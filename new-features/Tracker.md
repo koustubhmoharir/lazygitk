@@ -1,26 +1,40 @@
 # Current work
 
-Roadmap item: [1. Explicit-action defaults](Roadmap.md#1-explicit-action-defaults).
-Status: config/runtime audit complete; implementation and verification underway.
+Roadmap item: [2. Stable command identity and inventory](Roadmap.md#2-stable-command-identity-and-inventory).
+Status: current-item task plan ready; inventory work begins next.
 
-Scope: default `autoFetch`, `autoRefresh`, and `autoStageResolvedConflicts` to
-`false`, and `autoForwardBranches` to `none`. Keep read-only external-ref
-polling enabled and honor explicit user/repository configuration. Manual
-operations and refreshes following explicit actions remain available.
+Scope: establish stable, non-translated action identity and a complete key/action
+inventory. Preserve existing shortcuts, handlers, guards and modal behavior.
+Expose unbound actions in the palette and carry identities through equivalent
+invocation paths; do not implement usage ranking or remapping in this item.
 
-## Remaining tasks for item 1
+## Remaining tasks for item 2
 
-1. Finish verification of the timer-driven default and opt-in scenarios: no
-   automatic fetch or file polling under defaults, explicit fetch/refresh
-   opt-ins still work, and read-only external-ref polling remains active.
-   Keep all Git mutations in disposable repositories with local fake remotes.
-2. Finish final validation, including lint and the full headless integration
-   run; check generated outputs remain current after any fixes. Record results
-   and any verification limits
-   in the roadmap/merge guide. Once acceptance criteria are satisfied, mark item
-   1 complete in the roadmap, reconcile its description with actual behavior,
-   and replace this task list with the newly prepared plan for item 2 in the
-   same commit. Do not advance while a required check or scope issue is unresolved.
+1. Inventory all binding and menu construction paths, hardcoded accelerators,
+   modal/navigation keys, platform differences, custom commands and dispatch
+   precedence. Record verb, target, availability and aliases with source
+   references under `new-features`. Decide the narrow metadata/invocation seams
+   from that evidence, consulting TortoiseGit for design questions. Present the
+   concrete design before code changes; raise unresolved user choices.
+2. Add explicit command-identity and semantic-verb metadata to bindings and
+   relevant menu leaves, with validation/tests. Design IDs to survive locale,
+   shortcut, selection and source-order changes. Add optional custom-command
+   IDs and a documented stable fallback without persisting commands or secrets.
+3. Annotate the inventory's built-in actions and aliases through bounded,
+   reviewable changes. Share identity for equivalent invocation paths, not
+   unrelated operations with the same translated label. Keep behavior ownership
+   in existing controllers/helpers and record integration points in the merge
+   guide. Check completeness mechanically where practical.
+4. Connect palette deduplication and menu/binding identity propagation. Ensure
+   commands with no shortcut remain discoverable and executable, with disabled
+   reasons intact. Add focused tests for aliases, distinct equal-label actions,
+   custom commands, unbound actions, locale/keymap stability and unchanged
+   invocation behavior. Do not introduce frequency recording yet.
+5. Review the inventory against the implemented metadata, regenerate affected
+   docs/schema/test lists, and run formatting, build, short tests, lint and
+   relevant headless scenarios. Record verification limits. Complete item 2 in
+   the roadmap and replace this plan with item 3's task plan in the same final
+   implementation commit, only after its acceptance criteria are satisfied.
 
 ## How this tracker works
 
@@ -47,9 +61,10 @@ operations and refreshes following explicit actions remain available.
 
 ## Verification notes
 
-The initial environment lacks `just`; install it or use equivalent recipe
-commands and report that choice. Color-sensitive tests require clearing
-`NO_COLOR`. A previous lint attempt could not fetch the pinned tool because
-`sum.golang.org:443` refused the connection; resolve that before claiming item
-1's required verification is complete. These notes are environment observations,
-not completed feature tasks.
+`just` is unavailable; use the equivalent commands in `justfile`. Clear
+`NO_COLOR` for color-sensitive tests. The pinned lint shim now downloads and
+runs successfully. Headless invocations share `/tmp/lazygit/test_lazygit` and
+fixture directories: serialize their builds/runs. Use bounded eventual checks
+for background events, not immediate UI assertions or synthetic refreshes.
+The shared integration config explicitly disables fetch/file/ref polling;
+default-policy tests must restore values from the real default constructor.

@@ -587,6 +587,8 @@ var tests = []*components.IntegrationTest{
 	submodule.Stage,
 	submodule.StageAllWithDirtySubmodule,
 	submodule.StageDirtyOnly,
+	sync.AutomationOptIn,
+	sync.ExplicitActionDefaults,
 	sync.FastForwardBehindBranch,
 	sync.FastForwardBehindBranchCheckedOut,
 	sync.FastForwardBehindBranchWithoutReflogs,

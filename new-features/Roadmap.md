@@ -49,8 +49,8 @@ tasks with the next item's plan in the same completion commit.
 
 | Item | Deliverable | Status | Depends on | Relative size |
 | --- | --- | --- | --- | --- |
-| 1 | Explicit-action defaults | Current: defaults implemented, verification underway | None | Small |
-| 2 | Stable command identity and complete key/action inventory | Pending | None | Medium |
+| 1 | Explicit-action defaults | Complete | None | Small |
+| 2 | Stable command identity and complete key/action inventory | Current: inventory and implementation planning | None | Medium |
 | 3 | Separate commit/file diff actions and arbitrary-file comparison | Pending | 2 for command metadata | Medium |
 | 4 | Create/move a branch without checkout | Pending | Git probe review | Medium |
 | 5 | Checkout selected commit under a branch name | Pending | 4's shared prompts/validation | Medium |
@@ -76,6 +76,9 @@ related but different: two commands may share the verb `rename` while retaining
 distinct IDs such as `branch.rename` and `stash.rename`.
 
 ## 1. Explicit-action defaults
+
+Complete (2026-10-21). The implementation uses one shared constructor hook;
+existing automation handlers and manual actions remain unchanged.
 
 The fork overlay in `pkg/config/fork_defaults.go`, called from the shared
 platform config constructor before loading user configuration, sets:
@@ -105,6 +108,15 @@ continue-merge/rebase prompt, as specified by that existing config option.
 Validation: default/override config tests; targeted background-routine tests;
 existing fetch/auto-forward integration scenarios, with opt-in scenarios
 explicitly setting their intended config. Regenerate config docs/schema.
+
+Verified: debug build, isolated-config TUI start/quit and printed defaults,
+full short tests, formatting, generation and lint (zero issues). The full
+690-scenario headless run found two test-fixture issues (one missing staging
+opt-in and the new test inheriting the harness's disabled ref polling); both
+were corrected. An 11-scenario headless rerun, including both corrected tests,
+both new runtime scenarios and all seven forwarding scenarios, passed. The
+full suite was not repeated after those fixture-only corrections; the
+version-gated `sync/push_no_follow_tags` scenario was skipped by the harness.
 
 ## 2. Stable command identity and inventory
 

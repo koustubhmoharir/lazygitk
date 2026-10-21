@@ -62,6 +62,31 @@ about the code that exists, not speculative implementation tasks.
   snapshots in `docs/` and `schema/`. The fork-defaults explanation outside the
   generated YAML in `docs-master/Config.md` is hand-maintained. Keybinding
   cheatsheets should not change for this defaults-only item.
+- `pkg/integration/components/eventual_content.go` adds a bounded UI-thread
+  buffer observation for genuine background events; it never triggers refresh.
+  Its unit test verifies retries and UI-thread reads. New sync scenarios
+  `ExplicitActionDefaults` and `AutomationOptIn` use local bare remotes.
+  The shared test YAML explicitly disables polling, so the default-policy
+  scenario restores the three routine gates from `GetDefaultConfig` rather
+  than mistaking harness overrides for application defaults.
+
+### Item 1 verification (2026-10-21)
+
+- Passed: `go build -gcflags='all=-N -l'`, isolated-config TUI start/quit,
+  `--config` output, `go generate ./...`, `env -u NO_COLOR go test ./... -short`,
+  `scripts/gofumpt-check.sh` and `scripts/golangci-lint-shim.sh run` (zero issues).
+- Full headless attempt: 690 registered scenarios, one version-gated skip,
+  two fixture failures. The custom-patch reverse/conflict scenario needed an
+  explicit staging opt-in; the new default-policy scenario inherited the
+  harness's disabled external-ref polling. Both fixtures were corrected.
+- Corrected headless rerun passed in 14.924s: `TestIntegration/(sync|conflicts|main_view)/(explicit_action_defaults|automation_opt_in|fetch_and_auto_forward_branches_.*|apply_custom_patch_in_reverse_with_conflict|resolve_no_auto_stage)$`,
+  with `-parallel 4`. This covers 11 scenarios, including all seven forwarding
+  variants. Other full-run scenarios passed unchanged; the full suite was not
+  repeated after the fixture-only corrections. The earlier focused conflict
+  and no-forwarding run also passed. Do not describe the initial full attempt
+  as a single green full-suite run.
+- Used `justfile` command equivalents because `just` is absent. No system
+  dependencies were installed; the pinned Go lint tool downloaded successfully.
 
 ## Reviewing an upstream merge
 
