@@ -50,8 +50,8 @@ tasks with the next item's plan in the same completion commit.
 | Item | Deliverable | Status | Depends on | Relative size |
 | --- | --- | --- | --- | --- |
 | 1 | Explicit-action defaults | Complete | None | Small |
-| 2 | Stable command identity and complete key/action inventory | Current: inventory and bounded annotation | None | Medium |
-| 3 | Separate commit/file diff actions and arbitrary-file comparison | Pending | 2 for command metadata | Medium |
+| 2 | Stable command identity and complete key/action inventory | Complete | None | Medium |
+| 3 | Separate commit/file diff actions and arbitrary-file comparison | Current | 2 for command metadata | Medium |
 | 4 | Create/move a branch without checkout | Pending | Git probe review | Medium |
 | 5 | Checkout selected commit under a branch name | Pending | 4's shared prompts/validation | Medium |
 | 6 | Rebase current branch onto a selected commit | Pending | 2 | Small–medium |
@@ -119,6 +119,23 @@ full suite was not repeated after those fixture-only corrections; the
 version-gated `sync/push_no_follow_tags` scenario was skipped by the harness.
 
 ## 2. Stable command identity and inventory
+
+Complete (2026-10-21). Explicit metadata covers 312 binding and 176 menu
+factories; five parameter/informational factories intentionally have no
+independent action ID. See [the dispatch/semantic audit](command-identity-design.md)
+and [mechanical inventory](inventory/README.md). Mode-dependent staging/patch/
+conflict operations resolve identity live, without changing handlers.
+
+Palette aliases now merge by resolved ID, preserving local precedence and
+combining shortcut hints on copies. Distinct equal-label actions stay separate;
+unbound described actions remain executable. Hidden positional panel-jump
+definitions survive removed shortcuts, without adding panel-chooser entries.
+Controllers/helpers remain behavior owners; no frequency recording is added.
+
+Verified: debug build, full short tests, standalone inventory/checker tests,
+generation, formatting, lint (zero issues) and 14 targeted headless scenarios
+(including unbound branch rename through its normal prompt and Git result).
+No new full-suite run was performed for this item.
 
 Add stable, non-translated IDs to command bindings and relevant menu leaves.
 Add semantic verb metadata where needed for the keymap audit; do not use

@@ -151,6 +151,8 @@ about the code that exists, not speculative implementation tasks.
   unbound branch rename through the normal prompt and Git result. The first
   attempt's new test omitted the Local section header; its assertion was fixed.
   This was a targeted run, not a new full-suite run.
+  Final post-review debug build, full short tests, formatting and lint also
+  passed before advancing to item 3.
 
 ## Reviewing an upstream merge
 

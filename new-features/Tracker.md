@@ -1,21 +1,36 @@
 # Current work
 
-Roadmap item: [2. Stable command identity and inventory](Roadmap.md#2-stable-command-identity-and-inventory).
-Status: metadata, inventory and palette integration implemented; final verification underway.
+Roadmap item: [3. Separate diff actions for commits and historical files](Roadmap.md#3-separate-diff-actions-for-commits-and-historical-files).
+Status: designing the diff backend and subprocess lifecycle.
 
-Scope: establish stable, non-translated action identity and a complete key/action
-inventory. Preserve existing shortcuts, handlers, guards and modal behavior.
-Expose unbound actions in the palette and carry identities through equivalent
-invocation paths; do not implement usage ranking or remapping in this item.
+Scope: direct previous-commit and working-tree comparisons for commits and
+historical files/directories, plus explicitly chosen worktree-file comparison.
+Keep sticky diff mode independent, preserve captured selection and actual
+working-file bytes, and use the configured external difftool with safe cleanup.
 
-## Remaining tasks for item 2
+## Remaining tasks for item 3
 
-1. Finish the final build/short-test/lint pass after inventory and palette review.
-   Generation, standalone inventory/checker tests and 14 targeted headless
-   scenarios passed, including executing unbound branch rename via the palette.
-   Record verification limits. Complete item 2 in
-   the roadmap and replace this plan with item 3's task plan in the same final
-   implementation commit, only after its acceptance criteria are satisfied.
+1. Finalize the additive backend/UI design against the recorded probes and
+   TortoiseGit guidance. Resolve exact literal-path blob lookup, root/merge/
+   rename/deletion handling, trusted no-index exit status and temporary-file
+   lifetime before delegating bounded implementation. Raise unresolved choices.
+2. Implement and test endpoint/selection validation and exact historical blob
+   extraction. Stream binary bytes into private read-only temporary sources;
+   validate existing regular-file destinations inside the current worktree.
+3. Add the narrow subprocess success-status integration needed for trusted
+   no-index diffs; Git 0/1 are normal only for this action. Preserve other
+   subprocess errors/prompts and ensure cleanup on every completion path.
+4. Wire separate commit/file previous and worktree actions with stable IDs,
+   accurate labels/disabled reasons, captured OIDs/paths and priority hints.
+   Add arbitrary-file prompt with completion and explicit source/destination.
+   Keep old sticky comparison distinct. Introduce only the agreed provisional
+   case-insensitive diff keys, resolving collisions without a full remapping.
+5. Add fake-tool backend and headless UI coverage for endpoints, exact bytes,
+   unusual paths, renames/deletions/root/merge, missing/unsupported destinations,
+   cancellation/failure, sticky isolation and case variants. Update user docs,
+   inventory and merge guide; generate/build/test/lint and record limits.
+6. Once acceptance criteria pass, complete item 3 accurately in the roadmap and
+   replace this tracker with item 4's task-level plan in the same commit.
 
 ## How this tracker works
 
