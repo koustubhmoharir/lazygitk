@@ -134,6 +134,21 @@ type TranslationSet struct {
 	SureForceCheckout                     string
 	ForceCheckoutBranch                   string
 	BranchName                            string
+	CreateMoveBranchHere                  string
+	CreateBranchAndCheckout               string
+	PlaceBranchNamePrompt                 string
+	PlaceBranchTooltip                    string
+	PlaceBranchMoveTitle                  string
+	PlaceBranchMovePrompt                 string
+	PlaceBranchChangedTitle               string
+	PlaceBranchChangedNote                string
+	PlaceBranchCreateAgainPrompt          string
+	PlaceBranchAlreadyHereTitle           string
+	PlaceBranchAlreadyHerePrompt          string
+	PlaceBranchWorkingStatus              string
+	PlaceBranchApplyingStatus             string
+	PlaceBranchSelectCommit               string
+	PlaceBranchRepositoryChanged          string
 	NewBranchNameBranchOff                string
 	CantDeleteCheckOutBranch              string
 	DeleteBranchTitle                     string
@@ -1356,6 +1371,21 @@ func EnglishTranslationSet() *TranslationSet {
 		SureForceCheckout:                    "Are you sure you want force checkout? You will lose all local changes",
 		ForceCheckoutBranch:                  "Force checkout branch",
 		BranchName:                           "Branch name",
+		CreateMoveBranchHere:                 "Create/move branch here…",
+		CreateBranchAndCheckout:              "Create branch and check it out…",
+		PlaceBranchNamePrompt:                "Local branch name at %s (without checkout)",
+		PlaceBranchTooltip:                   "Create or move a local branch to the selected commit without changing HEAD, the index or working files.",
+		PlaceBranchMoveTitle:                 "Move existing branch?",
+		PlaceBranchMovePrompt:                "Move branch %q from %s to %s?\n\nThis changes only the branch tip; it does not check out the branch. Existing upstream settings are preserved.",
+		PlaceBranchChangedTitle:              "Branch changed; review again",
+		PlaceBranchChangedNote:               "The branch changed while this dialog was open. Review its current state before proceeding.",
+		PlaceBranchCreateAgainPrompt:         "Branch %q no longer exists. Create it at %s without checkout?",
+		PlaceBranchAlreadyHereTitle:          "Branch already at selected commit",
+		PlaceBranchAlreadyHerePrompt:         "Branch %q already points to %s. Nothing changed.",
+		PlaceBranchWorkingStatus:             "Checking branch",
+		PlaceBranchApplyingStatus:            "Placing branch",
+		PlaceBranchSelectCommit:              "Select exactly one commit to create or move a branch.",
+		PlaceBranchRepositoryChanged:         "The repository changed. Start the branch placement again.",
 		NewBranchNameBranchOff:               "New branch name (branch is off of '{{.branchName}}')",
 		CantDeleteCheckOutBranch:             "You cannot delete the checked out branch!",
 		DeleteBranchTitle:                    "Delete branch '{{.selectedBranchName}}'?",

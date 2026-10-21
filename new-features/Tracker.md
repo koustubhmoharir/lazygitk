@@ -1,7 +1,7 @@
 # Current work
 
 Roadmap item: [4. Create or move a branch at a selected commit, without checkout](Roadmap.md#4-create-or-move-a-branch-at-a-selected-commit-without-checkout).
-Status: backend implemented and verified; reviewing the modal flow and headless regressions.
+Status: implementation and headless regressions verified; finishing final checks.
 
 Scope: create or move a named local branch to a captured selected commit,
 without checkout. Existing-tip moves require a warning; preserve HEAD, index,
@@ -10,16 +10,11 @@ responsibility. Never bypass another worktree's branch occupancy.
 
 ## Remaining tasks for item 4
 
-1. Add a separate discoverable commit-list action and branch-name prompt, keeping
-   create-and-checkout clearly distinct. Warn with old/new tips before a move;
-   if state changes after confirmation, show the new state and require fresh
-   confirmation. Refresh markers without changing checkout or selected commit.
-2. Finish controller and headless regressions for create/move/no-op/cancel,
-   invalid/conflicting names, dirty index/worktree, detached HEAD, occupied
-   worktrees, concurrent ref changes, upstream retention and reflog recovery.
-3. Update usage, inventory and merge guide; generate, build, format, test and lint.
-   Record limits and avoid claiming undo support without a verified integration.
-4. Once acceptance criteria pass, complete item 4 accurately in the roadmap and
+1. Finish final full-short-test and lint reruns after the generated test list is
+   stable. Usage, inventory, generation, debug build, formatting, targeted race
+   tests and 127 branch/commit/reflog headless scenarios have passed. Record
+   verification limits; do not claim Undo support or a new full headless run.
+2. Once acceptance criteria pass, complete item 4 accurately in the roadmap and
    replace this tracker with item 5's task-level plan in the same commit.
 
 ## How this tracker works

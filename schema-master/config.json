@@ -1739,6 +1739,19 @@
     },
     "KeybindingCommitsConfig": {
       "properties": {
+        "createMoveBranch": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ]
+        },
         "squashDown": {
           "oneOf": [
             {

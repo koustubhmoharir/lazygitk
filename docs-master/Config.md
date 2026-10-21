@@ -837,6 +837,7 @@ keybinding:
     addForkRemote: F
     sortOrder: s
   commits:
+    createMoveBranch: null
     squashDown: s
     renameCommit: r
     renameCommitWithEditor: R

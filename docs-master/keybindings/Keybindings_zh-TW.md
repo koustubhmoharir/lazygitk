@@ -110,7 +110,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | 檢出 | 檢出所選擇的提交作為分離HEAD。 |
 | `` y `` | 複製提交屬性 | 複製提交屬性到剪貼簿(如hash、URL、diff、訊息、作者)。 |
 | `` o `` | 在瀏覽器中開啟提交 |  |
-| `` n `` | 從提交建立新分支 |  |
+| `` n `` | Create branch and check it out… |  |
 | `` N `` | 移動提交至新分支 | 建立一個新分支，並將目前分支未推送的提交移動到該分支。如果您打算開始新工作但忘記先建立新分支，這會很有用。<br><br>請注意，此操作忽略選擇，新分支總是從主分支建立或堆疊在目前分支之上（您可以選擇哪種方式）。 |
 | `` g `` | 檢視重設選項 | 檢視重置選項 (soft/mixed/hard) 用於重置到選擇項。 |
 | `` C `` | 複製提交 (揀選) | Mark commit as copied. Then, in the local commits view, choose Paste (cherry-pick) from the command palette. Use `<esc>` to cancel the selection. |
@@ -177,7 +177,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | 檢出 | 檢出所選擇的提交作為分離HEAD。 |
 | `` y `` | 複製提交屬性 | 複製提交屬性到剪貼簿(如hash、URL、diff、訊息、作者)。 |
 | `` o `` | 在瀏覽器中開啟提交 |  |
-| `` n `` | 從提交建立新分支 |  |
+| `` n `` | Create branch and check it out… |  |
 | `` N `` | 移動提交至新分支 | 建立一個新分支，並將目前分支未推送的提交移動到該分支。如果您打算開始新工作但忘記先建立新分支，這會很有用。<br><br>請注意，此操作忽略選擇，新分支總是從主分支建立或堆疊在目前分支之上（您可以選擇哪種方式）。 |
 | `` g `` | 檢視重設選項 | 檢視重置選項 (soft/mixed/hard) 用於重置到選擇項。 |
 | `` C `` | 複製提交 (揀選) | Mark commit as copied. Then, in the local commits view, choose Paste (cherry-pick) from the command palette. Use `<esc>` to cancel the selection. |
@@ -239,7 +239,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | 檢出 | 檢出所選擇的提交作為分離HEAD。 |
 | `` y `` | 複製提交屬性 | 複製提交屬性到剪貼簿(如hash、URL、diff、訊息、作者)。 |
 | `` o `` | 在瀏覽器中開啟提交 |  |
-| `` n `` | 從提交建立新分支 |  |
+| `` n `` | Create branch and check it out… |  |
 | `` N `` | 移動提交至新分支 | 建立一個新分支，並將目前分支未推送的提交移動到該分支。如果您打算開始新工作但忘記先建立新分支，這會很有用。<br><br>請注意，此操作忽略選擇，新分支總是從主分支建立或堆疊在目前分支之上（您可以選擇哪種方式）。 |
 | `` g `` | 檢視重設選項 | 檢視重置選項 (soft/mixed/hard) 用於重置到選擇項。 |
 | `` C `` | 複製提交 (揀選) | Mark commit as copied. Then, in the local commits view, choose Paste (cherry-pick) from the command palette. Use `<esc>` to cancel the selection. |

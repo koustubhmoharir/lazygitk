@@ -4,15 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"regexp"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
 )
-
-var fullHistoricalOID = regexp.MustCompile(`^(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})$`)
 
 type historicalDiffSelection struct {
 	oid          string
@@ -48,7 +45,7 @@ func (self *BasicCommitsController) historicalCommitSelection(previous bool) (*m
 		return nil, &types.DisabledReason{Text: self.c.Tr.HistoricalDiffSingleCommitOnly}
 	}
 	commit := selected[0]
-	if !fullHistoricalOID.MatchString(commit.Hash()) {
+	if !isFullSelectedCommitOID(commit.Hash()) {
 		return nil, &types.DisabledReason{Text: self.c.Tr.HistoricalDiffMissingSelection}
 	}
 	if previous && len(commit.Parents()) == 0 {
@@ -130,7 +127,7 @@ func (self *CommitFilesController) captureHistoricalFileSelection() (*historical
 		return nil, &types.DisabledReason{Text: self.c.Tr.HistoricalDiffSingleCommitOnly}
 	}
 	commit, ok := self.context().GetRef().(*models.Commit)
-	if !ok || commit == nil || !fullHistoricalOID.MatchString(commit.Hash()) {
+	if !ok || commit == nil || !isFullSelectedCommitOID(commit.Hash()) {
 		return nil, &types.DisabledReason{Text: self.c.Tr.HistoricalDiffMissingSelection}
 	}
 	nodes, start, end := self.context().GetSelectedItems()

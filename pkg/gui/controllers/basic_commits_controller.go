@@ -49,6 +49,8 @@ func NewBasicCommitsController(c *ControllerCommon, context ContainsCommits) *Ba
 
 func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
+		// Fork: ref-only placement is separate from upstream creation/checkout.
+		self.branchPlacementBinding(opts),
 		{
 			CommandID:         "commit.checkout-menu",
 			Verb:              "checkout",
@@ -83,7 +85,7 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 			Keys:              opts.GetKeys(opts.Config.Universal.New),
 			Handler:           self.withItem(self.newBranch),
 			GetDisabledReason: self.require(self.singleItemSelected()),
-			Description:       self.c.Tr.CreateNewBranchFromCommit,
+			Description:       self.c.Tr.CreateBranchAndCheckout,
 		},
 		{
 			// Putting this in BasicCommitsController even though we really only want it in the commits

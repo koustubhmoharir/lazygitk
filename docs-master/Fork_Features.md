@@ -59,6 +59,31 @@ keybinding:
     diffWithWorkingFile: []
 ```
 
+## Create or move a branch without checkout
+
+Select one commit in local history, another branch's history, or reflog. Open
+`?` and choose **Create/move branch here…**, then enter a literal local branch
+name. Existing names are suggested; no name is automatically chosen or cleaned
+up. This action is initially unbound (`keybinding.commits.createMoveBranch`).
+
+A new name creates a branch without checkout. An existing different tip needs
+a warning showing its old/new commit IDs; cancel leaves it unchanged. If the
+branch changes while the warning is open, review and confirm the new state
+again. An already matching tip reports that nothing changed.
+
+HEAD, staged changes, working files and the selected commit stay unchanged.
+Existing upstream settings are preserved. A checked-out/reserved branch cannot
+be moved: use explicit Reset for the current branch and finish any active
+operation first. Another worktree's reservation is never bypassed. Symbolic
+branch aliases are rejected. **Create branch and check it out…** remains a
+separate action with its existing behavior.
+
+Creation/movement records a descriptive destination-branch reflog entry. The
+existing Undo action does not cover independent branch placement; inspect that
+branch's reflog for explicit recovery. Ref changes are expected-old transactions;
+occupancy is freshly checked, not locked against arbitrary external checkouts.
+An uncertain Git transaction failure is reported, never silently retried.
+
 ## Command palette identity
 
 Equivalent invocation paths share an entry with combined shortcut hints.

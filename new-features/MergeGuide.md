@@ -213,6 +213,7 @@ about the code that exists, not speculative implementation tasks.
   validation; existing creation/checkout/reset paths are not replaced.
 - `branch_ref_transaction.go` uses the repo-bound command builder but owns the
   interactive process lifecycle instead of the runner's whole-command retry.
+  Its wait goroutine uses upstream's `utils.Safe` terminal-restoration wrapper.
   Git's prepared transaction holds the target ref lock during the final type,
   value and occupancy checks. Preserve EOF-abort, ACK/hook-output handling,
   bounded diagnostics and no retry after a possibly committed write.
@@ -230,6 +231,27 @@ about the code that exists, not speculative implementation tasks.
   same-OID aliases, hooks, lock cleanup and process failures. The prepared
   protocol predates the minimum supported Git version; no minimum-version or
   cross-platform runtime matrix has been performed.
+- `BasicCommitsController` adds one binding hook; the old creation/checkout
+  action keeps its handler/identity but has an explicit checkout label.
+  `branch_placement_actions.go` owns captured source/repository identity, worker
+  preparation/application, move warnings and renewed confirmation. Refresh
+  branches/commits/subcommits/reflog by identity, not position or checkout.
+  `selected_commit.go` shares full-OID guards with historical comparisons;
+  the latter's behavior is unchanged. The config field is initially unbound.
+- Development docs/schema/cheatsheets and the static inventory must be
+  regenerated after the binding/config/English additions. Controller tests
+  verify captured selection, cancellation, changed/deleted refs, no-op refresh,
+  repository changes and unchanged dirty files.
+- The 127-scenario branch/commit/reflog headless selection passed in 107.551s,
+  including all three new placement scenarios (local history with dirty files,
+  stale/deleted destinations and independent branch history/reflog sources).
+  The first broad attempt was invalidated by adding a source scenario while
+  its generated list was frozen; regeneration and a stable-source rerun fixed
+  that harness coordination issue. This is not a new full-suite run.
+- Debug build, generation, formatting, inventory/checker tests and targeted
+  backend/controller race tests passed. Real SHA-256 creation/movement passed
+  separately. Full short tests passed after the goroutine-wrapper correction;
+  final post-generation short/lint reruns remain in progress.
 
 ## Reviewing an upstream merge
 
