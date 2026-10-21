@@ -1,7 +1,10 @@
-# Feature plan for the fork
+# Roadmap for the fork
 
 Status: design and implementation plan only; no application behavior changed.
 Explored on 2026-10-21 at upstream commit `4e1eebe278790f257a875da6633234391a5a85b3`.
+
+Current item and its remaining tasks: [Tracker.md](Tracker.md).
+Upstream integration notes: [MergeGuide.md](MergeGuide.md).
 
 Supporting evidence: [repository map](repository-map.md) and
 [Git operation investigation](git-operation-investigation.md), plus
@@ -39,19 +42,33 @@ Supporting evidence: [repository map](repository-map.md) and
 
 Each numbered milestone is independently reviewable. Separate preparatory
 refactors from behavior changes and keep tests with the behavior they verify.
-Do not implement these milestones until the design has been presented.
+The tracker contains task-level planning for the current item only; plan later
+items when they become current. On completing an item, mark it complete here,
+update its description to match the implementation, and replace the tracker's
+tasks with the next item's plan in the same completion commit.
 
-| Milestone | Deliverable | Depends on | Relative size |
-| --- | --- | --- | --- |
-| 1 | Explicit-action defaults | None | Small |
-| 2 | Stable command identity and complete key/action inventory | None | Medium |
-| 3 | Separate commit/file diff actions and arbitrary-file comparison | 2 for command metadata | Medium |
-| 4 | Create/move a branch without checkout | Git probe review | Medium |
-| 5 | Checkout selected commit under a branch name | 4's shared prompts/validation | Medium |
-| 6 | Rebase current branch onto a selected commit | 2 | Small–medium |
-| 7 | Operate on selected branches without checkout | 4; explicit target design | Large |
-| 8 | Consistent default shortcuts and inactive-key behavior | 2–7's action inventory | Large |
-| 9 | Frequency-ordered command palette | 2; works before or after 8 | Medium |
+| Item | Deliverable | Status | Depends on | Relative size |
+| --- | --- | --- | --- | --- |
+| 1 | Explicit-action defaults | Current: planned, implementation not started | None | Small |
+| 2 | Stable command identity and complete key/action inventory | Pending | None | Medium |
+| 3 | Separate commit/file diff actions and arbitrary-file comparison | Pending | 2 for command metadata | Medium |
+| 4 | Create/move a branch without checkout | Pending | Git probe review | Medium |
+| 5 | Checkout selected commit under a branch name | Pending | 4's shared prompts/validation | Medium |
+| 6 | Rebase current branch onto a selected commit | Pending | 2 | Small–medium |
+| 7 | Operate on selected branches without checkout | Pending | 4; explicit target design | Large |
+| 8 | Consistent default shortcuts and inactive-key behavior | Pending | 2–7's action inventory | Large |
+| 9 | Frequency-ordered command palette | Pending | 2; works before or after 8 | Medium |
+
+## Fork implementation principles
+
+Follow the root [AGENTS.md](../AGENTS.md). Prefer additive fork modules and
+small, explicit integration points so upstream merges remain feasible. When a
+fork path replaces an upstream path, explain the replacement at the integration
+point and record it in the merge guide. Correctness and maintainability take
+priority over reducing the diff. This fork exists to improve usability: present
+meaningful choices through modal flows with sensible defaults and leave the
+user in control. Consult TortoiseGit when design or implementation questions
+arise; raise unresolved choices instead of silently deciding for the user.
 
 Shortcuts are finalized after the new commands are enumerated, so new features
 do not immediately force a second remapping. Stable IDs and key semantics are
