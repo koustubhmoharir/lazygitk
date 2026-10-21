@@ -42,7 +42,8 @@ func TestForkDefaultsConfigLoading(t *testing.T) {
 			repoPath := filepath.Join(dir, "repo.yml")
 			userContent := []byte("git:\n  autoFetch: true\n  autoRefresh: true\n  autoForwardBranches: allBranches\n  autoStageResolvedConflicts: true\n  autoDetectExternalChanges: false\n")
 			mustSucceed(t, os.WriteFile(userPath, userContent, 0o600))
-			files := []*ConfigFile{{Path: userPath, Policy: ConfigFilePolicyErrorIfMissing}}
+			files := make([]*ConfigFile, 1, 2)
+			files[0] = &ConfigFile{Path: userPath, Policy: ConfigFilePolicyErrorIfMissing}
 
 			// Explicit opt-ins survive both initial loading and GUI config reload.
 			for _, initialized := range []bool{false, true} {
