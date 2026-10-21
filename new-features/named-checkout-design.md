@@ -1,0 +1,73 @@
+# Named checkout: design boundary
+
+Roadmap item 5 is current. The command-level lock-retry opt-out and shared
+full-OID syntax check are committed. The checkout backend/UI are not implemented
+yet: the concurrency choice below needs the user's direction.
+
+## Intended flow
+
+[TortoiseGit's checkout dialog](https://tortoisegit.org/docs/tortoisegit/tgit-dug-checkout.html)
+separates the target, branch name and working-tree overwrite option. This fork's
+**Checkout as branch…** will be a distinct row in `RefsHelper.CreateCheckoutMenu`.
+It will never request working-file overwrite, stash or a temporary checkout.
+Existing detached/existing-at-commit choices remain distinct.
+
+Capture repository and selected commit identity before opening the name prompt.
+Accept a literal local name with existing local-name suggestions, not silent
+sanitization or a guessed name. Reuse the placement validation/ref-query helpers
+and the shared pure full-OID guard. A backend plan should snapshot destination
+type/tip and current HEAD identity; a change before application requires a fresh
+review. Warn before moving an existing different tip, including the current
+branch when applicable. Creating or attaching an already matching branch still
+performs checkout, unlike ref-only placement's no-op.
+
+Check current operation metadata and all worktree reservations freshly. Do not
+let an allowed current checkout mask another worktree's reservation. Refuse
+active merge, rebase, cherry-pick, revert, sequencer or bisect state instead of
+letting checkout silently discard/leave operation metadata. Do not require a
+clean index/worktree: Git must decide whether actual paths would be overwritten.
+
+## Verified command and failure behavior
+
+The [reproducible Git probes](named-checkout-probes.md) establish:
+
+- Combined `checkout --no-overwrite-ignore -B` carries tested unrelated dirty
+  changes and rejects tested overwrite collisions without moving branch refs.
+  Do not split branch movement and checkout into separate commands.
+- A bare full OID can be redirected by a branch with exactly that name.
+  The verified `OID^{commit}` form avoids checkout's branch-name shadowing.
+  Preparation must also verify actual object identity/type, not just a
+  `cat-file -t` combined-output string that may include warnings.
+- Git permits some active-operation checkouts; the fork needs its own guards.
+- A failing post-checkout hook can follow a completed checkout. A rejecting
+  reference-transaction hook can leave index/files changed but refs unchanged.
+  Never promise universal rollback or retry after such a failure. Refresh all
+  relevant models and show Git's actual failure plus possible partial changes.
+- Use the command-local lock-retry opt-out; lock text is not proof that no
+  state changed. Existing Git hook behavior must remain enabled.
+
+The command sequence and timing are corroborated by Git's
+[checkout implementation](https://raw.githubusercontent.com/git/git/v2.51.1/builtin/checkout.c)
+and [branch ref-update implementation](https://raw.githubusercontent.com/git/git/v2.51.1/branch.c).
+Ordinary overwrite rejection and post-transition failures are different cases.
+
+## Unresolved concurrency choice
+
+The deterministic `post-index-change` probes prove that `checkout -B` does not
+perform an expected-old ref update for an existing destination. A direct tip
+change during checkout is overwritten. If a direct destination becomes a
+symbolic alias during that interval, Git follows it and updates another branch.
+No amount of pre-launch rechecking makes that interval atomic. Unlike ref-only
+placement, holding a prepared ref lock through checkout would prevent Git's own
+combined operation from acquiring that lock; it is not a usable drop-in solution.
+
+The user must choose between Git's native concurrency contract (fresh checks
+before launch, coordinate other ref-mutating tools while checkout is running)
+and investigating stronger in-command protection first. Stronger protection
+needs a separately reviewed design, preserving existing hooks and accounting
+for Git's index/files-before-ref ordering; a late rejection can itself leave a
+partial working-tree transition. No hook override, Git patch or weaker
+split-operation workaround has been implemented or implicitly authorized.
+
+Once that choice is resolved, finish the current tracker tasks with backend,
+modal and real-Git/headless regressions. Do not start later roadmap items.

@@ -1,8 +1,8 @@
 # Current work
 
 Roadmap item: [5. Checkout any commit under a supplied branch name](Roadmap.md#5-checkout-any-commit-under-a-supplied-branch-name).
-Status: auditing combined checkout semantics and refining bounded Git probes;
-command-local lock-retry opt-out is implemented and verified.
+Status: awaiting the user's checkout-concurrency choice after completed Git
+probes. Lock-retry opt-out and shared pure OID validation are committed.
 
 Scope: check out a captured selected commit under a literal new or existing
 local branch name. Warn before moving an existing name; use Git's combined
@@ -10,6 +10,11 @@ operation, carry dirty changes when safe, preserve ignored collisions, and
 never force files, require an unnecessarily clean tree, or offer stash.
 
 ## Remaining tasks for item 5
+
+Design question: [named-checkout-design.md](named-checkout-design.md) records
+the verified late-ref/alias race. Choose Git's native concurrency contract
+(coordinate other writers during checkout) or investigate stronger in-command
+protection before implementing the backend. No checkout mutation is implemented.
 
 1. Audit checkout-menu construction, branch validation, operation guards,
    autostash offers, refresh and worker ownership. Consult TortoiseGit and probe

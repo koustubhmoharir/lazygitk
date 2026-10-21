@@ -273,6 +273,13 @@ about the code that exists, not speculative implementation tasks.
   without importing controllers. This refactor changes neither existence/type
   verification nor diff/placement behavior. Both affected packages' short tests
   passed, including a dedicated SHA-1/SHA-256/revision/synthetic-input matrix.
+- [named-checkout-design.md](named-checkout-design.md) records the paused design
+  boundary; [named-checkout-probes.md](named-checkout-probes.md) and its standalone
+  build-ignored probe reproduce native Git behavior. In particular, plain OID
+  branch-name shadowing, late direct/symbolic ref changes and post-transition
+  failures must not be overlooked when implementing or merging named checkout.
+  The user has not yet chosen the concurrency contract. No hook replacement or
+  checkout backend is implemented. Probe writes stay in owned temporary repos.
 
 ## Reviewing an upstream merge
 
