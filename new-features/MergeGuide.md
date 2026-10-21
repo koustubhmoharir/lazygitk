@@ -263,10 +263,16 @@ about the code that exists, not speculative implementation tasks.
   the existing combined-output path. Default retries and credential handling
   are unchanged. Preserve this distinction: a hook may emit lock-error text
   after a mutating operation, so retrying based on text alone is unsafe.
-- Tests verify default retry behavior, copied/isolate flags, single execution
+- Tests verify default retry behavior, copied/isolated flags, single execution
   and unchanged stdout/stderr/error identity with the opt-out. Both command
   packages' short tests passed. Existing callers do not opt out yet; the named
   checkout backend will explicitly choose this behavior.
+- `git_commands/object_id.go` now owns the shared full-OID syntax check formerly
+  private to historical diffs. The commit-controller helper delegates to it;
+  the forthcoming shared checkout-menu helper can use the same cheap check
+  without importing controllers. This refactor changes neither existence/type
+  verification nor diff/placement behavior. Both affected packages' short tests
+  passed, including a dedicated SHA-1/SHA-256/revision/synthetic-input matrix.
 
 ## Reviewing an upstream merge
 

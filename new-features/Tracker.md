@@ -22,6 +22,7 @@ never force files, require an unnecessarily clean tree, or offer stash.
    preserve tracking settings and report Git failures without stash or retry.
    Use the verified command-local lock-retry opt-out, not the default retrying
    runner path after a possibly partial checkout.
+   The shared pure full-OID guard is now available to both controller packages.
 3. Add **Checkout as branch…** to the shared checkout menu. Capture repository
    and source identity, prompt for the destination, warn with old/new tips and
    require fresh review of changed destinations. Refresh all checkout-related

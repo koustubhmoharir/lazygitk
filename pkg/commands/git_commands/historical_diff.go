@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"runtime"
 	"strings"
 
@@ -28,15 +27,6 @@ type HistoricalFileDiff struct {
 	SourcePath      string
 	DestinationPath string
 	tempDir         string
-}
-
-var fullObjectID = regexp.MustCompile(`^(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})$`)
-
-func validateObjectID(oid string) error {
-	if !fullObjectID.MatchString(oid) {
-		return fmt.Errorf("expected a full 40- or 64-character hexadecimal object ID")
-	}
-	return nil
 }
 
 // ResolveHistoricalDiffCommit validates and resolves a full commit object ID,
