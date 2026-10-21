@@ -1,7 +1,7 @@
 # Current work
 
 Roadmap item: [1. Explicit-action defaults](Roadmap.md#1-explicit-action-defaults).
-Status: task plan ready; application implementation has not started.
+Status: config/runtime audit complete; implementation and verification underway.
 
 Scope: default `autoFetch`, `autoRefresh`, and `autoStageResolvedConflicts` to
 `false`, and `autoForwardBranches` to `none`. Keep read-only external-ref
@@ -10,24 +10,18 @@ operations and refreshes following explicit actions remain available.
 
 ## Remaining tasks for item 1
 
-1. Audit the config-loading and automation paths to finalize the integration
-   point and verification cases. Cover platform defaults, explicit overrides,
-   startup/repo switches, config reload, return from subprocesses, post-fetch
-   forwarding, and resolved-conflict staging/continue prompts. Record findings
-   and merge-sensitive seams in [MergeGuide.md](MergeGuide.md). Resolve genuine
-   design questions using TortoiseGit as a guide and the user's agreed behavior.
-2. Implement the defaults through a focused fork-owned module and the smallest
+1. Implement the defaults through a focused fork-owned module and the smallest
    correct shared integration point, with a replacement comment where needed.
    Add config regression coverage for the four changed defaults, retained ref
    polling, explicit opt-ins, and supported platform constructors. Preserve
    existing config files and manual actions. Avoid changing automation handlers
    when existing config gates already provide the required behavior.
-3. Verify runtime behavior with focused tests and affected integration scenarios.
+2. Verify runtime behavior with focused tests and affected integration scenarios.
    Demonstrate no automatic fetch/file polling/forwarding/conflict staging under
    defaults, including no forwarding after manual fetch; verify explicit opt-ins
    still work and read-only ref polling remains active. Keep all Git mutations
    in disposable repositories with local fake remotes.
-4. Regenerate config documentation/schema and any changed integration-test
+3. Regenerate config documentation/schema and any changed integration-test
    list, review the outputs, and complete formatting, build, unit tests, lint
    and affected end-to-end checks. Record results and any verification limits
    in the roadmap/merge guide. Once acceptance criteria are satisfied, mark item
