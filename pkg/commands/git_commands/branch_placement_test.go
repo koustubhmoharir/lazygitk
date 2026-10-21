@@ -112,6 +112,25 @@ func TestBranchPlacementLiteralValidationAndExactRef(t *testing.T) {
 	assert.Equal(t, BranchPlacementNoop, packed.Action())
 }
 
+func TestBranchPlacementSHA256Repository(t *testing.T) {
+	root := t.TempDir()
+	gitTest(t, root, "init", "-q", "--object-format=sha256")
+	gitTest(t, root, "config", "user.name", "Test")
+	gitTest(t, root, "config", "user.email", "test@example.invalid")
+	first := branchPlacementTestCommit(t, root, "file", "one\n", "one")
+	second := branchPlacementTestCommit(t, root, "file", "two\n", "two")
+	commands := branchPlacementTestCommands(t, root)
+	assert.Len(t, first, 64)
+	for _, target := range []string{first, second} {
+		plan := branchPlacementRequirePlan(t, commands, "topic", target)
+		if err := commands.ApplyBranchPlacement(plan); err != nil {
+			t.Fatalf("place SHA-256 branch: %v", err)
+		}
+		assert.Equal(t, target, gitTest(t, root, "rev-parse", "refs/heads/topic"))
+		assert.Equal(t, second, gitTest(t, root, "rev-parse", "HEAD"))
+	}
+}
+
 func TestBranchPlacementRejectsAliasesAndCurrentMovement(t *testing.T) {
 	root, first, second := transactionHistory(t)
 	gitTest(t, root, "branch", "topic", first)
