@@ -154,6 +154,19 @@ about the code that exists, not speculative implementation tasks.
   Final post-review debug build, full short tests, formatting and lint also
   passed before advancing to item 3.
 
+### Direct historical comparison seams (item 3 in progress)
+
+- [direct-diff-design.md](direct-diff-design.md) records endpoints, literal
+  paths, temporary-file ownership, default-key collision handling and the
+  TortoiseGit guidance consulted before implementation.
+- `oscommands/subprocess_exit_status.go` owns opt-in success normalization.
+  `CmdObj` adds only a private allowlist; normal runner behavior is unchanged.
+  `Gui.runSubprocess` calls `SubprocessError` immediately after `exec.Cmd.Run`,
+  before its error/return prompt. Keep that ordering on merge: suppressing an
+  accepted difference status after prompting is too late. No command accepts
+  nonzero results unless its builder explicitly opts in. Tests cover wrapped
+  exit errors, command-local copied lists, start errors and preserved failures.
+
 ## Reviewing an upstream merge
 
 1. Record the upstream commit being integrated and review changes around all

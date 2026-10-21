@@ -1129,7 +1129,9 @@ func (gui *Gui) runSubprocess(cmdObj *oscommands.CmdObj) error {
 
 	fmt.Fprintf(os.Stdout, "\n%s\n\n", style.FgBlue.Sprint("+ "+strings.Join(subprocess.Args, " ")))
 
-	err := subprocess.Run()
+	// Fork: normalize only explicitly accepted subprocess statuses before the
+	// generic error/return prompt (e.g. trusted no-index diff's normal status 1).
+	err := cmdObj.SubprocessError(subprocess.Run())
 
 	subprocess.Stdout = io.Discard
 	subprocess.Stderr = io.Discard

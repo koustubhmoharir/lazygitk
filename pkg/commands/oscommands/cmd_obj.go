@@ -37,6 +37,9 @@ type CmdObj struct {
 
 	// can be set so that we don't run certain commands simultaneously
 	mutex *deadlock.Mutex
+
+	// Exit codes accepted by SubprocessError for this command only.
+	subprocessSuccessExitCodes []int
 }
 
 type CredentialStrategy int

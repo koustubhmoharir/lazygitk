@@ -1,7 +1,7 @@
 # Current work
 
 Roadmap item: [3. Separate diff actions for commits and historical files](Roadmap.md#3-separate-diff-actions-for-commits-and-historical-files).
-Status: designing the diff backend and subprocess lifecycle.
+Status: backend and UI implementation underway; real-Git and UI regression coverage in progress.
 
 Scope: direct previous-commit and working-tree comparisons for commits and
 historical files/directories, plus explicitly chosen worktree-file comparison.
@@ -10,26 +10,19 @@ working-file bytes, and use the configured external difftool with safe cleanup.
 
 ## Remaining tasks for item 3
 
-1. Finalize the additive backend/UI design against the recorded probes and
-   TortoiseGit guidance. Resolve exact literal-path blob lookup, root/merge/
-   rename/deletion handling, trusted no-index exit status and temporary-file
-   lifetime before delegating bounded implementation. Raise unresolved choices.
-2. Implement and test endpoint/selection validation and exact historical blob
+1. Implement and test endpoint/selection validation and exact historical blob
    extraction. Stream binary bytes into private read-only temporary sources;
    validate existing regular-file destinations inside the current worktree.
-3. Add the narrow subprocess success-status integration needed for trusted
-   no-index diffs; Git 0/1 are normal only for this action. Preserve other
-   subprocess errors/prompts and ensure cleanup on every completion path.
-4. Wire separate commit/file previous and worktree actions with stable IDs,
+2. Wire separate commit/file previous and worktree actions with stable IDs,
    accurate labels/disabled reasons, captured OIDs/paths and priority hints.
    Add arbitrary-file prompt with completion and explicit source/destination.
    Keep old sticky comparison distinct. Introduce only the agreed provisional
    case-insensitive diff keys, resolving collisions without a full remapping.
-5. Add fake-tool backend and headless UI coverage for endpoints, exact bytes,
+3. Add fake-tool backend and headless UI coverage for endpoints, exact bytes,
    unusual paths, renames/deletions/root/merge, missing/unsupported destinations,
    cancellation/failure, sticky isolation and case variants. Update user docs,
    inventory and merge guide; generate/build/test/lint and record limits.
-6. Once acceptance criteria pass, complete item 3 accurately in the roadmap and
+4. Once acceptance criteria pass, complete item 3 accurately in the roadmap and
    replace this tracker with item 4's task-level plan in the same commit.
 
 ## How this tracker works
