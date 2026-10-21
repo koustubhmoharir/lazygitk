@@ -36,7 +36,11 @@ claim that proposed features have been implemented or integration-tested.
   checkout depending on controller. `n` also participates in search and
   focused-diff navigation.
 - `pkg/config/keybinding.go`, `keynames.go`, and their tests: aliases and
-  validation. Audit parsed keys, not just YAML spellings.
+  validation. `Keybinding []string` means alternative single keys, not successive
+  keystrokes; `KeyFromLabel` accepts one rune or a special-key label. Existing
+  uppercase commands are distinct keys. Audit parsed keys, not just YAML
+  spellings. The revised plan uses menus for multi-letter paths rather than
+  treating a list such as `[p, u]` as a chord.
 - `pkg/gui/types/keybindings.go`: `Binding` carries keys, descriptions, handler,
   tags, and disabled reasons; it has no stable command ID yet.
 - `pkg/gui/keybindings.go`: `GetInitialKeybindings` gathers controller/context
@@ -56,10 +60,15 @@ claim that proposed features have been implemented or integration-tested.
 - `pkg/gui/menu_panel.go`, `controllers/menu_controller.go`,
   `context/menu_context.go`: sections, item key precedence, filtering, physical
   navigation keys, and selection. Sorting only the input bindings may still
-  leave section-based rendering to address.
+  leave section-based rendering to address. `controllers/menu_key.go` and
+  `controllers/helpers/menu_key.go` construct single-rune accelerators;
+  `FilterAsYouType` is for menus without their own item keys. First-key menus
+  can implement multi-letter command paths, but nested return/cancel state
+  and case-insensitive item accelerators require explicit testing.
 - `pkg/gui/services/custom_commands/keybinding_creator.go`: custom commands
   become bindings for one/multiple contexts or globally. Existing custom Ctrl+T
-  can shadow a new builtin; migration needs to explain removing it.
+  can shadow a builtin; the revised plan reserves Ctrl for custom commands
+  and uses separate unmodified shortcuts for the two core diffs.
 - `pkg/config/app_config.go`: `AppState`, `SaveAppState`, and state loading;
   `pkg/gui/gui.go` saves state at shutdown. Existing shell-command history is
   unrelated to usage counts and should not become the identity source.
@@ -69,7 +78,12 @@ claim that proposed features have been implemented or integration-tested.
 - `pkg/gui/controllers/basic_commits_controller.go`: shared commit-list
   actions, including `openDiffTool`, `newBranch`, `checkout`, and reset menu.
   `openDiffTool` already invokes a directory difftool using parent→commit,
-  adjusted by sticky diff mode. It currently has no target-choice submenu.
+  adjusted by sticky diff mode. The agreed design adds distinct previous-commit
+  and working-tree actions, not a target-choice submenu.
+- `pkg/gui/controllers/commits_files_controller.go`: `openDiffTool` gets its
+  endpoints from `CommitFilesContext.GetFromAndToForDiff`, adjusts for sticky
+  mode, and passes `node.GetPath()` with directory mode for non-file nodes.
+  Add the same two direct actions here, scoped to the selected file/directory.
 - `pkg/commands/git_commands/diff.go`: `DiffToolCmdOptions` and
   `OpenDiffToolCmdObj` already support selected-commit→working-tree by setting
   `FromCommit` and leaving `ToCommit` empty. Uses argv, `--no-prompt`, optional
@@ -77,6 +91,15 @@ claim that proposed features have been implemented or integration-tested.
 - `pkg/gui/controllers/diffing_menu_action.go` and
   `controllers/helpers/diff_helper.go`: existing in-app sticky comparisons;
   keep these distinct from explicit external-difftool choices.
+- `pkg/gui/controllers/helpers/suggestions_helper.go`:
+  `GetFilePathSuggestionsFunc` uses `WorkingTree.AllRepoFiles` to build a
+  suggestion trie. Inspect its exclusions before reusing it as an arbitrary
+  working-file picker: ignored files must be accepted even if suggestions
+  omit them. The destination is a filesystem path, not a Git revision.
+- `pkg/gui/gui.go`: `runSubprocess` and `runSubprocessWithSuspense` attach the
+  terminal and propagate nonzero exit errors. File-pair `--no-index` difftool
+  needs a feature-specific exit policy and temp-source lifetime; see the
+  [file comparison investigation](file-diff-investigation.md).
 - `pkg/gui/controllers/helpers/refs_helper.go`: `CreateCheckoutMenu` currently
   offers detached checkout or existing branches already at the selected commit.
   It does not prompt to assign an arbitrary name there. `NewBranch` checks the

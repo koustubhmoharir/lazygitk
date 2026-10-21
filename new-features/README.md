@@ -4,13 +4,22 @@ Status: design and implementation plan only; no application behavior changed.
 Explored on 2026-10-21 at upstream commit `4e1eebe278790f257a875da6633234391a5a85b3`.
 
 Supporting evidence: [repository map](repository-map.md) and
-[Git operation investigation](git-operation-investigation.md).
+[Git operation investigation](git-operation-investigation.md), plus
+[file comparison probes](file-diff-investigation.md).
 
 ## Agreed direction
 
 - Default shortcuts express a shared verb on the selected object. Rename can
   rename a branch, commit message, or stash; refresh and rebase cannot reuse
   that key. An inapplicable shortcut does nothing.
+- Alphabetic command bindings are case-insensitive. Core defaults do not use
+  Ctrl. Two- or three-letter bindings use menus on the first key, with nested
+  menus if needed; no new key-chord engine is required. Text entry and menu
+  navigation retain normal modal behavior.
+- Previous-commit diff and working-tree diff are separate actions, not target
+  choices in a menu. Working-tree diff gets priority for both a whole commit
+  and one historical file. A third action compares a historical file with an
+  explicitly chosen working-directory file, regardless of rename detection.
 - Disable automatic fetch, periodic file refresh, branch forwarding, and
   staging of resolved conflicts. Retain read-only external-ref polling.
 - The first version supports operations on other branches that do not require
@@ -19,6 +28,12 @@ Supporting evidence: [repository map](repository-map.md) and
 - Distinguish the selected object, the checked-out branch, and the operation's
   destination in labels and confirmations. Selection must not silently change
   while a prompt or worker is running.
+- Rebase requires a clean worktree and index; the user commits changes instead
+  of stashing. The new workflow must not invoke or offer autostash.
+- Keep existing reset for current-branch pointer movement. Named checkout must
+  carry dirty changes without stashing whenever Git can avoid overwriting them;
+  moving a non-current branch is only a ref change.
+- Palette usage counts are shared across repositories.
 
 ## Delivery sequence
 
@@ -30,7 +45,7 @@ Do not implement these milestones until the design has been presented.
 | --- | --- | --- | --- |
 | 1 | Explicit-action defaults | None | Small |
 | 2 | Stable command identity and complete key/action inventory | None | Medium |
-| 3 | Built-in diff target menu | 2 for command metadata | Small–medium |
+| 3 | Separate commit/file diff actions and arbitrary-file comparison | 2 for command metadata | Medium |
 | 4 | Create/move a branch without checkout | Git probe review | Medium |
 | 5 | Checkout selected commit under a branch name | 4's shared prompts/validation | Medium |
 | 6 | Rebase current branch onto a selected commit | 2 | Small–medium |
@@ -98,37 +113,90 @@ Validation: uniqueness/stability of built-in IDs, aliases sharing an ID, custom
 commands, unbound commands in the palette, locale/keymap changes, and unchanged
 handler behavior in the preparatory refactor.
 
-## 3. Built-in diff target menu
+## 3. Separate diff actions for commits and historical files
 
-Extend the existing Ctrl+T external-difftool action in
-`BasicCommitsController`; do not implement the feature as a shipped custom
-shell command. Make the action discoverable in `?` as **Diff selected commit…**
-and show it in the bottom action hints when space permits.
+### Direct previous-commit and working-tree comparisons
 
-Offer two explicit choices for a single selected commit:
+Extend the existing external-difftool machinery in `BasicCommitsController`
+and `CommitFilesController` with distinct command IDs, `?` entries and bindings
+for **Diff with previous commit** and **Diff with working tree**. Do not put a
+target-choice menu between the shortcut and comparison. Prioritize working-tree
+diff in the bottom hints and allocate it a single unmodified letter, the same
+in commit lists and historical-file lists. Provisional candidates are `w` for
+working tree and `v` for previous version; uppercase invokes the same actions.
+Resolve existing assignments in the full audit before adopting them. Ctrl+T
+is not a core default.
 
-1. **Diff with previous commit**: first parent → selected commit, matching the
-   user's `SHA~1 SHA` command.
-2. **Diff with working tree**: selected commit → working tree, matching the
-   user's single-revision `git difftool -d SHA` command.
+| Selected object | Previous-commit action | Working-tree action |
+| --- | --- | --- |
+| Single commit (local, subcommits, reflog) | First parent → selected commit, directory diff | Selected commit → working tree, directory diff |
+| File of a single selected commit | First-parent version → selected version | Selected historical version → same-path working file |
+| Directory in a historical file tree | Same endpoints, scoped to directory | Selected commit → working tree, scoped to directory |
 
-Use the existing argument-vector command builder, configured external difftool,
-directory-diff mode, and terminal subprocess lifecycle. An explicit menu choice
-sets its endpoints independently of sticky diff mode. Preserve access to the
-current sticky-mode comparison where needed, with a distinct label.
-Working-tree comparison follows Git's tracked-file behavior, including staged
-and unstaged contents; it does not promise to include untracked files.
+Use the configured external difftool, argument-vector command builder and
+terminal subprocess lifecycle. These actions set endpoints independently of
+sticky diff mode; retain the old sticky comparison under a distinct action.
+Whole-commit comparison follows normal Git tracked-file semantics, including
+staged and unstaged contents, not untracked files. Comparing must not stage,
+restore, cherry-pick, or create a custom patch as a prerequisite.
 
-For merge commits, label the previous-commit choice as first parent. For a root
-commit, disable that choice with an explanation; working-tree diff still works.
-Do not treat rebase placeholders or empty hashes as real selectable commits.
-Support local commits, subcommits, and reflog via the shared controller. In
-other panes, the same diff verb operates only on a supported selected target;
-it must not fall back to an unrelated current-branch operation.
+For recognized renames, use old/new path metadata for the correct historical
+versions. If the working path is missing, explain it and expose the arbitrary
+file comparison; do not guess an unrelated destination. Explicit selection
+works independently of Git rename detection. A deleted file has no blob in the
+selected commit: do not silently substitute parent content; label any offered
+parent-version comparison explicitly. Preserve ordinary addition/deletion diffs
+in the previous-commit action. For merges, previous means first parent; disable
+that action for root commits with a reason. Reject empty hashes/placeholders
+and initially disable ambiguous multi-commit selections.
 
-Validation: exact argv for both endpoints, root/merge commits, filenames with
-spaces, sticky diff mode, no selection, submenu/tooltip discovery, subprocess
-exit/failure and refresh. Use a fake difftool in tests; no GUI dependency.
+Validation: exact argv/endpoints, full commit versus file/directory, both case
+variants, staged/unstaged changes, recognized/unrecognized renames, added/deleted
+files, root/merge commits, missing paths, sticky-mode isolation, no selection,
+and subprocess failure/return. Use a fake difftool; no GUI dependency.
+
+### Compare a historical file with a chosen working-directory file
+
+Add an independent **Diff with working file…** action for a historical file.
+Prompt for an existing file within the current worktree, default to its likely
+matching path, and allow browsing/completion plus typing a path. Accept tracked,
+untracked and ignored files, including names Git never associates with the
+historical path. Treat input as a path, never a revision or shell expression.
+Resolve relative paths from the worktree root, including linked worktrees.
+Show both historical `commit:path` and the chosen destination. Directories are
+not single-file targets. Files outside the worktree are a separate extension.
+
+Capture the source full commit OID and tree path before prompting. Read the
+blob bytes through Git into a private temporary source file and compare with
+the actual chosen file using the configured difftool. Investigate and verify
+`git difftool --no-index` rather than assuming the current one-path revision
+comparison can compare unrelated paths. Share this blob/file comparison helper
+with the direct single-file working-tree action where needed so it compares
+actual working-file contents even when that path is now untracked or ignored;
+do not mistakenly show an index deletion instead. Launch from the worktree to
+preserve local tool configuration. Preserve the source basename/extension so
+tools recognize its type; stream binary data without text conversion. Missing
+source, gitlink, or unsupported symlink cases need a clear reason; a missing destination
+allows selecting another path.
+
+Historical content is a temporary read-only source. Comparison does not itself
+modify the real file/index/refs. If the external tool edits the working file,
+treat that as the user's tool action and refresh afterward. Keep temporary data
+until the tool finishes, including supported GUI wait modes, and clean it after
+success, failure or cancellation. The probes show `--trust-exit-code` separates
+successful tools returning 0 (Git returns 1 for differing files) from tool
+failure (Git returns 128). Treat Git 0/1 as normal results for this action, with
+trust enabled, before the generic subprocess error/prompt path runs. Do not
+globally suppress exit code 1 for other commands. A tool that itself uses 1 for
+successful comparison needs an explicit adapter/success-code policy; do not
+mistake every tool failure for normal differences. Use restrictive temp
+permissions and never execute source blobs.
+
+Validation: fake tool records left/right bytes and paths; mismatched filenames,
+untracked/ignored targets, nested/spaced/Unicode/option-like paths, binary and
+empty blobs, symlinks/deletions, cancel, large-file streaming, exit codes and
+cleanup. Assert unrelated dirty/index state is unchanged. Probe evidence is
+recorded separately; no repository feature code is implemented yet.
 
 ## 4. Create or move a branch at a selected commit, without checkout
 
@@ -145,20 +213,18 @@ old/new abbreviated OIDs, and that its tip will move; cancellation changes
 nothing. Preserve existing upstream metadata.
 
 Refuse moving a branch checked out in another worktree. If the requested name
-is the current branch, explain that moving its tip also moves HEAD and changes
-what the unchanged index/worktree are compared against. Proposed support uses
-an explicit soft-reset path, with its own confirmation and in-progress-operation
-guards; it must not bypass Git's protection using a raw `update-ref`. Recheck
-worktree occupancy and ref state immediately before the write. If the ref
-moved after confirmation, require a new confirmation rather
+is the current branch, direct the user to existing explicit reset actions;
+do not add another current-branch soft-reset feature under this milestone.
+Changing the checkout, even with a dirty tree, is milestone 5's separate
+workflow. Recheck worktree occupancy and ref state immediately before the
+write. If the ref moved after confirmation, require a new confirmation rather
 than overwriting unseen changes. Use expected-old-OID ref updates where safe,
 without losing worktree guards or branch/reflog semantics.
 
 For a non-current destination, success leaves HEAD, index, files, and current
-context unchanged; for the current branch, only its tip/HEAD commit changes.
-Refresh branch markers and retain the selected commit. Include a useful
-reflog reason for a move. Do not claim the existing undo system supports this
-until verified.
+context unchanged. Refresh branch markers and retain the selected commit.
+Include a useful reflog reason for a move. Do not claim the existing undo system
+supports this until verified.
 
 Validation: create, move, already-at-target, warning cancel, invalid/conflicting
 names, detached HEAD, dirty index/worktree, occupied worktrees, concurrent ref
@@ -191,8 +257,11 @@ Permit an existing destination that is the current branch if Git can perform
 the safe combined operation. Distinguish force-moving a branch name from
 force-overwriting files in all wording. Resolve the selected commit once,
 revalidate the destination after confirmation, and refresh HEAD/branch/files/
-reflog/worktree models together after success. Keep existing checkout/autostash
-flows separate unless the user explicitly asks to change their behavior.
+reflog/worktree models together after success. Audit the existing checkout
+autostash offers too: the fork's named-checkout workflow never requires or
+offers stash. For overwrite conflicts explain which paths block checkout so
+the user can commit instead. Reuse existing reset actions for pointer-only
+current-branch changes; do not confuse reset with the dirty-preserving checkout.
 
 Validation: genuinely different source and target trees, new/existing/current
 destination, unrelated and overlapping staged/unstaged changes, untracked and
@@ -219,9 +288,12 @@ detached/unborn HEAD, and incompatible in-progress operations. Explain history
 rewrites before starting. Reusing the current helper requires auditing its
 `--autostash`, `--rebase-merges`, and Git `rebase.updateRefs` behavior: do not
 silently stash dirt or rewrite additional branches in a command presented as
-affecting one branch. Proposed default: require a clean index/worktree for this
-new action and suppress updates to other branch refs; surface this choice for
-review before implementation.
+affecting one branch. Agreed behavior: require a clean index/worktree, pass
+`--no-autostash` explicitly so Git config cannot re-enable it, and suppress
+updates to other branch refs for this action. Show a commit-first message when
+dirty, with no stash suggestion. Apply the same no-autostash, clean-tree policy
+to the fork's other rebase entry points during the audit, not just this new
+binding. Do not remove manual stash commands; their removal is not requested.
 
 Validation: divergent/ancestor/descendant targets, selected commit on another
 branch or in reflog, root commit, no-op, dirty state, conflicts with continue
@@ -270,19 +342,51 @@ stacks. Assert current HEAD/index/worktree and unrelated refs remain unchanged.
 ## 8. Consistent default keys and no-op behavior
 
 Use milestone 2's complete inventory to produce and review a verb-to-key table
-before changing defaults. Keep familiar keys only where they can be consistent.
-Starting candidates are `?` help, `r` rename, `R` refresh, `n` new,
-`d` delete, and Ctrl+T external diff; these are candidates, not a complete keymap.
-Rebase, fetch, fast-forward, fixup, checkout, staging, and browser-opening need
-distinct allocations. Give uncommon commands no default shortcut if needed;
-keep them reachable in the palette. Audit collisions among global and local
-actions, not just within one view.
+before changing defaults. All alphabetic commands are case-insensitive: `p`
+and `P` cannot mean pull and push, and `r` and `R` cannot mean rename and
+refresh. Normalize command matching and collision checks, including menu-item
+accelerators, while leaving entered text/paths/search patterns unchanged.
+Define this initially for ASCII command letters rather than applying locale
+case conversion to arbitrary user text. Punctuation remains literal.
+
+Reserve Ctrl for user custom commands: no core default Ctrl bindings, including
+diff, scrolling, filtering, clipboard, editor-submit, alternate navigation, and
+platform-specific defaults. Preserve conventional terminal/editor input and
+special keys such as Enter/Tab, which some terminals encode as control bytes;
+do not claim those byte aliases are independently bindable. Core features get
+unmodified letters, menus, or dedicated non-letter navigation keys. Ctrl-based
+custom commands remain supported; explicitly configured overrides may opt back
+into old behavior.
+
+Use the existing menu machinery for two-/three-letter bindings. A first key
+opens a visible command group, a second invokes a leaf or opens a submenu,
+and a third invokes a leaf there. Groups themselves never mutate Git state.
+Prefixes and continuation letters have consistent meaning across panes;
+inapplicable leaves do nothing. Use accelerator-driven menus without automatic
+filter-as-you-type so continuation letters select actions instead of becoming
+search text. Show complete paths in `?` and cheatsheets and expose each leaf
+as a standalone palette action; do not require opening the group from `?`.
+
+Nested menus need explicit return/cancel state and captured origin/selection;
+the current generic menu does not by itself establish a back-navigation stack.
+Ensure Esc, focus/repo changes, popup replacement and invalid continuation do
+not invoke another command or replay letters into a different pane. Prefix
+menus need no inter-key timeout or hidden chord state.
+
+Give working-tree diff a direct one-letter shortcut in commit and file lists;
+the provisional `w` and previous-version `v` are separate direct actions, not
+leaves in a diff-target menu. Move conflicting worktree/new/navigation bindings
+into suitable groups during the full audit. Fetch, fast-forward, fixup, rebase,
+push/pull, checkout, rename, refresh and staging all need distinct keys or
+complete menu paths. A shared verb can act on different selected object types.
+Audit collisions among globals, parents and locals, not just within one view.
 
 Known changes include splitting `r` (files refresh / branch rebase / commit
 rename), `f` (fetch / fast-forward / fixup), and `c` (commit / checkout by name /
 fixup message / restore historical file). Space currently means staging,
 checkout, or menu selection; that also needs an explicit semantic decision.
-`n`/`N` are new/search-next/diff-file-navigation collisions requiring resolution.
+`n`/`N` are new/search-next/diff-file-navigation collisions requiring resolution;
+both cases must now resolve to one command meaning.
 
 For a reserved action key whose verb is inapplicable, consume the event with no
 side effect. Do not fall through to an unrelated parent/global binding, show
@@ -291,7 +395,7 @@ an explanatory tooltip. Keep genuine operation errors visible after invocation.
 Distinguish inapplicable commands from actionable precondition failures such
 as an overwrite conflict.
 
-Proposed exception: text entry, search/filter input, and external subprocesses
+Agreed exception: text entry, search/filter input, and external subprocesses
 retain normal typing. Menus retain explicit navigation/confirm/cancel controls.
 Search-match and operation-specific modes must not repurpose reserved action
 keys to unrelated commands. Review whether navigation/selection should be
@@ -299,28 +403,33 @@ shared verbs or have pane-specific meaning before final allocation.
 
 Explicit user key overrides/custom commands remain possible; the cross-pane
 contract applies to the fork's defaults. Document overrides that recreate
-collisions. Remove the old Ctrl+T custom command locally when adopting the
-built-in menu, since it currently overrides the builtin in that context.
+collisions. The old custom Ctrl+T target menu can remain as an explicit user
+override, but is no longer needed for either core diff action; do not silently
+edit the user's config or ship Ctrl+T as a builtin.
 
 Validation: a default key × pane/mode matrix, including aliases and platform
-variants. Verify both dispatch and side effects, disabled-key no-ops, no global
-fallback, menus/filtering/editors, custom overrides, and generated cheatsheets.
+variants. Verify lowercase/uppercase parity, no core Ctrl defaults, prefix/menu
+path uniqueness, nested-menu cancellation, dispatch and side effects,
+disabled-key no-ops, no global fallback, menus/filtering/editors, custom Ctrl
+commands/overrides, and generated cheatsheets.
 Provide a migration table for changed defaults in `docs-master/`.
 
 ## 9. Frequency-ordered `?` palette
 
 Sort discoverable actions by local usage counts using stable command IDs.
-Proposed policy: global per-user lifetime counts, shared across repositories;
-the palette still shows actions relevant to the current context. Sort the
-whole actionable list by count descending, with original declaration order as
-a deterministic tie-breaker. Retain Local/Global/Navigation as annotations or
+Agreed scope: global per-user counts, shared across repositories. Planned
+initial policy is lifetime frequency. The palette still shows actions relevant
+to the current context. Sort the whole actionable list by count descending,
+with original declaration order as a deterministic tie-breaker. Retain
+Local/Global/Navigation as annotations or
 filters rather than fixed groups that prevent global frequency ordering.
 Keep the displayed order stable while the palette is open.
 
 Record direct shortcuts and palette execution consistently and once per
 accepted action. Do not count typing, navigation repeats, opening `?`, disabled
-actions, or canceled confirmations. Count distinct diff-menu choices separately;
-opening the parent menu should not double-count the leaf. Once an operation is
+actions, or canceled confirmations. Count each direct diff action separately;
+opening a prefix menu must not double-count its eventual leaf. Direct palette
+execution and a menu path share the same leaf identity. Once an operation is
 accepted and starts, it counts even if Git later fails, so asynchronous success
 does not change the definition. Custom commands use their stable ID policy.
 
@@ -363,21 +472,19 @@ connection to `sum.golang.org:443` was refused. No Go sources changed and no
 system dependencies were installed. End-to-end feature tests remain future
 implementation work; the disposable Git probes are recorded separately.
 
-## Remaining review questions
+The subsequent planning revision changes Markdown only. Formatting and diff
+checks passed; unchanged application tests were not rerun. Additional disposable
+file-pair probes verify local difftool config, spaced paths and exit statuses;
+they do not validate a completed UI or implementation.
 
-1. May text-entry contexts and menu confirmation/navigation follow the normal
-   modal conventions described above? The full key allocation, including the
-   meaning of Space, is a separate review artifact before milestone 8.
-2. Should “create/move branch here” allow naming the current branch through
-   the explicitly warned soft-reset path, preserving the index/worktree but
-   changing their comparison base? Moving another worktree's branch is blocked.
-3. For the new “rebase current onto commit” action, is the proposed clean-tree,
-   current-branch-only default right, or should it offer explicit opt-ins for
-   autostash and updating stacked branch refs?
-4. Does the proposed global lifetime-frequency policy, flattening of palette
-   groups, and counting of accepted actions match the desired ordering?
+## Next design review artifact
 
-Decisions already received are recorded under “Agreed direction”; these
-remaining questions need not block the first independent milestone. This is
-an extensible backlog: add further features here with target semantics,
-repository evidence, dependencies, and acceptance tests.
+The earlier questions are answered under “Agreed direction” and the relevant
+milestones. Before milestone 8, produce the complete case-insensitive key and
+menu-path table, including Space semantics, migration from uppercase/Ctrl
+defaults, and direct shortcuts for the two frequent diff actions. No new
+behavioral confirmation is needed to continue planning from these decisions.
+
+This remains an extensible backlog: add further features with target semantics,
+repository evidence, dependencies, and acceptance tests. No application feature
+has been implemented by these planning updates.

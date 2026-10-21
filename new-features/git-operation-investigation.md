@@ -159,9 +159,10 @@ rejected.
 ## Coordinator disposition and probe limits
 
 The main plan distinguishes ref-only creation/movement from named checkout.
-It blocks moving branches occupied in another worktree, proposes a separately
-warned soft-reset path for the current branch, uses `--no-overwrite-ignore`
-for named checkout, and retains Git's ordinary sparse/submodule constraints.
+It blocks moving branches occupied in another worktree, keeps the existing
+reset action for pointer-only changes of the current branch, uses
+`--no-overwrite-ignore` for named checkout, and retains Git's ordinary
+sparse/submodule constraints.
 
 These probes cover ordinary tracked/staged/untracked/ignored files and branch
 occupancy. They do not establish guarantees for sparse checkout, submodules,
