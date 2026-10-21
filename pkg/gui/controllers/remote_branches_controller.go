@@ -35,6 +35,8 @@ func NewRemoteBranchesController(
 func (self *RemoteBranchesController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	return []*types.Binding{
 		{
+			CommandID:         "remote-branch.checkout",
+			Verb:              "checkout",
 			Keys:              opts.GetKeys(opts.Config.Universal.Select),
 			Handler:           self.withItem(self.checkoutBranch),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -43,18 +45,24 @@ func (self *RemoteBranchesController) GetKeybindings(opts types.KeybindingsOpts)
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "branch.create-and-checkout",
+			Verb:              "create",
 			Keys:              opts.GetKeys(opts.Config.Universal.New),
 			Handler:           self.withItem(self.newLocalBranch),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.NewBranch,
 		},
 		{
+			CommandID:   "worktree.create-menu",
+			Verb:        "create-worktree",
 			Keys:        opts.GetKeys(opts.Config.Universal.NewWorktree),
 			Handler:     self.withItem(self.c.Helpers().Worktree.NewWorktreeMenuForRemoteBranch),
 			Description: self.c.Tr.NewWorktree,
 			OpensMenu:   true,
 		},
 		{
+			CommandID:         "branch.merge-selected-into-current",
+			Verb:              "merge",
 			Keys:              opts.GetKeys(opts.Config.Branches.MergeIntoCurrentBranch),
 			Handler:           opts.Guards.OutsideFilterMode(self.withItem(self.merge)),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -63,6 +71,8 @@ func (self *RemoteBranchesController) GetKeybindings(opts types.KeybindingsOpts)
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "branch.rebase-current-onto-selected",
+			Verb:              "rebase",
 			Keys:              opts.GetKeys(opts.Config.Branches.RebaseBranch),
 			Handler:           opts.Guards.OutsideFilterMode(self.withItem(self.rebase)),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -71,6 +81,8 @@ func (self *RemoteBranchesController) GetKeybindings(opts types.KeybindingsOpts)
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "remote-branch.delete",
+			Verb:              "delete",
 			Keys:              opts.GetKeys(opts.Config.Universal.Remove),
 			Handler:           self.withItems(self.delete),
 			GetDisabledReason: self.require(self.itemRangeSelected()),
@@ -79,6 +91,8 @@ func (self *RemoteBranchesController) GetKeybindings(opts types.KeybindingsOpts)
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "branch.set-upstream-to-selection",
+			Verb:              "set-upstream",
 			Keys:              opts.GetKeys(opts.Config.Branches.SetUpstream),
 			Handler:           self.withItem(self.setAsUpstream),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -87,12 +101,16 @@ func (self *RemoteBranchesController) GetKeybindings(opts types.KeybindingsOpts)
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:   "remote-branch.sort-menu",
+			Verb:        "sort",
 			Keys:        opts.GetKeys(opts.Config.Branches.SortOrder),
 			Handler:     self.createSortMenu,
 			Description: self.c.Tr.SortOrder,
 			OpensMenu:   true,
 		},
 		{
+			CommandID:         "branch.reset-menu",
+			Verb:              "reset",
 			Keys:              opts.GetKeys(opts.Config.Commits.ViewResetOptions),
 			Handler:           self.withItem(self.createResetMenu),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -101,7 +119,9 @@ func (self *RemoteBranchesController) GetKeybindings(opts types.KeybindingsOpts)
 			OpensMenu:         true,
 		},
 		{
-			Keys: opts.GetKeys(opts.Config.Universal.OpenDiffTool),
+			CommandID: "diff.ref.external",
+			Verb:      "external-diff-context",
+			Keys:      opts.GetKeys(opts.Config.Universal.OpenDiffTool),
 			Handler: self.withItem(func(selectedBranch *models.RemoteBranch) error {
 				return self.c.Helpers().Diff.OpenDiffToolForRef(selectedBranch)
 			}),

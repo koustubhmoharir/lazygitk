@@ -37,6 +37,8 @@ func NewStashController(
 func (self *StashController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
 		{
+			CommandID:         "stash.apply",
+			Verb:              "apply",
 			Keys:              opts.GetKeys(opts.Config.Universal.Select),
 			Handler:           self.withItem(self.handleStashApply),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -45,6 +47,8 @@ func (self *StashController) GetKeybindings(opts types.KeybindingsOpts) []*types
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "stash.pop",
+			Verb:              "pop",
 			Keys:              opts.GetKeys(opts.Config.Stash.PopStash),
 			Handler:           self.withItem(self.handleStashPop),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -53,6 +57,8 @@ func (self *StashController) GetKeybindings(opts types.KeybindingsOpts) []*types
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "stash.drop",
+			Verb:              "drop",
 			Keys:              opts.GetKeys(opts.Config.Universal.Remove),
 			Handler:           self.withItems(self.handleStashDrop),
 			GetDisabledReason: self.require(self.itemRangeSelected()),
@@ -61,6 +67,8 @@ func (self *StashController) GetKeybindings(opts types.KeybindingsOpts) []*types
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "branch.create-and-checkout",
+			Verb:              "create",
 			Keys:              opts.GetKeys(opts.Config.Universal.New),
 			Handler:           self.withItem(self.handleNewBranchOffStashEntry),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -68,12 +76,16 @@ func (self *StashController) GetKeybindings(opts types.KeybindingsOpts) []*types
 			Tooltip:           self.c.Tr.NewBranchFromStashTooltip,
 		},
 		{
+			CommandID:   "worktree.create-menu",
+			Verb:        "create-worktree",
 			Keys:        opts.GetKeys(opts.Config.Universal.NewWorktree),
 			Handler:     self.withItem(self.c.Helpers().Worktree.NewWorktreeMenuForStash),
 			Description: self.c.Tr.NewWorktree,
 			OpensMenu:   true,
 		},
 		{
+			CommandID:         "stash.rename",
+			Verb:              "rename",
 			Keys:              opts.GetKeys(opts.Config.Stash.RenameStash),
 			Handler:           self.withItem(self.handleRenameStashEntry),
 			GetDisabledReason: self.require(self.singleItemSelected()),

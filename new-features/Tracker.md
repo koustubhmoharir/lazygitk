@@ -18,7 +18,7 @@ invocation paths; do not implement usage ranking or remapping in this item.
    inventory alone is not semantic completeness. Raise unresolved user choices.
 2. Finish built-in metadata validation and regression coverage for identity
    stability across locale, shortcut, selection and source-order changes.
-3. Annotate the inventory's built-in actions and aliases through bounded,
+3. Finish annotating remaining built-in actions and aliases through bounded,
    reviewable changes. Share identity for equivalent invocation paths, not
    unrelated operations with the same translated label. Keep behavior ownership
    in existing controllers/helpers and record integration points in the merge

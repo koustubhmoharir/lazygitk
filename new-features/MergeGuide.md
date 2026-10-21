@@ -110,6 +110,13 @@ about the code that exists, not speculative implementation tasks.
 - Changing `CustomCommand` requires regenerating development docs and schema
   with the existing generation recipe. Never add command text or rendered form
   values to identity/usage persistence when extending this metadata.
+- Built-in bindings in the basic-commit, local-branch, remote-branch, tag and
+  stash controllers carry explicit operation IDs/verbs. Preserve the literals
+  through upstream key/description/handler renames rather than recomputing IDs.
+  Equivalent `RefsHelper.NewBranch`, reset-menu and ref-difftool invocations
+  share identity across these controllers. Commit difftool identity remains
+  separate because its default endpoints differ. This is metadata only; no
+  keys, guards or Git handlers are replaced by the annotations.
 
 ## Reviewing an upstream merge
 

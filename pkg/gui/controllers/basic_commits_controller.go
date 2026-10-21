@@ -51,6 +51,8 @@ func NewBasicCommitsController(c *ControllerCommon, context ContainsCommits) *Ba
 func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
 		{
+			CommandID:         "commit.checkout-menu",
+			Verb:              "checkout",
 			Keys:              opts.GetKeys(opts.Config.Commits.CheckoutCommit),
 			Handler:           self.withItem(self.checkout),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -59,6 +61,8 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "commit.copy-attribute-menu",
+			Verb:              "copy",
 			Keys:              opts.GetKeys(opts.Config.Commits.CopyCommitAttributeToClipboard),
 			Handler:           self.withItem(self.copyCommitAttribute),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -67,12 +71,16 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 			OpensMenu:         true,
 		},
 		{
+			CommandID:         "commit.open-browser",
+			Verb:              "open-in-browser",
 			Keys:              opts.GetKeys(opts.Config.Commits.OpenInBrowser),
 			Handler:           self.withItem(self.openInBrowser),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.OpenCommitInBrowser,
 		},
 		{
+			CommandID:         "branch.create-and-checkout",
+			Verb:              "create",
 			Keys:              opts.GetKeys(opts.Config.Universal.New),
 			Handler:           self.withItem(self.newBranch),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -83,6 +91,8 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 			// panel. But I find it important that this ends up next to "New Branch", and I couldn't
 			// find another way to achieve this. It's not such a big deal to have it in subcommits and
 			// reflog too, I'd say.
+			CommandID:         "branch.move-commits-to-new",
+			Verb:              "move-commits",
 			Keys:              opts.GetKeys(opts.Config.Branches.MoveCommitsToNewBranch),
 			Handler:           self.c.Helpers().Refs.MoveCommitsToNewBranch,
 			GetDisabledReason: self.c.Helpers().Refs.CanMoveCommitsToNewBranch,
@@ -90,12 +100,16 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 			Tooltip:           self.c.Tr.MoveCommitsToNewBranchTooltip,
 		},
 		{
+			CommandID:   "worktree.create-menu",
+			Verb:        "create-worktree",
 			Keys:        opts.GetKeys(opts.Config.Universal.NewWorktree),
 			Handler:     self.withItem(self.c.Helpers().Worktree.NewWorktreeMenuForCommit),
 			Description: self.c.Tr.NewWorktree,
 			OpensMenu:   true,
 		},
 		{
+			CommandID:         "branch.reset-menu",
+			Verb:              "reset",
 			Keys:              opts.GetKeys(opts.Config.Commits.ViewResetOptions),
 			Handler:           self.withItem(self.createResetMenu),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -105,6 +119,8 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "commit.copy-for-cherry-pick",
+			Verb:              "copy-for-cherry-pick",
 			Keys:              opts.GetKeys(opts.Config.Commits.CherryPickCopy),
 			Handler:           self.withItem(self.copyRange),
 			GetDisabledReason: self.require(self.itemRangeSelected(self.canCopyCommits)),
@@ -118,17 +134,23 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 			DisplayOnScreen: true,
 		},
 		{
+			CommandID:   "commit.clear-cherry-pick-selection",
+			Verb:        "clear-cherry-pick-selection",
 			Keys:        opts.GetKeys(opts.Config.Commits.ResetCherryPick),
 			Handler:     self.c.Helpers().CherryPick.Reset,
 			Description: self.c.Tr.ResetCherryPick,
 		},
 		{
+			CommandID:         "diff.commit.external",
+			Verb:              "external-diff-context",
 			Keys:              opts.GetKeys(opts.Config.Universal.OpenDiffTool),
 			Handler:           self.withItem(self.openDiffTool),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.OpenDiffTool,
 		},
 		{
+			CommandID:         "commit.select-current-branch-history",
+			Verb:              "select-branch-commits",
 			Keys:              opts.GetKeys(opts.Config.Commits.SelectCommitsOfCurrentBranch),
 			Handler:           self.selectCommitsOfCurrentBranch,
 			GetDisabledReason: self.require(self.canSelectCommitsOfCurrentBranch),

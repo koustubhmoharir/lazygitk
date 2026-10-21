@@ -40,6 +40,8 @@ func NewTagsController(
 func (self *TagsController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
 		{
+			CommandID:         "tag.checkout",
+			Verb:              "checkout",
 			Keys:              opts.GetKeys(opts.Config.Universal.Select),
 			Handler:           self.withItem(self.checkout),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -48,6 +50,8 @@ func (self *TagsController) GetKeybindings(opts types.KeybindingsOpts) []*types.
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:       "tag.create-at-current",
+			Verb:            "create-tag",
 			Keys:            opts.GetKeys(opts.Config.Universal.New),
 			Handler:         self.create,
 			Description:     self.c.Tr.NewTag,
@@ -55,12 +59,16 @@ func (self *TagsController) GetKeybindings(opts types.KeybindingsOpts) []*types.
 			DisplayOnScreen: true,
 		},
 		{
+			CommandID:   "worktree.create-menu",
+			Verb:        "create-worktree",
 			Keys:        opts.GetKeys(opts.Config.Universal.NewWorktree),
 			Handler:     self.withItem(self.c.Helpers().Worktree.NewWorktreeMenuForTag),
 			Description: self.c.Tr.NewWorktree,
 			OpensMenu:   true,
 		},
 		{
+			CommandID:         "tag.delete-menu",
+			Verb:              "delete",
 			Keys:              opts.GetKeys(opts.Config.Universal.Remove),
 			Handler:           self.withItems(self.delete),
 			Description:       self.c.Tr.Delete,
@@ -70,6 +78,8 @@ func (self *TagsController) GetKeybindings(opts types.KeybindingsOpts) []*types.
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "tag.push",
+			Verb:              "push",
 			Keys:              opts.GetKeys(opts.Config.Branches.PushTag),
 			Handler:           self.withItems(self.push),
 			GetDisabledReason: self.require(self.itemsSelected()),
@@ -78,6 +88,8 @@ func (self *TagsController) GetKeybindings(opts types.KeybindingsOpts) []*types.
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "branch.reset-menu",
+			Verb:              "reset",
 			Keys:              opts.GetKeys(opts.Config.Commits.ViewResetOptions),
 			Handler:           self.withItem(self.createResetMenu),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -87,7 +99,9 @@ func (self *TagsController) GetKeybindings(opts types.KeybindingsOpts) []*types.
 			OpensMenu:         true,
 		},
 		{
-			Keys: opts.GetKeys(opts.Config.Universal.OpenDiffTool),
+			CommandID: "diff.ref.external",
+			Verb:      "external-diff-context",
+			Keys:      opts.GetKeys(opts.Config.Universal.OpenDiffTool),
 			Handler: self.withItem(func(selectedTag *models.Tag) error {
 				return self.c.Helpers().Diff.OpenDiffToolForRef(selectedTag)
 			}),

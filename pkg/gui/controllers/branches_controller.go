@@ -41,8 +41,10 @@ func NewBranchesController(
 func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	return []*types.Binding{
 		{
-			Keys:    opts.GetKeys(opts.Config.Universal.Select),
-			Handler: self.withItem(self.press),
+			CommandID: "branch.checkout",
+			Verb:      "checkout",
+			Keys:      opts.GetKeys(opts.Config.Universal.Select),
+			Handler:   self.withItem(self.press),
 			GetDisabledReason: self.require(
 				self.singleItemSelected(),
 				self.notPulling,
@@ -52,6 +54,8 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			DisplayOnScreen: true,
 		},
 		{
+			CommandID:         "branch.create-and-checkout",
+			Verb:              "create",
 			Keys:              opts.GetKeys(opts.Config.Universal.New),
 			Handler:           self.withItem(self.newBranch),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -59,6 +63,8 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "branch.move-commits-to-new",
+			Verb:              "move-commits",
 			Keys:              opts.GetKeys(opts.Config.Branches.MoveCommitsToNewBranch),
 			Handler:           self.c.Helpers().Refs.MoveCommitsToNewBranch,
 			GetDisabledReason: self.c.Helpers().Refs.CanMoveCommitsToNewBranch,
@@ -66,18 +72,24 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			Tooltip:           self.c.Tr.MoveCommitsToNewBranchTooltip,
 		},
 		{
+			CommandID:   "worktree.create-menu",
+			Verb:        "create-worktree",
 			Keys:        opts.GetKeys(opts.Config.Universal.NewWorktree),
 			Handler:     self.withItem(self.c.Helpers().Worktree.NewWorktreeMenuForBranch),
 			Description: self.c.Tr.NewWorktree,
 			OpensMenu:   true,
 		},
 		{
+			CommandID:         "branch.create-pull-request",
+			Verb:              "create-pull-request",
 			Keys:              opts.GetKeys(opts.Config.Branches.CreatePullRequest),
 			Handler:           self.withItem(self.handleCreatePullRequest),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.CreatePullRequest,
 		},
 		{
+			CommandID:         "branch.pull-request-menu",
+			Verb:              "pull-request-options",
 			Keys:              opts.GetKeys(opts.Config.Branches.ViewPullRequestOptions),
 			Handler:           self.withItem(self.handleCreatePullRequestMenu),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -85,29 +97,39 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			OpensMenu:         true,
 		},
 		{
+			CommandID:         "branch.open-pull-request",
+			Verb:              "open-pull-request",
 			Keys:              opts.GetKeys(opts.Config.Branches.OpenPullRequestInBrowser),
 			Handler:           self.withItem(self.openPRInBrowser),
 			GetDisabledReason: self.require(self.singleItemSelected(self.branchHasPR)),
 			Description:       self.c.Tr.OpenPullRequestInBrowser,
 		},
 		{
+			CommandID:         "branch.copy-pull-request-url",
+			Verb:              "copy-url",
 			Keys:              opts.GetKeys(opts.Config.Branches.CopyPullRequestURL),
 			Handler:           self.copyPullRequestURL,
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.CopyPullRequestURL,
 		},
 		{
+			CommandID:   "branch.checkout-by-name",
+			Verb:        "checkout",
 			Keys:        opts.GetKeys(opts.Config.Branches.CheckoutBranchByName),
 			Handler:     self.checkoutByName,
 			Description: self.c.Tr.CheckoutByName,
 			Tooltip:     self.c.Tr.CheckoutByNameTooltip,
 		},
 		{
+			CommandID:   "branch.checkout-previous",
+			Verb:        "checkout-previous",
 			Keys:        opts.GetKeys(opts.Config.Branches.CheckoutPreviousBranch),
 			Handler:     self.checkoutPreviousBranch,
 			Description: self.c.Tr.CheckoutPreviousBranch,
 		},
 		{
+			CommandID:         "branch.force-checkout",
+			Verb:              "force-checkout",
 			Keys:              opts.GetKeys(opts.Config.Branches.ForceCheckoutBranch),
 			Handler:           self.forceCheckout,
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -115,6 +137,8 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			Tooltip:           self.c.Tr.ForceCheckoutTooltip,
 		},
 		{
+			CommandID:         "branch.delete-menu",
+			Verb:              "delete",
 			Keys:              opts.GetKeys(opts.Config.Universal.Remove),
 			Handler:           self.withItems(self.delete),
 			GetDisabledReason: self.require(self.itemRangeSelected(self.branchesAreReal)),
@@ -124,6 +148,8 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "branch.rebase-current-onto-selected",
+			Verb:              "rebase",
 			Keys:              opts.GetKeys(opts.Config.Branches.RebaseBranch),
 			Handler:           opts.Guards.OutsideFilterMode(self.withItem(self.rebase)),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -133,6 +159,8 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "branch.merge-selected-into-current",
+			Verb:              "merge",
 			Keys:              opts.GetKeys(opts.Config.Branches.MergeIntoCurrentBranch),
 			Handler:           opts.Guards.OutsideFilterMode(self.merge),
 			GetDisabledReason: self.require(self.singleItemSelected(self.notMergingIntoYourself)),
@@ -142,6 +170,8 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			OpensMenu:         true,
 		},
 		{
+			CommandID:         "branch.fast-forward-selected",
+			Verb:              "fast-forward",
 			Keys:              opts.GetKeys(opts.Config.Branches.FastForward),
 			Handler:           self.withItems(self.fastForward),
 			GetDisabledReason: self.require(self.itemRangeSelected(self.branchesAreReal)),
@@ -149,18 +179,24 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			Tooltip:           self.c.Tr.FastForwardTooltip,
 		},
 		{
+			CommandID:         "tag.create-at-selection",
+			Verb:              "create-tag",
 			Keys:              opts.GetKeys(opts.Config.Branches.CreateTag),
 			Handler:           self.withItem(self.createTag),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.NewTag,
 		},
 		{
+			CommandID:   "branch.sort-menu",
+			Verb:        "sort",
 			Keys:        opts.GetKeys(opts.Config.Branches.SortOrder),
 			Handler:     self.createSortMenu,
 			Description: self.c.Tr.SortOrder,
 			OpensMenu:   true,
 		},
 		{
+			CommandID:         "branch.reset-menu",
+			Verb:              "reset",
 			Keys:              opts.GetKeys(opts.Config.Commits.ViewResetOptions),
 			Handler:           self.withItem(self.createResetMenu),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -169,12 +205,16 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "branch.rename",
+			Verb:              "rename",
 			Keys:              opts.GetKeys(opts.Config.Branches.RenameBranch),
 			Handler:           self.withItem(self.rename),
 			GetDisabledReason: self.require(self.singleItemSelected(self.branchIsReal)),
 			Description:       self.c.Tr.RenameBranch,
 		},
 		{
+			CommandID:         "branch.upstream-menu",
+			Verb:              "set-upstream",
 			Keys:              opts.GetKeys(opts.Config.Branches.SetUpstream),
 			Handler:           self.withItem(self.viewUpstreamOptions),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -185,7 +225,9 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			DisplayOnScreen:   true,
 		},
 		{
-			Keys: opts.GetKeys(opts.Config.Universal.OpenDiffTool),
+			CommandID: "diff.ref.external",
+			Verb:      "external-diff-context",
+			Keys:      opts.GetKeys(opts.Config.Universal.OpenDiffTool),
 			Handler: self.withItem(func(selectedBranch *models.Branch) error {
 				return self.c.Helpers().Diff.OpenDiffToolForRef(selectedBranch)
 			}),
