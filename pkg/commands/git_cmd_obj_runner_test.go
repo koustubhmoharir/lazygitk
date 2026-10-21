@@ -22,6 +22,30 @@ type scriptedRunner struct {
 	calls   int
 }
 
+type scriptedOutputsRunner struct {
+	stdout string
+	stderr string
+	err    error
+	calls  int
+}
+
+func (self *scriptedOutputsRunner) Run(*oscommands.CmdObj) error {
+	panic("not implemented")
+}
+
+func (self *scriptedOutputsRunner) RunWithOutput(*oscommands.CmdObj) (string, error) {
+	panic("not implemented")
+}
+
+func (self *scriptedOutputsRunner) RunWithOutputs(*oscommands.CmdObj) (string, string, error) {
+	self.calls++
+	return self.stdout, self.stderr, self.err
+}
+
+func (self *scriptedOutputsRunner) RunAndProcessLines(*oscommands.CmdObj, func(string) (bool, error)) error {
+	panic("not implemented")
+}
+
 func (self *scriptedRunner) next() (string, error) {
 	result := self.results[self.calls]
 	self.calls++
@@ -134,4 +158,64 @@ func TestRunWithOutputRetriesLockErrorInLinkedWorktree(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, 2, inner.calls)
+}
+
+func TestRunWithOutputWithLockRetriesDisabledPreservesLockFailure(t *testing.T) {
+	wantErr := errors.New("fatal: checkout hook reported .git/index.lock; operation may have changed the worktree")
+	inner := &scriptedRunner{results: []runnerResult{{output: "hook output", err: wantErr}}}
+
+	output, err := newTestRunner(inner).RunWithOutput(dummyCmdObj().DisableLockRetries())
+
+	assert.Equal(t, "hook output", output)
+	assert.Same(t, wantErr, err)
+	assert.Equal(t, 1, inner.calls)
+}
+
+func TestRunWithOutputWithLockRetriesDisabledDoesNotRetryLockTextInOutput(t *testing.T) {
+	inner := &scriptedRunner{results: []runnerResult{{
+		output: "fatal: Unable to create '/repo/.git/index.lock': File exists.",
+		err:    errors.New("exit status 128"),
+	}}}
+
+	output, err := newTestRunner(inner).RunWithOutput(dummyCmdObj().DisableLockRetries())
+
+	assert.Equal(t, "fatal: Unable to create '/repo/.git/index.lock': File exists.", output)
+	assert.EqualError(t, err, "exit status 128")
+	assert.Equal(t, 1, inner.calls)
+}
+
+func TestRunWithOutputsWithLockRetriesDisabledPreservesResults(t *testing.T) {
+	wantErr := errors.New("fatal: cannot lock ref after checkout hook")
+	inner := &scriptedOutputsRunner{stdout: "stdout", stderr: "hook stderr", err: wantErr}
+	runner := &gitCmdObjRunner{log: utils.NewDummyLog(), innerRunner: inner, initialRetryDelay: 0}
+
+	stdout, stderr, err := runner.RunWithOutputs(dummyCmdObj().DisableLockRetries())
+
+	assert.Equal(t, "stdout", stdout)
+	assert.Equal(t, "hook stderr", stderr)
+	assert.Same(t, wantErr, err)
+	assert.Equal(t, 1, inner.calls)
+}
+
+func TestRunWithOutputWithLockRetriesDisabledDoesNotChangeSuccessOrNonLockBehavior(t *testing.T) {
+	for _, result := range []runnerResult{
+		{output: "success", err: nil},
+		{output: "ordinary failure", err: errors.New("ordinary failure")},
+	} {
+		inner := &scriptedRunner{results: []runnerResult{result}}
+		output, err := newTestRunner(inner).RunWithOutput(dummyCmdObj().DisableLockRetries())
+		assert.Equal(t, result.output, output)
+		assert.Equal(t, result.err, err)
+		assert.Equal(t, 1, inner.calls)
+	}
+}
+
+func TestRunWithOutputUsesLockRetryOptOut(t *testing.T) {
+	wantErr := errors.New("fatal: cannot lock ref")
+	inner := &scriptedRunner{results: []runnerResult{{output: "partial checkout", err: wantErr}}}
+	cmd := dummyCmdObj().DisableLockRetries()
+	err := newTestRunner(inner).Run(cmd)
+
+	assert.Same(t, wantErr, err)
+	assert.Equal(t, 1, inner.calls)
 }

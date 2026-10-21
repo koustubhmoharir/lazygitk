@@ -255,6 +255,19 @@ about the code that exists, not speculative implementation tasks.
   goroutine wrapper and a test allocation lint warning; a concurrent generated-
   list change also required restarting lint against the stable source tree.
 
+### Named checkout foundations (item 5 in progress)
+
+- `oscommands/lock_retries.go` adds an opt-in, command-local
+  `DisableLockRetries` flag, copied by `CmdObj.Clone`. Two early hooks in
+  `gitCmdObjRunner` honor it for combined/separate captured output; `Run` uses
+  the existing combined-output path. Default retries and credential handling
+  are unchanged. Preserve this distinction: a hook may emit lock-error text
+  after a mutating operation, so retrying based on text alone is unsafe.
+- Tests verify default retry behavior, copied/isolate flags, single execution
+  and unchanged stdout/stderr/error identity with the opt-out. Both command
+  packages' short tests passed. Existing callers do not opt out yet; the named
+  checkout backend will explicitly choose this behavior.
+
 ## Reviewing an upstream merge
 
 1. Record the upstream commit being integrated and review changes around all

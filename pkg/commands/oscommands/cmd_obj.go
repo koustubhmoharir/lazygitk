@@ -31,6 +31,9 @@ type CmdObj struct {
 	// see IgnoreEmptyError()
 	ignoreEmptyError bool
 
+	// see DisableLockRetries()
+	disableLockRetries bool
+
 	// if set to true, it means we might be asked to enter a username/password by this command.
 	credentialStrategy CredentialStrategy
 	task               gocui.Task

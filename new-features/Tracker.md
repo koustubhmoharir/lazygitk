@@ -1,7 +1,8 @@
 # Current work
 
 Roadmap item: [5. Checkout any commit under a supplied branch name](Roadmap.md#5-checkout-any-commit-under-a-supplied-branch-name).
-Status: auditing combined checkout semantics and preparing bounded Git probes.
+Status: auditing combined checkout semantics and refining bounded Git probes;
+command-local lock-retry opt-out is implemented and verified.
 
 Scope: check out a captured selected commit under a literal new or existing
 local branch name. Warn before moving an existing name; use Git's combined
@@ -19,6 +20,8 @@ never force files, require an unnecessarily clean tree, or offer stash.
    validation where appropriate. Permit a safe current-branch destination,
    reject reserved/in-progress states, revalidate before the combined checkout,
    preserve tracking settings and report Git failures without stash or retry.
+   Use the verified command-local lock-retry opt-out, not the default retrying
+   runner path after a possibly partial checkout.
 3. Add **Checkout as branch…** to the shared checkout menu. Capture repository
    and source identity, prompt for the destination, warn with old/new tips and
    require fresh review of changed destinations. Refresh all checkout-related

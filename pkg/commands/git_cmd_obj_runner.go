@@ -55,12 +55,18 @@ func (self *gitCmdObjRunner) Run(cmdObj *oscommands.CmdObj) error {
 }
 
 func (self *gitCmdObjRunner) RunWithOutput(cmdObj *oscommands.CmdObj) (string, error) {
+	if cmdObj.LockRetriesDisabled() {
+		return self.innerRunner.RunWithOutput(cmdObj.Clone())
+	}
 	return self.retryOnLockError(func() (string, error) {
 		return self.innerRunner.RunWithOutput(cmdObj.Clone())
 	})
 }
 
 func (self *gitCmdObjRunner) RunWithOutputs(cmdObj *oscommands.CmdObj) (string, string, error) {
+	if cmdObj.LockRetriesDisabled() {
+		return self.innerRunner.RunWithOutputs(cmdObj.Clone())
+	}
 	var stdout, stderr string
 	_, err := self.retryOnLockError(func() (string, error) {
 		var runErr error
