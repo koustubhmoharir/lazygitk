@@ -51,8 +51,8 @@ tasks with the next item's plan in the same completion commit.
 | --- | --- | --- | --- | --- |
 | 1 | Explicit-action defaults | Complete | None | Small |
 | 2 | Stable command identity and complete key/action inventory | Complete | None | Medium |
-| 3 | Separate commit/file diff actions and arbitrary-file comparison | Current | 2 for command metadata | Medium |
-| 4 | Create/move a branch without checkout | Pending | Git probe review | Medium |
+| 3 | Separate commit/file diff actions and arbitrary-file comparison | Complete | 2 for command metadata | Medium |
+| 4 | Create/move a branch without checkout | Current | Git probe review | Medium |
 | 5 | Checkout selected commit under a branch name | Pending | 4's shared prompts/validation | Medium |
 | 6 | Rebase current branch onto a selected commit | Pending | 2 | Small–medium |
 | 7 | Operate on selected branches without checkout | Pending | 4; explicit target design | Large |
@@ -162,17 +162,37 @@ handler behavior in the preparatory refactor.
 
 ## 3. Separate diff actions for commits and historical files
 
+Complete (2026-10-21). The fork adds an independent historical-diff backend
+and two controller hooks; existing sticky comparisons retain their handlers
+under a distinct label. See [implementation design](direct-diff-design.md) and
+[usage](../docs-master/Fork_Features.md).
+
+Working-tree comparison uses `w/W`, previous-commit comparison uses `v/V`,
+and explicit-file comparison is initially unbound but executable from `?`.
+Colliding upstream defaults are unbound, not removed; displaced operations
+remain in the palette until the full keymap milestone. Palette guidance replaces
+empty paste-key hints. Working-tree comparison is prioritized in display hints
+without changing dispatch order. Explicit configured bindings remain effective.
+
+Verified: debug build, full short tests, standalone inventory/checker tests,
+generation, formatting and lint (zero issues). The 99-scenario affected-operation
+headless run and final 15-scenario palette/diff run passed. Real Git/fake-tool
+tests cover exact bytes, literal and Unicode paths, empty/large binary blobs,
+root/merge/rename/deletion behavior, captured selection, staged/index preservation,
+tool failure/recovery and cleanup. Verification ran on Linux/Git 2.51.1; no new
+full-suite run or external GUI-tool matrix was performed. Detached custom tools
+must use their wait mode; unsupported symlink/gitlink comparisons report a reason.
+
 ### Direct previous-commit and working-tree comparisons
 
 Extend the existing external-difftool machinery in `BasicCommitsController`
 and `CommitFilesController` with distinct command IDs, `?` entries and bindings
 for **Diff with previous commit** and **Diff with working tree**. Do not put a
 target-choice menu between the shortcut and comparison. Prioritize working-tree
-diff in the bottom hints and allocate it a single unmodified letter, the same
-in commit lists and historical-file lists. Provisional candidates are `w` for
-working tree and `v` for previous version; uppercase invokes the same actions.
-Resolve existing assignments in the full audit before adopting them. Ctrl+T
-is not a core default.
+diff in the bottom hints with the same unmodified `w` in commit and historical-
+file lists; `v` selects the previous version. Uppercase invokes the same actions.
+The fork overlay clears their colliding defaults. No new Ctrl binding is added;
+the remaining legacy Ctrl bindings are addressed by the full keymap milestone.
 
 | Selected object | Previous-commit action | Working-tree action |
 | --- | --- | --- |
@@ -243,7 +263,8 @@ Validation: fake tool records left/right bytes and paths; mismatched filenames,
 untracked/ignored targets, nested/spaced/Unicode/option-like paths, binary and
 empty blobs, symlinks/deletions, cancel, large-file streaming, exit codes and
 cleanup. Assert unrelated dirty/index state is unchanged. Probe evidence is
-recorded separately; no repository feature code is implemented yet.
+recorded separately; the implementation and its integration seams are tracked
+in [MergeGuide.md](MergeGuide.md).
 
 ## 4. Create or move a branch at a selected commit, without checkout
 

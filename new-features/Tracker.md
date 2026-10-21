@@ -1,24 +1,34 @@
 # Current work
 
-Roadmap item: [3. Separate diff actions for commits and historical files](Roadmap.md#3-separate-diff-actions-for-commits-and-historical-files).
-Status: comparisons implemented; final scoped invocation tests and verification underway.
+Roadmap item: [4. Create or move a branch at a selected commit, without checkout](Roadmap.md#4-create-or-move-a-branch-at-a-selected-commit-without-checkout).
+Status: reviewing branch-ref primitives, worktree guards and concurrency semantics.
 
-Scope: direct previous-commit and working-tree comparisons for commits and
-historical files/directories, plus explicitly chosen worktree-file comparison.
-Keep sticky diff mode independent, preserve captured selection and actual
-working-file bytes, and use the configured external difftool with safe cleanup.
+Scope: create or move a named local branch to a captured selected commit,
+without checkout. Existing-tip moves require a warning; preserve HEAD, index,
+working files and upstream metadata. Current-branch movement remains Reset's
+responsibility. Never bypass another worktree's branch occupancy.
 
-## Remaining tasks for item 3
+## Remaining tasks for item 4
 
-1. Finish and review the historical materialization matrix for Unicode, empty,
-   option-like/literal-magic paths and large binary blobs. Core backend,
-   selection/capture, completion and exact directory/rename invocation tests pass.
-2. Finish the last short-test/format/lint pass after that matrix; check generated
-   artifacts for freshness and record limits. Debug build and lint passed;
-   the 99-scenario regression run and final 15-scenario palette/diff run passed,
-   including hint priority, staged-versus-working bytes, failure/recovery and cleanup.
-3. Once acceptance criteria pass, complete item 3 accurately in the roadmap and
-   replace this tracker with item 4's task-level plan in the same commit.
+1. Audit existing branch creation, validation, ref-update, worktree occupancy,
+   branch-name suggestions and undo/reflog paths. Consult TortoiseGit and verify
+   expected-old-OID updates, symbolic refs and occupancy behavior in disposable
+   repositories. Record the additive design and raise unresolved choices.
+2. Add backend preparation/application APIs for a validated literal local branch
+   name and captured full commit OID. Distinguish create/no-op/move, preserve
+   tracking metadata, reject prohibited occupied/current-branch moves, and
+   recheck occupancy plus expected ref state immediately before writing.
+3. Add a separate discoverable commit-list action and branch-name prompt, keeping
+   create-and-checkout clearly distinct. Warn with old/new tips before a move;
+   if state changes after confirmation, show the new state and require fresh
+   confirmation. Refresh markers without changing checkout or selected commit.
+4. Add unit, real-Git and headless regressions for create/move/no-op/cancel,
+   invalid/conflicting names, dirty index/worktree, detached HEAD, occupied
+   worktrees, concurrent ref changes, upstream retention and reflog recovery.
+5. Update usage, inventory and merge guide; generate, build, format, test and lint.
+   Record limits and avoid claiming undo support without a verified integration.
+6. Once acceptance criteria pass, complete item 4 accurately in the roadmap and
+   replace this tracker with item 5's task-level plan in the same commit.
 
 ## How this tracker works
 

@@ -154,7 +154,7 @@ about the code that exists, not speculative implementation tasks.
   Final post-review debug build, full short tests, formatting and lint also
   passed before advancing to item 3.
 
-### Direct historical comparison seams (item 3 in progress)
+### Direct historical comparison seams (item 3 complete)
 
 - [direct-diff-design.md](direct-diff-design.md) records endpoints, literal
   paths, temporary-file ownership, default-key collision handling and the
@@ -199,8 +199,11 @@ about the code that exists, not speculative implementation tasks.
   return, fixed endpoints under sticky/reverse mode, both letter cases, ignored
   destination selection, staged/index preservation, failure/recovery and cleanup.
   Exact controller invocation tests additionally cover directory scope, recognized
-  rename paths and historical deletion. Final content-matrix review remains in
-  the tracker; do not describe these targeted runs as a new full-suite run.
+  rename paths and historical deletion. Final content-matrix review passed for
+  Unicode/nested/spaced/option-like/literal-magic paths, empty blobs and a large
+  binary blob. The final short-test/format/lint pass was green. Verification is
+  Linux/Git 2.51.1, not a GUI-tool or cross-platform matrix; do not describe the
+  targeted headless runs as a new full-suite run.
 
 ## Reviewing an upstream merge
 
