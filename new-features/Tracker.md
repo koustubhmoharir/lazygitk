@@ -15,9 +15,9 @@ operations and refreshes following explicit actions remain available.
    defaults, including no forwarding after manual fetch; verify explicit opt-ins
    still work and read-only ref polling remains active. Keep all Git mutations
    in disposable repositories with local fake remotes.
-2. Regenerate config documentation/schema and any changed integration-test
-   list, review the outputs, and complete formatting, build, unit tests, lint
-   and affected end-to-end checks. Record results and any verification limits
+2. Finish final validation, including lint and the full headless integration
+   run; check generated outputs remain current after any fixes. Record results
+   and any verification limits
    in the roadmap/merge guide. Once acceptance criteria are satisfied, mark item
    1 complete in the roadmap, reconcile its description with actual behavior,
    and replace this task list with the newly prepared plan for item 2 in the

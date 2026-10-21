@@ -51,6 +51,11 @@ about the code that exists, not speculative implementation tasks.
 - Existing integration scenarios specifically testing automatic staging or
   forwarding must opt in explicitly. Default-policy scenarios should not set
   the option to its default: they must detect a regression in the constructor.
+- Generation uses `go generate ./...`: development defaults are written to
+  `docs-master/Config.md` and `schema-master/config.json`, not the release
+  snapshots in `docs/` and `schema/`. The fork-defaults explanation outside the
+  generated YAML in `docs-master/Config.md` is hand-maintained. Keybinding
+  cheatsheets should not change for this defaults-only item.
 
 ## Reviewing an upstream merge
 

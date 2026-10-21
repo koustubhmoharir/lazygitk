@@ -29,6 +29,20 @@ to the top of your config file or via [Visual Studio Code settings.json config][
 [yaml]: https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml
 [settings]: https://github.com/redhat-developer/vscode-yaml#associating-a-schema-to-a-glob-pattern-via-yamlschemas
 
+## Fork automation defaults
+
+This fork leaves fetching, periodic file refresh, branch fast-forwarding and
+staging of resolved conflicts to explicit actions by default. Read-only polling
+for external ref changes stays enabled. Manual fetch and refresh still work;
+returning from a terminal command also refreshes the UI. With automatic conflict
+staging disabled, the associated automatic continue-merge/rebase prompt is
+disabled too.
+
+These are defaults, not restrictions. Existing user or repository settings that
+explicitly enable automation remain effective; config files are not rewritten.
+Restart after changing fetch or polling settings. To opt in, set only the
+individual options you want under `git` in your config.
+
 ## Default
 
 This is only meant as a reference for what config options exist, and what their default values are. It is not meant to be copied and pasted into your config file as a whole; that's not a good idea for several reasons. It is recommended to include only those settings in your config file that you actually want to change.
@@ -469,10 +483,10 @@ git:
   skipHookPrefix: WIP
 
   # If true, periodically fetch from remote
-  autoFetch: true
+  autoFetch: false
 
   # If true, periodically refresh files and submodules
-  autoRefresh: true
+  autoRefresh: false
 
   # If true, poll the repo periodically for external ref changes (commits, branch
   # updates, checkouts made outside lazygit) and refresh when one is detected.
@@ -486,7 +500,7 @@ git:
   # fast-forwarded there, unless that worktree has changes to tracked files or is
   # in the middle of a rebase or bisect.
   # Possible values: 'none' | 'onlyMainBranches' | 'allBranches'
-  autoForwardBranches: onlyMainBranches
+  autoForwardBranches: none
 
   # If true, pass the --all arg to git fetch
   fetchAll: true
@@ -495,7 +509,7 @@ git:
   # conflicts but no longer do; and it will also ask you if you want to continue a
   # merge or rebase if you've resolved all conflicts. If false, it won't do either
   # of these things.
-  autoStageResolvedConflicts: true
+  autoStageResolvedConflicts: false
 
   # Command used when displaying the current branch git log in the main window
   branchLogCmd: git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium {{branchName}} --
