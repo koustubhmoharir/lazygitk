@@ -410,6 +410,8 @@ func (self *WorkingTreeHelper) CreateMergeConflictMenu(selectedFilepaths []strin
 					self.c.Tr.UseCurrentChanges,
 					cmdColor.Sprint("git merge-file --ours"),
 				},
+				CommandID: "conflict.file.take-current",
+				Verb:      "take-current",
 				OnPress: func() error {
 					return onMergeStrategySelected("--ours")
 				},
@@ -420,6 +422,8 @@ func (self *WorkingTreeHelper) CreateMergeConflictMenu(selectedFilepaths []strin
 					self.c.Tr.UseIncomingChanges,
 					cmdColor.Sprint("git merge-file --theirs"),
 				},
+				CommandID: "conflict.file.take-incoming",
+				Verb:      "take-incoming",
 				OnPress: func() error {
 					return onMergeStrategySelected("--theirs")
 				},
@@ -430,6 +434,8 @@ func (self *WorkingTreeHelper) CreateMergeConflictMenu(selectedFilepaths []strin
 					self.c.Tr.UseBothChanges,
 					cmdColor.Sprint("git merge-file --union"),
 				},
+				CommandID: "conflict.file.take-both",
+				Verb:      "take-both",
 				OnPress: func() error {
 					return onMergeStrategySelected("--union")
 				},
@@ -440,8 +446,10 @@ func (self *WorkingTreeHelper) CreateMergeConflictMenu(selectedFilepaths []strin
 					self.c.Tr.OpenMergeTool,
 					cmdColor.Sprint("git mergetool"),
 				},
-				OnPress: self.OpenMergeTool,
-				Keys:    menuKey('m'),
+				CommandID: "conflict.open-mergetool",
+				Verb:      "open-mergetool",
+				OnPress:   self.OpenMergeTool,
+				Keys:      menuKey('m'),
 			},
 		},
 	})

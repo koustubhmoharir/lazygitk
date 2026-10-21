@@ -41,6 +41,8 @@ func NewSubmodulesController(
 func (self *SubmodulesController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	return []*types.Binding{
 		{
+			CommandID:         "submodule.enter",
+			Verb:              "enter-repository",
 			Keys:              opts.GetKeys(opts.Config.Universal.GoInto),
 			Handler:           self.withItem(self.enter),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -50,11 +52,15 @@ func (self *SubmodulesController) GetKeybindings(opts types.KeybindingsOpts) []*
 			DisplayOnScreen: true,
 		},
 		{
+			CommandID:         "submodule.enter",
+			Verb:              "enter-repository",
 			Keys:              opts.GetKeys(opts.Config.Universal.Select),
 			Handler:           self.withItem(self.enter),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 		},
 		{
+			CommandID:         "submodule.delete",
+			Verb:              "delete",
 			Keys:              opts.GetKeys(opts.Config.Universal.Remove),
 			Handler:           self.withItem(self.remove),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -63,6 +69,8 @@ func (self *SubmodulesController) GetKeybindings(opts types.KeybindingsOpts) []*
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "submodule.update",
+			Verb:              "update",
 			Keys:              opts.GetKeys(opts.Config.Submodules.Update),
 			Handler:           self.withItem(self.update),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -71,18 +79,24 @@ func (self *SubmodulesController) GetKeybindings(opts types.KeybindingsOpts) []*
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:       "submodule.create",
+			Verb:            "create",
 			Keys:            opts.GetKeys(opts.Config.Universal.New),
 			Handler:         self.add,
 			Description:     self.c.Tr.NewSubmodule,
 			DisplayOnScreen: true,
 		},
 		{
+			CommandID:         "submodule.edit-url",
+			Verb:              "edit",
 			Keys:              opts.GetKeys(opts.Config.Universal.Edit),
 			Handler:           self.withItem(self.editURL),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.EditSubmoduleUrl,
 		},
 		{
+			CommandID:         "submodule.initialize",
+			Verb:              "initialize",
 			Keys:              opts.GetKeys(opts.Config.Submodules.Init),
 			Handler:           self.withItem(self.init),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -90,12 +104,16 @@ func (self *SubmodulesController) GetKeybindings(opts types.KeybindingsOpts) []*
 			Tooltip:           self.c.Tr.InitSubmoduleTooltip,
 		},
 		{
+			CommandID:   "submodule.bulk-menu",
+			Verb:        "submodule-options",
 			Keys:        opts.GetKeys(opts.Config.Submodules.BulkMenu),
 			Handler:     self.openBulkActionsMenu,
 			Description: self.c.Tr.ViewBulkSubmoduleOptions,
 			OpensMenu:   true,
 		},
 		{
+			CommandID:   "game.snake",
+			Verb:        "start-game",
 			Handler:     self.easterEgg,
 			Description: self.c.Tr.EasterEgg,
 		},
@@ -223,6 +241,8 @@ func (self *SubmodulesController) openBulkActionsMenu() error {
 		Items: []*types.MenuItem{
 			{
 				LabelColumns: []string{self.c.Tr.BulkInitSubmodules, style.FgGreen.Sprint(self.c.Git().Submodule.BulkInitCmdObj().ToString())},
+				CommandID:    "submodule.initialize-all",
+				Verb:         "initialize-submodules",
 				OnPress: func() error {
 					return self.c.WithWaitingStatus(self.c.Tr.RunningCommand, func(gocui.Task) error {
 						self.c.LogAction(self.c.Tr.Actions.BulkInitialiseSubmodules)
@@ -239,6 +259,8 @@ func (self *SubmodulesController) openBulkActionsMenu() error {
 			},
 			{
 				LabelColumns: []string{self.c.Tr.BulkUpdateSubmodules, style.FgYellow.Sprint(self.c.Git().Submodule.BulkUpdateCmdObj().ToString())},
+				CommandID:    "submodule.update-all",
+				Verb:         "update-submodules",
 				OnPress: func() error {
 					return self.c.WithWaitingStatus(self.c.Tr.RunningCommand, func(gocui.Task) error {
 						self.c.LogAction(self.c.Tr.Actions.BulkUpdateSubmodules)
@@ -254,6 +276,8 @@ func (self *SubmodulesController) openBulkActionsMenu() error {
 			},
 			{
 				LabelColumns: []string{self.c.Tr.BulkUpdateRecursiveSubmodules, style.FgYellow.Sprint(self.c.Git().Submodule.BulkUpdateRecursivelyCmdObj().ToString())},
+				CommandID:    "submodule.update-all-recursively",
+				Verb:         "update-submodules-recursively",
 				OnPress: func() error {
 					return self.c.WithWaitingStatus(self.c.Tr.RunningCommand, func(gocui.Task) error {
 						self.c.LogAction(self.c.Tr.Actions.BulkUpdateRecursiveSubmodules)
@@ -269,6 +293,8 @@ func (self *SubmodulesController) openBulkActionsMenu() error {
 			},
 			{
 				LabelColumns: []string{self.c.Tr.BulkDeinitSubmodules, style.FgRed.Sprint(self.c.Git().Submodule.BulkDeinitCmdObj().ToString())},
+				CommandID:    "submodule.deinitialize-all",
+				Verb:         "deinitialize-submodules",
 				OnPress: func() error {
 					return self.c.WithWaitingStatus(self.c.Tr.RunningCommand, func(gocui.Task) error {
 						self.c.LogAction(self.c.Tr.Actions.BulkDeinitialiseSubmodules)

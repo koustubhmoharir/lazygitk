@@ -14,8 +14,10 @@ func (gui *Gui) handleCreateExtrasMenuPanel() error {
 		Title: gui.c.Tr.CommandLog,
 		Items: []*types.MenuItem{
 			{
-				Label: gui.c.Tr.ToggleShowCommandLog,
-				Keys:  []gocui.Key{gocui.NewKeyRune('t')},
+				Label:     gui.c.Tr.ToggleShowCommandLog,
+				CommandID: "command-log.toggle",
+				Verb:      "toggle-command-log",
+				Keys:      []gocui.Key{gocui.NewKeyRune('t')},
 				OnPress: func() error {
 					currentContext := gui.c.Context().CurrentStatic()
 					if gui.c.State().GetShowExtrasWindow() && currentContext.GetKey() == context.COMMAND_LOG_CONTEXT_KEY {
@@ -29,9 +31,11 @@ func (gui *Gui) handleCreateExtrasMenuPanel() error {
 				},
 			},
 			{
-				Label:   gui.c.Tr.FocusCommandLog,
-				Keys:    []gocui.Key{gocui.NewKeyRune('f')},
-				OnPress: gui.handleFocusCommandLog,
+				Label:     gui.c.Tr.FocusCommandLog,
+				CommandID: "navigation.focus-command-log",
+				Verb:      "focus-command-log",
+				Keys:      []gocui.Key{gocui.NewKeyRune('f')},
+				OnPress:   gui.handleFocusCommandLog,
 			},
 		},
 	})

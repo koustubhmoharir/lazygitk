@@ -49,6 +49,8 @@ func (self *FilterController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			Keys:        opts.GetKeys(opts.Config.Universal.StartSearch),
 			Handler:     self.OpenFilterPrompt,
 			Description: self.c.Tr.StartFilter,
+			CommandID:   "filter.open",
+			Verb:        "filter",
 		},
 	}
 }

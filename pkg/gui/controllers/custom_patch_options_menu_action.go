@@ -28,50 +28,64 @@ func (self *CustomPatchOptionsMenuAction) Call() error {
 
 	menuItems := []*types.MenuItem{
 		{
-			Label:   self.c.Tr.ResetPatch,
-			Tooltip: self.c.Tr.ResetPatchTooltip,
-			OnPress: self.c.Helpers().CustomPatch.Reset,
-			Keys:    menuKey('c'),
+			CommandID: "patch.clear",
+			Verb:      "clear-patch",
+			Label:     self.c.Tr.ResetPatch,
+			Tooltip:   self.c.Tr.ResetPatchTooltip,
+			OnPress:   self.c.Helpers().CustomPatch.Reset,
+			Keys:      menuKey('c'),
 		},
 		{
-			Label:   self.c.Tr.ApplyPatch,
-			Tooltip: self.c.Tr.ApplyPatchTooltip,
-			OnPress: func() error { return self.handleApplyPatch(false) },
-			Keys:    menuKey('a'),
+			CommandID: "patch.apply",
+			Verb:      "apply-patch",
+			Label:     self.c.Tr.ApplyPatch,
+			Tooltip:   self.c.Tr.ApplyPatchTooltip,
+			OnPress:   func() error { return self.handleApplyPatch(false) },
+			Keys:      menuKey('a'),
 		},
 		{
-			Label:   self.c.Tr.ApplyPatchInReverse,
-			Tooltip: self.c.Tr.ApplyPatchInReverseTooltip,
-			OnPress: func() error { return self.handleApplyPatch(true) },
-			Keys:    menuKey('r'),
+			CommandID: "patch.apply-reverse",
+			Verb:      "reverse-apply-patch",
+			Label:     self.c.Tr.ApplyPatchInReverse,
+			Tooltip:   self.c.Tr.ApplyPatchInReverseTooltip,
+			OnPress:   func() error { return self.handleApplyPatch(true) },
+			Keys:      menuKey('r'),
 		},
 	}
 
 	if self.c.Git().Patch.PatchBuilder.CanRebase && self.c.Git().Status.WorkingTreeState().None() {
 		menuItems = append(menuItems, []*types.MenuItem{
 			{
-				Label:   fmt.Sprintf(self.c.Tr.RemovePatchFromOriginalCommit, utils.ShortHash(self.c.Git().Patch.PatchBuilder.To)),
-				Tooltip: self.c.Tr.RemovePatchFromOriginalCommitTooltip,
-				OnPress: self.handleDeletePatchFromCommit,
-				Keys:    menuKey('d'),
+				CommandID: "patch.remove-from-source-commit",
+				Verb:      "remove-patch-from-commit",
+				Label:     fmt.Sprintf(self.c.Tr.RemovePatchFromOriginalCommit, utils.ShortHash(self.c.Git().Patch.PatchBuilder.To)),
+				Tooltip:   self.c.Tr.RemovePatchFromOriginalCommitTooltip,
+				OnPress:   self.handleDeletePatchFromCommit,
+				Keys:      menuKey('d'),
 			},
 			{
-				Label:   self.c.Tr.MovePatchOutIntoIndex,
-				Tooltip: self.c.Tr.MovePatchOutIntoIndexTooltip,
-				OnPress: self.handleMovePatchIntoWorkingTree,
-				Keys:    menuKey('i'),
+				CommandID: "patch.move-to-index",
+				Verb:      "move-patch",
+				Label:     self.c.Tr.MovePatchOutIntoIndex,
+				Tooltip:   self.c.Tr.MovePatchOutIntoIndexTooltip,
+				OnPress:   self.handleMovePatchIntoWorkingTree,
+				Keys:      menuKey('i'),
 			},
 			{
-				Label:   self.c.Tr.MovePatchIntoNewCommit,
-				Tooltip: self.c.Tr.MovePatchIntoNewCommitTooltip,
-				OnPress: self.handlePullPatchIntoNewCommit,
-				Keys:    menuKey('n'),
+				CommandID: "patch.move-to-new-commit",
+				Verb:      "move-patch",
+				Label:     self.c.Tr.MovePatchIntoNewCommit,
+				Tooltip:   self.c.Tr.MovePatchIntoNewCommitTooltip,
+				OnPress:   self.handlePullPatchIntoNewCommit,
+				Keys:      menuKey('n'),
 			},
 			{
-				Label:   self.c.Tr.MovePatchIntoNewCommitBefore,
-				Tooltip: self.c.Tr.MovePatchIntoNewCommitBeforeTooltip,
-				OnPress: self.handlePullPatchIntoNewCommitBefore,
-				Keys:    menuKey('N'),
+				CommandID: "patch.move-to-new-commit-before",
+				Verb:      "move-patch",
+				Label:     self.c.Tr.MovePatchIntoNewCommitBefore,
+				Tooltip:   self.c.Tr.MovePatchIntoNewCommitBeforeTooltip,
+				OnPress:   self.handlePullPatchIntoNewCommitBefore,
+				Keys:      menuKey('N'),
 			},
 		}...)
 
@@ -90,6 +104,8 @@ func (self *CustomPatchOptionsMenuAction) Call() error {
 					append(
 						[]*types.MenuItem{
 							{
+								CommandID:      "patch.move-to-selected-commit",
+								Verb:           "move-patch",
 								Label:          fmt.Sprintf(self.c.Tr.MovePatchToSelectedCommit, selectedCommit.Hash()),
 								Tooltip:        self.c.Tr.MovePatchToSelectedCommitTooltip,
 								OnPress:        self.handleMovePatchToSelectedCommit,
@@ -105,9 +121,11 @@ func (self *CustomPatchOptionsMenuAction) Call() error {
 
 	menuItems = append(menuItems, []*types.MenuItem{
 		{
-			Label:   self.c.Tr.CopyPatchToClipboard,
-			OnPress: func() error { return self.copyPatchToClipboard() },
-			Keys:    menuKey('y'),
+			CommandID: "clipboard.copy-patch",
+			Verb:      "copy",
+			Label:     self.c.Tr.CopyPatchToClipboard,
+			OnPress:   func() error { return self.copyPatchToClipboard() },
+			Keys:      menuKey('y'),
 		},
 	}...)
 

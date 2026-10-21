@@ -227,6 +227,7 @@ func (self *HandlerCreator) confirmPrompt(prompt *config.CustomCommandPrompt, ha
 
 func (self *HandlerCreator) menuPrompt(prompt *config.CustomCommandPrompt, wrappedF func(string) error) error {
 	menuItems := lo.Map(prompt.Options, func(option config.CustomCommandMenuOption, _ int) *types.MenuItem {
+		// Parameter choice within the custom command, not an independent action.
 		return &types.MenuItem{
 			LabelColumns: []string{option.Name, style.FgYellow.Sprint(option.Description)},
 			OnPress: func() error {
@@ -253,6 +254,7 @@ func (self *HandlerCreator) menuPromptFromCommand(prompt *config.CustomCommandPr
 	}
 
 	menuItems := lo.Map(candidates, func(candidate *commandMenuItem, _ int) *types.MenuItem {
+		// Parameter choice within the custom command, not an independent action.
 		return &types.MenuItem{
 			LabelColumns: []string{candidate.label},
 			OnPress: func() error {

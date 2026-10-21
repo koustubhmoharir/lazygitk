@@ -38,12 +38,16 @@ func NewWorktreesController(
 func (self *WorktreesController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
 		{
+			CommandID:       "worktree.create",
+			Verb:            "create-worktree",
 			Keys:            opts.GetKeys(opts.Config.Universal.New),
 			Handler:         self.add,
 			Description:     self.c.Tr.NewWorktree,
 			DisplayOnScreen: true,
 		},
 		{
+			CommandID:         "worktree.switch",
+			Verb:              "switch-worktree",
 			Keys:              opts.GetKeys(opts.Config.Universal.Select),
 			Handler:           self.withItem(self.enter),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -52,17 +56,23 @@ func (self *WorktreesController) GetKeybindings(opts types.KeybindingsOpts) []*t
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "worktree.switch",
+			Verb:              "switch-worktree",
 			Keys:              opts.GetKeys(opts.Config.Universal.GoInto),
 			Handler:           self.withItem(self.enter),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 		},
 		{
+			CommandID:         "worktree.open-editor",
+			Verb:              "open-in-editor",
 			Keys:              opts.GetKeys(opts.Config.Universal.OpenFile),
 			Handler:           self.withItem(self.open),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.OpenInEditor,
 		},
 		{
+			CommandID:         "worktree.remove-menu",
+			Verb:              "delete-worktree",
 			Keys:              opts.GetKeys(opts.Config.Universal.Remove),
 			Handler:           self.withItem(self.remove),
 			GetDisabledReason: self.require(self.singleItemSelected()),

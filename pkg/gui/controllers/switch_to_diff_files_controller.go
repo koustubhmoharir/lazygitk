@@ -76,6 +76,8 @@ func (self *SwitchToDiffFilesController) GetKeybindings(opts types.KeybindingsOp
 			Handler:           self.enter,
 			GetDisabledReason: self.canEnter,
 			Description:       self.c.Tr.ViewItemFiles,
+			CommandID:         "navigation.open-diff-files",
+			Verb:              "view-files",
 		},
 	}
 

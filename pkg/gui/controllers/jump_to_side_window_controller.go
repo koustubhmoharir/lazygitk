@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 )
 
@@ -29,18 +30,21 @@ func (self *JumpToSideWindowController) GetKeybindings(opts types.KeybindingsOpt
 	windows := self.c.Helpers().Window.SideWindows()
 	jumpKeys := opts.Config.Universal.JumpToBlock
 
-	// Assign jump keys to panels positionally (by default 1 to the first panel,
-	// 2 to the second, etc.), for as many panels as there are keys. If there are
-	// more panels than keys the extra panels just have no jump key, and if there
-	// are more keys than panels the extra keys are unused; either way panels stay
-	// reachable via the next/previous-panel keys.
-	count := min(len(windows), len(jumpKeys))
-	bindings := make([]*types.Binding, 0, count)
-	for i := range count {
+	// Fork: retain parameterized navigation definitions even without shortcuts,
+	// rather than deriving command existence from the configured key count.
+	// Keys remain positional; extra keys are unused, as upstream.
+	bindings := make([]*types.Binding, 0, len(windows))
+	for i := range windows {
+		var keys []gocui.Key
+		if i < len(jumpKeys) {
+			keys = opts.GetKeys(jumpKeys[i])
+		}
 		bindings = append(bindings, &types.Binding{
-			ViewName: "",
-			Keys:     opts.GetKeys(jumpKeys[i]),
-			Handler:  opts.Guards.NoPopupPanel(self.goToSideWindow(windows[i])),
+			ViewName:  "",
+			Keys:      keys,
+			Handler:   opts.Guards.NoPopupPanel(self.goToSideWindow(windows[i])),
+			CommandID: "navigation.focus-panel",
+			Verb:      "focus-panel",
 		})
 	}
 	return bindings

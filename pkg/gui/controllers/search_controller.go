@@ -39,6 +39,8 @@ func (self *SearchController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			Keys:        opts.GetKeys(opts.Config.Universal.StartSearch),
 			Handler:     self.openSearchPrompt,
 			Description: self.c.Tr.StartSearch,
+			CommandID:   "search.open",
+			Verb:        "search",
 		},
 	}
 }

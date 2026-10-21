@@ -16,6 +16,8 @@ func (gui *Gui) createMenu(opts types.CreateMenuOptions) error {
 		// this is mutative but I'm okay with that for now
 		opts.Items = append(opts.Items, &types.MenuItem{
 			LabelColumns: []string{gui.c.Tr.Cancel},
+			CommandID:    "menu.cancel",
+			Verb:         "cancel",
 			OnPress: func() error {
 				if opts.OnCancel != nil {
 					return opts.OnCancel()

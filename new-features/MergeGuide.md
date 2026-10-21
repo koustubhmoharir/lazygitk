@@ -117,6 +117,40 @@ about the code that exists, not speculative implementation tasks.
   share identity across these controllers. Commit difftool identity remains
   separate because its default endpoints differ. This is metadata only; no
   keys, guards or Git handlers are replaced by the annotations.
+- `Binding`/`MenuItem` also offer optional live metadata callbacks through
+  `GetCommandID`/`GetVerb`. `controllers/diff_command_identity.go` distinguishes
+  the existing main-diff staging, unstaging, patch-selection and commit-discard
+  operations. Only their binding metadata hooks in `MainViewController` change;
+  handlers and disabled reasons remain upstream-owned. If upstream adds another
+  `FocusedMainViewDiffSource` implementation or changes pane semantics, review
+  this resolver. Its 12-case matrix and callback tests protect the classification.
+- `controllers/file_command_identity.go` classifies the single-file conflict
+  dialog using the existing predicate. Review it if upstream changes primary
+  staging/conflict dispatch. The selected path is never part of identity.
+- Built-in menu leaves and the remaining binding factories carry literal IDs
+  or finite internal-enum IDs. Parameter-only prompts and informational rows
+  intentionally have none; see the identity design's dynamic-factory audit.
+- `OptionsMenuAction` delegates to fork-owned `command_palette.go`, replacing
+  translated-description deduplication with resolved identity deduplication.
+  Palette copies merge shortcut hints without mutating dispatch bindings and
+  preserve the preferred binding's handler/disabled check. `MenuItem.Binding`
+  marks a palette proxy for future usage instrumentation; menu accelerator
+  wrappers propagate live item identity without changing row identity or guards.
+- `JumpToSideWindowController` retains all parameterized panel definitions when
+  fewer keys are configured, instead of truncating definitions to key count.
+  Positional dispatch is unchanged. Review this replacement if upstream changes
+  panel layout or shortcut allocation; platform/locale/unbound metadata tests
+  must remain valid. This does not add visible panel-chooser menu entries.
+- The inventory generator and annotation-only AST checker live under
+  `new-features/inventory` with standalone, explicitly invoked tests. Regenerate
+  the source snapshot after command changes. Five unannotated parameter/info
+  factories are intentional; do not add IDs derived from their user input.
+- Item 2 verification: full short tests, generator/checker tests, generation,
+  formatting and lint passed. The corrected 14-scenario headless selection
+  passed in 11.796s, covering palette filtering/navigation, custom submenus and
+  unbound branch rename through the normal prompt and Git result. The first
+  attempt's new test omitted the Local section header; its assertion was fixed.
+  This was a targeted run, not a new full-suite run.
 
 ## Reviewing an upstream merge
 

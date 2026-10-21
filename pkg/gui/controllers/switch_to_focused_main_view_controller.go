@@ -35,6 +35,8 @@ func (self *SwitchToFocusedMainViewController) GetKeybindings(opts types.Keybind
 			Handler:     self.handleFocusMainView,
 			Description: self.c.Tr.FocusMainView,
 			Tag:         "global",
+			CommandID:   "navigation.focus-diff",
+			Verb:        "focus-diff",
 		},
 	}
 

@@ -21,7 +21,9 @@ func (self *EditConfigAction) Call() error {
 	default:
 		menuItems := lo.Map(confPaths, func(path string, _ int) *types.MenuItem {
 			return &types.MenuItem{
-				Label: path,
+				Label:     path,
+				CommandID: "config.edit-file",
+				Verb:      "edit",
 				OnPress: func() error {
 					return self.c.Helpers().Files.EditFiles([]string{path})
 				},

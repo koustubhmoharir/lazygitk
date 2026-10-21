@@ -39,7 +39,9 @@ func (self *FilteringMenuAction) Call() error {
 
 	if fileName != "" {
 		menuItems = append(menuItems, &types.MenuItem{
-			Label: fmt.Sprintf("%s '%s'", self.c.Tr.FilterBy, fileName),
+			Label:     fmt.Sprintf("%s '%s'", self.c.Tr.FilterBy, fileName),
+			CommandID: "filter.by-selected-path",
+			Verb:      "filter",
 			OnPress: func() error {
 				return self.c.Helpers().Mode.SetFilteringPath(fileName)
 			},
@@ -49,7 +51,9 @@ func (self *FilteringMenuAction) Call() error {
 
 	if author != "" {
 		menuItems = append(menuItems, &types.MenuItem{
-			Label: fmt.Sprintf("%s '%s'", self.c.Tr.FilterBy, author),
+			Label:     fmt.Sprintf("%s '%s'", self.c.Tr.FilterBy, author),
+			CommandID: "filter.by-selected-author",
+			Verb:      "filter",
 			OnPress: func() error {
 				return self.c.Helpers().Mode.SetFilteringAuthor(author)
 			},
@@ -58,7 +62,9 @@ func (self *FilteringMenuAction) Call() error {
 	}
 
 	menuItems = append(menuItems, &types.MenuItem{
-		Label: self.c.Tr.FilterPathOption,
+		Label:     self.c.Tr.FilterPathOption,
+		CommandID: "filter.prompt-path",
+		Verb:      "filter",
 		OnPress: func() error {
 			self.c.Prompt(types.PromptOpts{
 				FindSuggestionsFunc: self.c.Helpers().Suggestions.GetFilePathSuggestionsFunc(),
@@ -74,7 +80,9 @@ func (self *FilteringMenuAction) Call() error {
 	})
 
 	menuItems = append(menuItems, &types.MenuItem{
-		Label: self.c.Tr.FilterAuthorOption,
+		Label:     self.c.Tr.FilterAuthorOption,
+		CommandID: "filter.prompt-author",
+		Verb:      "filter",
 		OnPress: func() error {
 			self.c.Prompt(types.PromptOpts{
 				FindSuggestionsFunc: self.c.Helpers().Suggestions.GetAuthorsSuggestionsFunc(),
@@ -91,8 +99,10 @@ func (self *FilteringMenuAction) Call() error {
 
 	if self.c.Modes().Filtering.Active() {
 		menuItems = append(menuItems, &types.MenuItem{
-			Label:   self.c.Tr.ExitFilterMode,
-			OnPress: self.c.Helpers().Mode.ClearFiltering,
+			Label:     self.c.Tr.ExitFilterMode,
+			CommandID: "filter.exit-mode",
+			Verb:      "clear-filter",
+			OnPress:   self.c.Helpers().Mode.ClearFiltering,
 		})
 	}
 

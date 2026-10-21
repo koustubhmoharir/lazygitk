@@ -38,6 +38,8 @@ func NewBisectController(
 func (self *BisectController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
 		{
+			CommandID:   "bisect.options-menu",
+			Verb:        "bisect-options",
 			Keys:        opts.GetKeys(opts.Config.Commits.ViewBisectOptions),
 			Handler:     opts.Guards.OutsideFilterMode(self.withItem(self.openMenu)),
 			Description: self.c.Tr.ViewBisectOptions,
@@ -91,7 +93,9 @@ func (self *BisectController) openMidBisectMenu(info *git_commands.BisectInfo, c
 
 	menuItems := []*types.MenuItem{
 		{
-			Label: fmt.Sprintf(self.c.Tr.Bisect.Mark, shortHashToMark, info.NewTerm()),
+			CommandID: "bisect.mark-new",
+			Verb:      "mark-bisect-new",
+			Label:     fmt.Sprintf(self.c.Tr.Bisect.Mark, shortHashToMark, info.NewTerm()),
 			OnPress: func() error {
 				self.c.LogAction(self.c.Tr.Actions.BisectMark)
 				if err := self.c.Git().Bisect.Mark(hashToMark, info.NewTerm()); err != nil {
@@ -104,7 +108,9 @@ func (self *BisectController) openMidBisectMenu(info *git_commands.BisectInfo, c
 			Keys:           menuKey('b'),
 		},
 		{
-			Label: fmt.Sprintf(self.c.Tr.Bisect.Mark, shortHashToMark, info.OldTerm()),
+			CommandID: "bisect.mark-old",
+			Verb:      "mark-bisect-old",
+			Label:     fmt.Sprintf(self.c.Tr.Bisect.Mark, shortHashToMark, info.OldTerm()),
 			OnPress: func() error {
 				self.c.LogAction(self.c.Tr.Actions.BisectMark)
 				if err := self.c.Git().Bisect.Mark(hashToMark, info.OldTerm()); err != nil {
@@ -117,7 +123,9 @@ func (self *BisectController) openMidBisectMenu(info *git_commands.BisectInfo, c
 			Keys:           menuKey('g'),
 		},
 		{
-			Label: fmt.Sprintf(self.c.Tr.Bisect.SkipCurrent, shortHashToMark),
+			CommandID: "bisect.skip-current",
+			Verb:      "skip-bisect",
+			Label:     fmt.Sprintf(self.c.Tr.Bisect.SkipCurrent, shortHashToMark),
 			OnPress: func() error {
 				self.c.LogAction(self.c.Tr.Actions.BisectSkip)
 				if err := self.c.Git().Bisect.Skip(hashToMark); err != nil {
@@ -132,7 +140,9 @@ func (self *BisectController) openMidBisectMenu(info *git_commands.BisectInfo, c
 	}
 	if info.GetCurrentHash() != "" && info.GetCurrentHash() != commit.Hash() {
 		menuItems = append(menuItems, lo.ToPtr(types.MenuItem{
-			Label: fmt.Sprintf(self.c.Tr.Bisect.SkipSelected, commit.ShortHash()),
+			CommandID: "bisect.skip-selected",
+			Verb:      "skip-bisect",
+			Label:     fmt.Sprintf(self.c.Tr.Bisect.SkipSelected, commit.ShortHash()),
 			OnPress: func() error {
 				self.c.LogAction(self.c.Tr.Actions.BisectSkip)
 				if err := self.c.Git().Bisect.Skip(commit.Hash()); err != nil {
@@ -146,7 +156,9 @@ func (self *BisectController) openMidBisectMenu(info *git_commands.BisectInfo, c
 		}))
 	}
 	menuItems = append(menuItems, lo.ToPtr(types.MenuItem{
-		Label: self.c.Tr.Bisect.ResetOption,
+		CommandID: "bisect.reset",
+		Verb:      "reset-bisect",
+		Label:     self.c.Tr.Bisect.ResetOption,
 		OnPress: func() error {
 			return self.c.Helpers().Bisect.Reset()
 		},
@@ -164,7 +176,9 @@ func (self *BisectController) openStartBisectMenu(info *git_commands.BisectInfo,
 		Title: self.c.Tr.Bisect.BisectMenuTitle,
 		Items: []*types.MenuItem{
 			{
-				Label: fmt.Sprintf(self.c.Tr.Bisect.MarkStart, commit.ShortHash(), info.NewTerm()),
+				CommandID: "bisect.start-mark-new",
+				Verb:      "start-bisect-new",
+				Label:     fmt.Sprintf(self.c.Tr.Bisect.MarkStart, commit.ShortHash(), info.NewTerm()),
 				OnPress: func() error {
 					self.c.LogAction(self.c.Tr.Actions.StartBisect)
 					if err := self.c.Git().Bisect.Start(); err != nil {
@@ -182,7 +196,9 @@ func (self *BisectController) openStartBisectMenu(info *git_commands.BisectInfo,
 				Keys:           menuKey('b'),
 			},
 			{
-				Label: fmt.Sprintf(self.c.Tr.Bisect.MarkStart, commit.ShortHash(), info.OldTerm()),
+				CommandID: "bisect.start-mark-old",
+				Verb:      "start-bisect-old",
+				Label:     fmt.Sprintf(self.c.Tr.Bisect.MarkStart, commit.ShortHash(), info.OldTerm()),
 				OnPress: func() error {
 					self.c.LogAction(self.c.Tr.Actions.StartBisect)
 					if err := self.c.Git().Bisect.Start(); err != nil {
@@ -200,7 +216,9 @@ func (self *BisectController) openStartBisectMenu(info *git_commands.BisectInfo,
 				Keys:           menuKey('g'),
 			},
 			{
-				Label: self.c.Tr.Bisect.ChooseTerms,
+				CommandID: "bisect.start-custom-terms",
+				Verb:      "start-bisect",
+				Label:     self.c.Tr.Bisect.ChooseTerms,
 				OnPress: func() error {
 					self.c.Prompt(types.PromptOpts{
 						Title: self.c.Tr.Bisect.OldTermPrompt,

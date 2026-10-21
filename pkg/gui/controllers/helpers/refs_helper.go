@@ -146,8 +146,10 @@ func (self *RefsHelper) CheckoutRemoteBranch(fullBranchName string, localBranchN
 		Prompt: self.c.Tr.RemoteBranchCheckoutPrompt,
 		Items: []*types.MenuItem{
 			{
-				Label:   self.c.Tr.CheckoutTypeNewBranch,
-				Tooltip: self.c.Tr.CheckoutTypeNewBranchTooltip,
+				Label:     self.c.Tr.CheckoutTypeNewBranch,
+				CommandID: "branch.checkout-tracking",
+				Verb:      "checkout",
+				Tooltip:   self.c.Tr.CheckoutTypeNewBranchTooltip,
 				OnPress: func() error {
 					// First create the local branch with the upstream set, and
 					// then check it out. We could do that in one step using
@@ -170,8 +172,10 @@ func (self *RefsHelper) CheckoutRemoteBranch(fullBranchName string, localBranchN
 				},
 			},
 			{
-				Label:   self.c.Tr.CheckoutTypeDetachedHead,
-				Tooltip: self.c.Tr.CheckoutTypeDetachedHeadTooltip,
+				Label:     self.c.Tr.CheckoutTypeDetachedHead,
+				CommandID: "commit.checkout-detached",
+				Verb:      "checkout",
+				Tooltip:   self.c.Tr.CheckoutTypeDetachedHeadTooltip,
 				OnPress: func() error {
 					return checkout(fullBranchName, false)
 				},
@@ -245,8 +249,10 @@ func (self *RefsHelper) CreateSortOrderMenu(sortOptionsOrder []string, menuPromp
 			OnPress: func() error {
 				return onSelected(opt.sortOrder)
 			},
-			Keys:   opt.keys,
-			Widget: types.MakeMenuRadioButton(opt.sortOrder == currentValue),
+			Keys:      opt.keys,
+			CommandID: "ui.sort-order.set",
+			Verb:      "sort",
+			Widget:    types.MakeMenuRadioButton(opt.sortOrder == currentValue),
 		}
 	})
 	return self.c.Menu(types.CreateMenuOptions{
@@ -289,8 +295,10 @@ func (self *RefsHelper) CreateGitResetMenu(name string, ref string) error {
 						},
 					})
 			},
-			Keys:    row.keys,
-			Tooltip: row.tooltip,
+			Keys:      row.keys,
+			CommandID: "branch.reset." + row.strength,
+			Verb:      "reset-" + row.strength,
+			Tooltip:   row.tooltip,
 		}
 	})
 
@@ -310,6 +318,8 @@ func (self *RefsHelper) CreateCheckoutMenu(commit *models.Commit) error {
 	menuItems := []*types.MenuItem{
 		{
 			LabelColumns: []string{fmt.Sprintf(self.c.Tr.Actions.CheckoutCommitAsDetachedHead, utils.ShortHash(hash))},
+			CommandID:    "commit.checkout-detached",
+			Verb:         "checkout",
 			OnPress: func() error {
 				self.c.LogAction(self.c.Tr.Actions.CheckoutCommit)
 				return self.CheckoutRef(hash, types.CheckoutRefOptions{})
@@ -326,6 +336,8 @@ func (self *RefsHelper) CreateCheckoutMenu(commit *models.Commit) error {
 			}
 			return &types.MenuItem{
 				LabelColumns: []string{fmt.Sprintf(self.c.Tr.Actions.CheckoutBranchAtCommit, branch.Name)},
+				CommandID:    "branch.checkout",
+				Verb:         "checkout",
 				OnPress: func() error {
 					self.c.LogAction(self.c.Tr.Actions.CheckoutBranch)
 					return self.CheckoutRef(branch.RefName(), types.CheckoutRefOptions{})
@@ -336,6 +348,8 @@ func (self *RefsHelper) CreateCheckoutMenu(commit *models.Commit) error {
 	} else {
 		menuItems = append(menuItems, &types.MenuItem{
 			LabelColumns:   []string{self.c.Tr.Actions.CheckoutBranch},
+			CommandID:      "branch.checkout",
+			Verb:           "checkout",
 			OnPress:        func() error { return nil },
 			DisabledReason: &types.DisabledReason{Text: self.c.Tr.NoBranchesFoundAtCommitTooltip},
 			Keys:           menuKey('1'),
@@ -505,7 +519,9 @@ func (self *RefsHelper) MoveCommitsToNewBranch() error {
 		Prompt: prompt,
 		Items: []*types.MenuItem{
 			{
-				Label: fmt.Sprintf(self.c.Tr.MoveCommitsToNewBranchFromBaseItem, shortBaseBranchName),
+				Label:     fmt.Sprintf(self.c.Tr.MoveCommitsToNewBranchFromBaseItem, shortBaseBranchName),
+				CommandID: "branch.move-commits-to-new-from-base",
+				Verb:      "move-commits",
 				OnPress: func() error {
 					commitsToCherryPick := lo.Filter(self.c.Model().Commits, func(commit *models.Commit, _ int) bool {
 						return commit.Status == models.StatusUnpushed
@@ -516,7 +532,9 @@ func (self *RefsHelper) MoveCommitsToNewBranch() error {
 				},
 			},
 			{
-				Label: fmt.Sprintf(self.c.Tr.MoveCommitsToNewBranchStackedItem, currentBranch.Name),
+				Label:     fmt.Sprintf(self.c.Tr.MoveCommitsToNewBranchStackedItem, currentBranch.Name),
+				CommandID: "branch.move-commits-to-new-stacked",
+				Verb:      "move-commits",
 				OnPress: func() error {
 					return withNewBranchNamePrompt(currentBranch.Name, func(newBranchName string) error {
 						return self.moveCommitsToNewBranchStackedOnCurrentBranch(newBranchName, mustStash)

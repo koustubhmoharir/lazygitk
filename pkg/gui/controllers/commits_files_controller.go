@@ -60,12 +60,16 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 	bindings := []*types.Binding{
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.CopyFileInfoToClipboard),
+			CommandID:   "history-file.copy-menu",
+			Verb:        "copy",
 			Handler:     self.openCopyMenu,
 			Description: self.c.Tr.CopyToClipboardMenu,
 			OpensMenu:   true,
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.CommitFiles.CheckoutCommitFile),
+			CommandID:         "history-file.checkout",
+			Verb:              "checkout",
 			Handler:           self.withItem(self.checkout),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.Checkout,
@@ -74,6 +78,8 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.Remove),
+			CommandID:         "commit.discard-file-changes",
+			Verb:              "discard-from-commit",
 			Handler:           self.withItems(self.discard),
 			GetDisabledReason: self.require(self.itemsSelected(self.canDiscardFileChanges)),
 			Description:       self.c.Tr.Discard,
@@ -82,6 +88,8 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.OpenFile),
+			CommandID:         "file.open",
+			Verb:              "open-file",
 			Handler:           self.withItem(self.open),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.OpenFile,
@@ -89,6 +97,8 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.Edit),
+			CommandID:         "file.edit",
+			Verb:              "edit",
 			Handler:           self.withItems(self.edit),
 			GetDisabledReason: self.require(self.itemsSelected(self.canEditFiles)),
 			Description:       self.c.Tr.Edit,
@@ -97,12 +107,16 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.OpenDiffTool),
+			CommandID:         "diff.history-file.external",
+			Verb:              "external-diff-context",
 			Handler:           self.withItem(self.openDiffTool),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.OpenDiffTool,
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.Select),
+			CommandID:         "patch.toggle-file-selection",
+			Verb:              "toggle-patch-selection",
 			Handler:           self.withItems(self.toggleForPatch),
 			GetDisabledReason: self.require(self.itemsSelected()),
 			Description:       self.c.Tr.ToggleAddToPatch,
@@ -113,6 +127,8 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 		},
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.ToggleStagedAll),
+			CommandID:   "patch.toggle-all-file-selection",
+			Verb:        "toggle-all-patch-selection",
 			Handler:     self.withItem(self.toggleAllForPatch),
 			Description: self.c.Tr.ToggleAllInPatch,
 			Tooltip: utils.ResolvePlaceholderString(self.c.Tr.ToggleAllInPatchTooltip,
@@ -121,6 +137,8 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.GoInto),
+			CommandID:         "navigation.open-history-file-diff",
+			Verb:              "view-diff",
 			Handler:           self.withItem(self.enter),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.FocusCommitFileDiff,
@@ -128,12 +146,16 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 		},
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.ToggleTreeView),
+			CommandID:   "ui.file-tree.toggle",
+			Verb:        "toggle-file-tree",
 			Handler:     self.toggleTreeView,
 			Description: self.c.Tr.ToggleTreeView,
 			Tooltip:     self.c.Tr.ToggleTreeViewTooltip,
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Files.CollapseAll),
+			CommandID:         "ui.file-tree.collapse-all",
+			Verb:              "collapse-all",
 			Handler:           self.collapseAll,
 			Description:       self.c.Tr.CollapseAll,
 			Tooltip:           self.c.Tr.CollapseAllTooltip,
@@ -141,6 +163,8 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Files.ExpandAll),
+			CommandID:         "ui.file-tree.expand-all",
+			Verb:              "expand-all",
 			Handler:           self.expandAll,
 			Description:       self.c.Tr.ExpandAll,
 			Tooltip:           self.c.Tr.ExpandAllTooltip,
@@ -240,7 +264,9 @@ func (self *CommitFilesController) openCopyMenu() error {
 	node := self.context().GetSelected()
 
 	copyNameItem := &types.MenuItem{
-		Label: self.c.Tr.CopyFileName,
+		Label:     self.c.Tr.CopyFileName,
+		CommandID: "clipboard.copy-file-name",
+		Verb:      "copy",
 		OnPress: func() error {
 			if err := self.c.OS().CopyToClipboard(node.Name()); err != nil {
 				return err
@@ -252,7 +278,9 @@ func (self *CommitFilesController) openCopyMenu() error {
 		Keys:           menuKey('n'),
 	}
 	copyRelativePathItem := &types.MenuItem{
-		Label: self.c.Tr.CopyRelativeFilePath,
+		Label:     self.c.Tr.CopyRelativeFilePath,
+		CommandID: "clipboard.copy-file-path",
+		Verb:      "copy",
 		OnPress: func() error {
 			if err := self.c.OS().CopyToClipboard(node.GetPath()); err != nil {
 				return err
@@ -264,7 +292,9 @@ func (self *CommitFilesController) openCopyMenu() error {
 		Keys:           menuKey('p'),
 	}
 	copyAbsolutePathItem := &types.MenuItem{
-		Label: self.c.Tr.CopyAbsoluteFilePath,
+		Label:     self.c.Tr.CopyAbsoluteFilePath,
+		CommandID: "clipboard.copy-absolute-file-path",
+		Verb:      "copy",
 		OnPress: func() error {
 			absPath, err := self.c.Helpers().Diff.AbsolutePathOfFileOfDiff(node.GetPath())
 			if err != nil {
@@ -280,7 +310,9 @@ func (self *CommitFilesController) openCopyMenu() error {
 		Keys:           menuKey('P'),
 	}
 	copyFileDiffItem := &types.MenuItem{
-		Label: self.c.Tr.CopySelectedDiff,
+		Label:     self.c.Tr.CopySelectedDiff,
+		CommandID: "clipboard.copy-history-file-diff",
+		Verb:      "copy",
 		OnPress: func() error {
 			return self.copyDiffToClipboard(self.pathsForDiff(node), self.c.Tr.FileDiffCopiedToast)
 		},
@@ -288,7 +320,9 @@ func (self *CommitFilesController) openCopyMenu() error {
 		Keys:           menuKey('s'),
 	}
 	copyAllDiff := &types.MenuItem{
-		Label: self.c.Tr.CopyAllFilesDiff,
+		Label:     self.c.Tr.CopyAllFilesDiff,
+		CommandID: "clipboard.copy-history-diff",
+		Verb:      "copy",
 		OnPress: func() error {
 			return self.copyDiffToClipboard([]string{"."}, self.c.Tr.AllFilesDiffCopiedToast)
 		},
@@ -296,7 +330,9 @@ func (self *CommitFilesController) openCopyMenu() error {
 		Keys:           menuKey('a'),
 	}
 	copyFileContentItem := &types.MenuItem{
-		Label: self.c.Tr.CopyFileContent,
+		Label:     self.c.Tr.CopyFileContent,
+		CommandID: "clipboard.copy-history-file-content",
+		Verb:      "copy",
 		OnPress: func() error {
 			if err := self.copyFileContentToClipboard(node.GetPath()); err != nil {
 				return err

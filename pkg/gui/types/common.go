@@ -309,11 +309,17 @@ func MakeMenuCheckBox(value bool) MenuWidget {
 }
 
 type MenuItem struct {
+	// Binding records the origin when this item proxies a binding (e.g. the
+	// command palette), rather than introducing a separate leaf operation.
+	Binding *Binding
 	// CommandID is the stable, non-translated identity of this action.
 	CommandID string
+	// Optional mode-dependent metadata, propagated from an underlying binding.
+	CommandIDFunc func() string
 	// Verb describes the action's semantics independently of its target.
-	Verb  string
-	Label string
+	Verb     string
+	VerbFunc func() string
+	Label    string
 
 	// alternative to Label. Allows specifying columns which will be auto-aligned
 	LabelColumns []string

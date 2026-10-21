@@ -28,12 +28,16 @@ func NewContextLinesController(
 func (self *ContextLinesController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
 		{
+			CommandID:   "diff.context.increase",
+			Verb:        "increase-context",
 			Keys:        opts.GetKeys(opts.Config.Universal.IncreaseContextInDiffView),
 			Handler:     self.Increase,
 			Description: self.c.Tr.IncreaseContextInDiffView,
 			Tooltip:     self.c.Tr.IncreaseContextInDiffViewTooltip,
 		},
 		{
+			CommandID:   "diff.context.decrease",
+			Verb:        "decrease-context",
 			Keys:        opts.GetKeys(opts.Config.Universal.DecreaseContextInDiffView),
 			Handler:     self.Decrease,
 			Description: self.c.Tr.DecreaseContextInDiffView,

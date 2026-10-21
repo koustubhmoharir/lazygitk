@@ -30,6 +30,8 @@ func (self *FilesController) createResetMenu() error {
 				self.c.Tr.DiscardAllChangesToAllFiles,
 				red.Sprint(nukeStr),
 			},
+			CommandID: "worktree.discard-all",
+			Verb:      "discard-all-changes",
 			OnPress: func() error {
 				self.c.Confirm(
 					types.ConfirmOpts{
@@ -61,6 +63,8 @@ func (self *FilesController) createResetMenu() error {
 				self.c.Tr.DiscardAnyUnstagedChanges,
 				red.Sprint("git checkout -- ."),
 			},
+			CommandID: "worktree.discard-unstaged",
+			Verb:      "discard-unstaged-changes",
 			OnPress: func() error {
 				self.c.LogAction(self.c.Tr.Actions.DiscardUnstagedFileChanges)
 				if err := self.c.Git().WorkingTree.DiscardAnyUnstagedFileChanges(); err != nil {
@@ -79,6 +83,8 @@ func (self *FilesController) createResetMenu() error {
 				self.c.Tr.DiscardUntrackedFiles,
 				red.Sprint("git clean -fd"),
 			},
+			CommandID: "worktree.delete-untracked",
+			Verb:      "delete-untracked",
 			OnPress: func() error {
 				self.c.LogAction(self.c.Tr.Actions.RemoveUntrackedFiles)
 				if err := self.c.Git().WorkingTree.RemoveUntrackedFiles(); err != nil {
@@ -97,7 +103,9 @@ func (self *FilesController) createResetMenu() error {
 				self.c.Tr.DiscardStagedChanges,
 				red.Sprint("stash staged and drop stash"),
 			},
-			Tooltip: self.c.Tr.DiscardStagedChangesDescription,
+			CommandID: "worktree.discard-staged",
+			Verb:      "discard-staged-changes",
+			Tooltip:   self.c.Tr.DiscardStagedChangesDescription,
 			OnPress: func() error {
 				self.c.LogAction(self.c.Tr.Actions.RemoveStagedFiles)
 				if !self.c.Helpers().WorkingTree.IsWorkingTreeDirtyExceptSubmodules() {
@@ -122,6 +130,8 @@ func (self *FilesController) createResetMenu() error {
 				self.c.Tr.SoftReset,
 				red.Sprint("git reset --soft HEAD"),
 			},
+			CommandID: "worktree.reset.soft",
+			Verb:      "reset-soft",
 			OnPress: func() error {
 				self.c.LogAction(self.c.Tr.Actions.SoftReset)
 				if err := self.c.Git().WorkingTree.ResetSoft("HEAD"); err != nil {
@@ -140,6 +150,8 @@ func (self *FilesController) createResetMenu() error {
 				"mixed reset",
 				red.Sprint("git reset --mixed HEAD"),
 			},
+			CommandID: "worktree.reset.mixed",
+			Verb:      "reset-mixed",
 			OnPress: func() error {
 				self.c.LogAction(self.c.Tr.Actions.MixedReset)
 				if err := self.c.Git().WorkingTree.ResetMixed("HEAD"); err != nil {
@@ -158,6 +170,8 @@ func (self *FilesController) createResetMenu() error {
 				self.c.Tr.HardReset,
 				red.Sprint("git reset --hard HEAD"),
 			},
+			CommandID: "worktree.reset.hard",
+			Verb:      "reset-hard",
 			OnPress: func() error {
 				return self.c.ConfirmIf(helpers.IsWorkingTreeDirtyExceptSubmodules(self.c.Model().Files, self.c.Model().Submodules),
 					types.ConfirmOpts{

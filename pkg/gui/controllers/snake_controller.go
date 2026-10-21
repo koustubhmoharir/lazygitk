@@ -24,24 +24,34 @@ func NewSnakeController(
 func (self *SnakeController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
 		{
-			Keys:    opts.GetKeys(opts.Config.Universal.NextItem),
-			Handler: self.SetDirection(snake.Down),
+			Keys:      opts.GetKeys(opts.Config.Universal.NextItem),
+			Handler:   self.SetDirection(snake.Down),
+			CommandID: "game.snake.down",
+			Verb:      "play-down",
 		},
 		{
-			Keys:    opts.GetKeys(opts.Config.Universal.PrevItem),
-			Handler: self.SetDirection(snake.Up),
+			Keys:      opts.GetKeys(opts.Config.Universal.PrevItem),
+			Handler:   self.SetDirection(snake.Up),
+			CommandID: "game.snake.up",
+			Verb:      "play-up",
 		},
 		{
-			Keys:    opts.GetKeys(opts.Config.Universal.PrevBlock),
-			Handler: self.SetDirection(snake.Left),
+			Keys:      opts.GetKeys(opts.Config.Universal.PrevBlock),
+			Handler:   self.SetDirection(snake.Left),
+			CommandID: "game.snake.left",
+			Verb:      "play-left",
 		},
 		{
-			Keys:    opts.GetKeys(opts.Config.Universal.NextBlock),
-			Handler: self.SetDirection(snake.Right),
+			Keys:      opts.GetKeys(opts.Config.Universal.NextBlock),
+			Handler:   self.SetDirection(snake.Right),
+			CommandID: "game.snake.right",
+			Verb:      "play-right",
 		},
 		{
-			Keys:    opts.GetKeys(opts.Config.Universal.Return),
-			Handler: self.Escape,
+			Keys:      opts.GetKeys(opts.Config.Universal.Return),
+			Handler:   self.Escape,
+			CommandID: "game.snake.cancel",
+			Verb:      "cancel",
 		},
 	}
 

@@ -56,14 +56,18 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 	return []*types.Binding{
 		{
 			Keys:            opts.GetKeys(opts.Config.Universal.TogglePanel),
+			CommandID:       "navigation.diff.switch-pane",
+			Verb:            "switch-diff-pane",
 			Handler:         self.togglePanel,
 			Description:     self.c.Tr.ToggleDiffPane,
 			Tooltip:         self.c.Tr.ToggleDiffPaneTooltip,
 			DisplayOnScreen: true,
 		},
 		{
-			Keys:    opts.GetKeys(opts.Config.Main.ToggleSelectHunk),
-			Handler: self.toggleSelectHunk,
+			Keys:      opts.GetKeys(opts.Config.Main.ToggleSelectHunk),
+			CommandID: "selection.diff.toggle-hunk",
+			Verb:      "toggle-hunk-selection",
+			Handler:   self.toggleSelectHunk,
 			DescriptionFunc: self.diffSelectionDescription(func() string {
 				if self.diffSelectState().Mode == types.DiffSelectModeHunk {
 					return self.c.Tr.SelectLineByLine
@@ -77,6 +81,8 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.ToggleRangeSelect),
+			CommandID:         "selection.diff.toggle-range",
+			Verb:              "toggle-range-selection",
 			Handler:           self.toggleRangeSelect,
 			Description:       self.c.Tr.ToggleRangeSelect,
 			DescriptionFunc:   self.diffSelectionDescriptionText(self.c.Tr.ToggleRangeSelect),
@@ -84,6 +90,8 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.Edit),
+			CommandID:         "file.edit-line",
+			Verb:              "edit",
 			Handler:           self.editLine,
 			Description:       self.c.Tr.EditFile,
 			DescriptionFunc:   self.diffSelectionDescriptionText(self.c.Tr.EditFile),
@@ -91,8 +99,12 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			Tooltip:           self.c.Tr.EditFileTooltip,
 		},
 		{
-			Keys:    opts.GetKeys(opts.Config.Universal.Select),
-			Handler: self.primaryAction,
+			Keys:          opts.GetKeys(opts.Config.Universal.Select),
+			CommandID:     "diff.primary-selection",
+			CommandIDFunc: self.primaryActionCommandID,
+			Verb:          "primary-action",
+			VerbFunc:      self.primaryActionVerb,
+			Handler:       self.primaryAction,
 			// The description is of the working tree's diff, which is where the key does
 			// the thing users know it for; over a commit's diff it says so for itself.
 			Description:       self.c.Tr.Stage,
@@ -107,6 +119,10 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.Remove),
 			Handler:           self.discardSelection,
+			CommandID:         "diff.discard-selection",
+			CommandIDFunc:     self.discardSelectionCommandID,
+			Verb:              "discard",
+			VerbFunc:          self.discardSelectionVerb,
 			Description:       self.c.Tr.DiscardSelection,
 			DescriptionFunc:   self.diffActionDescription(self.c.Tr.DiscardSelection, self.c.Tr.RemoveSelectionFromPatch),
 			GetDisabledReason: self.discardSelectionDisabledReason,
@@ -119,6 +135,8 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Main.EditSelectHunk),
+			CommandID:         "diff.edit-hunk",
+			Verb:              "edit-hunk",
 			Handler:           self.editHunk,
 			Description:       self.c.Tr.EditHunk,
 			DescriptionFunc:   self.workingTreeActionDescription(self.c.Tr.EditHunk),
@@ -127,6 +145,8 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.CopyToClipboard),
+			CommandID:         "clipboard.copy-diff-selection",
+			Verb:              "copy",
 			Handler:           self.copySelection,
 			Description:       self.c.Tr.CopySelectedDiffLinesToClipboard,
 			DescriptionFunc:   self.diffSelectionDescriptionText(self.c.Tr.CopySelectedDiffLinesToClipboard),
@@ -134,6 +154,8 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Main.PrevHunk),
+			CommandID:         "navigation.diff.previous-hunk",
+			Verb:              "previous-hunk",
 			Handler:           self.prevChangeBlock,
 			Description:       self.c.Tr.PrevHunk,
 			DescriptionFunc:   self.diffSelectionDescriptionText(self.c.Tr.PrevHunk),
@@ -141,6 +163,8 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Main.NextHunk),
+			CommandID:         "navigation.diff.next-hunk",
+			Verb:              "next-hunk",
 			Handler:           self.nextChangeBlock,
 			Description:       self.c.Tr.NextHunk,
 			DescriptionFunc:   self.diffSelectionDescriptionText(self.c.Tr.NextHunk),
@@ -148,6 +172,8 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Main.PrevFile),
+			CommandID:         "navigation.diff.previous-file",
+			Verb:              "previous-file",
 			Handler:           self.prevFile,
 			Description:       self.c.Tr.PrevFileInDiff,
 			DescriptionFunc:   self.diffSelectionDescriptionText(self.c.Tr.PrevFileInDiff),
@@ -155,6 +181,8 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Main.NextFile),
+			CommandID:         "navigation.diff.next-file",
+			Verb:              "next-file",
 			Handler:           self.nextFile,
 			Description:       self.c.Tr.NextFileInDiff,
 			DescriptionFunc:   self.diffSelectionDescriptionText(self.c.Tr.NextFileInDiff),
@@ -162,6 +190,8 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.JumpToFile),
+			CommandID:         "diff.jump-to-file-menu",
+			Verb:              "jump-to-file",
 			Handler:           self.openJumpToFileMenu,
 			Description:       self.c.Tr.JumpToFile,
 			DescriptionFunc:   self.diffSelectionDescriptionText(self.c.Tr.JumpToFile),
@@ -171,6 +201,8 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Commits.OpenPullRequestInBrowser),
+			CommandID:         "diff.open-line-pull-request",
+			Verb:              "open-pull-request",
 			Handler:           self.openPullRequestAtSelectedLine,
 			Description:       self.c.Tr.OpenPullRequestAtSelectedLine,
 			DescriptionFunc:   self.pullRequestDescription(self.c.Tr.OpenPullRequestAtSelectedLine),
@@ -179,6 +211,8 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		},
 		{
 			Keys:            opts.GetKeys(opts.Config.Universal.Return),
+			CommandID:       "navigation.diff.escape",
+			Verb:            "cancel",
 			Handler:         self.escape,
 			Description:     self.c.Tr.ExitFocusedMainView,
 			DescriptionFunc: self.escapeDescription,
@@ -187,15 +221,31 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		{
 			// overriding this because we want to read all of the task's output before we start searching
 			Keys:        opts.GetKeys(opts.Config.Universal.StartSearch),
+			CommandID:   "search.open",
+			Verb:        "search",
 			Handler:     self.openSearch,
 			Description: self.c.Tr.StartSearch,
 			Tag:         "navigation",
 		},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.PrevItem), Handler: self.handlePrevLine},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.NextItem), Handler: self.handleNextLine},
+		{
+			Tag:       "navigation",
+			Keys:      opts.GetKeys(opts.Config.Universal.PrevItem),
+			CommandID: "navigation.diff.previous-line",
+			Verb:      "previous-item",
+			Handler:   self.handlePrevLine,
+		},
+		{
+			Tag:       "navigation",
+			Keys:      opts.GetKeys(opts.Config.Universal.NextItem),
+			CommandID: "navigation.diff.next-line",
+			Verb:      "next-item",
+			Handler:   self.handleNextLine,
+		},
 		{
 			Tag:               "navigation",
 			Keys:              opts.GetKeys(opts.Config.Universal.RangeSelectUp),
+			CommandID:         "selection.diff.extend-up",
+			Verb:              "extend-selection-up",
 			Handler:           self.extendRangeUp,
 			Description:       self.c.Tr.RangeSelectUp,
 			DescriptionFunc:   self.diffSelectionDescriptionText(self.c.Tr.RangeSelectUp),
@@ -204,6 +254,8 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		{
 			Tag:               "navigation",
 			Keys:              opts.GetKeys(opts.Config.Universal.RangeSelectDown),
+			CommandID:         "selection.diff.extend-down",
+			Verb:              "extend-selection-down",
 			Handler:           self.extendRangeDown,
 			Description:       self.c.Tr.RangeSelectDown,
 			DescriptionFunc:   self.diffSelectionDescriptionText(self.c.Tr.RangeSelectDown),
@@ -211,6 +263,8 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		},
 		{
 			Keys:            opts.GetKeys(opts.Config.Files.CommitChanges),
+			CommandID:       "commit.create",
+			Verb:            "commit",
 			Handler:         self.workingTreeAction(self.c.Helpers().WorkingTree.HandleCommitPress),
 			Description:     self.c.Tr.Commit,
 			DescriptionFunc: self.workingTreeActionDescription(self.c.Tr.Commit),
@@ -218,29 +272,77 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		},
 		{
 			Keys:            opts.GetKeys(opts.Config.Files.CommitChangesWithoutHook),
+			CommandID:       "commit.create-without-hooks",
+			Verb:            "commit-without-hooks",
 			Handler:         self.workingTreeAction(self.c.Helpers().WorkingTree.HandleWIPCommitPress),
 			Description:     self.c.Tr.CommitChangesWithoutHook,
 			DescriptionFunc: self.workingTreeActionDescription(self.c.Tr.CommitChangesWithoutHook),
 		},
 		{
 			Keys:            opts.GetKeys(opts.Config.Files.CommitChangesWithEditor),
+			CommandID:       "commit.create-with-editor",
+			Verb:            "commit-with-editor",
 			Handler:         self.workingTreeAction(self.c.Helpers().WorkingTree.HandleCommitEditorPress),
 			Description:     self.c.Tr.CommitChangesWithEditor,
 			DescriptionFunc: self.workingTreeActionDescription(self.c.Tr.CommitChangesWithEditor),
 		},
 		{
 			Keys:            opts.GetKeys(opts.Config.Files.FindBaseCommitForFixup),
+			CommandID:       "commit.find-fixup-target",
+			Verb:            "find-fixup-target",
 			Handler:         self.workingTreeAction(self.c.Helpers().FixupHelper.HandleFindBaseCommitForFixupPress),
 			Description:     self.c.Tr.FindBaseCommitForFixup,
 			DescriptionFunc: self.workingTreeActionDescription(self.c.Tr.FindBaseCommitForFixup),
 			Tooltip:         self.c.Tr.FindBaseCommitForFixupTooltip,
 		},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.PrevPage), Handler: self.handlePrevPage, Description: self.c.Tr.PrevPage},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.NextPage), Handler: self.handleNextPage, Description: self.c.Tr.NextPage},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.GotoTop), Handler: self.handleGotoTop, Description: self.c.Tr.GotoTop},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.GotoBottom), Handler: self.handleGotoBottom, Description: self.c.Tr.GotoBottom},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.ScrollLeft), Handler: self.handleScrollLeft, Description: self.c.Tr.ScrollLeft},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.ScrollRight), Handler: self.handleScrollRight, Description: self.c.Tr.ScrollRight},
+		{
+			Tag:         "navigation",
+			Keys:        opts.GetKeys(opts.Config.Universal.PrevPage),
+			CommandID:   "navigation.page.previous",
+			Verb:        "previous-page",
+			Handler:     self.handlePrevPage,
+			Description: self.c.Tr.PrevPage,
+		},
+		{
+			Tag:         "navigation",
+			Keys:        opts.GetKeys(opts.Config.Universal.NextPage),
+			CommandID:   "navigation.page.next",
+			Verb:        "next-page",
+			Handler:     self.handleNextPage,
+			Description: self.c.Tr.NextPage,
+		},
+		{
+			Tag:         "navigation",
+			Keys:        opts.GetKeys(opts.Config.Universal.GotoTop),
+			CommandID:   "navigation.diff.first",
+			Verb:        "first-item",
+			Handler:     self.handleGotoTop,
+			Description: self.c.Tr.GotoTop,
+		},
+		{
+			Tag:         "navigation",
+			Keys:        opts.GetKeys(opts.Config.Universal.GotoBottom),
+			CommandID:   "navigation.diff.last",
+			Verb:        "last-item",
+			Handler:     self.handleGotoBottom,
+			Description: self.c.Tr.GotoBottom,
+		},
+		{
+			Tag:         "navigation",
+			Keys:        opts.GetKeys(opts.Config.Universal.ScrollLeft),
+			CommandID:   "navigation.scroll.left",
+			Verb:        "scroll-left",
+			Handler:     self.handleScrollLeft,
+			Description: self.c.Tr.ScrollLeft,
+		},
+		{
+			Tag:         "navigation",
+			Keys:        opts.GetKeys(opts.Config.Universal.ScrollRight),
+			CommandID:   "navigation.scroll.right",
+			Verb:        "scroll-right",
+			Handler:     self.handleScrollRight,
+			Description: self.c.Tr.ScrollRight,
+		},
 	}
 }
 

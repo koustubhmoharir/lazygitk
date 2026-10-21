@@ -28,18 +28,24 @@ func (self *ConfirmationController) GetKeybindings(opts types.KeybindingsOpts) [
 			Handler:         func() error { return self.context().State.OnConfirm() },
 			Description:     self.c.Tr.Confirm,
 			DisplayOnScreen: true,
+			CommandID:       "confirmation.confirm",
+			Verb:            "confirm",
 		},
 		{
 			Keys:            opts.GetKeys(opts.Config.Universal.Return),
 			Handler:         func() error { return self.context().State.OnClose() },
 			Description:     self.c.Tr.CloseCancel,
 			DisplayOnScreen: true,
+			CommandID:       "confirmation.cancel",
+			Verb:            "cancel",
 		},
 		{
 			Keys:            opts.GetKeys(opts.Config.Universal.CopyToClipboard),
 			Handler:         self.handleCopyToClipboard,
 			Description:     self.c.Tr.CopyToClipboardMenu,
 			DisplayOnScreen: true,
+			CommandID:       "clipboard.copy-confirmation",
+			Verb:            "copy",
 		},
 	}
 

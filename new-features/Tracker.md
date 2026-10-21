@@ -1,7 +1,7 @@
 # Current work
 
 Roadmap item: [2. Stable command identity and inventory](Roadmap.md#2-stable-command-identity-and-inventory).
-Status: identity design recorded; inventory review and bounded annotation underway.
+Status: metadata, inventory and palette integration implemented; final verification underway.
 
 Scope: establish stable, non-translated action identity and a complete key/action
 inventory. Preserve existing shortcuts, handlers, guards and modal behavior.
@@ -10,27 +10,10 @@ invocation paths; do not implement usage ranking or remapping in this item.
 
 ## Remaining tasks for item 2
 
-1. Inventory all binding and menu construction paths, hardcoded accelerators,
-   modal/navigation keys, platform differences, custom commands and dispatch
-   precedence. Record verb, target, availability and aliases with source
-   references under `new-features`. Finish dynamic-factory and semantic review
-   against [the identity design](command-identity-design.md); the raw AST
-   inventory alone is not semantic completeness. Raise unresolved user choices.
-2. Finish built-in metadata validation and regression coverage for identity
-   stability across locale, shortcut, selection and source-order changes.
-3. Finish annotating remaining built-in actions and aliases through bounded,
-   reviewable changes. Share identity for equivalent invocation paths, not
-   unrelated operations with the same translated label. Keep behavior ownership
-   in existing controllers/helpers and record integration points in the merge
-   guide. Check completeness mechanically where practical.
-4. Connect palette deduplication and menu/binding identity propagation. Ensure
-   commands with no shortcut remain discoverable and executable, with disabled
-   reasons intact. Add focused tests for aliases, distinct equal-label actions,
-   custom commands, unbound actions, locale/keymap stability and unchanged
-   invocation behavior. Do not introduce frequency recording yet.
-5. Review the inventory against the implemented metadata, regenerate affected
-   docs/schema/test lists, and run formatting, build, short tests, lint and
-   relevant headless scenarios. Record verification limits. Complete item 2 in
+1. Finish the final build/short-test/lint pass after inventory and palette review.
+   Generation, standalone inventory/checker tests and 14 targeted headless
+   scenarios passed, including executing unbound branch rename via the palette.
+   Record verification limits. Complete item 2 in
    the roadmap and replace this plan with item 3's task plan in the same final
    implementation commit, only after its acceptance criteria are satisfied.
 

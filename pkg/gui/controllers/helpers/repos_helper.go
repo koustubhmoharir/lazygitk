@@ -255,6 +255,8 @@ func (self *ReposHelper) recentRepoMenuItem(entry recentRepoEntry, widths recent
 	})
 
 	return &types.MenuItem{
+		CommandID: "repo.switch",
+		Verb:      "switch-repository",
 		LabelColumns: []string{
 			displayedName,
 			style.FgCyan.Sprint(displayedBranch),

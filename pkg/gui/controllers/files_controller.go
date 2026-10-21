@@ -48,6 +48,10 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 	return []*types.Binding{
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.Select),
+			CommandID:         "file.toggle-stage",
+			CommandIDFunc:     self.primaryFileCommandID,
+			Verb:              "toggle-stage",
+			VerbFunc:          self.primaryFileVerb,
 			Handler:           self.withItems(self.press),
 			GetDisabledReason: self.require(self.itemsSelected(self.canStageSelection)),
 			Description:       self.c.Tr.Stage,
@@ -56,17 +60,23 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 		},
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.OpenStatusFilter),
+			CommandID:   "file.filter-menu",
+			Verb:        "filter",
 			Handler:     self.handleStatusFilterPressed,
 			Description: self.c.Tr.FileFilter,
 		},
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.CopyFileInfoToClipboard),
+			CommandID:   "file.copy-menu",
+			Verb:        "copy",
 			Handler:     self.openCopyMenu,
 			Description: self.c.Tr.CopyToClipboardMenu,
 			OpensMenu:   true,
 		},
 		{
 			Keys:            opts.GetKeys(opts.Config.Files.CommitChanges),
+			CommandID:       "commit.create",
+			Verb:            "commit",
 			Handler:         self.c.Helpers().WorkingTree.HandleCommitPress,
 			Description:     self.c.Tr.Commit,
 			Tooltip:         self.c.Tr.CommitTooltip,
@@ -74,27 +84,37 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 		},
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.CommitChangesWithoutHook),
+			CommandID:   "commit.create-without-hooks",
+			Verb:        "commit-without-hooks",
 			Handler:     self.c.Helpers().WorkingTree.HandleWIPCommitPress,
 			Description: self.c.Tr.CommitChangesWithoutHook,
 		},
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.AmendLastCommit),
+			CommandID:   "commit.amend-head",
+			Verb:        "amend",
 			Handler:     self.handleAmendCommitPress,
 			Description: self.c.Tr.AmendLastCommit,
 		},
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.CommitChangesWithEditor),
+			CommandID:   "commit.create-with-editor",
+			Verb:        "commit-with-editor",
 			Handler:     self.c.Helpers().WorkingTree.HandleCommitEditorPress,
 			Description: self.c.Tr.CommitChangesWithEditor,
 		},
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.FindBaseCommitForFixup),
+			CommandID:   "commit.find-fixup-target",
+			Verb:        "find-fixup-target",
 			Handler:     self.c.Helpers().FixupHelper.HandleFindBaseCommitForFixupPress,
 			Description: self.c.Tr.FindBaseCommitForFixup,
 			Tooltip:     self.c.Tr.FindBaseCommitForFixupTooltip,
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.Edit),
+			CommandID:         "file.edit",
+			Verb:              "edit",
 			Handler:           self.withItems(self.edit),
 			GetDisabledReason: self.require(self.itemsSelected(self.canEditFiles)),
 			Description:       self.c.Tr.Edit,
@@ -103,6 +123,8 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.OpenFile),
+			CommandID:         "file.open",
+			Verb:              "open-file",
 			Handler:           self.Open,
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.OpenFile,
@@ -110,6 +132,8 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Files.IgnoreFile),
+			CommandID:         "file.ignore-menu",
+			Verb:              "ignore",
 			Handler:           self.withItem(self.ignoreOrExcludeMenu),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.Actions.IgnoreExcludeFile,
@@ -117,11 +141,15 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 		},
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.RefreshFiles),
+			CommandID:   "file.refresh",
+			Verb:        "refresh",
 			Handler:     self.refresh,
 			Description: self.c.Tr.RefreshFiles,
 		},
 		{
 			Keys:            opts.GetKeys(opts.Config.Files.StashAllChanges),
+			CommandID:       "stash.create",
+			Verb:            "stash",
 			Handler:         self.stash,
 			Description:     self.c.Tr.Stash,
 			Tooltip:         self.c.Tr.StashTooltip,
@@ -129,6 +157,8 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 		},
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.ViewStashOptions),
+			CommandID:   "stash.create-menu",
+			Verb:        "stash-options",
 			Handler:     self.createStashMenu,
 			Description: self.c.Tr.ViewStashOptions,
 			Tooltip:     self.c.Tr.ViewStashOptionsTooltip,
@@ -136,6 +166,8 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Files.ToggleStagedAll),
+			CommandID:         "file.toggle-stage-all",
+			Verb:              "toggle-stage-all",
 			Handler:           self.toggleStagedAll,
 			GetDisabledReason: self.require(self.anyFilesDisplayed, self.canStageAll),
 			Description:       self.c.Tr.ToggleStagedAll,
@@ -143,6 +175,8 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.GoInto),
+			CommandID:         "file.enter",
+			Verb:              "enter-file",
 			Handler:           self.enter,
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.FileEnter,
@@ -150,6 +184,8 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.Remove),
+			CommandID:         "file.discard-menu",
+			Verb:              "discard",
 			Handler:           self.withItems(self.remove),
 			GetDisabledReason: self.require(self.itemsSelected(self.canRemove)),
 			Description:       self.c.Tr.Discard,
@@ -159,12 +195,16 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 		},
 		{
 			Keys:        opts.GetKeys(opts.Config.Commits.ViewResetOptions),
+			CommandID:   "branch.reset-upstream-menu",
+			Verb:        "reset",
 			Handler:     self.createResetToUpstreamMenu,
 			Description: self.c.Tr.ViewResetToUpstreamOptions,
 			OpensMenu:   true,
 		},
 		{
 			Keys:            opts.GetKeys(opts.Config.Files.ViewResetOptions),
+			CommandID:       "worktree.discard-menu",
+			Verb:            "discard-worktree-options",
 			Handler:         self.createResetMenu,
 			Description:     self.c.Tr.Reset,
 			Tooltip:         self.c.Tr.FileResetOptionsTooltip,
@@ -173,18 +213,24 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 		},
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.ToggleTreeView),
+			CommandID:   "ui.file-tree.toggle",
+			Verb:        "toggle-file-tree",
 			Handler:     self.toggleTreeView,
 			Description: self.c.Tr.ToggleTreeView,
 			Tooltip:     self.c.Tr.ToggleTreeViewTooltip,
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.OpenDiffTool),
+			CommandID:         "diff.working-file.external",
+			Verb:              "external-diff-context",
 			Handler:           self.withItem(self.openDiffTool),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.OpenDiffTool,
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Files.OpenMergeOptions),
+			CommandID:         "conflict.options-menu",
+			Verb:              "conflict-options",
 			Handler:           self.withItems(self.openMergeConflictMenu),
 			Description:       self.c.Tr.ViewMergeConflictOptions,
 			Tooltip:           self.c.Tr.ViewMergeConflictOptionsTooltip,
@@ -194,12 +240,16 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 		},
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.Fetch),
+			CommandID:   "repo.fetch",
+			Verb:        "fetch",
 			Handler:     self.fetch,
 			Description: self.c.Tr.Fetch,
 			Tooltip:     self.c.Tr.FetchTooltip,
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Files.CollapseAll),
+			CommandID:         "ui.file-tree.collapse-all",
+			Verb:              "collapse-all",
 			Handler:           self.collapseAll,
 			Description:       self.c.Tr.CollapseAll,
 			Tooltip:           self.c.Tr.CollapseAllTooltip,
@@ -207,6 +257,8 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Files.ExpandAll),
+			CommandID:         "ui.file-tree.expand-all",
+			Verb:              "expand-all",
 			Handler:           self.expandAll,
 			Description:       self.c.Tr.ExpandAll,
 			Tooltip:           self.c.Tr.ExpandAllTooltip,
@@ -916,14 +968,18 @@ func (self *FilesController) openFileConflictMenu(file *models.File) error {
 		return nil
 	}
 	keepItem := &types.MenuItem{
-		Label: self.c.Tr.MergeConflictKeepFile,
+		Label:     self.c.Tr.MergeConflictKeepFile,
+		CommandID: "conflict.keep-file",
+		Verb:      "keep-file",
 		OnPress: func() error {
 			return handle(self.c.Git().WorkingTree.StageFile, self.c.Tr.Actions.ResolveConflictByKeepingFile)
 		},
 		Keys: menuKey('k'),
 	}
 	deleteItem := &types.MenuItem{
-		Label: self.c.Tr.MergeConflictDeleteFile,
+		Label:     self.c.Tr.MergeConflictDeleteFile,
+		CommandID: "conflict.delete-file",
+		Verb:      "delete-file",
 		OnPress: func() error {
 			return handle(self.c.Git().WorkingTree.RemoveConflictedFile, self.c.Tr.Actions.ResolveConflictByDeletingFile)
 		},
@@ -986,14 +1042,18 @@ func (self *FilesController) openSubmoduleConflictMenu(file *models.File) error 
 		Prompt: utils.ResolvePlaceholderString(self.c.Tr.SubmoduleMergeConflictDescription, map[string]string{"path": path}),
 		Items: []*types.MenuItem{
 			{
-				Label:   label(self.c.Tr.MergeConflictTakeCurrentCommit, ours),
-				OnPress: func() error { return resolve(ours, self.c.Tr.Actions.TakeCurrentSubmoduleCommit) },
-				Keys:    menuKey('c'),
+				Label:     label(self.c.Tr.MergeConflictTakeCurrentCommit, ours),
+				CommandID: "conflict.submodule.take-current",
+				Verb:      "take-current",
+				OnPress:   func() error { return resolve(ours, self.c.Tr.Actions.TakeCurrentSubmoduleCommit) },
+				Keys:      menuKey('c'),
 			},
 			{
-				Label:   label(self.c.Tr.MergeConflictTakeIncomingCommit, theirs),
-				OnPress: func() error { return resolve(theirs, self.c.Tr.Actions.TakeIncomingSubmoduleCommit) },
-				Keys:    menuKey('i'),
+				Label:     label(self.c.Tr.MergeConflictTakeIncomingCommit, theirs),
+				CommandID: "conflict.submodule.take-incoming",
+				Verb:      "take-incoming",
+				OnPress:   func() error { return resolve(theirs, self.c.Tr.Actions.TakeIncomingSubmoduleCommit) },
+				Keys:      menuKey('i'),
 			},
 		},
 	})
@@ -1153,6 +1213,8 @@ func (self *FilesController) ignoreOrExcludeMenu(node *filetree.FileNode) error 
 		Items: []*types.MenuItem{
 			{
 				LabelColumns: []string{self.c.Tr.IgnoreFile},
+				CommandID:    "file.ignore",
+				Verb:         "ignore",
 				OnPress: func() error {
 					if err := self.ignore(node); err != nil {
 						return err
@@ -1163,6 +1225,8 @@ func (self *FilesController) ignoreOrExcludeMenu(node *filetree.FileNode) error 
 			},
 			{
 				LabelColumns: []string{self.c.Tr.ExcludeFile},
+				CommandID:    "file.exclude",
+				Verb:         "exclude",
 				OnPress: func() error {
 					if err := self.exclude(node); err != nil {
 						return err
@@ -1198,19 +1262,25 @@ func (self *FilesController) handleAmendCommitPress() error {
 			HideCancel: true, // We want the cancel item first, so we add one manually
 			Items: []*types.MenuItem{
 				{
-					Label: self.c.Tr.Cancel,
+					Label:     self.c.Tr.Cancel,
+					CommandID: "menu.cancel",
+					Verb:      "cancel",
 					OnPress: func() error {
 						return nil
 					},
 				},
 				{
-					Label: self.c.Tr.AmendCommitWithConflictsContinue,
+					Label:     self.c.Tr.AmendCommitWithConflictsContinue,
+					CommandID: "operation.continue",
+					Verb:      "continue",
 					OnPress: func() error {
 						return self.c.Helpers().MergeAndRebase.ContinueRebase()
 					},
 				},
 				{
-					Label: self.c.Tr.AmendCommitWithConflictsAmend,
+					Label:     self.c.Tr.AmendCommitWithConflictsAmend,
+					CommandID: "commit.amend-head",
+					Verb:      "amend",
 					OnPress: func() error {
 						return doAmend()
 					},
@@ -1249,7 +1319,9 @@ func (self *FilesController) handleStatusFilterPressed() error {
 		Title: self.c.Tr.FilteringMenuTitle,
 		Items: []*types.MenuItem{
 			{
-				Label: self.c.Tr.FilterStagedFiles,
+				Label:     self.c.Tr.FilterStagedFiles,
+				CommandID: "file.filter-staged",
+				Verb:      "filter",
 				OnPress: func() error {
 					return self.setStatusFiltering(filetree.DisplayStaged)
 				},
@@ -1257,7 +1329,9 @@ func (self *FilesController) handleStatusFilterPressed() error {
 				Widget: types.MakeMenuRadioButton(currentFilter == filetree.DisplayStaged),
 			},
 			{
-				Label: self.c.Tr.FilterUnstagedFiles,
+				Label:     self.c.Tr.FilterUnstagedFiles,
+				CommandID: "file.filter-unstaged",
+				Verb:      "filter",
 				OnPress: func() error {
 					return self.setStatusFiltering(filetree.DisplayUnstaged)
 				},
@@ -1265,7 +1339,9 @@ func (self *FilesController) handleStatusFilterPressed() error {
 				Widget: types.MakeMenuRadioButton(currentFilter == filetree.DisplayUnstaged),
 			},
 			{
-				Label: self.c.Tr.FilterTrackedFiles,
+				Label:     self.c.Tr.FilterTrackedFiles,
+				CommandID: "file.filter-tracked",
+				Verb:      "filter",
 				OnPress: func() error {
 					return self.setStatusFiltering(filetree.DisplayTracked)
 				},
@@ -1273,7 +1349,9 @@ func (self *FilesController) handleStatusFilterPressed() error {
 				Widget: types.MakeMenuRadioButton(currentFilter == filetree.DisplayTracked),
 			},
 			{
-				Label: self.c.Tr.FilterUntrackedFiles,
+				Label:     self.c.Tr.FilterUntrackedFiles,
+				CommandID: "file.filter-untracked",
+				Verb:      "filter",
 				OnPress: func() error {
 					return self.setStatusFiltering(filetree.DisplayUntracked)
 				},
@@ -1281,7 +1359,9 @@ func (self *FilesController) handleStatusFilterPressed() error {
 				Widget: types.MakeMenuRadioButton(currentFilter == filetree.DisplayUntracked),
 			},
 			{
-				Label: self.c.Tr.NoFilter,
+				Label:     self.c.Tr.NoFilter,
+				CommandID: "file.clear-status-filter",
+				Verb:      "clear-filter",
 				OnPress: func() error {
 					return self.setStatusFiltering(filetree.DisplayAll)
 				},
@@ -1388,7 +1468,9 @@ func (self *FilesController) createStashMenu() error {
 		Title: self.c.Tr.StashOptions,
 		Items: []*types.MenuItem{
 			{
-				Label: self.c.Tr.StashAllChanges,
+				Label:     self.c.Tr.StashAllChanges,
+				CommandID: "stash.create",
+				Verb:      "stash",
 				OnPress: func() error {
 					if !self.c.Helpers().WorkingTree.IsWorkingTreeDirtyExceptSubmodules() {
 						return errors.New(self.c.Tr.NoFilesToStash)
@@ -1398,7 +1480,9 @@ func (self *FilesController) createStashMenu() error {
 				Keys: menuKey('a'),
 			},
 			{
-				Label: self.c.Tr.StashAllChangesKeepIndex,
+				Label:     self.c.Tr.StashAllChangesKeepIndex,
+				CommandID: "stash.create-keep-index",
+				Verb:      "stash",
 				OnPress: func() error {
 					if !self.c.Helpers().WorkingTree.IsWorkingTreeDirtyExceptSubmodules() {
 						return errors.New(self.c.Tr.NoFilesToStash)
@@ -1409,14 +1493,18 @@ func (self *FilesController) createStashMenu() error {
 				Keys: menuKey('i'),
 			},
 			{
-				Label: self.c.Tr.StashIncludeUntrackedChanges,
+				Label:     self.c.Tr.StashIncludeUntrackedChanges,
+				CommandID: "stash.create-include-untracked",
+				Verb:      "stash",
 				OnPress: func() error {
 					return self.handleStashSave(self.c.Git().Stash.StashIncludeUntrackedChanges, self.c.Tr.Actions.StashIncludeUntrackedChanges)
 				},
 				Keys: menuKey('U'),
 			},
 			{
-				Label: self.c.Tr.StashStagedChanges,
+				Label:     self.c.Tr.StashStagedChanges,
+				CommandID: "stash.create-staged",
+				Verb:      "stash",
 				OnPress: func() error {
 					// there must be something in staging otherwise the current implementation mucks the stash up
 					if !self.c.Helpers().WorkingTree.AnyStagedFilesExceptSubmodules() {
@@ -1427,7 +1515,9 @@ func (self *FilesController) createStashMenu() error {
 				Keys: menuKey('s'),
 			},
 			{
-				Label: self.c.Tr.StashUnstagedChanges,
+				Label:     self.c.Tr.StashUnstagedChanges,
+				CommandID: "stash.create-unstaged",
+				Verb:      "stash",
 				OnPress: func() error {
 					if !self.c.Helpers().WorkingTree.IsWorkingTreeDirtyExceptSubmodules() {
 						return errors.New(self.c.Tr.NoFilesToStash)
@@ -1476,7 +1566,9 @@ func (self *FilesController) openCopyMenu() error {
 	node := self.context().GetSelected()
 
 	copyNameItem := &types.MenuItem{
-		Label: self.c.Tr.CopyFileName,
+		Label:     self.c.Tr.CopyFileName,
+		CommandID: "clipboard.copy-file-name",
+		Verb:      "copy",
 		OnPress: func() error {
 			if err := self.c.OS().CopyToClipboard(node.Name()); err != nil {
 				return err
@@ -1488,7 +1580,9 @@ func (self *FilesController) openCopyMenu() error {
 		Keys:           menuKey('n'),
 	}
 	copyRelativePathItem := &types.MenuItem{
-		Label: self.c.Tr.CopyRelativeFilePath,
+		Label:     self.c.Tr.CopyRelativeFilePath,
+		CommandID: "clipboard.copy-file-path",
+		Verb:      "copy",
 		OnPress: func() error {
 			if err := self.c.OS().CopyToClipboard(node.GetPath()); err != nil {
 				return err
@@ -1500,7 +1594,9 @@ func (self *FilesController) openCopyMenu() error {
 		Keys:           menuKey('p'),
 	}
 	copyAbsolutePathItem := &types.MenuItem{
-		Label: self.c.Tr.CopyAbsoluteFilePath,
+		Label:     self.c.Tr.CopyAbsoluteFilePath,
+		CommandID: "clipboard.copy-absolute-file-path",
+		Verb:      "copy",
 		OnPress: func() error {
 			absPath, err := filepath.Abs(node.GetPath())
 			if err != nil {
@@ -1516,8 +1612,10 @@ func (self *FilesController) openCopyMenu() error {
 		Keys:           menuKey('P'),
 	}
 	copyFileDiffItem := &types.MenuItem{
-		Label:   self.c.Tr.CopySelectedDiff,
-		Tooltip: self.c.Tr.CopyFileDiffTooltip,
+		Label:     self.c.Tr.CopySelectedDiff,
+		CommandID: "clipboard.copy-working-file-diff",
+		Verb:      "copy",
+		Tooltip:   self.c.Tr.CopyFileDiffTooltip,
 		OnPress: func() error {
 			path := self.context().GetSelectedPath()
 			hasStaged := self.hasPathStagedChanges(node)
@@ -1542,8 +1640,10 @@ func (self *FilesController) openCopyMenu() error {
 		Keys: menuKey('s'),
 	}
 	copyAllDiff := &types.MenuItem{
-		Label:   self.c.Tr.CopyAllFilesDiff,
-		Tooltip: self.c.Tr.CopyFileDiffTooltip,
+		Label:     self.c.Tr.CopyAllFilesDiff,
+		CommandID: "clipboard.copy-working-tree-diff",
+		Verb:      "copy",
+		Tooltip:   self.c.Tr.CopyFileDiffTooltip,
 		OnPress: func() error {
 			hasStaged := self.c.Helpers().WorkingTree.AnyStagedFiles()
 			diff, err := self.c.Git().Diff.GetDiff(hasStaged, "--")
@@ -1859,7 +1959,9 @@ func (self *FilesController) remove(selectedNodes []*filetree.FileNode) error {
 
 		menuItems := []*types.MenuItem{
 			{
-				Label: self.c.Tr.SubmoduleStashAndReset,
+				Label:     self.c.Tr.SubmoduleStashAndReset,
+				CommandID: "submodule.stash-and-reset",
+				Verb:      "stash-and-reset",
 				OnPress: func() error {
 					return self.ResetSubmodule(submodule)
 				},
@@ -1877,7 +1979,9 @@ func (self *FilesController) remove(selectedNodes []*filetree.FileNode) error {
 	}
 
 	discardAllChangesItem := types.MenuItem{
-		Label: self.c.Tr.DiscardAllChanges,
+		Label:     self.c.Tr.DiscardAllChanges,
+		CommandID: "file.discard-all-changes",
+		Verb:      "discard",
 		OnPress: func() error {
 			return self.confirmDiscardingNestedRepositories(selectedNodes, func() error {
 				self.c.LogAction(self.c.Tr.Actions.DiscardAllChangesInFile)
@@ -1905,7 +2009,9 @@ func (self *FilesController) remove(selectedNodes []*filetree.FileNode) error {
 	}
 
 	discardUnstagedChangesItem := types.MenuItem{
-		Label: self.c.Tr.DiscardUnstagedChanges,
+		Label:     self.c.Tr.DiscardUnstagedChanges,
+		CommandID: "file.discard-unstaged-changes",
+		Verb:      "discard",
 		OnPress: func() error {
 			return self.confirmDiscardingNestedRepositories(selectedNodes, func() error {
 				self.c.LogAction(self.c.Tr.Actions.DiscardAllUnstagedChangesInFile)

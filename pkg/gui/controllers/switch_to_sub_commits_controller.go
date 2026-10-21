@@ -49,6 +49,8 @@ func (self *SwitchToSubCommitsController) GetKeybindings(opts types.KeybindingsO
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Keys:              opts.GetKeys(opts.Config.Universal.GoInto),
 			Description:       self.c.Tr.ViewCommits,
+			CommandID:         "navigation.open-commits",
+			Verb:              "view-commits",
 		},
 	}
 

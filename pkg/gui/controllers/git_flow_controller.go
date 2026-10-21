@@ -35,6 +35,8 @@ func NewGitFlowController(
 func (self *GitFlowController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
 		{
+			CommandID:   "branch.git-flow-menu",
+			Verb:        "git-flow-options",
 			Keys:        opts.GetKeys(opts.Config.Branches.ViewGitFlowOptions),
 			Handler:     self.withItem(self.handleCreateGitFlowMenu),
 			Description: self.c.Tr.GitFlowOptions,
@@ -73,31 +75,41 @@ func (self *GitFlowController) handleCreateGitFlowMenu(branch *models.Branch) er
 		Items: []*types.MenuItem{
 			{
 				// not localising here because it's one to one with the actual git flow commands
-				Label: fmt.Sprintf("finish branch '%s'", branch.Name),
+				Label:     fmt.Sprintf("finish branch '%s'", branch.Name),
+				CommandID: "branch.git-flow-finish",
+				Verb:      "finish-git-flow",
 				OnPress: func() error {
 					return self.gitFlowFinishBranch(branch.Name)
 				},
 				DisabledReason: self.require(self.singleItemSelected())(),
 			},
 			{
-				Label:   "start feature",
-				OnPress: startHandler("feature"),
-				Keys:    menuKey('f'),
+				Label:     "start feature",
+				CommandID: "branch.git-flow-start-feature",
+				Verb:      "start-git-flow",
+				OnPress:   startHandler("feature"),
+				Keys:      menuKey('f'),
 			},
 			{
-				Label:   "start hotfix",
-				OnPress: startHandler("hotfix"),
-				Keys:    menuKey('h'),
+				Label:     "start hotfix",
+				CommandID: "branch.git-flow-start-hotfix",
+				Verb:      "start-git-flow",
+				OnPress:   startHandler("hotfix"),
+				Keys:      menuKey('h'),
 			},
 			{
-				Label:   "start bugfix",
-				OnPress: startHandler("bugfix"),
-				Keys:    menuKey('b'),
+				Label:     "start bugfix",
+				CommandID: "branch.git-flow-start-bugfix",
+				Verb:      "start-git-flow",
+				OnPress:   startHandler("bugfix"),
+				Keys:      menuKey('b'),
 			},
 			{
-				Label:   "start release",
-				OnPress: startHandler("release"),
-				Keys:    menuKey('r'),
+				Label:     "start release",
+				CommandID: "branch.git-flow-start-release",
+				Verb:      "start-git-flow",
+				OnPress:   startHandler("release"),
+				Keys:      menuKey('r'),
 			},
 		},
 	})

@@ -29,12 +29,16 @@ func NewRenameSimilarityThresholdController(
 func (self *RenameSimilarityThresholdController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
 		{
+			CommandID:   "diff.rename-threshold.increase",
+			Verb:        "increase-rename-threshold",
 			Keys:        opts.GetKeys(opts.Config.Universal.IncreaseRenameSimilarityThreshold),
 			Handler:     self.Increase,
 			Description: self.c.Tr.IncreaseRenameSimilarityThreshold,
 			Tooltip:     self.c.Tr.IncreaseRenameSimilarityThresholdTooltip,
 		},
 		{
+			CommandID:   "diff.rename-threshold.decrease",
+			Verb:        "decrease-rename-threshold",
 			Keys:        opts.GetKeys(opts.Config.Universal.DecreaseRenameSimilarityThreshold),
 			Handler:     self.Decrease,
 			Description: self.c.Tr.DecreaseRenameSimilarityThreshold,

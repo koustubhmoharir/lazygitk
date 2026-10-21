@@ -32,6 +32,8 @@ func NewStatusController(
 func (self *StatusController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
 		{
+			CommandID:       "config.edit-menu",
+			Verb:            "edit",
 			Keys:            opts.GetKeys(opts.Config.Universal.Edit),
 			Handler:         self.editConfig,
 			Description:     self.c.Tr.EditConfig,
@@ -39,23 +41,31 @@ func (self *StatusController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			DisplayOnScreen: true,
 		},
 		{
+			CommandID:       "app.check-update",
+			Verb:            "check-update",
 			Keys:            opts.GetKeys(opts.Config.Status.CheckForUpdate),
 			Handler:         self.handleCheckForUpdate,
 			Description:     self.c.Tr.CheckForUpdate,
 			DisplayOnScreen: true,
 		},
 		{
+			CommandID:       "repo.switch-menu",
+			Verb:            "switch-repository",
 			Keys:            opts.GetKeys(opts.Config.Status.RecentRepos),
 			Handler:         self.c.Helpers().Repos.CreateRecentReposMenu,
 			Description:     self.c.Tr.SwitchRepo,
 			DisplayOnScreen: true,
 		},
 		{
+			CommandID:   "history.all-branches.next",
+			Verb:        "next-history-view",
 			Keys:        opts.GetKeys(opts.Config.Status.AllBranchesLogGraph),
 			Handler:     func() error { self.switchToOrRotateAllBranchesLogs(); return nil },
 			Description: self.c.Tr.AllBranchesLogGraph,
 		},
 		{
+			CommandID:   "history.all-branches.previous",
+			Verb:        "previous-history-view",
 			Keys:        opts.GetKeys(opts.Config.Status.AllBranchesLogGraphReverse),
 			Handler:     func() error { self.switchToOrRotateAllBranchesLogsBackward(); return nil },
 			Description: self.c.Tr.AllBranchesLogGraphReverse,

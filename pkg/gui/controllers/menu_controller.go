@@ -43,6 +43,8 @@ func (self *MenuController) GetKeybindings(opts types.KeybindingsOpts) []*types.
 			Keys:              opts.GetKeys(opts.Config.Universal.Select),
 			Handler:           self.withItem(self.press),
 			GetDisabledReason: self.require(self.singleItemSelected()),
+			CommandID:         "menu.execute",
+			Verb:              "execute",
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.ConfirmMenu),
@@ -50,12 +52,16 @@ func (self *MenuController) GetKeybindings(opts types.KeybindingsOpts) []*types.
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.Execute,
 			DisplayOnScreen:   true,
+			CommandID:         "menu.execute",
+			Verb:              "execute",
 		},
 		{
 			Keys:            opts.GetKeys(opts.Config.Universal.Return),
 			Handler:         self.close,
 			Description:     self.c.Tr.CloseCancel,
 			DisplayOnScreen: true,
+			CommandID:       "menu.cancel",
+			Verb:            "cancel",
 		},
 	}
 
@@ -82,15 +88,17 @@ func (self *MenuController) physicalKeyBindings(opts types.KeybindingsOpts) []*t
 			binding: &types.Binding{
 				Handler:           self.withItem(self.press),
 				GetDisabledReason: self.require(self.singleItemSelected()),
+				CommandID:         "menu.execute",
+				Verb:              "execute",
 			},
 		},
-		{gocui.NewKeyName(gocui.KeyEsc), opts.Config.Universal.Return, &types.Binding{Handler: self.close}},
-		{gocui.NewKeyName(gocui.KeyArrowUp), opts.Config.Universal.PrevItem, &types.Binding{Handler: self.listController.HandlePrevLine}},
-		{gocui.NewKeyName(gocui.KeyArrowDown), opts.Config.Universal.NextItem, &types.Binding{Handler: self.listController.HandleNextLine}},
-		{gocui.NewKeyName(gocui.KeyPgup), opts.Config.Universal.PrevPage, &types.Binding{Handler: self.listController.HandlePrevPage}},
-		{gocui.NewKeyName(gocui.KeyPgdn), opts.Config.Universal.NextPage, &types.Binding{Handler: self.listController.HandleNextPage}},
-		{gocui.NewKeyName(gocui.KeyHome), opts.Config.Universal.GotoTop, &types.Binding{Handler: self.listController.HandleGotoTop}},
-		{gocui.NewKeyName(gocui.KeyEnd), opts.Config.Universal.GotoBottom, &types.Binding{Handler: self.listController.HandleGotoBottom}},
+		{gocui.NewKeyName(gocui.KeyEsc), opts.Config.Universal.Return, &types.Binding{Handler: self.close, CommandID: "menu.cancel", Verb: "cancel"}},
+		{gocui.NewKeyName(gocui.KeyArrowUp), opts.Config.Universal.PrevItem, &types.Binding{Handler: self.listController.HandlePrevLine, CommandID: "navigation.list.previous", Verb: "previous-item"}},
+		{gocui.NewKeyName(gocui.KeyArrowDown), opts.Config.Universal.NextItem, &types.Binding{Handler: self.listController.HandleNextLine, CommandID: "navigation.list.next", Verb: "next-item"}},
+		{gocui.NewKeyName(gocui.KeyPgup), opts.Config.Universal.PrevPage, &types.Binding{Handler: self.listController.HandlePrevPage, CommandID: "navigation.page.previous", Verb: "previous-page"}},
+		{gocui.NewKeyName(gocui.KeyPgdn), opts.Config.Universal.NextPage, &types.Binding{Handler: self.listController.HandleNextPage, CommandID: "navigation.page.next", Verb: "next-page"}},
+		{gocui.NewKeyName(gocui.KeyHome), opts.Config.Universal.GotoTop, &types.Binding{Handler: self.listController.HandleGotoTop, CommandID: "navigation.list.first", Verb: "first-item"}},
+		{gocui.NewKeyName(gocui.KeyEnd), opts.Config.Universal.GotoBottom, &types.Binding{Handler: self.listController.HandleGotoBottom, CommandID: "navigation.list.last", Verb: "last-item"}},
 	}
 
 	bindings := []*types.Binding{}

@@ -327,22 +327,22 @@ func (self *ListController) isFocused() bool {
 
 func (self *ListController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.PrevItem), Handler: self.HandlePrevLine},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.NextItem), Handler: self.HandleNextLine},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.PrevPage), Handler: self.HandlePrevPage, Description: self.c.Tr.PrevPage},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.NextPage), Handler: self.HandleNextPage, Description: self.c.Tr.NextPage},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.GotoTop), Handler: self.HandleGotoTop, Description: self.c.Tr.GotoTop},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.GotoBottom), Handler: self.HandleGotoBottom, Description: self.c.Tr.GotoBottom},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.ScrollLeft), Handler: self.HandleScrollLeft},
-		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.ScrollRight), Handler: self.HandleScrollRight},
+		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.PrevItem), Handler: self.HandlePrevLine, CommandID: "navigation.list.previous", Verb: "previous-item"},
+		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.NextItem), Handler: self.HandleNextLine, CommandID: "navigation.list.next", Verb: "next-item"},
+		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.PrevPage), Handler: self.HandlePrevPage, Description: self.c.Tr.PrevPage, CommandID: "navigation.page.previous", Verb: "previous-page"},
+		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.NextPage), Handler: self.HandleNextPage, Description: self.c.Tr.NextPage, CommandID: "navigation.page.next", Verb: "next-page"},
+		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.GotoTop), Handler: self.HandleGotoTop, Description: self.c.Tr.GotoTop, CommandID: "navigation.list.first", Verb: "first-item"},
+		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.GotoBottom), Handler: self.HandleGotoBottom, Description: self.c.Tr.GotoBottom, CommandID: "navigation.list.last", Verb: "last-item"},
+		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.ScrollLeft), Handler: self.HandleScrollLeft, CommandID: "navigation.scroll.left", Verb: "scroll-left"},
+		{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.ScrollRight), Handler: self.HandleScrollRight, CommandID: "navigation.scroll.right", Verb: "scroll-right"},
 	}
 
 	if self.context.RangeSelectEnabled() {
 		bindings = append(bindings,
 			[]*types.Binding{
-				{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.ToggleRangeSelect), Handler: self.HandleToggleRangeSelect, Description: self.c.Tr.ToggleRangeSelect},
-				{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.RangeSelectDown), Handler: self.HandleRangeSelectDown, Description: self.c.Tr.RangeSelectDown},
-				{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.RangeSelectUp), Handler: self.HandleRangeSelectUp, Description: self.c.Tr.RangeSelectUp},
+				{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.ToggleRangeSelect), Handler: self.HandleToggleRangeSelect, Description: self.c.Tr.ToggleRangeSelect, CommandID: "selection.list.toggle-range", Verb: "toggle-range-selection"},
+				{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.RangeSelectDown), Handler: self.HandleRangeSelectDown, Description: self.c.Tr.RangeSelectDown, CommandID: "selection.list.extend-down", Verb: "extend-selection-down"},
+				{Tag: "navigation", Keys: opts.GetKeys(opts.Config.Universal.RangeSelectUp), Handler: self.HandleRangeSelectUp, Description: self.c.Tr.RangeSelectUp, CommandID: "selection.list.extend-up", Verb: "extend-selection-up"},
 			}...,
 		)
 	}

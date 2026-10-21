@@ -34,6 +34,8 @@ func NewSyncController(
 func (self *SyncController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
 		{
+			CommandID:         "branch.push-current",
+			Verb:              "push",
 			Keys:              opts.GetKeys(opts.Config.Universal.Push),
 			Handler:           opts.Guards.NoPopupPanel(self.HandlePush),
 			GetDisabledReason: self.getDisabledReasonForPushOrPull,
@@ -41,6 +43,8 @@ func (self *SyncController) GetKeybindings(opts types.KeybindingsOpts) []*types.
 			Tooltip:           self.c.Tr.PushTooltip,
 		},
 		{
+			CommandID:         "branch.pull-current",
+			Verb:              "pull",
 			Keys:              opts.GetKeys(opts.Config.Universal.Pull),
 			Handler:           opts.Guards.NoPopupPanel(self.HandlePull),
 			GetDisabledReason: self.getDisabledReasonForPushOrPull,
@@ -100,13 +104,17 @@ func (self *SyncController) push(currentBranch *models.Branch) error {
 		Prompt: self.branchesBelowPrompt(currentBranch, branchesBelow),
 		Items: []*types.MenuItem{
 			{
-				Label: utils.ResolvePlaceholderString(self.c.Tr.PushBranchAndBranchesBelow, branchName),
+				CommandID: "branch.push-current-stack",
+				Verb:      "push-stack",
+				Label:     utils.ResolvePlaceholderString(self.c.Tr.PushBranchAndBranchesBelow, branchName),
 				OnPress: func() error {
 					return self.pushWithBranchesBelow(currentBranch, branchesBelow)
 				},
 			},
 			{
-				Label: utils.ResolvePlaceholderString(self.c.Tr.PushOnlyCurrentBranch, branchName),
+				CommandID: "branch.push-current",
+				Verb:      "push",
+				Label:     utils.ResolvePlaceholderString(self.c.Tr.PushOnlyCurrentBranch, branchName),
 				OnPress: func() error {
 					return self.pushCurrentBranch(currentBranch)
 				},
@@ -251,13 +259,17 @@ func (self *SyncController) pull(currentBranch *models.Branch) error {
 		Prompt: self.branchesBelowToUpdatePrompt(currentBranch, branchesBelow),
 		Items: []*types.MenuItem{
 			{
-				Label: utils.ResolvePlaceholderString(self.c.Tr.PullBranchAndBranchesBelow, branchName),
+				CommandID: "branch.pull-current-stack",
+				Verb:      "pull-stack",
+				Label:     utils.ResolvePlaceholderString(self.c.Tr.PullBranchAndBranchesBelow, branchName),
 				OnPress: func() error {
 					return self.pullCurrentBranch(currentBranch, branchesBelow)
 				},
 			},
 			{
-				Label: utils.ResolvePlaceholderString(self.c.Tr.PullOnlyCurrentBranch, branchName),
+				CommandID: "branch.pull-current",
+				Verb:      "pull",
+				Label:     utils.ResolvePlaceholderString(self.c.Tr.PullOnlyCurrentBranch, branchName),
 				OnPress: func() error {
 					return self.pullCurrentBranch(currentBranch, nil)
 				},

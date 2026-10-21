@@ -291,13 +291,17 @@ func (self *TagsController) confirmRemoteDelete(
 func (self *TagsController) delete(tags []*models.Tag) error {
 	menuItems := []*types.MenuItem{
 		{
-			Label: lo.Ternary(len(tags) > 1, self.c.Tr.DeleteLocalTags, self.c.Tr.DeleteLocalTag),
-			Keys:  menuKey('c'),
+			CommandID: "tag.delete-local",
+			Verb:      "delete",
+			Label:     lo.Ternary(len(tags) > 1, self.c.Tr.DeleteLocalTags, self.c.Tr.DeleteLocalTag),
+			Keys:      menuKey('c'),
 			OnPress: func() error {
 				return self.localDelete(tags)
 			},
 		},
 		{
+			CommandID: "tag.delete-remote",
+			Verb:      "delete",
 			Label:     lo.Ternary(len(tags) > 1, self.c.Tr.DeleteRemoteTags, self.c.Tr.DeleteRemoteTag),
 			Keys:      menuKey('r'),
 			OpensMenu: true,
@@ -306,6 +310,8 @@ func (self *TagsController) delete(tags []*models.Tag) error {
 			},
 		},
 		{
+			CommandID: "tag.delete-local-and-remote",
+			Verb:      "delete",
 			Label:     lo.Ternary(len(tags) > 1, self.c.Tr.DeleteLocalAndRemoteTags, self.c.Tr.DeleteLocalAndRemoteTag),
 			Keys:      menuKey('b'),
 			OpensMenu: true,

@@ -224,7 +224,9 @@ func (self *CommitsHelper) OpenCommitMenu(suggestionFunc func(string) []*types.S
 
 	menuItems := []*types.MenuItem{
 		{
-			Label: self.c.Tr.OpenInEditor,
+			Label:     self.c.Tr.OpenInEditor,
+			CommandID: "commit-editor.open-external-editor",
+			Verb:      "edit-commit-message",
 			OnPress: func() error {
 				return self.SwitchToEditor()
 			},
@@ -232,14 +234,18 @@ func (self *CommitsHelper) OpenCommitMenu(suggestionFunc func(string) []*types.S
 			DisabledReason: disabledReasonForOpenInEditor,
 		},
 		{
-			Label: self.c.Tr.AddCoAuthor,
+			Label:     self.c.Tr.AddCoAuthor,
+			CommandID: "commit-editor.add-coauthor",
+			Verb:      "add-coauthor",
 			OnPress: func() error {
 				return self.addCoAuthor(suggestionFunc)
 			},
 			Keys: menuKey('c'),
 		},
 		{
-			Label: self.c.Tr.PasteCommitMessageFromClipboard,
+			Label:     self.c.Tr.PasteCommitMessageFromClipboard,
+			CommandID: "commit-editor.paste-message",
+			Verb:      "paste-message",
 			OnPress: func() error {
 				return self.pasteCommitMessageFromClipboard()
 			},

@@ -18,7 +18,9 @@ func (self *DiffingMenuAction) Call() error {
 	for _, name := range names {
 		menuItems = append(menuItems, []*types.MenuItem{
 			{
-				Label: fmt.Sprintf("%s %s", self.c.Tr.Diff, name),
+				Label:     fmt.Sprintf("%s %s", self.c.Tr.Diff, name),
+				CommandID: "diff.set-reference",
+				Verb:      "set-diff-reference",
 				OnPress: func() error {
 					self.c.Modes().Diffing.Ref = name
 					// can scope this down based on current view but too lazy right now
@@ -31,7 +33,9 @@ func (self *DiffingMenuAction) Call() error {
 
 	menuItems = append(menuItems, []*types.MenuItem{
 		{
-			Label: self.c.Tr.EnterRefToDiff,
+			Label:     self.c.Tr.EnterRefToDiff,
+			CommandID: "diff.prompt-reference",
+			Verb:      "set-diff-reference",
 			OnPress: func() error {
 				self.c.Prompt(types.PromptOpts{
 					Title:               self.c.Tr.EnterRefName,
@@ -51,7 +55,9 @@ func (self *DiffingMenuAction) Call() error {
 	if self.c.Modes().Diffing.Active() {
 		menuItems = append(menuItems, []*types.MenuItem{
 			{
-				Label: self.c.Tr.SwapDiff,
+				Label:     self.c.Tr.SwapDiff,
+				CommandID: "diff.swap-endpoints",
+				Verb:      "swap-diff",
 				OnPress: func() error {
 					self.c.Modes().Diffing.Reverse = !self.c.Modes().Diffing.Reverse
 					self.c.Refresh(types.RefreshOptions{})
@@ -59,7 +65,9 @@ func (self *DiffingMenuAction) Call() error {
 				},
 			},
 			{
-				Label: self.c.Tr.ExitDiffMode,
+				Label:     self.c.Tr.ExitDiffMode,
+				CommandID: "diff.exit-mode",
+				Verb:      "exit-diff-mode",
 				OnPress: func() error {
 					self.c.Modes().Diffing = diffing.New()
 					self.c.Refresh(types.RefreshOptions{})

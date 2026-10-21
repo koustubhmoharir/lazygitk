@@ -4,8 +4,8 @@ Current scope: roadmap item 2. This is a preparatory identity change, not the
 new keymap or usage ranking. Mechanical source evidence is in
 [inventory/inventory.json](inventory/inventory.json), regenerated with
 `go run new-features/inventory/generate.go`. Factory locations are audit
-references, never persistent IDs. The static inventory still needs semantic
-annotation and dynamic-factory review before it is considered complete.
+references, never persistent IDs. The semantic review below supplements the
+static inventory; source expressions are evidence, not inferred action names.
 
 ## Existing invocation paths
 
@@ -25,9 +25,10 @@ annotation and dynamic-factory review before it is considered complete.
 - `Gui.callKeybindingHandler` checks disabled reasons before invoking a binding.
   The palette calls this same gateway, preserving guards and error behavior.
 - `OptionsMenuAction` gathers local/global/navigation bindings, including
-  bindings without shortcut keys, but currently deduplicates by translated
-  description. Different commands with equal labels can disappear. Metadata
-  will replace description-based deduplication, not controller ownership.
+  bindings without shortcut keys. The fork deduplicates by resolved operation
+  ID, combines alias shortcuts and retains distinct equal-label commands.
+  Local aliases retain precedence over global aliases; copies prevent palette
+  construction from mutating installed bindings. Controller ownership stays intact.
 - Menu accelerators are converted to bindings by `MenuContext.GetKeybindings`.
   Enter and accelerators reach `MenuContext.OnMenuPress`, which checks disabled
   reasons, pops the menu and invokes `OnPress`. Filtering menus deliberately do
@@ -45,6 +46,18 @@ addresses, selected hashes, ref names, source locations or list positions.
 Built-in IDs use lower-case dotted names; hyphens separate words within a part.
 Equivalent shortcut/menu paths use the same ID. A verb describes a shared
 operation on its target, not a reason to merge distinct command identities.
+
+Mode-dependent bindings can supply `CommandIDFunc` and `VerbFunc`; consumers
+use `GetCommandID`/`GetVerb` to resolve them when invoked, not when shortcuts
+were first registered. These callbacks must be cheap, make no Git calls and
+return fixed operation identifiers rather than hashes/names of selected data.
+Static fields remain useful generic identities for off-stack tooling.
+
+The main diff selection demonstrates why this matters: working-tree lines stage
+or unstage depending on pane side; historical lines toggle patch membership,
+and the custom-patch pane removes selected patch lines. Discarding working-tree
+lines differs from removing lines from a commit. The identity resolver describes
+these existing operations without changing their handlers or disabled guards.
 
 Examples that the annotation review must preserve:
 
@@ -70,6 +83,42 @@ their existing handlers and disabled reasons. No counters or persistence are
 introduced in this item. Later usage instrumentation must avoid counting both
 a palette/menu wrapper and its underlying binding, and must not count generic
 Enter/navigation or parameter-choice prompts as independent commands.
+`MenuItem.Binding` explicitly identifies palette proxies. A successful handler
+return is not necessarily acceptance: some handlers open conditional prompts or
+menus even without `OpensMenu`. Usage instrumentation must follow acceptance,
+not assume that every nil return means a completed leaf action.
+
+## Dynamic and low-level factory review
+
+- All 312 binding and 176 menu factories have been reviewed. Five intentionally
+  lack independent action IDs: the two worktree-location choices, the two custom
+  prompt-option factories and the no-applicable-custom-commands placeholder.
+  The former four supply parameters to their parent action; the last does nothing.
+- Branch reset and operation-resume factories concatenate only finite internal
+  enums (`soft`/`mixed`/`hard`, `continue`/`abort`/`skip`), never translated text.
+  Dynamic checkout/recent-repository/diff-file rows share an operation ID but
+  retain separate row identity and selected arguments. Regular merge preserves
+  one ID even when its label changes with Git config; explicit `--ff` and
+  `--no-ff` variants are distinct. `--ff` is not `--ff-only`.
+- Panel-jump rows are parameterized navigation, not different Git actions. Their
+  IDs do not include positional shortcut numbers. The fork retains definitions
+  for panels with no assigned key, preserving the original positional mapping
+  and hidden shortcut-only presentation. Next/previous panel navigation remains
+  available in the palette; this item does not introduce a panel chooser.
+- The primary file binding resolves to conflict options for a single dialog-only
+  conflict, otherwise toggle staging. The resolver shares the existing predicate
+  and never incorporates a selected path or file contents into an ID.
+- The three low-level registration calls are GUI binding installation, per-key
+  gocui installation and editable word-motion configuration. No alternate Git
+  action registry exists there. `gocui/keybinding.go` owns view/parent/editor/
+  global routing; `gocui/edit.go` owns text editing (including Ctrl word/delete/
+  cursor/paste behavior). Text editing is not a case-insensitive core command.
+- Hardcoded dispatch leads include search-match/escape interception, editor
+  keys, physical menu safety keys, mouse handling and normal non-input enums.
+  The raw case list deliberately retains non-key cases. Menu `essentialKeys`
+  protects confirm/cancel/navigation from accelerators; printable filtering keys
+  type text rather than execute displayed shortcut reminders. These paths and
+  platform modifier defaults are inventoried without changing their behavior.
 
 TortoiseGit provides a useful precedent: its
 [log-menu implementation](https://raw.githubusercontent.com/TortoiseGit/TortoiseGit/master/src/TortoiseProc/GitLogListBase.cpp)

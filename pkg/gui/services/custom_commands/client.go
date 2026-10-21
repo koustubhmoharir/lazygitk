@@ -105,6 +105,7 @@ func (self *Client) showCustomCommandsMenu(customCommand config.CustomCommand) e
 	}
 
 	if len(menuItems) == 0 {
+		// Informational placeholder, not a command with its own action identity.
 		menuItems = append(menuItems, &types.MenuItem{
 			Label:   self.c.Tr.NoApplicableCommandsInThisContext,
 			OnPress: func() error { return nil },

@@ -1848,6 +1848,8 @@ func (self *RefreshHelper) promptForBaseGithubRepo(githubRemotes []githubRemoteI
 	menuItems := lo.Map(githubRemotes, func(info githubRemoteInfo, _ int) *types.MenuItem {
 		return &types.MenuItem{
 			LabelColumns: []string{info.remote.Name, style.FgCyan.Sprint(info.serviceInfo.RepoName)},
+			CommandID:    "config.set-base-github-remote",
+			Verb:         "set-base-remote",
 			OnPress: func() error {
 				return self.c.WithWaitingStatus(self.c.Tr.FetchingPullRequests, func(gocui.Task) error {
 					if err := self.c.Git().GitHub.SetConfiguredBaseRemoteName(info.remote.Name); err != nil {

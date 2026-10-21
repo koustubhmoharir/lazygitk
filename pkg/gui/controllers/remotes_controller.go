@@ -45,6 +45,8 @@ func NewRemotesController(
 func (self *RemotesController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
 		{
+			CommandID:         "remote.view-branches",
+			Verb:              "view-branches",
 			Keys:              opts.GetKeys(opts.Config.Universal.GoInto),
 			Handler:           self.withItem(self.enter),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -52,12 +54,16 @@ func (self *RemotesController) GetKeybindings(opts types.KeybindingsOpts) []*typ
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:       "remote.create",
+			Verb:            "create",
 			Keys:            opts.GetKeys(opts.Config.Universal.New),
 			Handler:         self.add,
 			Description:     self.c.Tr.NewRemote,
 			DisplayOnScreen: true,
 		},
 		{
+			CommandID:         "remote.delete",
+			Verb:              "delete",
 			Keys:              opts.GetKeys(opts.Config.Universal.Remove),
 			Handler:           self.withItem(self.remove),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -66,6 +72,8 @@ func (self *RemotesController) GetKeybindings(opts types.KeybindingsOpts) []*typ
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "remote.edit-url",
+			Verb:              "edit",
 			Keys:              opts.GetKeys(opts.Config.Universal.Edit),
 			Handler:           self.withItem(self.edit),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -74,6 +82,8 @@ func (self *RemotesController) GetKeybindings(opts types.KeybindingsOpts) []*typ
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "remote.fetch",
+			Verb:              "fetch",
 			Keys:              opts.GetKeys(opts.Config.Branches.FetchRemote),
 			Handler:           self.withItem(self.fetch),
 			GetDisabledReason: self.require(self.singleItemSelected()),
@@ -82,6 +92,8 @@ func (self *RemotesController) GetKeybindings(opts types.KeybindingsOpts) []*typ
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "remote.add-fork",
+			Verb:              "create-fork-remote",
 			Keys:              opts.GetKeys(opts.Config.Branches.AddForkRemote),
 			Handler:           self.addFork,
 			GetDisabledReason: self.hasOriginRemote(),

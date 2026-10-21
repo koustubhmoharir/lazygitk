@@ -276,6 +276,8 @@ func (self *BranchesController) viewUpstreamOptions(selectedBranch *models.Branc
 		self.c.Tr.UpstreamGenericName)
 
 	viewDivergenceItem := &types.MenuItem{
+		CommandID:    "branch.view-upstream-divergence",
+		Verb:         "view-divergence",
 		LabelColumns: []string{self.c.Tr.ViewDivergenceFromUpstream},
 		OnPress: func() error {
 			branch := self.context().GetSelected()
@@ -308,6 +310,8 @@ func (self *BranchesController) viewUpstreamOptions(selectedBranch *models.Branc
 		map[string]string{"baseBranch": shortBaseBranchName},
 	)
 	viewDivergenceFromBaseBranchItem := &types.MenuItem{
+		CommandID:    "branch.view-base-divergence",
+		Verb:         "view-divergence",
 		LabelColumns: []string{label},
 		Keys:         menuKey('b'),
 		OnPress: func() error {
@@ -328,6 +332,8 @@ func (self *BranchesController) viewUpstreamOptions(selectedBranch *models.Branc
 	}
 
 	unsetUpstreamItem := &types.MenuItem{
+		CommandID:    "branch.unset-upstream",
+		Verb:         "unset-upstream",
 		LabelColumns: []string{self.c.Tr.UnsetUpstream},
 		OnPress: func() error {
 			if err := self.c.Git().Branch.UnsetUpstream(selectedBranch.Name); err != nil {
@@ -345,6 +351,8 @@ func (self *BranchesController) viewUpstreamOptions(selectedBranch *models.Branc
 	}
 
 	setUpstreamItem := &types.MenuItem{
+		CommandID:    "branch.set-upstream",
+		Verb:         "set-upstream",
 		LabelColumns: []string{self.c.Tr.SetUpstream},
 		OnPress: func() error {
 			return self.c.Helpers().Upstream.PromptForUpstreamWithoutInitialContent(selectedBranch, func(upstream string) error {
@@ -387,6 +395,8 @@ func (self *BranchesController) viewUpstreamOptions(selectedBranch *models.Branc
 	)
 
 	upstreamResetItem := &types.MenuItem{
+		CommandID:    "branch.reset-selected-upstream-menu",
+		Verb:         "reset",
 		LabelColumns: []string{upstreamResetOptions},
 		OpensMenu:    true,
 		OnPress: func() error {
@@ -402,6 +412,8 @@ func (self *BranchesController) viewUpstreamOptions(selectedBranch *models.Branc
 	}
 
 	upstreamRebaseItem := &types.MenuItem{
+		CommandID:    "branch.rebase-current-onto-selected-upstream",
+		Verb:         "rebase",
 		LabelColumns: []string{upstreamRebaseOptions},
 		OpensMenu:    true,
 		OnPress: func() error {
@@ -633,8 +645,10 @@ func (self *BranchesController) delete(branches []*models.Branch) error {
 	})
 
 	localDeleteItem := &types.MenuItem{
-		Label: lo.Ternary(len(branches) > 1, self.c.Tr.DeleteLocalBranches, self.c.Tr.DeleteLocalBranch),
-		Keys:  menuKey('c'),
+		CommandID: "branch.delete-local",
+		Verb:      "delete",
+		Label:     lo.Ternary(len(branches) > 1, self.c.Tr.DeleteLocalBranches, self.c.Tr.DeleteLocalBranch),
+		Keys:      menuKey('c'),
 		OnPress: func() error {
 			return self.localDelete(branches)
 		},
@@ -644,8 +658,10 @@ func (self *BranchesController) delete(branches []*models.Branch) error {
 	}
 
 	remoteDeleteItem := &types.MenuItem{
-		Label: lo.Ternary(len(branches) > 1, self.c.Tr.DeleteRemoteBranches, self.c.Tr.DeleteRemoteBranch),
-		Keys:  menuKey('r'),
+		CommandID: "remote-branch.delete",
+		Verb:      "delete",
+		Label:     lo.Ternary(len(branches) > 1, self.c.Tr.DeleteRemoteBranches, self.c.Tr.DeleteRemoteBranch),
+		Keys:      menuKey('r'),
 		OnPress: func() error {
 			return self.remoteDelete(branches)
 		},
@@ -657,8 +673,10 @@ func (self *BranchesController) delete(branches []*models.Branch) error {
 	}
 
 	deleteBothItem := &types.MenuItem{
-		Label: lo.Ternary(len(branches) > 1, self.c.Tr.DeleteLocalAndRemoteBranches, self.c.Tr.DeleteLocalAndRemoteBranch),
-		Keys:  menuKey('b'),
+		CommandID: "branch.delete-local-and-remote",
+		Verb:      "delete",
+		Label:     lo.Ternary(len(branches) > 1, self.c.Tr.DeleteLocalAndRemoteBranches, self.c.Tr.DeleteLocalAndRemoteBranch),
+		Keys:      menuKey('b'),
 		OnPress: func() error {
 			return self.localAndRemoteDelete(branches)
 		},
@@ -801,12 +819,16 @@ func (self *BranchesController) createPullRequestMenu(selectedBranch *models.Bra
 	menuItemsForBranch := func(branch *models.Branch) []*types.MenuItem {
 		return []*types.MenuItem{
 			{
+				CommandID:    "branch.create-pull-request",
+				Verb:         "create-pull-request",
 				LabelColumns: fromToLabelColumns(branch.Name, self.c.Tr.DefaultBranch),
 				OnPress: func() error {
 					return self.handleCreatePullRequest(branch)
 				},
 			},
 			{
+				CommandID:    "branch.create-pull-request-to-chosen-target",
+				Verb:         "create-pull-request",
 				LabelColumns: fromToLabelColumns(branch.Name, self.c.Tr.SelectBranch),
 				OnPress: func() error {
 					if !branch.IsTrackingRemote() {
@@ -838,6 +860,8 @@ func (self *BranchesController) createPullRequestMenu(selectedBranch *models.Bra
 	if selectedBranch != checkedOutBranch {
 		menuItems = append(menuItems,
 			&types.MenuItem{
+				CommandID:    "branch.create-pull-request-current-to-selected",
+				Verb:         "create-pull-request",
 				LabelColumns: fromToLabelColumns(checkedOutBranch.Name, selectedBranch.Name),
 				OnPress: func() error {
 					if !checkedOutBranch.IsTrackingRemote() || !selectedBranch.IsTrackingRemote() {

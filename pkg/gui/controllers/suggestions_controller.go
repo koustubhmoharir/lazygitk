@@ -35,20 +35,28 @@ func (self *SuggestionsController) GetKeybindings(opts types.KeybindingsOpts) []
 			Keys:              opts.GetKeys(opts.Config.Universal.ConfirmSuggestion),
 			Handler:           func() error { return self.context().State.OnConfirm() },
 			GetDisabledReason: self.require(self.singleItemSelected()),
+			CommandID:         "suggestion.accept",
+			Verb:              "accept-suggestion",
 		},
 		{
-			Keys:    opts.GetKeys(opts.Config.Universal.Return),
-			Handler: func() error { return self.context().State.OnClose() },
+			Keys:      opts.GetKeys(opts.Config.Universal.Return),
+			Handler:   func() error { return self.context().State.OnClose() },
+			CommandID: "suggestion.cancel",
+			Verb:      "cancel",
 		},
 		{
-			Keys:    opts.GetKeys(opts.Config.Universal.TogglePanel),
-			Handler: self.switchToPrompt,
+			Keys:      opts.GetKeys(opts.Config.Universal.TogglePanel),
+			Handler:   self.switchToPrompt,
+			CommandID: "prompt.focus-input",
+			Verb:      "focus-prompt",
 		},
 		{
 			Keys: opts.GetKeys(opts.Config.Universal.Remove),
 			Handler: func() error {
 				return self.context().State.OnDeleteSuggestion()
 			},
+			CommandID: "suggestion.delete",
+			Verb:      "delete",
 		},
 		{
 			Keys: opts.GetKeys(opts.Config.Universal.Edit),
@@ -64,6 +72,8 @@ func (self *SuggestionsController) GetKeybindings(opts types.KeybindingsOpts) []
 				}
 				return nil
 			},
+			CommandID: "suggestion.edit",
+			Verb:      "edit",
 		},
 	}
 

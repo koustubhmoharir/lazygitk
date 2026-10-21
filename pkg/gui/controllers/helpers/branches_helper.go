@@ -209,8 +209,10 @@ func (self *BranchesHelper) promptWorktreeBranchDelete(
 		Title: title,
 		Items: []*types.MenuItem{
 			{
-				Label: removeLabel,
-				Keys:  menuKey('r'),
+				Label:     removeLabel,
+				CommandID: "worktree.remove-for-branch-delete",
+				Verb:      "delete-branch-and-worktree",
+				Keys:      menuKey('r'),
 				OnPress: func() error {
 					return self.confirmForceIfUnmerged([]*models.Branch{branch}, func() error {
 						return self.worktreeHelper.Remove(worktree, deleteBranches)
@@ -218,9 +220,11 @@ func (self *BranchesHelper) promptWorktreeBranchDelete(
 				},
 			},
 			{
-				Label:   detachLabel,
-				Keys:    menuKey('d'),
-				Tooltip: self.c.Tr.DetachWorktreeTooltip,
+				Label:     detachLabel,
+				CommandID: "worktree.detach-for-branch-delete",
+				Verb:      "delete-branch-detach-worktree",
+				Keys:      menuKey('d'),
+				Tooltip:   self.c.Tr.DetachWorktreeTooltip,
 				OnPress: func() error {
 					return self.confirmForceIfUnmerged([]*models.Branch{branch}, func() error {
 						return self.worktreeHelper.Detach(worktree, deleteBranches)
@@ -243,8 +247,10 @@ func (self *BranchesHelper) RemoveWorktreeMenu(worktree *models.Worktree) error 
 	}
 
 	removeWorktreeItem := &types.MenuItem{
-		Label: self.c.Tr.RemoveWorktree,
-		Keys:  menuKey('w'),
+		Label:     self.c.Tr.RemoveWorktree,
+		CommandID: "worktree.delete",
+		Verb:      "delete-worktree",
+		Keys:      menuKey('w'),
 		OnPress: func() error {
 			return self.worktreeHelper.Remove(worktree, nil)
 		},
@@ -257,8 +263,10 @@ func (self *BranchesHelper) RemoveWorktreeMenu(worktree *models.Worktree) error 
 	detachedReason := &types.DisabledReason{Text: self.c.Tr.WorktreeNotCheckedOutOnBranch}
 
 	removeWorktreeAndBranchItem := &types.MenuItem{
-		Label: self.c.Tr.RemoveWorktreeAndDeleteBranch,
-		Keys:  menuKey('b'),
+		Label:     self.c.Tr.RemoveWorktreeAndDeleteBranch,
+		CommandID: "worktree.delete-and-local-branch",
+		Verb:      "delete-worktree-and-branch",
+		Keys:      menuKey('b'),
 		OnPress: func() error {
 			return self.RemoveWorktreeAndDeleteBranch(worktree, branch)
 		},
@@ -268,8 +276,10 @@ func (self *BranchesHelper) RemoveWorktreeMenu(worktree *models.Worktree) error 
 	}
 
 	removeWorktreeAndBothBranchesItem := &types.MenuItem{
-		Label: self.c.Tr.RemoveWorktreeAndDeleteBothBranches,
-		Keys:  menuKey('r'),
+		Label:     self.c.Tr.RemoveWorktreeAndDeleteBothBranches,
+		CommandID: "worktree.delete-and-branches",
+		Verb:      "delete-worktree-and-branches",
+		Keys:      menuKey('r'),
 		OnPress: func() error {
 			return self.RemoveWorktreeAndDeleteBothBranches(worktree, branch)
 		},

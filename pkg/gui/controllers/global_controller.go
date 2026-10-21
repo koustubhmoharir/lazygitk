@@ -25,6 +25,8 @@ func NewGlobalController(
 func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	return []*types.Binding{
 		{
+			CommandID:   "app.shell-command",
+			Verb:        "run-shell-command",
 			Keys:        opts.GetKeys(opts.Config.Universal.ExecuteShellCommand),
 			Handler:     self.shellCommand,
 			Description: self.c.Tr.ExecuteShellCommand,
@@ -32,12 +34,16 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			OpensMenu:   true,
 		},
 		{
+			CommandID:   "patch.options-menu",
+			Verb:        "patch-options",
 			Keys:        opts.GetKeys(opts.Config.Universal.CreatePatchOptionsMenu),
 			Handler:     self.createCustomPatchOptionsMenu,
 			Description: self.c.Tr.ViewPatchOptions,
 			OpensMenu:   true,
 		},
 		{
+			CommandID:         "branch.merge-rebase-menu",
+			Verb:              "merge-rebase-options",
 			Keys:              opts.GetKeys(opts.Config.Universal.CreateRebaseOptionsMenu),
 			Handler:           opts.Guards.NoPopupPanel(self.c.Helpers().MergeAndRebase.CreateRebaseOptionsMenu),
 			Description:       self.c.Tr.ViewMergeRebaseOptions,
@@ -46,22 +52,30 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			GetDisabledReason: self.canShowRebaseOptions,
 		},
 		{
+			CommandID:   "app.refresh",
+			Verb:        "refresh",
 			Keys:        opts.GetKeys(opts.Config.Universal.Refresh),
 			Handler:     opts.Guards.NoPopupPanel(self.refresh),
 			Description: self.c.Tr.Refresh,
 			Tooltip:     self.c.Tr.RefreshTooltip,
 		},
 		{
+			CommandID:   "ui.screen.next-mode",
+			Verb:        "next-screen-mode",
 			Keys:        opts.GetKeys(opts.Config.Universal.NextScreenMode),
 			Handler:     opts.Guards.NoPopupPanel(self.nextScreenMode),
 			Description: self.c.Tr.NextScreenMode,
 		},
 		{
+			CommandID:   "ui.screen.previous-mode",
+			Verb:        "previous-screen-mode",
 			Keys:        opts.GetKeys(opts.Config.Universal.PrevScreenMode),
 			Handler:     opts.Guards.NoPopupPanel(self.prevScreenMode),
 			Description: self.c.Tr.PrevScreenMode,
 		},
 		{
+			CommandID:         "diff.renderer.next",
+			Verb:              "next-diff-renderer",
 			Keys:              opts.GetKeys(opts.Config.Universal.CycleDiffRenderers),
 			Handler:           opts.Guards.NoPopupPanel(self.cycleDiffRenderers),
 			GetDisabledReason: self.canCycleDiffRenderers,
@@ -69,6 +83,8 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			Tooltip:           self.c.Tr.CycleDiffRenderersTooltip,
 		},
 		{
+			CommandID:         "diff.renderer.previous",
+			Verb:              "previous-diff-renderer",
 			Keys:              opts.GetKeys(opts.Config.Universal.CycleDiffRenderersReverse),
 			Handler:           opts.Guards.NoPopupPanel(self.cycleDiffRenderersBackward),
 			GetDisabledReason: self.canCycleDiffRenderers,
@@ -76,6 +92,8 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			Tooltip:           self.c.Tr.CycleDiffRenderersReverseTooltip,
 		},
 		{
+			CommandID:       "diff.jump-to-file-menu",
+			Verb:            "jump-to-file",
 			Keys:            opts.GetKeys(opts.Config.Universal.JumpToFile),
 			Handler:         opts.Guards.NoPopupPanel(self.jumpToFileInDiff),
 			Description:     self.c.Tr.JumpToFileInDiff,
@@ -84,6 +102,8 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			OpensMenu:       true,
 		},
 		{
+			CommandID:         "app.cancel",
+			Verb:              "cancel",
 			Keys:              opts.GetKeys(opts.Config.Universal.Return),
 			Handler:           self.escape,
 			Description:       self.c.Tr.Cancel,
@@ -92,6 +112,8 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:         "app.command-palette",
+			Verb:              "show-commands",
 			ViewName:          "",
 			Keys:              opts.GetKeys(opts.Config.Universal.OptionMenu),
 			Description:       self.c.Tr.OpenKeybindingsMenu,
@@ -102,6 +124,8 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			DisplayOnScreen:   true,
 		},
 		{
+			CommandID:   "filter.options-menu",
+			Verb:        "filter-options",
 			ViewName:    "",
 			Keys:        opts.GetKeys(opts.Config.Universal.FilteringMenu),
 			Handler:     opts.Guards.NoPopupPanel(self.createFilteringMenu),
@@ -110,6 +134,8 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			OpensMenu:   true,
 		},
 		{
+			CommandID:   "diff.options-menu",
+			Verb:        "diff-options",
 			Keys:        opts.GetKeys(opts.Config.Universal.DiffingMenu),
 			Handler:     opts.Guards.NoPopupPanel(self.createDiffingMenu),
 			Description: self.c.Tr.ViewDiffingOptions,
@@ -117,15 +143,21 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			OpensMenu:   true,
 		},
 		{
+			CommandID:   "app.quit",
+			Verb:        "quit",
 			Keys:        opts.GetKeys(opts.Config.Universal.Quit),
 			Description: self.c.Tr.Quit,
 			Handler:     self.quit,
 		},
 		{
-			Keys:    opts.GetKeys(opts.Config.Universal.QuitWithoutChangingDirectory),
-			Handler: self.quitWithoutChangingDirectory,
+			CommandID: "app.quit-without-cd",
+			Verb:      "quit-without-changing-directory",
+			Keys:      opts.GetKeys(opts.Config.Universal.QuitWithoutChangingDirectory),
+			Handler:   self.quitWithoutChangingDirectory,
 		},
 		{
+			CommandID:   "app.suspend",
+			Verb:        "suspend",
 			Keys:        opts.GetKeys(opts.Config.Universal.SuspendApp),
 			Handler:     self.c.Helpers().SuspendResume.SuspendApp,
 			Description: self.c.Tr.SuspendApp,
@@ -139,12 +171,16 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			},
 		},
 		{
+			CommandID:   "diff.toggle-whitespace",
+			Verb:        "toggle-whitespace",
 			Keys:        opts.GetKeys(opts.Config.Universal.ToggleWhitespaceInDiffView),
 			Handler:     self.toggleWhitespace,
 			Description: self.c.Tr.ToggleWhitespaceInDiffView,
 			Tooltip:     self.c.Tr.ToggleWhitespaceInDiffViewTooltip,
 		},
 		{
+			CommandID:   "config.edit-menu",
+			Verb:        "edit",
 			Keys:        opts.GetKeys(opts.Config.Universal.EditConfig),
 			Handler:     self.editConfig,
 			Description: self.c.Tr.EditConfig,

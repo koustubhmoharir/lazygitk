@@ -11,8 +11,14 @@ import (
 type Binding struct {
 	// CommandID is the stable, non-translated identity of this action.
 	CommandID string
+	// CommandIDFunc resolves mode-dependent identity at invocation time. Keep it
+	// cheap and independent of keys, translations and selected object values.
+	// CommandID remains the generic identity for static tooling.
+	CommandIDFunc func() string
 	// Verb describes the action's semantics independently of its target.
-	Verb        string
+	Verb string
+	// VerbFunc resolves the semantic verb alongside CommandIDFunc when needed.
+	VerbFunc    func() string
 	ViewName    string
 	Handler     func() error
 	Keys        []gocui.Key

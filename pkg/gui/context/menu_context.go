@@ -264,8 +264,13 @@ func (self *MenuContext) GetKeybindings(opts types.KeybindingsOpts) []*types.Bin
 
 	menuItemBindings := lo.Map(menuItemsWithKeys, func(item *types.MenuItem, _ int) *types.Binding {
 		return &types.Binding{
-			Keys:    item.Keys,
-			Handler: func() error { return self.OnMenuPress(item) },
+			// Binding identity follows the item; disabled checks and row identity stay unchanged.
+			Keys:          item.Keys,
+			CommandID:     item.CommandID,
+			CommandIDFunc: item.GetCommandID,
+			Verb:          item.Verb,
+			VerbFunc:      item.GetVerb,
+			Handler:       func() error { return self.OnMenuPress(item) },
 		}
 	})
 

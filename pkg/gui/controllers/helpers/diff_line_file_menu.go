@@ -52,7 +52,9 @@ func (self *DiffLineHelper) showJumpToFileMenu(pane types.DiffPaneContext, title
 			label = path
 		}
 		return &types.MenuItem{
-			Label: label,
+			Label:     label,
+			CommandID: "navigation.diff.jump-file",
+			Verb:      "jump-to-file",
 			OnPress: func() error {
 				if target, ok := self.StartOfFileInDiff(view, path); ok {
 					self.PlaceNavigationTarget(pane, target, true)

@@ -31,12 +31,16 @@ func (self *PromptController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			Handler:         func() error { return self.context().State.OnConfirm() },
 			Description:     self.c.Tr.Confirm,
 			DisplayOnScreen: true,
+			CommandID:       "prompt.confirm",
+			Verb:            "confirm",
 		},
 		{
 			Keys:            opts.GetKeys(opts.Config.Universal.Return),
 			Handler:         func() error { return self.context().State.OnClose() },
 			Description:     self.c.Tr.CloseCancel,
 			DisplayOnScreen: true,
+			CommandID:       "prompt.cancel",
+			Verb:            "cancel",
 		},
 		{
 			Keys: opts.GetKeys(opts.Config.Universal.TogglePanel),
@@ -46,6 +50,8 @@ func (self *PromptController) GetKeybindings(opts types.KeybindingsOpts) []*type
 				}
 				return nil
 			},
+			CommandID: "prompt.focus-suggestions",
+			Verb:      "focus-suggestions",
 		},
 	}
 

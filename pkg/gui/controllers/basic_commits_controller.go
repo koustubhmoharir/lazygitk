@@ -180,7 +180,9 @@ func (self *BasicCommitsController) copyCommitAttribute(commit *models.Commit) e
 	}
 
 	commitTagsItem := &types.MenuItem{
-		Label: self.c.Tr.CommitTags,
+		CommandID: "clipboard.copy-commit-tags",
+		Verb:      "copy",
+		Label:     self.c.Tr.CommitTags,
 		OnPress: func() error {
 			return self.copyCommitTagsToClipboard(commit)
 		},
@@ -193,26 +195,34 @@ func (self *BasicCommitsController) copyCommitAttribute(commit *models.Commit) e
 
 	items := []*types.MenuItem{
 		{
-			Label: self.c.Tr.CommitHash,
+			CommandID: "clipboard.copy-commit-hash",
+			Verb:      "copy",
+			Label:     self.c.Tr.CommitHash,
 			OnPress: func() error {
 				return self.copyCommitHashToClipboard(commit)
 			},
 		},
 		{
-			Label: self.c.Tr.CommitSubject,
+			CommandID: "clipboard.copy-commit-subject",
+			Verb:      "copy",
+			Label:     self.c.Tr.CommitSubject,
 			OnPress: func() error {
 				return self.copyCommitSubjectToClipboard(commit)
 			},
 			Keys: menuKey('s'),
 		},
 		{
-			Label: self.c.Tr.CommitMessage,
+			CommandID: "clipboard.copy-commit-message",
+			Verb:      "copy",
+			Label:     self.c.Tr.CommitMessage,
 			OnPress: func() error {
 				return self.copyCommitMessageToClipboard(commit)
 			},
 			Keys: menuKey('m'),
 		},
 		{
+			CommandID:      "clipboard.copy-commit-body",
+			Verb:           "copy",
 			Label:          self.c.Tr.CommitMessageBody,
 			DisabledReason: commitMessageBodyDisabled,
 			OnPress: func() error {
@@ -221,21 +231,27 @@ func (self *BasicCommitsController) copyCommitAttribute(commit *models.Commit) e
 			Keys: menuKey('b'),
 		},
 		{
-			Label: self.c.Tr.CommitURL,
+			CommandID: "clipboard.copy-commit-url",
+			Verb:      "copy",
+			Label:     self.c.Tr.CommitURL,
 			OnPress: func() error {
 				return self.copyCommitURLToClipboard(commit)
 			},
 			Keys: menuKey('u'),
 		},
 		{
-			Label: self.c.Tr.CommitDiff,
+			CommandID: "clipboard.copy-commit-diff",
+			Verb:      "copy",
+			Label:     self.c.Tr.CommitDiff,
 			OnPress: func() error {
 				return self.copyCommitDiffToClipboard(commit)
 			},
 			Keys: menuKey('d'),
 		},
 		{
-			Label: self.c.Tr.CommitAuthor,
+			CommandID: "clipboard.copy-commit-author",
+			Verb:      "copy",
+			Label:     self.c.Tr.CommitAuthor,
 			OnPress: func() error {
 				return self.copyAuthorToClipboard(commit)
 			},
