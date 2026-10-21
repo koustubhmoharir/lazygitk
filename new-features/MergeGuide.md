@@ -205,6 +205,32 @@ about the code that exists, not speculative implementation tasks.
   Linux/Git 2.51.1, not a GUI-tool or cross-platform matrix; do not describe the
   targeted headless runs as a new full-suite run.
 
+### Ref-only branch placement (item 4 in progress)
+
+- [branch-placement-design.md](branch-placement-design.md) and the linked probe
+  report explain why ordinary `git branch -f`/OID-only updates are insufficient.
+  `branch_placement.go` adds immutable prepare/apply snapshots and literal-name
+  validation; existing creation/checkout/reset paths are not replaced.
+- `branch_ref_transaction.go` uses the repo-bound command builder but owns the
+  interactive process lifecycle instead of the runner's whole-command retry.
+  Git's prepared transaction holds the target ref lock during the final type,
+  value and occupancy checks. Preserve EOF-abort, ACK/hook-output handling,
+  bounded diagnostics and no retry after a possibly committed write.
+- `branch_placement_guard.go` reads shared worktree metadata, including missing
+  physical worktrees and rebase/bisect/update-refs reservations. It does not
+  depend on UI worktree models or parse path-oriented porcelain output. Review
+  Git operation-metadata formats on upgrades; malformed active state fails
+  closed. A fresh occupancy check is not a cross-process checkout/worktree lock.
+- Exact Git ref queries support packed refs without loose-file assumptions.
+  Symbolic aliases (including broken aliases) are rejected, not dereferenced.
+  No-op placement writes nothing. Independent branch reflogs support manual
+  recovery; the upstream HEAD-based Undo action does not cover this operation.
+- Backend real-Git tests passed uncached on Linux/Git 2.51.1, including dirty
+  index/files, tracking metadata, occupied/unborn/detached states, CAS races,
+  same-OID aliases, hooks, lock cleanup and process failures. The prepared
+  protocol predates the minimum supported Git version; no minimum-version or
+  cross-platform runtime matrix has been performed.
+
 ## Reviewing an upstream merge
 
 1. Record the upstream commit being integrated and review changes around all
