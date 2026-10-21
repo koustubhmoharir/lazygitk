@@ -63,6 +63,9 @@ func (config *UserConfig) Validate() error {
 	if err := validateCustomCommands(config.CustomCommands); err != nil {
 		return err
 	}
+	if err := validateCustomCommandIdentities(config.CustomCommands); err != nil {
+		return err
+	}
 	if err := validateSpinner(config.Gui.Spinner); err != nil {
 		return err
 	}
@@ -272,7 +275,7 @@ func validateCustomCommands(customCommands []CustomCommand) error {
 				if len(customCommand.Key) > 0 {
 					commandRef = fmt.Sprintf(" with key '%s'", customCommand.Key.String())
 				}
-				return fmt.Errorf("Error with custom command%s: it is not allowed to use both commandMenu and any of the other fields except key and description.", commandRef)
+				return fmt.Errorf("Error with custom command%s: it is not allowed to use both commandMenu and any of the other fields except id, key and description.", commandRef)
 			}
 
 			if err := validateCustomCommands(customCommand.CommandMenu); err != nil {

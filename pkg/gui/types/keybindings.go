@@ -9,6 +9,10 @@ import (
 // is only handled if the given view has focus, or handled globally if the view
 // is ""
 type Binding struct {
+	// CommandID is the stable, non-translated identity of this action.
+	CommandID string
+	// Verb describes the action's semantics independently of its target.
+	Verb        string
 	ViewName    string
 	Handler     func() error
 	Keys        []gocui.Key

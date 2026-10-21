@@ -1,7 +1,7 @@
 # Current work
 
 Roadmap item: [2. Stable command identity and inventory](Roadmap.md#2-stable-command-identity-and-inventory).
-Status: current-item task plan ready; inventory work begins next.
+Status: identity design recorded; inventory review and bounded annotation underway.
 
 Scope: establish stable, non-translated action identity and a complete key/action
 inventory. Preserve existing shortcuts, handlers, guards and modal behavior.
@@ -13,13 +13,11 @@ invocation paths; do not implement usage ranking or remapping in this item.
 1. Inventory all binding and menu construction paths, hardcoded accelerators,
    modal/navigation keys, platform differences, custom commands and dispatch
    precedence. Record verb, target, availability and aliases with source
-   references under `new-features`. Decide the narrow metadata/invocation seams
-   from that evidence, consulting TortoiseGit for design questions. Present the
-   concrete design before code changes; raise unresolved user choices.
-2. Add explicit command-identity and semantic-verb metadata to bindings and
-   relevant menu leaves, with validation/tests. Design IDs to survive locale,
-   shortcut, selection and source-order changes. Add optional custom-command
-   IDs and a documented stable fallback without persisting commands or secrets.
+   references under `new-features`. Finish dynamic-factory and semantic review
+   against [the identity design](command-identity-design.md); the raw AST
+   inventory alone is not semantic completeness. Raise unresolved user choices.
+2. Finish built-in metadata validation and regression coverage for identity
+   stability across locale, shortcut, selection and source-order changes.
 3. Annotate the inventory's built-in actions and aliases through bounded,
    reviewable changes. Share identity for equivalent invocation paths, not
    unrelated operations with the same translated label. Keep behavior ownership

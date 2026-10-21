@@ -742,10 +742,12 @@ type CustomCommandAfterHook struct {
 }
 
 type CustomCommand struct {
+	// ID is an optional stable identity. Set it to keep this command's identity across definition changes.
+	ID string `yaml:"id,omitempty"`
 	// The key to trigger the command. Use a single letter or one of the values from https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md. To bind several alternates to the same command, use a sequence (e.g. `[a, b]`).
 	Key Keybinding `yaml:"key"`
 	// Instead of defining a single custom command, create a menu of custom commands. Useful for grouping related commands together under a single keybinding, and for keeping them out of the global keybindings menu.
-	// When using this, all other fields except Key and Description are ignored and must be empty.
+	// When using this, all other fields except ID, Key and Description are ignored and must be empty.
 	CommandMenu []CustomCommand `yaml:"commandMenu"`
 	// The context in which to listen for the key. Valid values are: status, files, worktrees, localBranches, remotes, remoteBranches, tags, commits, reflogCommits, subCommits, commitFiles, stash, and global. Multiple contexts separated by comma are allowed; most useful for "commits, subCommits" or "files, commitFiles".
 	Context string `yaml:"context" jsonschema:"example=status,example=files,example=worktrees,example=localBranches,example=remotes,example=remoteBranches,example=tags,example=commits,example=reflogCommits,example=subCommits,example=commitFiles,example=stash,example=global"`

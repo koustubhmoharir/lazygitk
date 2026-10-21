@@ -309,6 +309,10 @@ func MakeMenuCheckBox(value bool) MenuWidget {
 }
 
 type MenuItem struct {
+	// CommandID is the stable, non-translated identity of this action.
+	CommandID string
+	// Verb describes the action's semantics independently of its target.
+	Verb  string
 	Label string
 
 	// alternative to Label. Allows specifying columns which will be auto-aligned

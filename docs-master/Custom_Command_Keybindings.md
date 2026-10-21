@@ -50,6 +50,7 @@ Custom command keybindings will appear alongside inbuilt keybindings when you vi
 For a given custom command, here are the allowed fields:
 | _field_ | _description_ | required |
 |-----------------|----------------------|-|
+| id | Fork-specific stable command identity; see [Command identity](#command-identity) | no |
 | key | The key to trigger the command. Use a single key or list of keys, as described in [Custom_Keybindings.md](https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md). Custom commands without a key specified can be triggered by selecting them from the keybindings (`?`) menu | no |
 | command | The command to run (using Go template syntax for placeholder values) | yes |
 | context | The context in which to listen for the key (see [below](#contexts)) | yes |
@@ -64,6 +65,22 @@ Here are the options for the `after` key:
 | _field_ | _description_ | required |
 |-----------------|----------------------|-|
 | checkForConflicts | true/false. If true, check for merge conflicts | no |
+
+## Command identity
+
+This fork accepts an optional `id`, such as `id: history.compare-worktree`.
+It identifies the command independently of keys, labels and definition edits;
+it does not change how the command runs. IDs must be unique across the loaded
+custom-command tree. Start with an ASCII letter or digit, then use letters,
+digits, `.`, `_` or `-`. Use one definition with multiple keys/contexts for aliases.
+
+Without an ID, identity is a SHA-256 fingerprint of the unrendered command,
+prompts, output mode and after-hook settings. Changing that definition can change
+its identity, but changing keys, contexts or the description does not. Selected
+objects and entered form values never enter the fingerprint. Menu identity
+depends on its child identities, not their order. Prefer an explicit ID when
+you want durable identity across definition edits. No usage counters are stored
+by this preparatory identity change.
 
 ## Contexts
 

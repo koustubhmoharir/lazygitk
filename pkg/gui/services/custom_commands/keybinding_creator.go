@@ -32,8 +32,11 @@ func (self *KeybindingCreator) call(customCommand config.CustomCommand, handler 
 		return nil, err
 	}
 
+	commandID := customCommand.CommandIdentity()
 	return lo.Map(viewNames, func(viewName string, _ int) *types.Binding {
 		return &types.Binding{
+			CommandID:   commandID,
+			Verb:        "run-custom-command",
 			ViewName:    viewName,
 			Keys:        config.GetValidatedKeyBindingKeys(customCommand.Key),
 			Handler:     handler,

@@ -50,7 +50,7 @@ tasks with the next item's plan in the same completion commit.
 | Item | Deliverable | Status | Depends on | Relative size |
 | --- | --- | --- | --- | --- |
 | 1 | Explicit-action defaults | Complete | None | Small |
-| 2 | Stable command identity and complete key/action inventory | Current: inventory and implementation planning | None | Medium |
+| 2 | Stable command identity and complete key/action inventory | Current: inventory and bounded annotation | None | Medium |
 | 3 | Separate commit/file diff actions and arbitrary-file comparison | Pending | 2 for command metadata | Medium |
 | 4 | Create/move a branch without checkout | Pending | Git probe review | Medium |
 | 5 | Checkout selected commit under a branch name | Pending | 4's shared prompts/validation | Medium |

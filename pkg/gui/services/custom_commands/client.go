@@ -44,6 +44,8 @@ func (self *Client) GetCustomCommandKeybindings() ([]*types.Binding, error) {
 				return self.showCustomCommandsMenu(customCommand)
 			}
 			bindings = append(bindings, &types.Binding{
+				CommandID:   customCommand.CommandIdentity(),
+				Verb:        "open-custom-menu",
 				ViewName:    "", // custom commands menus are global; we filter the commands inside by context
 				Keys:        config.GetValidatedKeyBindingKeys(customCommand.Key),
 				Handler:     handler,
@@ -71,6 +73,8 @@ func (self *Client) showCustomCommandsMenu(customCommand config.CustomCommand) e
 				return self.showCustomCommandsMenu(subCommand)
 			}
 			menuItems = append(menuItems, &types.MenuItem{
+				CommandID: subCommand.CommandIdentity(),
+				Verb:      "open-custom-menu",
 				Label:     subCommand.GetDescription(),
 				Keys:      config.GetValidatedKeyBindingKeys(subCommand.Key),
 				OnPress:   handler,
@@ -91,9 +95,11 @@ func (self *Client) showCustomCommandsMenu(customCommand config.CustomCommand) e
 			}
 
 			menuItems = append(menuItems, &types.MenuItem{
-				Label:   subCommand.GetDescription(),
-				Keys:    config.GetValidatedKeyBindingKeys(subCommand.Key),
-				OnPress: self.handlerCreator.call(subCommand),
+				CommandID: subCommand.CommandIdentity(),
+				Verb:      "run-custom-command",
+				Label:     subCommand.GetDescription(),
+				Keys:      config.GetValidatedKeyBindingKeys(subCommand.Key),
+				OnPress:   self.handlerCreator.call(subCommand),
 			})
 		}
 	}

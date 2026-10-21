@@ -66,6 +66,10 @@
     },
     "CustomCommand": {
       "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID is an optional stable identity. Set it to keep this command's identity across definition changes."
+        },
         "key": {
           "oneOf": [
             {
@@ -85,7 +89,7 @@
             "$ref": "#/$defs/CustomCommand"
           },
           "type": "array",
-          "description": "Instead of defining a single custom command, create a menu of custom commands. Useful for grouping related commands together under a single keybinding, and for keeping them out of the global keybindings menu.\nWhen using this, all other fields except Key and Description are ignored and must be empty."
+          "description": "Instead of defining a single custom command, create a menu of custom commands. Useful for grouping related commands together under a single keybinding, and for keeping them out of the global keybindings menu.\nWhen using this, all other fields except ID, Key and Description are ignored and must be empty."
         },
         "context": {
           "type": "string",

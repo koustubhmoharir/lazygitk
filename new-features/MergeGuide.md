@@ -88,6 +88,29 @@ about the code that exists, not speculative implementation tasks.
 - Used `justfile` command equivalents because `just` is absent. No system
   dependencies were installed; the pinned Go lint tool downloaded successfully.
 
+### Command identity foundations (item 2 in progress)
+
+- `types.Binding` and `types.MenuItem` have additive `CommandID` and `Verb`
+  fields. Preserve `MenuItem.ID()` as row identity: many rows may share an
+  operation ID while carrying different object arguments. The rationale and
+  dispatch audit live in [command-identity-design.md](command-identity-design.md).
+- `config.CustomCommand.ID` is an optional YAML field. `UserConfig.Validate`
+  calls `validateCustomCommandIdentities` once over the whole nested tree,
+  alongside upstream's existing definition validation. Preserve both checks
+  when merging config changes; a command menu now permits `id` as metadata.
+- `pkg/config/custom_command_identity.go` owns explicit namespaces and the
+  version-1 fallback digest payload. No command contents are persisted. Changing
+  the payload's schema or normalization can change fallback identities; explicit
+  IDs survive definition changes. Keep the stability/privacy/validation tests.
+- `custom_commands.KeybindingCreator` assigns one identity to all contexts of
+  a definition. `Client` propagates identity to custom menu openers and leaves.
+  Existing handlers, key parsing and context filtering are unchanged. The
+  invocation verbs classify custom commands rather than inferring arbitrary
+  shell semantics. Tests capture menu construction without executing shell code.
+- Changing `CustomCommand` requires regenerating development docs and schema
+  with the existing generation recipe. Never add command text or rendered form
+  values to identity/usage persistence when extending this metadata.
+
 ## Reviewing an upstream merge
 
 1. Record the upstream commit being integrated and review changes around all
