@@ -1,21 +1,36 @@
 # Current work
 
-Roadmap item: [4. Create or move a branch at a selected commit, without checkout](Roadmap.md#4-create-or-move-a-branch-at-a-selected-commit-without-checkout).
-Status: implementation and headless regressions verified; finishing final checks.
+Roadmap item: [5. Checkout any commit under a supplied branch name](Roadmap.md#5-checkout-any-commit-under-a-supplied-branch-name).
+Status: auditing combined checkout semantics and preparing bounded Git probes.
 
-Scope: create or move a named local branch to a captured selected commit,
-without checkout. Existing-tip moves require a warning; preserve HEAD, index,
-working files and upstream metadata. Current-branch movement remains Reset's
-responsibility. Never bypass another worktree's branch occupancy.
+Scope: check out a captured selected commit under a literal new or existing
+local branch name. Warn before moving an existing name; use Git's combined
+operation, carry dirty changes when safe, preserve ignored collisions, and
+never force files, require an unnecessarily clean tree, or offer stash.
 
-## Remaining tasks for item 4
+## Remaining tasks for item 5
 
-1. Finish final full-short-test and lint reruns after the generated test list is
-   stable. Usage, inventory, generation, debug build, formatting, targeted race
-   tests and 127 branch/commit/reflog headless scenarios have passed. Record
-   verification limits; do not claim Undo support or a new full headless run.
-2. Once acceptance criteria pass, complete item 4 accurately in the roadmap and
-   replace this tracker with item 5's task-level plan in the same commit.
+1. Audit checkout-menu construction, branch validation, operation guards,
+   autostash offers, refresh and worker ownership. Consult TortoiseGit and probe
+   `checkout --no-overwrite-ignore -B` with genuinely different trees, dirty
+   index/files, current/other-worktree destinations, hooks and concurrent ref
+   changes. Record the additive design and resolve substantive ambiguities.
+2. Add backend preparation/application APIs reusing literal-name/full-OID/ref
+   validation where appropriate. Permit a safe current-branch destination,
+   reject reserved/in-progress states, revalidate before the combined checkout,
+   preserve tracking settings and report Git failures without stash or retry.
+3. Add **Checkout as branch…** to the shared checkout menu. Capture repository
+   and source identity, prompt for the destination, warn with old/new tips and
+   require fresh review of changed destinations. Refresh all checkout-related
+   models on actual completion, including uncertain hook/process failures.
+4. Add backend/controller/headless regressions for new/existing/current names,
+   detached HEAD, differing trees, carried dirty changes, overwritten tracked/
+   staged/untracked/ignored paths, cancellation, concurrent changes, occupied
+   worktrees and failure recovery. Assert no partial ref move on rejection.
+5. Update usage, inventory and merge guide; generate, debug-build, format, run
+   full short tests, relevant headless regressions and lint. Record any limits.
+6. Once acceptance criteria pass, complete item 5 accurately in the roadmap and
+   replace this tracker with item 6's task-level plan in the same commit.
 
 ## How this tracker works
 

@@ -205,7 +205,7 @@ about the code that exists, not speculative implementation tasks.
   Linux/Git 2.51.1, not a GUI-tool or cross-platform matrix; do not describe the
   targeted headless runs as a new full-suite run.
 
-### Ref-only branch placement (item 4 in progress)
+### Ref-only branch placement (item 4 complete)
 
 - [branch-placement-design.md](branch-placement-design.md) and the linked probe
   report explain why ordinary `git branch -f`/OID-only updates are insufficient.
@@ -250,8 +250,10 @@ about the code that exists, not speculative implementation tasks.
   that harness coordination issue. This is not a new full-suite run.
 - Debug build, generation, formatting, inventory/checker tests and targeted
   backend/controller race tests passed. Real SHA-256 creation/movement passed
-  separately. Full short tests passed after the goroutine-wrapper correction;
-  final post-generation short/lint reruns remain in progress.
+  separately. Final stable-source full short tests, formatting and lint passed
+  (zero issues). Earlier checks caught and corrected the missing terminal-safe
+  goroutine wrapper and a test allocation lint warning; a concurrent generated-
+  list change also required restarting lint against the stable source tree.
 
 ## Reviewing an upstream merge
 

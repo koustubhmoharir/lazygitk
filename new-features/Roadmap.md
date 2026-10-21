@@ -52,8 +52,8 @@ tasks with the next item's plan in the same completion commit.
 | 1 | Explicit-action defaults | Complete | None | Small |
 | 2 | Stable command identity and complete key/action inventory | Complete | None | Medium |
 | 3 | Separate commit/file diff actions and arbitrary-file comparison | Complete | 2 for command metadata | Medium |
-| 4 | Create/move a branch without checkout | Current | Git probe review | Medium |
-| 5 | Checkout selected commit under a branch name | Pending | 4's shared prompts/validation | Medium |
+| 4 | Create/move a branch without checkout | Complete | Git probe review | Medium |
+| 5 | Checkout selected commit under a branch name | Current | 4's shared prompts/validation | Medium |
 | 6 | Rebase current branch onto a selected commit | Pending | 2 | Small–medium |
 | 7 | Operate on selected branches without checkout | Pending | 4; explicit target design | Large |
 | 8 | Consistent default shortcuts and inactive-key behavior | Pending | 2–7's action inventory | Large |
@@ -267,6 +267,27 @@ recorded separately; the implementation and its integration seams are tracked
 in [MergeGuide.md](MergeGuide.md).
 
 ## 4. Create or move a branch at a selected commit, without checkout
+
+Complete (2026-10-22). A shared commit-controller hook exposes the initially
+unbound action in local history, independent branch history and reflog. The
+additive backend uses immutable plans and a prepared Git ref transaction, not
+the upstream new-branch helper: type, expected tip and worktree reservations
+are checked while Git holds the target-ref lock. See
+[design/probe evidence](branch-placement-design.md) and
+[usage](../docs-master/Fork_Features.md#create-or-move-a-branch-without-checkout).
+Deleted/changed destinations require fresh review; symbolic aliases are refused.
+Same-tip requests are informative no-ops, including the current branch. Creating
+the unborn current branch is refused, but another branch can be created without
+attaching HEAD. Occupancy checks are fresh, not a repository-wide lock against
+arbitrary concurrent external checkout/worktree creation. Branch reflog recovery
+is supported; upstream HEAD-based Undo is not claimed for this operation.
+
+Verified: debug build, full short tests, generation, formatting, inventory tool
+tests, lint (zero issues), targeted backend/controller race tests, real SHA-256
+creation/movement and 127 branch/commit/reflog headless scenarios (107.551s).
+The first broad headless attempt was invalidated by adding a scenario before
+regenerating its list; the stable-source rerun passed. Verification ran on
+Linux/Git 2.51.1, not a new full-suite or cross-platform/minimum-Git matrix.
 
 Add **Create/move branch here…** to every supported commit-list context. Keep
 **Create branch and check it out…** as a separate action so the distinction is
