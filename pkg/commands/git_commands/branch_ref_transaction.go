@@ -8,6 +8,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/jesseduffield/lazygit/pkg/utils"
 )
 
 // branchRefCommitError means commit was sent but Git did not finish cleanly.
@@ -67,10 +69,10 @@ func (self *BranchCommands) guardedBranchRefUpdate(ref, newOID, oldOID, reason s
 	}
 	done := make(chan struct{})
 	var waitErr error
-	go func() {
+	go utils.Safe(func() {
+		defer close(done)
 		waitErr = cmd.Wait()
-		close(done)
-	}()
+	})
 	commitSent := false
 	defer func() {
 		// EOF aborts an uncommitted transaction, including guard/protocol errors.
