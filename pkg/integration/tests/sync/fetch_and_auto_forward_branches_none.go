@@ -6,11 +6,10 @@ import (
 )
 
 var FetchAndAutoForwardBranchesNone = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Fetch from remote and auto-forward branches with config set to 'none'",
+	Description:  "Manual fetch leaves branch tips unchanged under the fork defaults",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig: func(config *config.AppConfig) {
-		config.GetUserConfig().Git.AutoForwardBranches = "none"
 		config.GetUserConfig().Git.LocalBranchSortOrder = "alphabetical"
 	},
 	SetupRepo: func(shell *Shell) {
@@ -43,7 +42,7 @@ var FetchAndAutoForwardBranchesNone = NewIntegrationTest(NewIntegrationTestArgs{
 			IsFocused().
 			Press(keys.Files.Fetch)
 
-		// AutoForwardBranches is "none": nothing should happen
+		// AutoForwardBranches defaults to "none": manual fetch must not move tips.
 		t.Views().Branches().
 			Lines(
 				Contains("checked-out").IsSelected(),

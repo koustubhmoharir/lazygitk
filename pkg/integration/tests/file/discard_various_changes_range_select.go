@@ -10,6 +10,7 @@ var DiscardVariousChangesRangeSelect = NewIntegrationTest(NewIntegrationTestArgs
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig: func(config *config.AppConfig) {
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
 	},
 	SetupRepo: func(shell *Shell) {
 		createAllPossiblePermutationsOfChangedFiles(shell)

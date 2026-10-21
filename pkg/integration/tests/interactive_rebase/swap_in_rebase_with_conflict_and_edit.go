@@ -9,7 +9,9 @@ var SwapInRebaseWithConflictAndEdit = NewIntegrationTest(NewIntegrationTestArgs{
 	Description:  "Via an edit-triggered rebase, swap two commits, causing a conflict, then edit the commit that will conflict.",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig:  func(config *config.AppConfig) {},
+	SetupConfig: func(config *config.AppConfig) {
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
+	},
 	SetupRepo: func(shell *Shell) {
 		shell.CreateFileAndAdd("myfile", "one")
 		shell.Commit("commit one")

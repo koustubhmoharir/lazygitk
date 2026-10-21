@@ -9,7 +9,9 @@ var AmendWhenThereAreConflictsAndCancel = NewIntegrationTest(NewIntegrationTestA
 	Description:  "Amends the last commit from the files panel while a rebase is stopped due to conflicts, and cancels the confirmation",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig:  func(config *config.AppConfig) {},
+	SetupConfig: func(config *config.AppConfig) {
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
+	},
 	SetupRepo: func(shell *Shell) {
 		setupForAmendTests(shell)
 	},

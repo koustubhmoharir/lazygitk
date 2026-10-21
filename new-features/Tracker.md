@@ -10,11 +10,10 @@ operations and refreshes following explicit actions remain available.
 
 ## Remaining tasks for item 1
 
-1. Verify runtime behavior with focused tests and affected integration scenarios.
-   Demonstrate no automatic fetch/file polling/forwarding/conflict staging under
-   defaults, including no forwarding after manual fetch; verify explicit opt-ins
-   still work and read-only ref polling remains active. Keep all Git mutations
-   in disposable repositories with local fake remotes.
+1. Finish verification of the timer-driven default and opt-in scenarios: no
+   automatic fetch or file polling under defaults, explicit fetch/refresh
+   opt-ins still work, and read-only external-ref polling remains active.
+   Keep all Git mutations in disposable repositories with local fake remotes.
 2. Finish final validation, including lint and the full headless integration
    run; check generated outputs remain current after any fixes. Record results
    and any verification limits

@@ -46,7 +46,9 @@ var MergeFileIncoming = NewIntegrationTest(NewIntegrationTestArgs{
 	Description:  "Conflicting file can be resolved to 'theirs' (incoming changes) version via merge-file",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig:  func(config *config.AppConfig) {},
+	SetupConfig: func(config *config.AppConfig) {
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
+	},
 	SetupRepo: func(shell *Shell) {
 		original, current, incoming, _ := testDataIncoming()
 		shared.CreateMergeConflictFileForMergeFileTests(shell, original, current, incoming)

@@ -9,7 +9,9 @@ var RevertMultipleCommitsInInteractiveRebase = NewIntegrationTest(NewIntegration
 	Description:  "Reverts a range of commits, the first of which conflicts, in the middle of an interactive rebase",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig:  func(cfg *config.AppConfig) {},
+	SetupConfig: func(cfg *config.AppConfig) {
+		cfg.GetUserConfig().Git.AutoStageResolvedConflicts = true
+	},
 	SetupRepo: func(shell *Shell) {
 		shell.CreateFileAndAdd("myfile", "")
 		shell.Commit("add empty file")

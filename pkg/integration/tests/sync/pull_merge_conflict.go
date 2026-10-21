@@ -9,7 +9,9 @@ var PullMergeConflict = NewIntegrationTest(NewIntegrationTestArgs{
 	Description:  "Pull with a merge strategy, where a conflict occurs",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig:  func(config *config.AppConfig) {},
+	SetupConfig: func(config *config.AppConfig) {
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
+	},
 	SetupRepo: func(shell *Shell) {
 		shell.CreateFileAndAdd("file", "content1")
 		shell.Commit("one")

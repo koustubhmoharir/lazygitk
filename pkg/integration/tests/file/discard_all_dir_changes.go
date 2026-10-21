@@ -10,6 +10,7 @@ var DiscardAllDirChanges = NewIntegrationTest(NewIntegrationTestArgs{
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig: func(config *config.AppConfig) {
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
 	},
 	SetupRepo: func(shell *Shell) {
 		// typically we would use more bespoke shell methods here, but I struggled to find a way to do that,

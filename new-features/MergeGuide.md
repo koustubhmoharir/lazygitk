@@ -51,6 +51,12 @@ about the code that exists, not speculative implementation tasks.
 - Existing integration scenarios specifically testing automatic staging or
   forwarding must opt in explicitly. Default-policy scenarios should not set
   the option to its default: they must detect a regression in the constructor.
+- `pkg/gui/fork_background_test.go` verifies the three independent startup
+  gates and no-op fetch triggering deterministically with invalid intervals;
+  it deliberately starts no background workers. Conflict integration scenarios
+  explicitly opt into staging when that is their subject; `ResolveNoAutoStage`
+  uses the fork default. `FetchAndAutoForwardBranchesNone` uses the forwarding
+  default and verifies that a manual fetch leaves local branch tips alone.
 - Generation uses `go generate ./...`: development defaults are written to
   `docs-master/Config.md` and `schema-master/config.json`, not the release
   snapshots in `docs/` and `schema/`. The fork-defaults explanation outside the

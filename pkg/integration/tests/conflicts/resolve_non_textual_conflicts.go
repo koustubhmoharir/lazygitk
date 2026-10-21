@@ -9,7 +9,9 @@ var ResolveNonTextualConflicts = NewIntegrationTest(NewIntegrationTestArgs{
 	Description:  "Resolve non-textual merge conflicts (e.g. one side modified, the other side deleted)",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig:  func(config *config.AppConfig) {},
+	SetupConfig: func(config *config.AppConfig) {
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
+	},
 	SetupRepo: func(shell *Shell) {
 		shell.RunShellCommand(`echo test1 > both-deleted1.txt`)
 		shell.RunShellCommand(`echo test2 > both-deleted2.txt`)

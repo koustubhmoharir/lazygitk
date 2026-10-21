@@ -10,7 +10,9 @@ var ContinuePromptDismissedWhenResolvedExternally = NewIntegrationTest(NewIntegr
 	Description:  "When the prompt to continue a merge is showing and the merge is then continued outside lazygit, dismiss the prompt",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig:  func(config *config.AppConfig) {},
+	SetupConfig: func(config *config.AppConfig) {
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
+	},
 	SetupRepo: func(shell *Shell) {
 		shared.CreateMergeConflictFile(shell)
 	},

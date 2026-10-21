@@ -10,9 +10,7 @@ var ResolveNoAutoStage = NewIntegrationTest(NewIntegrationTestArgs{
 	Description:  "Resolving conflicts without auto-staging",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig: func(config *config.AppConfig) {
-		config.GetUserConfig().Git.AutoStageResolvedConflicts = false
-	},
+	SetupConfig:  func(config *config.AppConfig) {},
 	SetupRepo: func(shell *Shell) {
 		shared.CreateMergeConflictFiles(shell)
 	},

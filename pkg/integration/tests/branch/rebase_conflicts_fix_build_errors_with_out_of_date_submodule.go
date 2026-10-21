@@ -12,6 +12,7 @@ var RebaseConflictsFixBuildErrorsWithOutOfDateSubmodule = NewIntegrationTest(New
 	Skip:         false,
 	SetupConfig: func(config *config.AppConfig) {
 		config.GetUserConfig().Git.LocalBranchSortOrder = "recency"
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
 	},
 	SetupRepo: func(shell *Shell) {
 		// Create an out-of-date submodule to verify that we don't try to stage it

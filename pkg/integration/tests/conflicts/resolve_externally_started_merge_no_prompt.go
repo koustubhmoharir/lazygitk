@@ -10,7 +10,9 @@ var ResolveExternallyStartedMergeNoPrompt = NewIntegrationTest(NewIntegrationTes
 	Description:  "When a merge started outside lazygit has its conflicts resolved, don't prompt to continue it",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig:  func(config *config.AppConfig) {},
+	SetupConfig: func(config *config.AppConfig) {
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
+	},
 	SetupRepo: func(shell *Shell) {
 		// Start the merge by running git directly and never tell lazygit it was
 		// the one to start it, so from lazygit's point of view it was started

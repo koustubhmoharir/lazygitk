@@ -12,6 +12,7 @@ var RebaseAndDrop = NewIntegrationTest(NewIntegrationTestArgs{
 	Skip:         false,
 	SetupConfig: func(config *config.AppConfig) {
 		config.GetUserConfig().Git.LocalBranchSortOrder = "recency"
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
 	},
 	SetupRepo: func(shell *Shell) {
 		shared.MergeConflictsSetup(shell)

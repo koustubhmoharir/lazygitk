@@ -10,7 +10,9 @@ var ConflictMarkerSizeNotAutoStaged = NewIntegrationTest(NewIntegrationTestArgs{
 	Description:  "Doesn't auto-stage an unresolved file whose conflict-marker-size gitattribute makes its markers longer than usual",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig:  func(config *config.AppConfig) {},
+	SetupConfig: func(config *config.AppConfig) {
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
+	},
 	SetupRepo: func(shell *Shell) {
 		shared.SetCustomConflictMarkerSize(shell)
 		shared.CreateMergeConflictFile(shell)

@@ -9,7 +9,9 @@ var AmendCommitWithConflict = NewIntegrationTest(NewIntegrationTestArgs{
 	Description:  "Amends a staged file to a commit, causing a conflict there.",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig:  func(config *config.AppConfig) {},
+	SetupConfig: func(config *config.AppConfig) {
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
+	},
 	SetupRepo: func(shell *Shell) {
 		shell.CreateFileAndAdd("file", "1\n").Commit("one")
 		shell.UpdateFileAndAdd("file", "1\n2\n").Commit("two")

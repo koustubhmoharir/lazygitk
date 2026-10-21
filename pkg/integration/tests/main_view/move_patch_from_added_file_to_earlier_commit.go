@@ -11,6 +11,7 @@ var MovePatchFromAddedFileToEarlierCommit = NewIntegrationTest(NewIntegrationTes
 	Skip:         false,
 	SetupConfig: func(config *config.AppConfig) {
 		config.GetUserConfig().Gui.UseHunkModeInDiffView = false
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
 	},
 	SetupRepo: func(shell *Shell) {
 		shell.EmptyCommit("first commit")

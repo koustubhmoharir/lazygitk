@@ -10,7 +10,9 @@ var PickBothHunksDiff3 = NewIntegrationTest(NewIntegrationTestArgs{
 	Description:  "Pick both hunks of a conflict rendered in the diff3 style; the common ancestor must not be included",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig:  func(config *config.AppConfig) {},
+	SetupConfig: func(config *config.AppConfig) {
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
+	},
 	SetupRepo: func(shell *Shell) {
 		shell.SetConfig("merge.conflictStyle", "diff3")
 		shared.CreateMergeConflictFile(shell)

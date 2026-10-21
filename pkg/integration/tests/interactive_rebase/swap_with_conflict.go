@@ -9,7 +9,9 @@ var SwapWithConflict = NewIntegrationTest(NewIntegrationTestArgs{
 	Description:  "Directly swap two commits, causing a conflict. Then resolve the conflict and continue",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig:  func(config *config.AppConfig) {},
+	SetupConfig: func(config *config.AppConfig) {
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
+	},
 	SetupRepo: func(shell *Shell) {
 		shell.CreateFileAndAdd("myfile", "one")
 		shell.Commit("commit one")

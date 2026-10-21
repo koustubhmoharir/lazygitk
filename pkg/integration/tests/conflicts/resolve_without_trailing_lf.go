@@ -9,7 +9,9 @@ var ResolveWithoutTrailingLf = NewIntegrationTest(NewIntegrationTestArgs{
 	Description:  "Regression test for resolving a merge conflict when the file doesn't have a trailing newline",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig:  func(config *config.AppConfig) {},
+	SetupConfig: func(config *config.AppConfig) {
+		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
+	},
 	SetupRepo: func(shell *Shell) {
 		shell.
 			NewBranch("branch1").
