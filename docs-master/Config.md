@@ -713,7 +713,7 @@ keybinding:
     scrollRight: L
     gotoTop: [<, <home>]
     gotoBottom: ['>', <end>]
-    toggleRangeSelect: v
+    toggleRangeSelect: null
     rangeSelectDown: <shift+down>
     rangeSelectUp: <shift+up>
     prevBlock: [<left>, h, <backtab>]
@@ -752,7 +752,7 @@ keybinding:
     confirmInEditor: [<ctrl+enter>, <ctrl+s>]
     remove: d
     new: "n"
-    newWorktree: w
+    newWorktree: null
     edit: e
     openFile: o
     scrollUpMain: [<pgup>, K, <ctrl+u>]
@@ -776,7 +776,10 @@ keybinding:
     undo: z
     redo: Z
     filteringMenu: <ctrl+s>
-    diffingMenu: [W, <ctrl+e>]
+    diffingMenu: null
+    diffWithWorkingTree: [w, W]
+    diffWithPreviousCommit: [v, V]
+    diffWithWorkingFile: null
     copyToClipboard: <ctrl+o>
     openRecentRepos: <ctrl+r>
     submitEditorText: <enter>
@@ -795,7 +798,7 @@ keybinding:
     allBranchesLogGraphReverse: A
   files:
     commitChanges: c
-    commitChangesWithoutHook: w
+    commitChangesWithoutHook: null
     amendLastCommit: A
     commitChangesWithEditor: C
     findBaseCommitForFixup: <ctrl+f>
@@ -849,7 +852,7 @@ keybinding:
     pickCommit: p
     revertCommit: t
     cherryPickCopy: C
-    pasteCommits: V
+    pasteCommits: null
     markCommitAsBaseForRebase: B
     tagCommit: T
     checkoutCommit: <space>

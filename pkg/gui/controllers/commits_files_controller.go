@@ -111,7 +111,7 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 			Verb:              "external-diff-context",
 			Handler:           self.withItem(self.openDiffTool),
 			GetDisabledReason: self.require(self.singleItemSelected()),
-			Description:       self.c.Tr.OpenDiffTool,
+			Description:       self.c.Tr.HistoricalDiffStickyTool,
 		},
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.Select),
@@ -172,7 +172,8 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 		},
 	}
 
-	return bindings
+	// Fork direct-diff actions are additive; the existing sticky comparison remains available.
+	return append(self.historicalDiffBindings(opts), bindings...)
 }
 
 func (self *CommitFilesController) context() *context.CommitFilesContext {

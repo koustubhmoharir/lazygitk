@@ -1966,8 +1966,7 @@
               },
               "type": "array"
             }
-          ],
-          "default": "V"
+          ]
         },
         "markCommitAsBaseForRebase": {
           "oneOf": [
@@ -2194,8 +2193,7 @@
               },
               "type": "array"
             }
-          ],
-          "default": "w"
+          ]
         },
         "amendLastCommit": {
           "oneOf": [
@@ -2978,8 +2976,7 @@
               },
               "type": "array"
             }
-          ],
-          "default": "v"
+          ]
         },
         "rangeSelectDown": {
           "oneOf": [
@@ -3414,8 +3411,7 @@
               },
               "type": "array"
             }
-          ],
-          "default": "w"
+          ]
         },
         "edit": {
           "oneOf": [
@@ -3764,10 +3760,53 @@
               },
               "type": "array"
             }
+          ]
+        },
+        "diffWithWorkingTree": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
           ],
           "default": [
-            "W",
-            "\u003cctrl+e\u003e"
+            "w",
+            "W"
+          ]
+        },
+        "diffWithPreviousCommit": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "default": [
+            "v",
+            "V"
+          ]
+        },
+        "diffWithWorkingFile": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
           ]
         },
         "diffingMenu-alt": {
@@ -3782,8 +3821,7 @@
               "type": "array"
             }
           ],
-          "description": "Deprecated: add the key to `diffingMenu` instead.",
-          "default": "\u003cctrl+e\u003e"
+          "description": "Deprecated: add the key to `diffingMenu` instead."
         },
         "copyToClipboard": {
           "oneOf": [

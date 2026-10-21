@@ -1,7 +1,7 @@
 # Command identity and dispatch audit
 
-Current scope: roadmap item 2. This is a preparatory identity change, not the
-new keymap or usage ranking. Mechanical source evidence is in
+Foundation completed in roadmap item 2. Later features extend this identity
+contract without adding usage ranking yet. Mechanical source evidence is in
 [inventory/inventory.json](inventory/inventory.json), regenerated with
 `go run new-features/inventory/generate.go`. Factory locations are audit
 references, never persistent IDs. The semantic review below supplements the
@@ -90,7 +90,8 @@ not assume that every nil return means a completed leaf action.
 
 ## Dynamic and low-level factory review
 
-- All 312 binding and 176 menu factories have been reviewed. Five intentionally
+- Item 2 reviewed its 312 binding and 176 menu factories. Later additions are
+  recorded in the regenerated inventory and their feature designs. Five intentionally
   lack independent action IDs: the two worktree-location choices, the two custom
   prompt-option factories and the no-applicable-custom-commands placeholder.
   The former four supply parameters to their parent action; the last does nothing.
@@ -119,6 +120,11 @@ not assume that every nil return means a completed leaf action.
   protects confirm/cancel/navigation from accelerators; printable filtering keys
   type text rather than execute displayed shortcut reminders. These paths and
   platform modifier defaults are inventoried without changing their behavior.
+- Item 3 adds five fixed-endpoint diff bindings with distinct IDs for commit,
+  historical-file and explicitly chosen-file comparisons. Their shared verbs
+  express the same comparisons at each scope. Guards reject ambiguous ranges,
+  missing commits and unsupported historical entries; captured OIDs/paths are
+  operation data, never action identity. See [direct-diff-design.md](direct-diff-design.md).
 
 TortoiseGit provides a useful precedent: its
 [log-menu implementation](https://raw.githubusercontent.com/TortoiseGit/TortoiseGit/master/src/TortoiseProc/GitLogListBase.cpp)

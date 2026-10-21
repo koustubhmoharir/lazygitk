@@ -28,7 +28,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <esc> `` | 取消 |  |
 | `` ? `` | 打开菜单 |  |
 | `` <ctrl+s> `` | 查看按路径过滤选项 | 查看用于过滤提交日志的选项，以便仅显示与过滤器匹配的提交。 |
-| `` W, <ctrl+e> `` | 打开 diff 菜单 | 查看与比较两个引用相关的选项，例如与选定的 ref 进行比较，输入要比较的 ref，然后反转比较方向。 |
 | `` q, <ctrl+c> `` | 退出 |  |
 | `` <ctrl+z> `` | 挂起应用程序 |  |
 | `` <ctrl+w> `` | 切换是否在差异视图中显示空白字符差异 | 切换是否在差异视图中显示空白字符更改。<br><br>默认值可在配置文件中通过键 'git.ignoreWhitespaceInDiffView' 更改。 |
@@ -44,7 +43,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` . `` | 下一页 |  |
 | `` <, <home> `` | 滚动到顶部 |  |
 | `` >, <end> `` | 滚动到底部 |  |
-| `` v `` | 切换拖动选择 |  |
 | `` <shift+down> `` | 向下扩展选择范围 |  |
 | `` <shift+up> `` | 向上扩展选择范围 |  |
 | `` / `` | 开始搜索 |  |
@@ -58,16 +56,17 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` <ctrl+o> `` | 复制缩略提交哈希值到剪贴板 |  |
+| `` w, W `` | Diff with working tree |  |
+| `` v, V `` | Diff with previous commit |  |
 | `` <space> `` | 检出 | 检出所选择的提交作为分离HEAD。 |
 | `` y `` | 复制提交属性到剪贴板 | 复制提交属性到剪贴板(如hash、URL、diff、消息、作者)。 |
 | `` o `` | 在浏览器中打开提交 |  |
 | `` n `` | 从提交创建新分支 |  |
 | `` N `` | 移动提交至新分支 | 创建一个新分支，并将当前分支未推送的提交移动到该分支。如果您打算开始新工作但忘记先创建新分支，这会很有用。<br><br>请注意，此操作忽略选择，新分支总是从主分支创建或堆叠在当前分支之上（您可以选择哪种方式）。 |
-| `` w `` | 新建工作树 |  |
 | `` g `` | 查看重置选项 | 查看重置选项 (soft/mixed/hard) 用于重置到选择项 |
-| `` C `` | 复制提交(拣选) | 标记提交为已复制。然后，在本地提交视图中，您可以按 `V` (Cherry-Pick) 将已复制的提交粘贴到已检出的分支中。任何时候都可以按 `<esc>` 来取消选择。 |
+| `` C `` | 复制提交(拣选) | Mark commit as copied. Then, in the local commits view, choose Paste (cherry-pick) from the command palette. Use `<esc>` to cancel the selection. |
 | `` <ctrl+r> `` | 重置已拣选(复制)的提交 |  |
-| `` <ctrl+t> `` | 使用外部差异比较工具(git difftool) |  |
+| `` <ctrl+t> `` | Diff using current comparison mode |  |
 | `` * `` | 选择当前分支的提交 |  |
 | `` 0 `` | 聚焦主视图 |  |
 | `` <enter> `` | 查看提交的文件 |  |
@@ -102,16 +101,17 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` <ctrl+o> `` | 复制缩略提交哈希值到剪贴板 |  |
+| `` w, W `` | Diff with working tree |  |
+| `` v, V `` | Diff with previous commit |  |
 | `` <space> `` | 检出 | 检出所选择的提交作为分离HEAD。 |
 | `` y `` | 复制提交属性到剪贴板 | 复制提交属性到剪贴板(如hash、URL、diff、消息、作者)。 |
 | `` o `` | 在浏览器中打开提交 |  |
 | `` n `` | 从提交创建新分支 |  |
 | `` N `` | 移动提交至新分支 | 创建一个新分支，并将当前分支未推送的提交移动到该分支。如果您打算开始新工作但忘记先创建新分支，这会很有用。<br><br>请注意，此操作忽略选择，新分支总是从主分支创建或堆叠在当前分支之上（您可以选择哪种方式）。 |
-| `` w `` | 新建工作树 |  |
 | `` g `` | 查看重置选项 | 查看重置选项 (soft/mixed/hard) 用于重置到选择项 |
-| `` C `` | 复制提交(拣选) | 标记提交为已复制。然后，在本地提交视图中，您可以按 `V` (Cherry-Pick) 将已复制的提交粘贴到已检出的分支中。任何时候都可以按 `<esc>` 来取消选择。 |
+| `` C `` | 复制提交(拣选) | Mark commit as copied. Then, in the local commits view, choose Paste (cherry-pick) from the command palette. Use `<esc>` to cancel the selection. |
 | `` <ctrl+r> `` | 重置已拣选(复制)的提交 |  |
-| `` <ctrl+t> `` | 使用外部差异比较工具(git difftool) |  |
+| `` <ctrl+t> `` | Diff using current comparison mode |  |
 | `` * `` | 选择当前分支的提交 |  |
 | `` 0 `` | 聚焦主视图 |  |
 | `` <enter> `` | 查看提交 |  |
@@ -137,7 +137,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` S `` | 应用该修复提交 | 压缩所选提交之上或当前分支的所有 “fixup!” 提交（自动压缩）。 |
 | `` <ctrl+j>, <alt+down> `` | 下移提交 |  |
 | `` <ctrl+k>, <alt+up> `` | 上移提交 |  |
-| `` V `` | 粘贴提交(拣选) |  |
 | `` B `` | 标记一个主提交用于变基 | 选择下一次变基的主提交。当您变基到一个分支时，只有高于主提交的提交才会被引入。这使用“git rebase --onto”命令。 |
 | `` A `` | 修补(Amend) | 用已暂存的变更来修补提交 |
 | `` a `` | 修补提交属性 | 设置或重置提交的作者，或添加其他作者。 |
@@ -145,15 +144,16 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` T `` | 标签提交 | 创建一个新标签指向所选提交。您可以在弹窗中输入标签名称和描述(可选)。 |
 | `` <ctrl+l> `` | 打开日志菜单 | 查看提交日志的选项，例如更改排序顺序、隐藏 git graph、显示整个 git graph。 |
 | `` G `` | 在浏览器中打开拉取请求 |  |
+| `` w, W `` | Diff with working tree |  |
+| `` v, V `` | Diff with previous commit |  |
 | `` <space> `` | 检出 | 检出所选择的提交作为分离HEAD。 |
 | `` y `` | 复制提交属性到剪贴板 | 复制提交属性到剪贴板(如hash、URL、diff、消息、作者)。 |
 | `` o `` | 在浏览器中打开提交 |  |
 | `` n `` | 从提交创建新分支 |  |
 | `` N `` | 移动提交至新分支 | 创建一个新分支，并将当前分支未推送的提交移动到该分支。如果您打算开始新工作但忘记先创建新分支，这会很有用。<br><br>请注意，此操作忽略选择，新分支总是从主分支创建或堆叠在当前分支之上（您可以选择哪种方式）。 |
-| `` w `` | 新建工作树 |  |
 | `` g `` | 查看重置选项 | 查看重置选项 (soft/mixed/hard) 用于重置到选择项 |
-| `` C `` | 复制提交(拣选) | 标记提交为已复制。然后，在本地提交视图中，您可以按 `V` (Cherry-Pick) 将已复制的提交粘贴到已检出的分支中。任何时候都可以按 `<esc>` 来取消选择。 |
-| `` <ctrl+t> `` | 使用外部差异比较工具(git difftool) |  |
+| `` C `` | 复制提交(拣选) | Mark commit as copied. Then, in the local commits view, choose Paste (cherry-pick) from the command palette. Use `<esc>` to cancel the selection. |
+| `` <ctrl+t> `` | Diff using current comparison mode |  |
 | `` * `` | 选择当前分支的提交 |  |
 | `` 0 `` | 聚焦主视图 |  |
 | `` <enter> `` | 查看提交的文件 |  |
@@ -171,12 +171,14 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` <ctrl+o> `` | 复制路径到剪贴板 |  |
+| `` w, W `` | Diff with working tree |  |
+| `` v, V `` | Diff with previous commit |  |
 | `` y `` | 复制到剪贴板 |  |
 | `` c `` | 检出 | 检出文件 |
 | `` d `` | 查看'放弃变更'选项 | 放弃对此文件的提交变更 |
 | `` o `` | 打开文件 | 使用默认程序打开该文件 |
 | `` e `` | 编辑(Edit) | 使用外部编辑器打开文件 |
-| `` <ctrl+t> `` | 使用外部差异比较工具(git difftool) |  |
+| `` <ctrl+t> `` | Diff using current comparison mode |  |
 | `` <space> `` | 补丁中包含的切换文件 | 切换文件是否包含在自定义补丁中。请参阅 https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches。 |
 | `` a `` | 操作所有文件 | 添加或删除所有提交中的文件到自定义的补丁中。请参阅 https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches。 |
 | `` <enter> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
@@ -195,7 +197,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <ctrl+b> `` | 通过状态过滤文件 |  |
 | `` y `` | 复制到剪贴板 |  |
 | `` c `` | 提交变更 | 提交暂存文件 |
-| `` w `` | 提交变更而无需预先提交钩子 |  |
 | `` A `` | 修补最后一次提交 |  |
 | `` C `` | 使用 Git 编辑器提交变更 |  |
 | `` <ctrl+f> `` | 找到用于修复的基准提交 | 找到您当前变更所基于的提交，以便于修正/改进该提交。这样做可以省去您逐一查看分支提交来确定应该修正/改进哪个提交的麻烦。请参阅文档: <https://github.com/jesseduffield/lazygit/tree/master/docs/Fixup_Commits.md> |
@@ -228,7 +229,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | 检出 | 检出选中的项目 |
 | `` n `` | 新分支 |  |
 | `` N `` | 移动提交至新分支 | 创建一个新分支，并将当前分支未推送的提交移动到该分支。如果您打算开始新工作但忘记先创建新分支，这会很有用。<br><br>请注意，此操作忽略选择，新分支总是从主分支创建或堆叠在当前分支之上（您可以选择哪种方式）。 |
-| `` w `` | 新建工作树 |  |
 | `` o `` | 创建拉取请求 |  |
 | `` O `` | 创建拉取请求选项 |  |
 | `` G `` | 在浏览器中打开拉取请求 |  |
@@ -257,7 +257,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <ctrl+o> `` | 复制标签到剪贴板 |  |
 | `` <space> `` | 检出 | 检出选择的标签作为分离的HEAD |
 | `` n `` | 创建标签 | 基于当前提交创建一个新标签。您将在弹窗中输入标签名称和描述(可选)。 |
-| `` w `` | 新建工作树 |  |
 | `` d `` | 删除 | 查看本地/远程标签的删除选项 |
 | `` P `` | 推送标签 | 推送选择的标签到远端。您将在弹窗中选择一个远端。 |
 | `` g `` | 重置 | 查看重置选项 (soft/mixed/hard) 用于重置到选择项 |
@@ -272,7 +271,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` <tab> `` | Switch diff pane | Switch to the other focused diff pane. |
 | `` a `` | 切换代码块选择 | 切换逐行选择与代码块选择模式。 |
-| `` v `` | 切换拖动选择 |  |
 | `` e `` | 编辑文件 | 使用外部编辑器打开文件 |
 | `` <space> `` | 切换暂存状态 | 切换行暂存状态 |
 | `` d `` | 取消变更(git reset) | 当选择未暂存的变更时，使用git reset丢弃该变更。当选择已暂存的变更时，取消暂存该变更 |
@@ -286,7 +284,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` G `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | 退出回到侧边面板 |  |
 | `` c `` | 提交变更 | 提交暂存文件 |
-| `` w `` | 提交变更而无需预先提交钩子 |  |
 | `` C `` | 使用 Git 编辑器提交变更 |  |
 | `` <ctrl+f> `` | 找到用于修复的基准提交 | 找到您当前变更所基于的提交，以便于修正/改进该提交。这样做可以省去您逐一查看分支提交来确定应该修正/改进哪个提交的麻烦。请参阅文档: <https://github.com/jesseduffield/lazygit/tree/master/docs/Fixup_Commits.md> |
 | `` / `` | 开始搜索 |  |
@@ -315,7 +312,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <mouse wheel up> (fn+down) `` | 向上滚动 |  |
 | `` <tab> `` | Switch diff pane | Switch to the other focused diff pane. |
 | `` a `` | 切换代码块选择 | 切换逐行选择与代码块选择模式。 |
-| `` v `` | 切换拖动选择 |  |
 | `` e `` | 编辑文件 | 使用外部编辑器打开文件 |
 | `` <space> `` | 切换暂存状态 | 切换行暂存状态 |
 | `` d `` | 取消变更(git reset) | 当选择未暂存的变更时，使用git reset丢弃该变更。当选择已暂存的变更时，取消暂存该变更 |
@@ -329,7 +325,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` G `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | 退出回到侧边面板 |  |
 | `` c `` | 提交变更 | 提交暂存文件 |
-| `` w `` | 提交变更而无需预先提交钩子 |  |
 | `` C `` | 使用 Git 编辑器提交变更 |  |
 | `` <ctrl+f> `` | 找到用于修复的基准提交 | 找到您当前变更所基于的提交，以便于修正/改进该提交。这样做可以省去您逐一查看分支提交来确定应该修正/改进哪个提交的麻烦。请参阅文档: <https://github.com/jesseduffield/lazygit/tree/master/docs/Fixup_Commits.md> |
 | `` / `` | 开始搜索 |  |
@@ -369,7 +364,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g `` | 应用并删除 | 将存储项应用到工作目录并删除存储项。 |
 | `` d `` | 删除 | 从贮藏列表中删除该贮藏项 |
 | `` n `` | 新分支 | 从选定的贮藏项创建一个新分支。这是通过 git 检查创建贮藏项的提交，从该提交创建一个新分支，然后将贮藏项作为附加提交应用到新分支来实现的。 |
-| `` w `` | 新建工作树 |  |
 | `` r `` | 重命名贮藏 |  |
 | `` 0 `` | 聚焦主视图 |  |
 | `` <enter> `` | 查看提交的文件 |  |
@@ -401,7 +395,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <ctrl+o> `` | 复制分支名称到剪贴板 |  |
 | `` <space> `` | 检出 | 基于当前选中的远程分支检出一个新的本地分支，或者将远程分支作分离的HEAD。 |
 | `` n `` | 新分支 |  |
-| `` w `` | 新建工作树 |  |
 | `` M `` | 合并到当前检出的分支 | 查看将选中项合并到当前分支的选项(正常合并，压缩合并) |
 | `` r `` | 变基 | 将检出的分支变基到所选的分支上。 |
 | `` d `` | 删除 | 从远程删除远程分支。 |

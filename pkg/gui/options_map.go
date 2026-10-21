@@ -56,6 +56,9 @@ func (self *OptionsMapMgr) renderContextOptionsMap() {
 		return len(binding.Keys) > 0 && binding.DisplayOnScreen && !binding.IsDisabled() &&
 			binding.GetShortDescription() != ""
 	})
+	// Fork: prioritize the primary history comparison in hints only; upstream
+	// controller/dispatch ordering remains unchanged.
+	bindingsToDisplay = prioritizeHistoricalDiffHints(bindingsToDisplay)
 
 	optionsMap := lo.Map(bindingsToDisplay, func(binding *types.Binding, _ int) bindingInfo {
 		displayStyle := theme.OptionsFgColor
@@ -73,11 +76,9 @@ func (self *OptionsMapMgr) renderContextOptionsMap() {
 	// Mode-specific local keybindings
 	if currentContext.GetKey() == context.LOCAL_COMMITS_CONTEXT_KEY {
 		if self.c.Modes().CherryPicking.Active() {
-			optionsMap = utils.Prepend(optionsMap, bindingInfo{
-				key:         self.c.KeybindingsOpts().Config.Commits.PasteCommits.String(),
-				description: self.c.Tr.PasteCommits,
-				style:       style.FgCyan,
-			})
+			// Fork: replace the upstream empty paste-key hint with a palette hint
+			// when the command is unbound, preserving explicit shortcut hints.
+			optionsMap = utils.Prepend(optionsMap, cherryPickModeHint(self.c.KeybindingsOpts().Config, self.c.Tr))
 		}
 
 		if self.c.Model().BisectInfo.Started() {

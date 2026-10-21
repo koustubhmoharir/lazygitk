@@ -8,7 +8,6 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gui/context/traits"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
-	"github.com/jesseduffield/lazygit/pkg/utils"
 	"github.com/samber/lo"
 )
 
@@ -125,12 +124,8 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 			Handler:           self.withItem(self.copyRange),
 			GetDisabledReason: self.require(self.itemRangeSelected(self.canCopyCommits)),
 			Description:       self.c.Tr.CherryPickCopy,
-			Tooltip: utils.ResolvePlaceholderString(self.c.Tr.CherryPickCopyTooltip,
-				map[string]string{
-					"paste":  opts.Config.Commits.PasteCommits.String(),
-					"escape": opts.Config.Universal.Return.String(),
-				},
-			),
+			// Fork: unbound paste is discoverable in the palette, not an empty key hint.
+			Tooltip:         cherryPickCopyTooltip(self.c.Tr, opts.Config),
 			DisplayOnScreen: true,
 		},
 		{
@@ -146,7 +141,7 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 			Keys:              opts.GetKeys(opts.Config.Universal.OpenDiffTool),
 			Handler:           self.withItem(self.openDiffTool),
 			GetDisabledReason: self.require(self.singleItemSelected()),
-			Description:       self.c.Tr.OpenDiffTool,
+			Description:       self.c.Tr.HistoricalDiffStickyTool,
 		},
 		{
 			CommandID:         "commit.select-current-branch-history",
@@ -158,7 +153,8 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 		},
 	}
 
-	return bindings
+	// Fork direct-diff actions are additive; the existing sticky comparison remains available.
+	return append(self.historicalDiffBindings(opts), bindings...)
 }
 
 func (self *BasicCommitsController) getCommitMessageBody(hash string) string {

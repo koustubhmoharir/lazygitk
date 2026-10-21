@@ -565,6 +565,9 @@ type KeybindingUniversalConfig struct {
 	Redo                      Keybinding `yaml:"redo"`
 	FilteringMenu             Keybinding `yaml:"filteringMenu"`
 	DiffingMenu               Keybinding `yaml:"diffingMenu"`
+	DiffWithWorkingTree       Keybinding `yaml:"diffWithWorkingTree"`
+	DiffWithPreviousCommit    Keybinding `yaml:"diffWithPreviousCommit"`
+	DiffWithWorkingFile       Keybinding `yaml:"diffWithWorkingFile"`
 	// Deprecated: add the key to `diffingMenu` instead.
 	DiffingMenuAlt                    Keybinding `yaml:"diffingMenu-alt"`
 	CopyToClipboard                   Keybinding `yaml:"copyToClipboard"`

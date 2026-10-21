@@ -166,6 +166,41 @@ about the code that exists, not speculative implementation tasks.
   accepted difference status after prompting is too late. No command accepts
   nonzero results unless its builder explicitly opts in. Tests cover wrapped
   exit errors, command-local copied lists, start errors and preserved failures.
+- `historical_diff.go` is an additive Git backend; the existing sticky difftool
+  builder remains intact. Literal path lookup, raw blob streaming and prepared
+  comparison ownership are tested separately from UI flow. Preserve its use of
+  the repo-bound builder/environment and explicit worktree cwd, not process cwd.
+- `historical_diff_actions.go` adds bindings through two hooks in the shared
+  commit and commit-file controllers. Existing sticky actions get a distinct
+  display label but retain their IDs/handlers. New guards/captured values must
+  not silently select another ref/file while a prompt is open. Filesystem
+  completion is separate from upstream's tracked-only suggestion trie.
+- `KeybindingUniversalConfig` adds three diff fields; defaults and displaced
+  shortcut removal live only in the fork overlay. Preserve explicit config
+  loading and regenerate development docs/schema/cheatsheets after changes.
+  New English strings fall back normally for untranslated locales.
+- The shared headless fixture supplies non-conflicting F6–F10 shortcuts for
+  legacy operations whose old letters are now reserved. These are test bindings,
+  not fork defaults. Default-keymap scenarios must restore the constructor's
+  keybinding config (as the historical-diff scenario does). Keep new direct-diff
+  bindings enabled in legacy tests rather than hiding collisions by disabling them.
+- [Fork feature usage](../docs-master/Fork_Features.md) documents the new flows
+  and transitional shortcuts; update it when behavior changes.
+- Fork-owned command-hint helpers replace the paste-key-only tooltip and mode
+  hint when paste is unbound. Keep the hooks in `BasicCommitsController` and
+  `OptionsMapMgr`; otherwise reserved diff keys leave blank instructions in the
+  copied-commit workflow. Explicit paste bindings keep their normal hints.
+  `OptionsMapMgr` also prioritizes working-tree comparison in the display-only
+  hint list, without reordering installed bindings or dispatch precedence.
+- Verification so far: debug build, full short tests, generation, standalone
+  inventory/checker tests, formatting and lint passed. The affected-operation
+  headless selection matched 99 scenarios and passed in 104.892s. A final
+  15-scenario palette/diff selection passed in 24.201s, including normal terminal
+  return, fixed endpoints under sticky/reverse mode, both letter cases, ignored
+  destination selection, staged/index preservation, failure/recovery and cleanup.
+  Exact controller invocation tests additionally cover directory scope, recognized
+  rename paths and historical deletion. Final content-matrix review remains in
+  the tracker; do not describe these targeted runs as a new full-suite run.
 
 ## Reviewing an upstream merge
 

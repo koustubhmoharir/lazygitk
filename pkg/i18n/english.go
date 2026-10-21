@@ -425,6 +425,8 @@ type TranslationSet struct {
 	DroppingMergeRequiresSingleSelection  string
 	CherryPickCopy                        string
 	CherryPickCopyTooltip                 string
+	CherryPickCopyPaletteTooltip          string
+	PasteCommitsPaletteHint               string
 	PasteCommits                          string
 	SureCherryPick                        string
 	CherryPick                            string
@@ -741,6 +743,17 @@ type TranslationSet struct {
 	EnterRefName                          string
 	ExitDiffMode                          string
 	DiffingMenuTitle                      string
+	DiffWithWorkingTree                   string
+	DiffWithPreviousCommit                string
+	DiffWithWorkingFile                   string
+	HistoricalDiffMissingSelection        string
+	HistoricalDiffRootCommit              string
+	HistoricalDiffSingleCommitOnly        string
+	HistoricalDiffFileOnly                string
+	HistoricalDiffWorkingFilePrompt       string
+	HistoricalDiffMissingWorkingFile      string
+	HistoricalDiffDeletedFile             string
+	HistoricalDiffStickyTool              string
 	SwapDiff                              string
 	ViewDiffingOptions                    string
 	ViewDiffingOptionsTooltip             string
@@ -1642,6 +1655,8 @@ func EnglishTranslationSet() *TranslationSet {
 		DroppingMergeRequiresSingleSelection: "Dropping a merge commit requires a single selected item",
 		CherryPickCopy:                       "Copy (cherry-pick)",
 		CherryPickCopyTooltip:                "Mark commit as copied. Then, within the local commits view, you can press `{{.paste}}` to paste (cherry-pick) the copied commit(s) into your checked out branch. At any time you can press `{{.escape}}` to cancel the selection.",
+		CherryPickCopyPaletteTooltip:         "Mark commit as copied. Then, in the local commits view, choose Paste (cherry-pick) from the command palette. Use `{{.escape}}` to cancel the selection.",
+		PasteCommitsPaletteHint:              "Find Paste (cherry-pick) in palette",
 		PasteCommits:                         "Paste (cherry-pick)",
 		SureCherryPick:                       "Are you sure you want to cherry-pick the {{.numCommits}} copied commit(s) onto this branch?",
 		CherryPick:                           "Cherry-pick",
@@ -1956,6 +1971,17 @@ func EnglishTranslationSet() *TranslationSet {
 		EnterRefName:                     "Enter ref:",
 		ExitDiffMode:                     "Exit diff mode",
 		DiffingMenuTitle:                 "Diffing",
+		DiffWithWorkingTree:              "Diff with working tree",
+		DiffWithPreviousCommit:           "Diff with previous commit",
+		DiffWithWorkingFile:              "Diff with working file…",
+		HistoricalDiffMissingSelection:   "Select a commit to compare.",
+		HistoricalDiffRootCommit:         "This commit has no available first parent to compare.",
+		HistoricalDiffSingleCommitOnly:   "Select exactly one commit to compare.",
+		HistoricalDiffFileOnly:           "Select a single historical file.",
+		HistoricalDiffWorkingFilePrompt:  "Compare %s:%s with working file (inside worktree)",
+		HistoricalDiffMissingWorkingFile: "The working file is missing. Use Diff with working file… to choose another file.",
+		HistoricalDiffDeletedFile:        "This file was deleted in the selected commit; there is no historical blob to compare.",
+		HistoricalDiffStickyTool:         "Diff using current comparison mode",
 		SwapDiff:                         "Reverse diff direction",
 		ViewDiffingOptions:               "View diffing options",
 		ViewDiffingOptionsTooltip:        "View options relating to diffing two refs e.g. diffing against selected ref, entering ref to diff against, and reversing the diff direction.",

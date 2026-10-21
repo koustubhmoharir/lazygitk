@@ -3,6 +3,20 @@
 disableStartupPopups: true
 promptToReturnFromSubprocess: false
 
+# Legacy operation scenarios use these explicit, non-conflicting test shortcuts.
+# w/W and v/V remain the real direct-diff defaults. Tests of the default keymap
+# must restore the constructor's Keybinding value in SetupConfig rather than
+# treating this compatibility fixture as product defaults.
+keybinding:
+  universal:
+    newWorktree: '<f6>'
+    diffingMenu: '<f7>'
+    toggleRangeSelect: '<f8>'
+  files:
+    commitChangesWithoutHook: '<f9>'
+  commits:
+    pasteCommits: '<f10>'
+
 gui:
   theme:
     activeBorderColor:

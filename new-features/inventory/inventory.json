@@ -19,7 +19,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 53,
+      "line": 52,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"commit.checkout-menu\"",
@@ -35,7 +35,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 63,
+      "line": 62,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"commit.copy-attribute-menu\"",
@@ -51,7 +51,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 73,
+      "line": 72,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"commit.open-browser\"",
@@ -66,7 +66,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 81,
+      "line": 80,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.create-and-checkout\"",
@@ -81,7 +81,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 89,
+      "line": 88,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.move-commits-to-new\"",
@@ -96,7 +96,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 102,
+      "line": 101,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"worktree.create-menu\"",
@@ -111,7 +111,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 110,
+      "line": 109,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.reset-menu\"",
@@ -128,7 +128,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 121,
+      "line": 120,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"commit.copy-for-cherry-pick\"",
@@ -144,7 +144,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 136,
+      "line": 131,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"commit.clear-cherry-pick-selection\"",
@@ -158,11 +158,11 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 143,
+      "line": 138,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.commit.external\"",
-        "Description": "self.c.Tr.OpenDiffTool",
+        "Description": "self.c.Tr.HistoricalDiffStickyTool",
         "GetDisabledReason": "self.require(self.singleItemSelected())",
         "Handler": "self.withItem(self.openDiffTool)",
         "Keys": "opts.GetKeys(opts.Config.Universal.OpenDiffTool)",
@@ -173,7 +173,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 151,
+      "line": 146,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"commit.select-current-branch-history\"",
@@ -188,7 +188,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 182,
+      "line": 178,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-tags\"",
@@ -202,7 +202,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 197,
+      "line": 193,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-hash\"",
@@ -215,7 +215,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 205,
+      "line": 201,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-subject\"",
@@ -229,7 +229,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 214,
+      "line": 210,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-message\"",
@@ -243,7 +243,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 223,
+      "line": 219,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-body\"",
@@ -258,7 +258,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 233,
+      "line": 229,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-url\"",
@@ -272,7 +272,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 242,
+      "line": 238,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-diff\"",
@@ -286,7 +286,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 251,
+      "line": 247,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-author\"",
@@ -1160,7 +1160,7 @@
       "owner": "CommitFilesController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.history-file.external\"",
-        "Description": "self.c.Tr.OpenDiffTool",
+        "Description": "self.c.Tr.HistoricalDiffStickyTool",
         "GetDisabledReason": "self.require(self.singleItemSelected())",
         "Handler": "self.withItem(self.openDiffTool)",
         "Keys": "opts.GetKeys(opts.Config.Universal.OpenDiffTool)",
@@ -1260,7 +1260,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/commits_files_controller.go",
-      "line": 266,
+      "line": 267,
       "owner": "CommitFilesController.openCopyMenu",
       "fields": {
         "CommandID": "\"clipboard.copy-file-name\"",
@@ -1275,7 +1275,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/commits_files_controller.go",
-      "line": 280,
+      "line": 281,
       "owner": "CommitFilesController.openCopyMenu",
       "fields": {
         "CommandID": "\"clipboard.copy-file-path\"",
@@ -1290,7 +1290,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/commits_files_controller.go",
-      "line": 294,
+      "line": 295,
       "owner": "CommitFilesController.openCopyMenu",
       "fields": {
         "CommandID": "\"clipboard.copy-absolute-file-path\"",
@@ -1305,7 +1305,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/commits_files_controller.go",
-      "line": 312,
+      "line": 313,
       "owner": "CommitFilesController.openCopyMenu",
       "fields": {
         "CommandID": "\"clipboard.copy-history-file-diff\"",
@@ -1320,7 +1320,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/commits_files_controller.go",
-      "line": 322,
+      "line": 323,
       "owner": "CommitFilesController.openCopyMenu",
       "fields": {
         "CommandID": "\"clipboard.copy-history-diff\"",
@@ -1335,7 +1335,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/commits_files_controller.go",
-      "line": 332,
+      "line": 333,
       "owner": "CommitFilesController.openCopyMenu",
       "fields": {
         "CommandID": "\"clipboard.copy-history-file-content\"",
@@ -3397,6 +3397,84 @@
       "fields": {
         "Label": "self.c.Tr.WorktreeLocationOther",
         "OnPress": "func() error {\n\tself.c.Prompt(types.PromptOpts{\n\t\tTitle:          self.c.Tr.NewWorktreePath,\n\t\tInitialContent: targets[0],\n\t\tHandleConfirm: func(response string) error {\n\t\t\treturn onConfirm(utils.ExpandTilde(response))\n\t\t},\n\t})\n\treturn nil\n}"
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "Binding",
+      "file": "pkg/gui/controllers/historical_diff_actions.go",
+      "line": 28,
+      "owner": "BasicCommitsController.historicalDiffBindings",
+      "fields": {
+        "CommandID": "\"diff.commit.worktree\"",
+        "Description": "self.c.Tr.DiffWithWorkingTree",
+        "DisplayOnScreen": "true",
+        "GetDisabledReason": "self.require(func() *types.DisabledReason { return self.canHistoricalDiffCommit(false) })",
+        "Handler": "self.diffCommitWithWorktree",
+        "Keys": "opts.GetKeys(opts.Config.Universal.DiffWithWorkingTree)",
+        "Verb": "\"diff-worktree\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "Binding",
+      "file": "pkg/gui/controllers/historical_diff_actions.go",
+      "line": 35,
+      "owner": "BasicCommitsController.historicalDiffBindings",
+      "fields": {
+        "CommandID": "\"diff.commit.previous\"",
+        "Description": "self.c.Tr.DiffWithPreviousCommit",
+        "GetDisabledReason": "self.require(func() *types.DisabledReason { return self.canHistoricalDiffCommit(true) })",
+        "Handler": "self.diffCommitWithPrevious",
+        "Keys": "opts.GetKeys(opts.Config.Universal.DiffWithPreviousCommit)",
+        "Verb": "\"diff-previous\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "Binding",
+      "file": "pkg/gui/controllers/historical_diff_actions.go",
+      "line": 104,
+      "owner": "CommitFilesController.historicalDiffBindings",
+      "fields": {
+        "CommandID": "\"diff.history-file.worktree\"",
+        "Description": "self.c.Tr.DiffWithWorkingTree",
+        "DisplayOnScreen": "true",
+        "GetDisabledReason": "self.require(func() *types.DisabledReason { return self.canHistoricalFileDiff(false, false) })",
+        "Handler": "self.diffHistoricalFileWithWorktree",
+        "Keys": "opts.GetKeys(opts.Config.Universal.DiffWithWorkingTree)",
+        "Verb": "\"diff-worktree\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "Binding",
+      "file": "pkg/gui/controllers/historical_diff_actions.go",
+      "line": 111,
+      "owner": "CommitFilesController.historicalDiffBindings",
+      "fields": {
+        "CommandID": "\"diff.history-file.previous\"",
+        "Description": "self.c.Tr.DiffWithPreviousCommit",
+        "GetDisabledReason": "self.require(func() *types.DisabledReason { return self.canHistoricalFileDiff(true, false) })",
+        "Handler": "self.diffHistoricalFileWithPrevious",
+        "Keys": "opts.GetKeys(opts.Config.Universal.DiffWithPreviousCommit)",
+        "Verb": "\"diff-previous\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "Binding",
+      "file": "pkg/gui/controllers/historical_diff_actions.go",
+      "line": 118,
+      "owner": "CommitFilesController.historicalDiffBindings",
+      "fields": {
+        "CommandID": "\"diff.history-file.working-file\"",
+        "Description": "self.c.Tr.DiffWithWorkingFile",
+        "GetDisabledReason": "self.require(func() *types.DisabledReason { return self.canHistoricalFileDiff(false, true) })",
+        "Handler": "self.promptHistoricalFileWorkingDiff",
+        "Keys": "opts.GetKeys(opts.Config.Universal.DiffWithWorkingFile)",
+        "OpensMenu": "true",
+        "Verb": "\"diff-working-file\""
       },
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
     },
@@ -10245,7 +10323,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/gui.go",
-      "line": 1304,
+      "line": 1306,
       "owner": "Gui.terminalHasLightBackground",
       "fields": {
         "key": "\"dark\""
@@ -10254,7 +10332,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/gui.go",
-      "line": 1306,
+      "line": 1308,
       "owner": "Gui.terminalHasLightBackground",
       "fields": {
         "key": "\"light\""
@@ -11368,7 +11446,7 @@
         "GotoBottom": "\u003e",
         "GotoTopAlt": "\u003chome\u003e",
         "GotoBottomAlt": "\u003cend\u003e",
-        "ToggleRangeSelect": "v",
+        "ToggleRangeSelect": null,
         "RangeSelectDown": "\u003cshift+down\u003e",
         "RangeSelectUp": "\u003cshift+up\u003e",
         "PrevBlock": "\u003cleft\u003e",
@@ -11403,7 +11481,7 @@
         "ConfirmInEditorAlt": "\u003cctrl+s\u003e",
         "Remove": "d",
         "New": "n",
-        "NewWorktree": "w",
+        "NewWorktree": null,
         "Edit": "e",
         "OpenFile": "o",
         "ScrollUpMain": "\u003cpgup\u003e",
@@ -11427,8 +11505,17 @@
         "Undo": "z",
         "Redo": "Z",
         "FilteringMenu": "\u003cctrl+s\u003e",
-        "DiffingMenu": "W",
-        "DiffingMenuAlt": "\u003cctrl+e\u003e",
+        "DiffingMenu": null,
+        "DiffWithWorkingTree": [
+          "w",
+          "W"
+        ],
+        "DiffWithPreviousCommit": [
+          "v",
+          "V"
+        ],
+        "DiffWithWorkingFile": null,
+        "DiffingMenuAlt": null,
         "CopyToClipboard": "\u003cctrl+o\u003e",
         "OpenRecentRepos": "\u003cctrl+r\u003e",
         "SubmitEditorText": "\u003center\u003e",
@@ -11449,7 +11536,7 @@
       },
       "Files": {
         "CommitChanges": "c",
-        "CommitChangesWithoutHook": "w",
+        "CommitChangesWithoutHook": null,
         "AmendLastCommit": "A",
         "CommitChangesWithEditor": "C",
         "FindBaseCommitForFixup": "\u003cctrl+f\u003e",
@@ -11511,7 +11598,7 @@
         "PickCommit": "p",
         "RevertCommit": "t",
         "CherryPickCopy": "C",
-        "PasteCommits": "V",
+        "PasteCommits": null,
         "MarkCommitAsBaseForRebase": "B",
         "CreateTag": "T",
         "CheckoutCommit": "\u003cspace\u003e",
@@ -11580,7 +11667,7 @@
         "GotoBottom": "\u003e",
         "GotoTopAlt": "\u003chome\u003e",
         "GotoBottomAlt": "\u003cend\u003e",
-        "ToggleRangeSelect": "v",
+        "ToggleRangeSelect": null,
         "RangeSelectDown": "\u003cshift+down\u003e",
         "RangeSelectUp": "\u003cshift+up\u003e",
         "PrevBlock": "\u003cleft\u003e",
@@ -11615,7 +11702,7 @@
         "ConfirmInEditorAlt": "\u003cctrl+s\u003e",
         "Remove": "d",
         "New": "n",
-        "NewWorktree": "w",
+        "NewWorktree": null,
         "Edit": "e",
         "OpenFile": "o",
         "ScrollUpMain": "\u003cpgup\u003e",
@@ -11639,8 +11726,17 @@
         "Undo": "z",
         "Redo": "Z",
         "FilteringMenu": "\u003cctrl+s\u003e",
-        "DiffingMenu": "W",
-        "DiffingMenuAlt": "\u003cctrl+e\u003e",
+        "DiffingMenu": null,
+        "DiffWithWorkingTree": [
+          "w",
+          "W"
+        ],
+        "DiffWithPreviousCommit": [
+          "v",
+          "V"
+        ],
+        "DiffWithWorkingFile": null,
+        "DiffingMenuAlt": null,
         "CopyToClipboard": "\u003cctrl+o\u003e",
         "OpenRecentRepos": "\u003cctrl+r\u003e",
         "SubmitEditorText": "\u003center\u003e",
@@ -11661,7 +11757,7 @@
       },
       "Files": {
         "CommitChanges": "c",
-        "CommitChangesWithoutHook": "w",
+        "CommitChangesWithoutHook": null,
         "AmendLastCommit": "A",
         "CommitChangesWithEditor": "C",
         "FindBaseCommitForFixup": "\u003cctrl+f\u003e",
@@ -11723,7 +11819,7 @@
         "PickCommit": "p",
         "RevertCommit": "t",
         "CherryPickCopy": "C",
-        "PasteCommits": "V",
+        "PasteCommits": null,
         "MarkCommitAsBaseForRebase": "B",
         "CreateTag": "T",
         "CheckoutCommit": "\u003cspace\u003e",
@@ -11792,7 +11888,7 @@
         "GotoBottom": "\u003e",
         "GotoTopAlt": "\u003chome\u003e",
         "GotoBottomAlt": "\u003cend\u003e",
-        "ToggleRangeSelect": "v",
+        "ToggleRangeSelect": null,
         "RangeSelectDown": "\u003cshift+down\u003e",
         "RangeSelectUp": "\u003cshift+up\u003e",
         "PrevBlock": "\u003cleft\u003e",
@@ -11827,7 +11923,7 @@
         "ConfirmInEditorAlt": "\u003cctrl+s\u003e",
         "Remove": "d",
         "New": "n",
-        "NewWorktree": "w",
+        "NewWorktree": null,
         "Edit": "e",
         "OpenFile": "o",
         "ScrollUpMain": "\u003cpgup\u003e",
@@ -11851,8 +11947,17 @@
         "Undo": "z",
         "Redo": "Z",
         "FilteringMenu": "\u003cctrl+s\u003e",
-        "DiffingMenu": "W",
-        "DiffingMenuAlt": "\u003cctrl+e\u003e",
+        "DiffingMenu": null,
+        "DiffWithWorkingTree": [
+          "w",
+          "W"
+        ],
+        "DiffWithPreviousCommit": [
+          "v",
+          "V"
+        ],
+        "DiffWithWorkingFile": null,
+        "DiffingMenuAlt": null,
         "CopyToClipboard": "\u003cctrl+o\u003e",
         "OpenRecentRepos": "\u003cctrl+r\u003e",
         "SubmitEditorText": "\u003center\u003e",
@@ -11873,7 +11978,7 @@
       },
       "Files": {
         "CommitChanges": "c",
-        "CommitChangesWithoutHook": "w",
+        "CommitChangesWithoutHook": null,
         "AmendLastCommit": "A",
         "CommitChangesWithEditor": "C",
         "FindBaseCommitForFixup": "\u003cctrl+f\u003e",
@@ -11935,7 +12040,7 @@
         "PickCommit": "p",
         "RevertCommit": "t",
         "CherryPickCopy": "C",
-        "PasteCommits": "V",
+        "PasteCommits": null,
         "MarkCommitAsBaseForRebase": "B",
         "CreateTag": "T",
         "CheckoutCommit": "\u003cspace\u003e",

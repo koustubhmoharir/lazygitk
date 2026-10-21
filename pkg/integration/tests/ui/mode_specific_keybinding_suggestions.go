@@ -19,7 +19,7 @@ var ModeSpecificKeybindingSuggestions = NewIntegrationTest(NewIntegrationTestArg
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
 		rebaseSuggestion := "View rebase options: m"
-		cherryPickSuggestion := "Paste (cherry-pick): V"
+		cherryPickSuggestion := "Paste (cherry-pick): " + keys.Commits.PasteCommits.String()
 		bisectSuggestion := "View bisect options: b"
 		customPatchSuggestion := "View custom patch options: <ctrl+p>"
 		mergeSuggestion := "View merge options: m"

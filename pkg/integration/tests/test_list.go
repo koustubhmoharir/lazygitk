@@ -233,6 +233,7 @@ var tests = []*components.IntegrationTest{
 	diff.DiffCommits,
 	diff.DiffNonStickyRange,
 	diff.DiffRendererMetadata,
+	diff.HistoricalDiffActions,
 	diff.IgnoreWhitespace,
 	diff.RenameSimilarityThresholdChange,
 	diff.RenderThroughAPipe,
