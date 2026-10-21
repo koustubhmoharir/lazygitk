@@ -1,6 +1,6 @@
 # Roadmap for the fork
 
-Status: design and implementation plan only; no application behavior changed.
+Status: implementation underway; see the tracker for current work.
 Explored on 2026-10-21 at upstream commit `4e1eebe278790f257a875da6633234391a5a85b3`.
 
 Current item and its remaining tasks: [Tracker.md](Tracker.md).
@@ -49,7 +49,7 @@ tasks with the next item's plan in the same completion commit.
 
 | Item | Deliverable | Status | Depends on | Relative size |
 | --- | --- | --- | --- | --- |
-| 1 | Explicit-action defaults | Current: planned, implementation not started | None | Small |
+| 1 | Explicit-action defaults | Current: defaults implemented, verification underway | None | Small |
 | 2 | Stable command identity and complete key/action inventory | Pending | None | Medium |
 | 3 | Separate commit/file diff actions and arbitrary-file comparison | Pending | 2 for command metadata | Medium |
 | 4 | Create/move a branch without checkout | Pending | Git probe review | Medium |
@@ -77,7 +77,8 @@ distinct IDs such as `branch.rename` and `stash.rename`.
 
 ## 1. Explicit-action defaults
 
-Change `GetDefaultConfig`'s Git settings in `pkg/config/user_config.go` to:
+The fork overlay in `pkg/config/fork_defaults.go`, called from the shared
+platform config constructor before loading user configuration, sets:
 
 ```yaml
 git:

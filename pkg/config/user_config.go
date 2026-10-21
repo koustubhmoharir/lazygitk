@@ -873,7 +873,9 @@ func GetDefaultConfig() *UserConfig {
 }
 
 func GetDefaultConfigForPlatform(platform string) *UserConfig {
-	return &UserConfig{
+	// The fork overlay replaces upstream automation defaults before user config
+	// is loaded, preserving explicit opt-ins and platform-specific keybindings.
+	return applyForkDefaults(&UserConfig{
 		Gui: GuiConfig{
 			ScrollHeight:              2,
 			ScrollPastBottom:          true,
@@ -1208,7 +1210,7 @@ func GetDefaultConfigForPlatform(platform string) *UserConfig {
 				CommitMenu: Keybinding{"<ctrl+o>"},
 			},
 		},
-	}
+	})
 }
 
 func platformKeyBinding(platform string, bindingByPlatform map[string]string, fallback string) string {

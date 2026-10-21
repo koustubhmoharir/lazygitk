@@ -21,6 +21,12 @@ about the code that exists, not speculative implementation tasks.
 
 ### Explicit-action defaults: audited integration seams
 
+- `pkg/config/fork_defaults.go:applyForkDefaults` replaces the four upstream
+  automation defaults. The constructor calls this overlay with a comment
+  explaining the replacement; upstream's default table stays intact. Preserve
+  this hook when merging constructor changes, and include new constructors if
+  upstream adds any. `fork_defaults_test.go` protects all platform defaults,
+  independent ref polling, config layering, opt-ins, reload and file contents.
 - `pkg/config/user_config.go:GetDefaultConfigForPlatform` is the shared
   constructor for app loading, platform variants, dummy configs and generated
   docs/schema. Apply fork defaults here before `loadUserConfig` overlays YAML,

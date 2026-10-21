@@ -10,18 +10,12 @@ operations and refreshes following explicit actions remain available.
 
 ## Remaining tasks for item 1
 
-1. Implement the defaults through a focused fork-owned module and the smallest
-   correct shared integration point, with a replacement comment where needed.
-   Add config regression coverage for the four changed defaults, retained ref
-   polling, explicit opt-ins, and supported platform constructors. Preserve
-   existing config files and manual actions. Avoid changing automation handlers
-   when existing config gates already provide the required behavior.
-2. Verify runtime behavior with focused tests and affected integration scenarios.
+1. Verify runtime behavior with focused tests and affected integration scenarios.
    Demonstrate no automatic fetch/file polling/forwarding/conflict staging under
    defaults, including no forwarding after manual fetch; verify explicit opt-ins
    still work and read-only ref polling remains active. Keep all Git mutations
    in disposable repositories with local fake remotes.
-3. Regenerate config documentation/schema and any changed integration-test
+2. Regenerate config documentation/schema and any changed integration-test
    list, review the outputs, and complete formatting, build, unit tests, lint
    and affected end-to-end checks. Record results and any verification limits
    in the roadmap/merge guide. Once acceptance criteria are satisfied, mark item
