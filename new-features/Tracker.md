@@ -4,7 +4,7 @@ Roadmap item: [7. Selected-branch operations without checkout](Roadmap.md#7-sele
 Status: source/remote inspection, guarded ref-only advancement and explicit
 push/fetch backend plans (including current-branch fetch) are implemented.
 Additive push-dialog/target helpers are implemented and directly tested.
-The additive off-branch update dialog is under independent review.
+The additive off-branch update dialog is implemented and directly tested.
 Default binding integration, explicit stack choices and the remaining
 end-to-end selected-branch workflows remain.
 

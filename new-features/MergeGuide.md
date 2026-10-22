@@ -59,8 +59,15 @@ about the code that exists, not speculative implementation tasks.
   changed selection or a newly checked-out target as permission to integrate.
   Divergence and occupied worktrees do not fall through to reset, checkout or
   worktree creation. English fallback strings belong with this helper, not
-  with a later default-binding change. Focused verification/corrections remain
-  in progress; this helper alone does not complete the selected-branch slice.
+  with a later default-binding change. Source/options are copied before worker
+  dispatch; normalized equivalent branch input preserves tracking suggestions.
+  Stale-source review preserves explicit one-off options rather than mixing
+  them with newly loaded upstream defaults. URL inputs are refused without
+  echoing them, and local-source menus say review rather than fetch.
+  Independent sync-controller tests passed (55.406s), covering divergent and
+  occupied linked-worktree refusal, cache-only fetch effects, cancellation,
+  generation/pointer changes and literal input capture. Scoped lint is clean.
+  This helper alone does not complete the selected-branch slice.
 - These modules are preparatory and not wired into push/pull yet. Native
   `PushRef` inspection can return only one of several configured destinations;
   it is a suggestion, not unique resolution or permission to execute. Future

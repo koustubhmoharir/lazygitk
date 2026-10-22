@@ -29,14 +29,20 @@ func (self *SyncController) updateBranchSource(source branchSyncSource) error {
 		if info.HeadRef == info.FullRef {
 			return fmt.Errorf(self.c.Tr.BranchSyncOffBranchOnly, source.name)
 		}
-		flow := &branchSyncUpdateFlow{target: target, info: info, options: git_commands.BranchFetchOptions{
-			Remote: info.UpstreamRemote, RemoteRef: info.UpstreamRef, TrackingRef: info.UpstreamTrackingRef,
-		}}
-		if looksLikeBranchSyncRemoteURL(flow.options.Remote) {
-			flow.options.Remote = ""
-		}
+		flow := &branchSyncUpdateFlow{target: target, info: info, options: branchSyncUpdateDefaults(info)}
 		return flow.menu()
 	})
+}
+
+func branchSyncUpdateDefaults(info git_commands.BranchSyncInfo) git_commands.BranchFetchOptions {
+	options := git_commands.BranchFetchOptions{Remote: info.UpstreamRemote, RemoteRef: info.UpstreamRef, TrackingRef: info.UpstreamTrackingRef}
+	if options.RemoteRef == "" {
+		options.RemoteRef = info.FullRef
+	}
+	if looksLikeBranchSyncRemoteURL(options.Remote) {
+		options.Remote = ""
+	}
+	return options
 }
 
 func (flow *branchSyncUpdateFlow) menu() error {
@@ -44,8 +50,12 @@ func (flow *branchSyncUpdateFlow) menu() error {
 		return err
 	}
 	tr := flow.target.c.Tr
+	fetchLabel := tr.BranchSyncFetchForReview
+	if flow.options.Remote == "." {
+		fetchLabel = tr.BranchSyncReviewLocalUpdate
+	}
 	items := []*types.MenuItem{
-		{CommandID: "branch.update-selected.fetch", Verb: "fetch", Label: tr.BranchSyncFetchForReview, OnPress: flow.beginFetch},
+		{CommandID: "branch.update-selected.fetch", Verb: "fetch", Label: fetchLabel, OnPress: flow.beginFetch},
 		{CommandID: "branch.update-selected.remote", Verb: "configure-fetch", Label: tr.BranchSyncChooseRemote, OpensMenu: true, OnPress: flow.promptRemote},
 		{CommandID: "branch.update-selected.upstream", Verb: "configure-fetch", Label: tr.BranchSyncChooseUpstreamBranch, OpensMenu: true, OnPress: flow.promptUpstream},
 		{CommandID: "branch.update-selected.tracking", Verb: "configure-fetch", Label: tr.BranchSyncChooseTrackingRef, OpensMenu: true, OnPress: flow.promptTrackingRef},
@@ -65,6 +75,9 @@ func (flow *branchSyncUpdateFlow) promptRemote() error {
 		if err := flow.target.checkRepository(); err != nil {
 			return err
 		}
+		if looksLikeBranchSyncRemoteURL(value) {
+			return errors.New("enter a configured remote name, not a URL")
+		}
 		if value != flow.options.Remote {
 			flow.options.TrackingRef = ""
 		}
@@ -82,11 +95,11 @@ func (flow *branchSyncUpdateFlow) promptUpstream() error {
 		if err := flow.target.checkRepository(); err != nil {
 			return err
 		}
-		if value != flow.options.RemoteRef {
-			flow.options.TrackingRef = ""
-		}
 		if !strings.HasPrefix(value, "refs/heads/") {
 			value = "refs/heads/" + value
+		}
+		if value != flow.options.RemoteRef {
+			flow.options.TrackingRef = ""
 		}
 		flow.options.RemoteRef = value
 		return flow.menu()
@@ -131,22 +144,18 @@ func (flow *branchSyncUpdateFlow) prepareLocalUpdate() error {
 	if err := flow.target.checkRepository(); err != nil {
 		return err
 	}
+	name, sourceOID, upstreamRef := flow.info.Name, flow.info.OID, flow.options.RemoteRef
 	return flow.target.c.WithWaitingStatus(flow.target.c.Tr.BranchSyncInspecting, func(gocui.Task) error {
 		if err := flow.target.checkRepository(); err != nil {
 			return err
 		}
-		plan, err := flow.target.git.Sync.PrepareLocalBranchUpdate(flow.info.Name, flow.info.OID, flow.options.RemoteRef)
+		plan, err := flow.target.git.Sync.PrepareLocalBranchUpdate(name, sourceOID, upstreamRef)
 		if errors.Is(err, git_commands.ErrBranchSyncChanged) {
 			flow.target.c.OnUIThread(func() error { return flow.reinspect() })
 			return nil
 		}
 		if errors.Is(err, git_commands.ErrBranchSyncDiverged) {
-			flow.target.c.OnUIThread(func() error {
-				if err := flow.target.checkRepository(); err != nil {
-					return err
-				}
-				return flow.target.c.Menu(types.CreateMenuOptions{Title: flow.target.c.Tr.BranchSyncUpdateReviewTitle, Prompt: fmt.Sprintf(flow.target.c.Tr.BranchSyncUpdateDiverged, flow.info.Name), Items: []*types.MenuItem{{CommandID: "branch.update-selected.diverged-cancel", Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: flow.target.checkRepository}}})
-			})
+			flow.target.c.OnUIThread(func() error { return flow.showDiverged(name) })
 			return nil
 		}
 		if err != nil {
@@ -167,11 +176,12 @@ func (flow *branchSyncUpdateFlow) prepareFetch() error {
 	if err := flow.target.checkRepository(); err != nil {
 		return err
 	}
+	name, sourceOID, options := flow.info.Name, flow.info.OID, flow.options
 	return flow.target.c.WithWaitingStatus(flow.target.c.Tr.BranchSyncInspecting, func(gocui.Task) error {
 		if err := flow.target.checkRepository(); err != nil {
 			return err
 		}
-		plan, err := flow.target.git.Sync.PrepareBranchFetch(flow.info.Name, flow.info.OID, flow.options)
+		plan, err := flow.target.git.Sync.PrepareBranchFetch(name, sourceOID, options)
 		if errors.Is(err, git_commands.ErrBranchSyncChanged) {
 			flow.target.c.OnUIThread(func() error { return flow.reinspect() })
 			return nil
@@ -190,13 +200,25 @@ func (flow *branchSyncUpdateFlow) prepareFetch() error {
 	})
 }
 
+func (flow *branchSyncUpdateFlow) showDiverged(name string) error {
+	if err := flow.target.checkRepository(); err != nil {
+		return err
+	}
+	return flow.target.c.Menu(types.CreateMenuOptions{
+		Title:    flow.target.c.Tr.BranchSyncUpdateReviewTitle,
+		Prompt:   fmt.Sprintf(flow.target.c.Tr.BranchSyncUpdateDiverged, name),
+		Items:    []*types.MenuItem{{CommandID: "branch.update-selected.diverged-cancel", Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: flow.target.checkRepository}},
+		OnCancel: flow.target.checkRepository,
+	})
+}
+
 func (flow *branchSyncUpdateFlow) reviewFetch() error {
 	if err := flow.target.checkRepository(); err != nil {
 		return err
 	}
 	plan := *flow.fetch
 	opts := plan.Options()
-	prompt := fmt.Sprintf(flow.target.c.Tr.BranchSyncFetchReviewPrompt, opts.Remote, opts.RemoteRef, opts.TrackingRef, flow.info.Name, utils.ShortHash(plan.SourceOID()))
+	prompt := fmt.Sprintf(flow.target.c.Tr.BranchSyncFetchReviewPrompt, opts.Remote, opts.RemoteRef, opts.TrackingRef, plan.Name(), utils.ShortHash(plan.SourceOID()))
 	flow.target.c.Confirm(types.ConfirmOpts{Title: flow.target.c.Tr.BranchSyncFetchReviewTitle, Prompt: prompt, HandleConfirm: func() error {
 		if err := flow.target.checkRepository(); err != nil {
 			return err
@@ -228,12 +250,7 @@ func (flow *branchSyncUpdateFlow) executeFetch(plan git_commands.BranchFetchPlan
 			return nil
 		}
 		if errors.Is(err, git_commands.ErrBranchSyncDiverged) {
-			flow.target.c.OnUIThread(func() error {
-				if err := flow.target.checkRepository(); err != nil {
-					return err
-				}
-				return flow.target.c.Menu(types.CreateMenuOptions{Title: flow.target.c.Tr.BranchSyncUpdateReviewTitle, Prompt: fmt.Sprintf(flow.target.c.Tr.BranchSyncUpdateDiverged, flow.info.Name), Items: []*types.MenuItem{{CommandID: "branch.update-selected.diverged-cancel", Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: flow.target.checkRepository}}})
-			})
+			flow.target.c.OnUIThread(func() error { return flow.showDiverged(plan.Name()) })
 			return nil
 		}
 		if err != nil {
@@ -292,10 +309,6 @@ func (flow *branchSyncUpdateFlow) reinspect() error {
 		}
 		flow.info = info
 		flow.fetch, flow.update = nil, nil
-		flow.options = git_commands.BranchFetchOptions{Remote: info.UpstreamRemote, RemoteRef: info.UpstreamRef, TrackingRef: info.UpstreamTrackingRef}
-		if looksLikeBranchSyncRemoteURL(flow.options.Remote) {
-			flow.options.Remote = ""
-		}
 		return flow.menu()
 	})
 }
