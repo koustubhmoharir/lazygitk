@@ -16,8 +16,7 @@ continue/skip/abort usable. Audit other rebase-start paths for the same policy.
    safety choice. Native Git can overwrite an ignored target-path collision;
    the user has been asked whether to warn and require explicit approval or
    retain native behavior. The design/probe documents record the audit and
-   settled harmless-untracked-file policy. Check legacy pull-mode compatibility
-   against the minimum supported Git version before finishing the audit.
+   settled harmless-untracked-file policy.
 2. Add a discoverable shared commit-list action and modal warning naming the
    checked-out source branch/tip and captured target. Preserve repository/source
    identity, require fresh review if pre-launch state changes, and reuse normal

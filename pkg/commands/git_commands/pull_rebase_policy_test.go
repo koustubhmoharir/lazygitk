@@ -41,7 +41,7 @@ func TestPullRebasePolicyRealGitConfigPrecedence(t *testing.T) {
 	pullPolicyRequireNoError(t, err)
 	assert.False(t, policy.rebase, "branch false must override global pull true")
 
-	for _, mode := range []string{"true", "merges", "m", "interactive", "i"} {
+	for _, mode := range []string{"true", "merges", "m", "interactive", "i", "preserve", "p"} {
 		gitTest(t, root, "config", branchKey, mode)
 		policy, err = commands.effectivePullRebasePolicy(PullOptions{})
 		pullPolicyRequireNoError(t, err)

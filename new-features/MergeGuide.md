@@ -42,6 +42,10 @@ about the code that exists, not speculative implementation tasks.
   context. Only configured rebase pulls get the clean check, no-autostash flag
   and no-retry policy; merge pulls retain their existing behavior. Do not pin
   `--rebase=<mode>` on the command: that changes Git's `pull.ff=only` precedence.
+  Recognize legacy `preserve`/`p` modes accepted by the minimum Git 2.32;
+  do not translate them into a modern topology choice. Native Git still rejects
+  modes removed from the installed version. See its
+  [2.32 parser](https://github.com/git/git/blob/v2.32.0/rebase.c).
 - Do not move start checks into generic rebase continuation, skip, abort,
   edit-todo, ordinary commits or HEAD amendments. Conflict resolution is
   intentionally allowed to stage changes. Arbitrary custom commands and

@@ -46,6 +46,11 @@ func (self *SyncCommands) pullRebaseConfig(command *GitCommandBuilder) (pullReba
 		return pullRebasePolicy{}, true, nil
 	case "merges", "m", "interactive", "i":
 		return pullRebasePolicy{rebase: true}, true, nil
+	case "preserve", "p":
+		// Git 2.32 (our minimum version) still accepts these legacy modes.
+		// Apply the same safety policy and leave version-specific validation
+		// to the actual pull, without translating its requested topology.
+		return pullRebasePolicy{rebase: true}, true, nil
 	default:
 		return pullRebasePolicy{}, true, fmt.Errorf("unsupported pull rebase mode %q", value)
 	}
