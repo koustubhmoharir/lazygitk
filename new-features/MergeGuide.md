@@ -19,7 +19,7 @@ about the code that exists, not speculative implementation tasks.
 
 ## Live integration record
 
-### Rebase-start policy (item 6 in progress)
+### Selected-commit rebase and clean-start policy (item 6)
 
 - `git_commands/rebase_start_policy.go` owns the shared fresh tracked/index
   clean-state query and commit-first error. Untracked files, including those
@@ -81,7 +81,7 @@ about the code that exists, not speculative implementation tasks.
   [rebase-selected-commit-probes.md](rebase-selected-commit-probes.md).
   The selected-commit flow now has an additive controller hook; ignored-file
   risks require explicit approval as described below. Item 6 remains under
-  acceptance testing.
+  acceptance testing at that checkpoint; final acceptance is recorded below.
 
 - `git_commands/rebase_ignored_files.go` conservatively intersects ignored paths
   with target-tree and potential replay-change paths (including merge diffs),
@@ -186,7 +186,10 @@ together in 20.955s; the conflict scenario itself took 6.66s. Independently
 rerun compound-operation controller tests passed in 14.079s. Final scoped lint
 initially caught a test-helper naming/attribution issue; that helper was
 corrected, and scoped lint then passed with zero issues. The final broad
-rerun remains in progress.
+rerun passed all 410 selected Go subtests in 547.765s: 409 scenarios executed
+successfully, and `sync/push_no_follow_tags` was intentionally skipped inside
+the harness. Item 6 is complete; this is affected-area coverage, not a claim
+that all headless categories or the minimum-Git/cross-platform matrix ran.
 
 ### Explicit-action defaults: audited integration seams
 

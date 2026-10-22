@@ -1,25 +1,43 @@
 # Current work
 
-Roadmap item: [6. Rebase the current branch onto a selected commit](Roadmap.md#6-rebase-the-current-branch-onto-a-selected-commit).
-Status: refusal and compound-operation coverage implemented and verified;
-final affected-area acceptance is running.
+Roadmap item: [7. Selected-branch operations without checkout](Roadmap.md#7-selected-branch-operations-without-checkout).
+Status: auditing existing selected-ref support and implicit current-branch sync.
 
-Scope: rebase the checked-out branch onto a captured selected commit, including
-other-branch history/reflog. Require no staged/unstaged tracked changes; allow
-harmless untracked files and let Git reject collisions. Never invoke or offer
-autostash, and do not rewrite additional branch refs. Keep conflict
-continue/skip/abort usable. Audit other rebase-start paths for the same policy.
+Scope: operate on the explicitly selected local branch wherever no worktree is
+needed. Preserve current HEAD, index, worktree and unrelated refs. Keep general
+off-branch merge/rebase/cherry-pick deferred; never create another worktree or
+switch branches silently. Keep stack-wide operations explicit choices.
 
-## Remaining tasks for item 6
+## Remaining tasks for item 7
 
-1. Finish the final 410-scenario affected-area headless run.
-   Generation, inventory checks, formatting, debug build, full short tests,
-   scoped lint, compound-operation controller tests and the fresh serial amendment/stack/
-   conflict rerun passed. The dedicated deleted-branch reflog scenario passed.
-   Record actual limits and results in the merge guide and roadmap, without
-   claiming an unperformed full suite or cross-platform/minimum-Git matrix.
-2. Once acceptance criteria pass, complete item 6 accurately in the roadmap and
-   replace this tracker with item 7's task-level plan in the same commit.
+1. Audit branch metadata, history/diff and sync entry points, workers and
+   prompts. Record existing selected-ref support, current-branch assumptions
+   and integration seams in `selected-branch-operations.md`. Consult
+   TortoiseGit and native Git for design questions; ask the user about choices
+   not already settled by the roadmap.
+2. Design and implement a captured branch/repository target for sync, with
+   fresh remote/upstream resolution and explicit source/destination labels.
+   Every prompt, command, upstream-setting action and refresh must retain that
+   target; neither a later selection nor current HEAD may substitute for it.
+3. Make push target the selected local branch with an explicit remote/refspec.
+   Preserve protection, force-with-lease, no-upstream and triangular-workflow
+   behavior. Keep pushing other stack branches an explicit separate choice.
+4. Make off-branch pull/update an explicit upstream fetch and verified
+   fast-forward without checkout. Explain divergence without attempting
+   integration. Reject tip changes to branches occupied by another worktree;
+   do not reuse paths that mutate that worktree. Preserve current-branch pull
+   and its clean/no-autostash rebase policy.
+5. Integrate branch-bearing versus global/current-branch actions, retaining
+   selected-ref metadata support and clearly named selected-source merge/
+   rebase actions. Do not change shortcut policy ahead of item 8.
+6. Verify with local fake remotes: selected != current, absent/gone upstream,
+   distinct push/pull remotes, force-with-lease rejection, fast-forward,
+   divergence/rewritten upstream, concurrent ref changes, occupied worktrees
+   and branch stacks. Assert HEAD/index/worktree and unrelated refs unchanged.
+   Maintain usage, inventory and merge guide; run generation, formatting,
+   build, short tests, relevant headless scenarios and lint.
+7. When acceptance passes, complete item 7 accurately in the roadmap and
+   replace this tracker with item 8's task-level plan in the same commit.
 
 ## How this tracker works
 

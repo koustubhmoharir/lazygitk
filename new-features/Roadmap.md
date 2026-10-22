@@ -55,8 +55,8 @@ tasks with the next item's plan in the same completion commit.
 | 3 | Separate commit/file diff actions and arbitrary-file comparison | Complete | 2 for command metadata | Medium |
 | 4 | Create/move a branch without checkout | Complete | Git probe review | Medium |
 | 5 | Checkout selected commit under a branch name | Complete | 4's shared prompts/validation | Medium |
-| 6 | Rebase current branch onto a selected commit | Current | 2 | Small–medium |
-| 7 | Operate on selected branches without checkout | Pending | 4; explicit target design | Large |
+| 6 | Rebase current branch onto a selected commit | Complete | 2 | Small–medium |
+| 7 | Operate on selected branches without checkout | Current | 4; explicit target design | Large |
 | 8 | Consistent default shortcuts and inactive-key behavior | Pending | 2–7's action inventory | Large |
 | 9 | Frequency-ordered command palette | Pending | 2; works before or after 8 | Medium |
 
@@ -389,6 +389,22 @@ ref/HEAD/index/file contents unchanged. Cover sparse checkout/submodules to the
 extent supported by existing checkout behavior; do not silently force them.
 
 ## 6. Rebase the current branch onto a selected commit
+
+Complete (2026-10-22). The shared commit-list action is available through `?`
+in local history, other-branch history and reflog, with a captured full target
+OID, explicit topology choice, history confirmation and separate ignored-file
+risk approval. Its default shortcut remains unbound until item 8. The new
+backend is independent of marked-base mode; existing advanced rebase actions
+remain separate. Source/risk changes require fresh review.
+
+Verification: debug build, full short suite, generation, inventory tests,
+formatting and scoped lint passed. The final affected-area headless run passed
+all 410 selected Go subtests in 547.765s: 409 scenarios executed, and one was
+intentionally skipped inside the harness. This includes clean stacked fixups,
+refusal before compound amendments mutate anything, conflict recovery and
+deleted-branch reflog invocation. Verification is Linux/Git 2.51.1, not a
+minimum-Git or cross-platform matrix; detailed limits and intermediate failures
+are recorded in [MergeGuide.md](MergeGuide.md).
 
 Add **Rebase current branch onto this commit…** in `BasicCommitsController`,
 including subcommits and reflog so a commit outside the current history can be

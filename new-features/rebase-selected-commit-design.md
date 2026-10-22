@@ -1,6 +1,7 @@
 # Rebase current branch onto a selected commit
 
-Design under review for roadmap item 6. No completed-feature claim is made here.
+Implemented design for completed roadmap item 6. Verification and integration
+limits are recorded in [MergeGuide.md](MergeGuide.md).
 
 ## Meaning and modal flow
 
@@ -20,7 +21,7 @@ be a no-op; a descendant can fast-forward the branch. Do not force a rewrite.
 The ordinary action explicitly disables autostash, automatic additional-ref
 updates and implicit fork-point/merge-preservation configuration. Merge
 preservation is a meaningful separate modal choice, not a hidden consequence
-of reusing upstream's builder. The eventual UI and tests must make the chosen
+of reusing upstream's builder. The UI and tests make the chosen
 topology visible before execution.
 
 This follows [TortoiseGit's rebase dialog](https://tortoisegit.org/docs/tortoisegit/tgit-dug-rebase.html)
@@ -120,12 +121,13 @@ updates. The pull audit also reads the
 [versioned Git implementation](https://github.com/git/git/blob/v2.51.1/builtin/pull.c)
 for configuration precedence and the timing of its clean-state guard.
 
-Backend tests need captured identity, dirty-state rejection, config opt-ins,
+Acceptance covers captured identity, dirty-state rejection, config opt-ins,
 literal OIDs including same-name refs, topology, no-op, conflict continue/abort
-and failure-state preservation. UI tests need source/repository capture,
+and failure-state preservation. UI tests cover source/repository capture,
 fresh review, marked-base isolation, cancel, recovery and signing routing.
 Generation, affected headless regressions, debug build, full short tests and
-lint remain required before this item is marked complete.
+scoped lint passed; the merge guide records actual runs and intermediate
+failures. The final 410 selected headless subtests include one internal skip.
 
 The application currently requires Git 2.32.0. Its
 [versioned rebase manual](https://git-scm.com/docs/git-rebase/2.32.0) and
