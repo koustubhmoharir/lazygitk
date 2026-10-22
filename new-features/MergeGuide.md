@@ -39,8 +39,9 @@ about the code that exists, not speculative implementation tasks.
 - Additive GUI modules `branch_sync_bindings.go`, `branch_sync_target.go` and
   `branch_sync_push_flow.go` implement focused-source resolution, captured
   repository/generation guards and one-branch push review. They are not yet
-  the committed default binding route: wider stack choices and the remaining
-  sync integration still need completion. Keep direct unit-test invocation
+  the committed default binding route: remaining sync integration still needs
+  completion. Wider-stack push is deferred; do not restore its push-menu offer.
+  Keep direct unit-test invocation
   separate from claims about the default binding's end-to-end behavior.
   Preserve synchronous repository-scoped busy flags, worker cleanup/refresh,
   callback repository checks, immutable approved plans and Cancel-first lease,
@@ -70,7 +71,18 @@ about the code that exists, not speculative implementation tasks.
   generation/pointer changes and literal input capture. Scoped lint is clean.
   This helper alone does not complete the selected-branch slice.
 - `branch_sync_stack_push_flow.go` composes one-branch dialogs into an explicit
-  wider push. `branch_sync_push_flow.go` collects already validated opaque
+  wider push. This flow is deferred and must not be reachable from ordinary
+  push: the user limited push to the selected branch. Keep its isolated
+  preparation/tests separate from acceptance of the shipped push route; do not
+  restore its offer during upstream merges. Pull/update and explicit
+  multi-selection Fast-forward are separate, unchanged scopes.
+  The push discovery entry point and the one-branch menu's optional stack
+  callback were removed; dormant batch primitives have no ordinary push entry.
+  Selected/current menu-scope tests and four focused terminal push scenarios
+  pass, including an unpublished related lower branch, tracking preservation
+  and stale review. The debug build and scoped lint pass. Default binding
+  integration and legacy multi-branch-push fixture migration remain separate.
+  `branch_sync_push_flow.go` collects already validated opaque
   plans through `acceptPlan` instead of running push during member review.
   Collection is read-only and holds no one-branch push flag across callbacks;
   the final Cancel-first batch menu claims every source flag synchronously.

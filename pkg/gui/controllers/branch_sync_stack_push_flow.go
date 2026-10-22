@@ -11,22 +11,6 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 )
 
-// Stack discovery is read-only. Each member then uses the one-branch dialog to
-// collect an immutable plan; no push runs until the separate batch approval.
-func (self *SyncController) reviewBranchStackPush(target *branchSyncTarget, info git_commands.BranchSyncInfo) error {
-	return target.inspectStack(info, func(members []git_commands.BranchStackMember) error {
-		if len(members) == 1 {
-			return target.c.Menu(types.CreateMenuOptions{
-				Title: target.c.Tr.BranchSyncStackPushTitle, Prompt: target.c.Tr.BranchSyncStackNoMembers,
-				Items:    []*types.MenuItem{{CommandID: "branch.push-stack.no-members", Verb: "cancel", Label: target.c.Tr.Cancel, OnPress: target.checkRepository}},
-				OnCancel: target.checkRepository,
-			})
-		}
-		batch := &branchStackPushFlow{target: target, members: members}
-		return batch.reviewNext()
-	})
-}
-
 type branchStackPushFlow struct {
 	target  *branchSyncTarget
 	members []git_commands.BranchStackMember

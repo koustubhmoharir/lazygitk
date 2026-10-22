@@ -6,15 +6,16 @@ push/fetch backend plans (including current-branch fetch) are implemented.
 Additive push-dialog/target helpers are implemented and directly tested.
 The additive off-branch update dialog is implemented and directly tested.
 The current-branch fetch/integration dialog and terminal executor are implemented.
-Explicit wider-stack push/update review and selected Fast-forward routing are
-implemented; finish default sync routing and end-to-end acceptance.
+Selected-branch push, explicit wider-update review and selected Fast-forward
+routing are implemented; finish default sync routing and end-to-end acceptance.
 Default binding integration and the remaining
 end-to-end selected-branch workflows remain.
 
 Scope: operate on the explicitly selected local branch wherever no worktree is
 needed. Preserve current HEAD, index, worktree and unrelated refs. Keep general
 off-branch merge/rebase/cherry-pick deferred; never create another worktree or
-switch branches silently. Keep stack-wide operations explicit choices.
+switch branches silently. Push only the selected branch; wider-stack push is
+deferred and must not be offered. Keep wider updates explicit choices.
 
 ## Remaining tasks for item 7
 
@@ -28,16 +29,12 @@ switch branches silently. Keep stack-wide operations explicit choices.
    The branch-only backend now handles explicit destinations, immutable
    multi-URL approval, reviewed leases and upstream-setting snapshots.
    Finish modal routing and protection/no-upstream/triangular-workflow
-   verification. Keep pushing other stack branches an explicit separate choice.
-   The one-branch dialog and upstream-refusal fallback are implemented;
-   integrate them without losing the explicit wider stack workflow.
-   Native stack inspection and the additive wider-push flow are implemented and
-   verified: per-member review, final batch approval, preflight and partial
-   failure handling. Finish default routing and remaining acceptance checks.
-   Resolve batch-member selection before final integration: native discovery
-   includes local-only branches that the old implicit stack push omitted.
-   The user has been asked about an explicit member-selection step, with
-   tracked branches selected and local-only branches unselected by default.
+   verification. The one-branch dialog and upstream-refusal fallback are
+   implemented; finish default routing and remaining acceptance checks.
+   Update legacy wider-push acceptance scenarios to assert selected-only
+   behavior, with every other local and remote branch unchanged. Wider-stack
+   push and its member-selection proposal are deferred by user choice; do not
+   route to the prepared wider-push flow or expose it in the push menu.
    Agreed upstream policy: refuse ambiguous changes before pushing; offer
    Cancel or an explicitly reviewed push without changing tracking. Do not
    repair or replace multi-valued/inherited upstream settings automatically.

@@ -487,8 +487,12 @@ ambiguous or inherited settings, refuse that change before pushing and offer
 Cancel or a newly reviewed push without changing tracking. Never repair those
 settings silently. Updating a remote-tracking cache ref after a successful
 push is distinct from changing the local branch's saved upstream relationship.
-Audit stacked-branch push/pull menus: changing a selected branch must not
-implicitly push or update branches below it. Preserve those as explicit choices.
+Push is limited to the selected branch for now: do not offer a multi-branch
+push or a stack-member selection dialog. Wider-stack push is deferred, including
+its previously prepared flow. Audit stacked-branch pull/update menus separately:
+changing a selected branch must not implicitly update branches below it; wider
+updates remain explicit choices. Explicit multi-selection Fast-forward is
+unchanged by this push-only scope decision.
 
 For the checked-out branch, Pull fetches first, then presents the exact fetched
 commit and integration choices before changing files. Default the integration

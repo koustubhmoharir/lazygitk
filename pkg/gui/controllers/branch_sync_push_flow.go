@@ -20,7 +20,6 @@ type branchSyncPushFlow struct {
 	// Stack review collects validated plans before any network push. Nil keeps
 	// the ordinary one-branch execution path.
 	acceptPlan    func(git_commands.BranchPushPlan) error
-	stackChoice   func() error
 	reviewContext string
 }
 
@@ -28,7 +27,8 @@ func (self *SyncController) pushBranchSource(source branchSyncSource) error {
 	target := newBranchSyncTarget(self.c, source)
 	return target.inspect(func(info git_commands.BranchSyncInfo) error {
 		flow := newBranchSyncPushFlow(target, info)
-		flow.stackChoice = func() error { return self.reviewBranchStackPush(target, flow.info) }
+		// Fork scope: pushing is one branch only. Wider-stack push preparation
+		// remains deferred and must not be offered by the ordinary push menu.
 		return flow.menu()
 	})
 }
@@ -77,9 +77,6 @@ func (flow *branchSyncPushFlow) menu() error {
 			return flow.menu()
 		}},
 		{CommandID: "branch.push-selected.force-with-lease", Verb: "push", Label: tr.BranchSyncForceLease, OpensMenu: true, OnPress: flow.beginForce},
-	}
-	if flow.stackChoice != nil {
-		items = append(items, &types.MenuItem{CommandID: "branch.push-selected.stack", Verb: "push-stack", Label: tr.BranchSyncStackPushChoice, OpensMenu: true, OnPress: flow.stackChoice})
 	}
 	return flow.target.c.Menu(types.CreateMenuOptions{Title: tr.BranchSyncPushMenu, Prompt: flow.reviewContext + flow.menuSummary(), Items: items, OnCancel: flow.target.checkRepository})
 }
