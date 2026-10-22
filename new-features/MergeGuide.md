@@ -120,6 +120,16 @@ about the code that exists, not speculative implementation tasks.
   divergent or rewritten upstreams must not fall through to reset/integration.
   A fetch may inspect an occupied branch; advancing its ref still obeys the
   existing worktree reservation guard. Current-branch pull is a separate path.
+  `PrepareCurrentBranchFetch` now exposes the same bounded fetch for an exact
+  native HEAD branch, without requiring a clean tree merely to download refs.
+  Plans retain their original current/off-branch mode during revalidation;
+  switching HEAD must not silently promote or demote the operation.
+  `FetchedBranchTip` reads a direct, full commit OID from the reviewed storage
+  only after successful fetch. It observes local state under Git's normal
+  concurrency model, not an atomic remote/ref transaction. Review that OID
+  before integration. Current fetch plans cannot use ref-only advancement.
+  Independent current/off-branch fetch tests passed (14.685s), including a
+  genuinely newer server tip with raw HEAD/index and dirty files preserved.
 - `branch_sync_tracking.go` now shares local-storage validation across branch
   network builders. Exact special namespaces and their children are both
   forbidden. Preserve native ref-format checks and broken-alias detection;
@@ -133,6 +143,9 @@ about the code that exists, not speculative implementation tasks.
   query/cleanliness errors as generic stale-plan errors. `pull` rejects
   `--no-prune-tags`; preserve invocation-only overrides for both global and
   selected-remote tag pruning instead. No persistent config rewrite is needed.
+  This is the earlier one-step primitive, not the subsequently approved Pull
+  UI: do not wire it into the new fetch-then-review action. That action must
+  integrate the reviewed incoming OID without another network pull.
 - `branch_sync_local.go` resolves exact direct local upstream refs without a
   fetch for off-branch advancement. Keep its source checks and guarded
   fast-forward application; approval captures a commit, not a live ref that

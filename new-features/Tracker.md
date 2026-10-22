@@ -2,7 +2,7 @@
 
 Roadmap item: [7. Selected-branch operations without checkout](Roadmap.md#7-selected-branch-operations-without-checkout).
 Status: source/remote inspection, guarded ref-only advancement and explicit
-push/fetch/current-pull backend plans (including local upstreams) are implemented.
+push/fetch backend plans (including current-branch fetch) are implemented.
 Additive push-dialog/target helpers are implemented and directly tested.
 Default binding integration, explicit stack choices and the remaining
 end-to-end selected-branch workflows remain.
@@ -41,6 +41,8 @@ switch branches silently. Keep stack-wide operations explicit choices.
    Retain clean/no-autostash behavior. Integrate local `.` upstreams through
    direct off-branch advancement or captured current integration, as appropriate.
    The earlier one-step current-pull primitive is not the approved UI path.
+   Current-branch fetch and exact observed-tip inspection are implemented;
+   finish the integration backend, modal choices and routing.
 4. Integrate branch-bearing versus global/current-branch actions, retaining
    selected-ref metadata support and clearly named selected-source merge/
    rebase actions. Do not change shortcut policy ahead of item 8.

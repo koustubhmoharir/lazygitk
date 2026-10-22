@@ -23,6 +23,7 @@ type BranchFetchPlan struct {
 	options         BranchFetchOptions
 	remoteSignature string
 	reservation     BranchSyncReservation
+	current         bool
 	prepared        bool
 }
 
@@ -31,6 +32,17 @@ func (plan BranchFetchPlan) SourceOID() string           { return plan.sourceOID
 func (plan BranchFetchPlan) Options() BranchFetchOptions { return plan.options }
 
 func (self *SyncCommands) PrepareBranchFetch(name, expectedOID string, opts BranchFetchOptions) (BranchFetchPlan, error) {
+	return self.prepareBranchFetch(name, expectedOID, opts, false)
+}
+
+// PrepareCurrentBranchFetch prepares the same bounded fetch as
+// PrepareBranchFetch, while requiring name to be the native HEAD branch.
+// Fetching alone is safe with a dirty worktree; integration is a later choice.
+func (self *SyncCommands) PrepareCurrentBranchFetch(name, expectedOID string, opts BranchFetchOptions) (BranchFetchPlan, error) {
+	return self.prepareBranchFetch(name, expectedOID, opts, true)
+}
+
+func (self *SyncCommands) prepareBranchFetch(name, expectedOID string, opts BranchFetchOptions, current bool) (BranchFetchPlan, error) {
 	if err := validateObjectID(expectedOID); err != nil {
 		return BranchFetchPlan{}, err
 	}
@@ -42,8 +54,11 @@ func (self *SyncCommands) PrepareBranchFetch(name, expectedOID string, opts Bran
 	if info.OID != expectedOID {
 		return BranchFetchPlan{}, ErrBranchSyncChanged
 	}
-	if info.HeadRef == info.FullRef {
+	if info.HeadRef == info.FullRef && !current {
 		return BranchFetchPlan{}, fmt.Errorf("branch %q is checked out in this worktree; branch fetch update requires an off-branch target", name)
+	}
+	if current && info.HeadRef != info.FullRef {
+		return BranchFetchPlan{}, ErrBranchSyncChanged
 	}
 	if !strings.HasPrefix(opts.RemoteRef, "refs/heads/") || opts.RemoteRef == "refs/heads/" {
 		return BranchFetchPlan{}, fmt.Errorf("choose a full remote branch ref under refs/heads/")
@@ -64,7 +79,7 @@ func (self *SyncCommands) PrepareBranchFetch(name, expectedOID string, opts Bran
 	}
 	return BranchFetchPlan{
 		owner: self.GitCommon, name: name, sourceOID: expectedOID, options: opts,
-		remoteSignature: remote.Signature, reservation: info.Reservation, prepared: true,
+		remoteSignature: remote.Signature, reservation: info.Reservation, current: current, prepared: true,
 	}, nil
 }
 
@@ -76,7 +91,7 @@ func (self *SyncCommands) BranchFetchCommand(plan BranchFetchPlan, task gocui.Ta
 	if !plan.prepared || plan.owner != self.GitCommon {
 		return nil, fmt.Errorf("fetch plan was not prepared by this repository instance")
 	}
-	fresh, err := self.PrepareBranchFetch(plan.name, plan.sourceOID, plan.options)
+	fresh, err := self.prepareBranchFetch(plan.name, plan.sourceOID, plan.options, plan.current)
 	if err != nil {
 		return nil, err
 	}
@@ -95,25 +110,39 @@ func (self *SyncCommands) BranchFetchCommand(plan BranchFetchPlan, task gocui.Ta
 // succeeded. It reads the exact fetched ref and creates the separate guarded,
 // ref-only fast-forward plan.
 func (self *SyncCommands) PrepareFetchedBranchUpdate(plan BranchFetchPlan) (BranchFastForwardPlan, error) {
-	if !plan.prepared || plan.owner != self.GitCommon {
-		return BranchFastForwardPlan{}, fmt.Errorf("fetch plan was not prepared by this repository instance")
+	if plan.current {
+		return BranchFastForwardPlan{}, fmt.Errorf("current-branch fetch plans cannot be applied as ref-only updates")
 	}
-	fresh, err := self.PrepareBranchFetch(plan.name, plan.sourceOID, plan.options)
+	tip, err := self.FetchedBranchTip(plan)
 	if err != nil {
 		return BranchFastForwardPlan{}, err
 	}
+	return self.PrepareBranchFastForward(plan.name, plan.sourceOID, tip)
+}
+
+// FetchedBranchTip revalidates a prepared fetch plan and returns the exact
+// full commit OID stored in its direct tracking ref. Call only after a
+// successful fetch command.
+func (self *SyncCommands) FetchedBranchTip(plan BranchFetchPlan) (string, error) {
+	if !plan.prepared || plan.owner != self.GitCommon {
+		return "", fmt.Errorf("fetch plan was not prepared by this repository instance")
+	}
+	fresh, err := self.prepareBranchFetch(plan.name, plan.sourceOID, plan.options, plan.current)
+	if err != nil {
+		return "", err
+	}
 	if fresh != plan {
-		return BranchFastForwardPlan{}, ErrBranchSyncChanged
+		return "", ErrBranchSyncChanged
 	}
 	state, err := NewBranchCommands(self.GitCommon).readPlacementRef(plan.options.TrackingRef)
 	if err != nil {
-		return BranchFastForwardPlan{}, err
+		return "", err
 	}
 	if !state.exists || state.symbolic != "" {
-		return BranchFastForwardPlan{}, fmt.Errorf("fetched tracking ref %q is missing or a symbolic alias", plan.options.TrackingRef)
+		return "", fmt.Errorf("fetched tracking ref %q is missing or a symbolic alias", plan.options.TrackingRef)
 	}
 	if err := NewBranchCommands(self.GitCommon).validateLiteralCommitOID(state.oid); err != nil {
-		return BranchFastForwardPlan{}, fmt.Errorf("fetched tracking ref %q does not point directly to a commit: %w", plan.options.TrackingRef, err)
+		return "", fmt.Errorf("fetched tracking ref %q does not point directly to a commit: %w", plan.options.TrackingRef, err)
 	}
-	return self.PrepareBranchFastForward(plan.name, plan.sourceOID, state.oid)
+	return strings.ToLower(state.oid), nil
 }
