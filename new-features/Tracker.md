@@ -43,7 +43,9 @@ switch branches silently. Keep stack-wide operations explicit choices.
    direct off-branch advancement or captured current integration, as appropriate.
    The earlier one-step current-pull primitive is not the approved UI path.
    Current-branch fetch and exact observed-tip inspection are implemented;
-   finish the integration backend, modal choices and routing.
+   the reviewed native merge/rebase backend is implemented, including
+   pre-fetch fork points and ignored-file approval. Finish modal choices and
+   routing without dropping those reviewed backend guarantees.
 4. Integrate branch-bearing versus global/current-branch actions, retaining
    selected-ref metadata support and clearly named selected-source merge/
    rebase actions. Do not change shortcut policy ahead of item 8.

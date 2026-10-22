@@ -167,6 +167,39 @@ about the code that exists, not speculative implementation tasks.
 - `CurrentBranchPullPlan.WithFastForwardOnly` adds only the stricter native
   ff-only option. Revalidation retains that reviewed restriction without
   broadening a plan's source, destination, repository or ref-update scope.
+- `branch_sync_pull_review.go` is the replacement backend for fetch-first
+  current-branch Pull. Capture `CurrentPullReview` before fetching: the old
+  explicit tracking ref/reflog supplies a fork point for rewritten upstreams.
+  Integration plans capture a full incoming OID and replay boundary, use native
+  merge/rebase rather than another network pull, and remain backend-bound.
+  Source HEAD/tip, reservations and native policy are checked again at launch.
+  Preserve native branch/pull rebase precedence, pull.ff precedence, merge.ff
+  fallback and refusal of unconfigured divergent reconciliation. Explicit
+  choices override defaults; never silently choose merge when no policy exists.
+  Default custom branch.mergeOptions remain native and must be displayed using
+  `MergeOptions`/`ConfiguredMergeFF`; explicit merge choices clear that bundle
+  only for the invocation. `UsesConfiguredRebaseOptions` signals that the
+  default retains configured topology/autosquash behavior. The UI must label
+  that as configured rebase, not promise explicitly linear history.
+  All choices prohibit autostash, recursive submodule updates and automatic
+  rebase updates of other branch refs. Optional index/stat-cache writes are
+  disabled during cleanliness review. Explicit linear rebase suppresses
+  autosquash and merge preservation; interactive rebase needs a terminal.
+  Reuse the conservative ignored-path/content fingerprint scan for merge,
+  fast-forward and rebase. Approval is immutable and invalidated by changed
+  risk contents; actual merge no-ops do not request irrelevant approval.
+  FF-only divergence is refused before presenting overwrite-risk approval.
+  Local current upstreams read exact local branch refs directly, so a shadowed
+  or URL-rewritten remote named `.` cannot redirect this action.
+
+Reviewed integration backend checkpoint (2026-10-22): independent focused
+tests passed (74.603s) and the full backend short package passed (208.045s).
+Native tests cover merge policy and custom option bundles, actual divergent
+rebases, dropped-upstream-commit exclusion, captured local targets, config/source
+changes, dirty-tree rules and approved/stale ignored-file risks. Debug build
+also passed. Scoped backend/controller/i18n lint reported zero issues; a final
+ignored-risk case rerun passed (20.371s) after a test-only exhaustive-switch
+correction. This is backend verification, not default Pull UI acceptance.
 
 Additive push-modal checkpoint (2026-10-22): independent focused controller
 tests passed (18.609s), including normal single-upstream replacement,

@@ -209,6 +209,33 @@ updates after a successful push remain distinct from saved branch tracking.
 
 ## Usability and native references
 
+### Fetch-first current Pull backend
+
+The user approved fetching first and reviewing the exact incoming commit before
+changing files. The earlier `CurrentBranchPullCommand` remains an internal
+one-step primitive; it is not the approved new UI path. The additive
+`branch_sync_pull_review.go` captures source identity, native policy and a known
+tracking fork point before the fetch, then prepares merge/rebase against the
+reviewed full commit OID. Local upstreams use direct ref reads. No second
+network pull may substitute a newer incoming target after approval.
+
+Defaults follow native Git policy, with explicit alternative methods. When
+divergent reconciliation is not configured, require a choice. Preserve and
+display custom configured merge options and label configured rebase separately
+from an explicit linear rebase. An explicit method replaces its corresponding
+default options only for that invocation, without rewriting saved config.
+Never invoke autostash or move other branch refs through rebase.updateRefs.
+Current integration may change this worktree after approval, but not another
+worktree or nested submodule checkout implicitly.
+
+The old tracking history identifies which commits should be replayed after an
+upstream rewrite; capturing only the new upstream would risk resurrecting
+dropped commits. Related ignored-file risks need separate explicit approval,
+and changed contents require new review. A no-op merge needs no overwrite-risk
+approval. These backend contracts are verified; modal/default-route integration
+is still unfinished. Pull's eventual default shortcut must be a multi-key path,
+not a single letter, while remaining independently available in `?`.
+
 [TortoiseGit's Push dialog](https://tortoisegit.org/docs/tortoisegit/tgit-dug-push.html)
 exposes local source, remote branch and remote separately, preselecting tracking
 information and keeping upstream-setting a visible option. Its
