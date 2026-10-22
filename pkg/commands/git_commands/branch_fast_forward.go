@@ -74,9 +74,10 @@ func (self *SyncCommands) PrepareBranchFastForward(name, expectedOID, targetOID 
 	return plan, nil
 }
 
-// ApplyBranchFastForward revalidates the captured source and delegates a real
-// update once to the expected-old guarded branch placement transaction.
-func (self *SyncCommands) ApplyBranchFastForward(plan BranchFastForwardPlan) error {
+// CheckBranchFastForward revalidates a prepared plan without applying its ref
+// update. It is a read-only preflight; callers must still use Apply for the
+// expected-old guarded placement transaction.
+func (self *SyncCommands) CheckBranchFastForward(plan BranchFastForwardPlan) error {
 	if !plan.prepared {
 		return fmt.Errorf("branch fast-forward plan was not prepared")
 	}
@@ -89,6 +90,15 @@ func (self *SyncCommands) ApplyBranchFastForward(plan BranchFastForwardPlan) err
 	}
 	if fresh != plan {
 		return ErrBranchSyncChanged
+	}
+	return nil
+}
+
+// ApplyBranchFastForward revalidates the captured source and delegates a real
+// update once to the expected-old guarded branch placement transaction.
+func (self *SyncCommands) ApplyBranchFastForward(plan BranchFastForwardPlan) error {
+	if err := self.CheckBranchFastForward(plan); err != nil {
+		return err
 	}
 	if !plan.needsUpdate {
 		return nil

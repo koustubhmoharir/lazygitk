@@ -51,6 +51,10 @@ switch branches silently. Keep stack-wide operations explicit choices.
    pre-fetch fork points and ignored-file approval. Finish modal choices and
    routing without dropping those reviewed backend guarantees. The additive
    modal flow and terminal handoff are implemented and directly tested.
+   Read-only fast-forward preflight is implemented for wider updates. Finish
+   the explicit stack/multi-selection flow without resetting divergence or
+   modifying another worktree, and retain terminal integration for the current
+   branch after guarded ref-only updates.
 4. Integrate branch-bearing versus global/current-branch actions, retaining
    selected-ref metadata support and clearly named selected-source merge/
    rebase actions. Do not change shortcut policy ahead of item 8.

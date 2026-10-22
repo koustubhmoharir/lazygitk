@@ -104,6 +104,13 @@ about the code that exists, not speculative implementation tasks.
   only, not a global suppression of Git diagnostics.
   Plans are bound to the original backend instance, not just equivalent
   repository data; a repository replacement must not reuse an old plan.
+  `CheckBranchFastForward` exposes the same read-only owner/source/occupancy/
+  plan validation for multi-branch preflight. `ApplyBranchFastForward` still
+  repeats it and delegates a real update once to guarded placement. Passing
+  preflight is not a reservation or permission to omit launch-time checks.
+  Independent fast-forward tests passed (42.395s); read-only checks compare
+  refs, raw index/HEAD/config/reflogs and worktree bytes, and preserve occupied
+  no-ops, changed-state refusals and backend ownership. Backend lint is clean.
 - `branch_sync_refspec.go` resolves native push's tracking lookup through
   configured fetch refspecs, rather than inventing
   `refs/remotes/<remote>/<branch>`. Do not reuse it as fetch's DWIM source

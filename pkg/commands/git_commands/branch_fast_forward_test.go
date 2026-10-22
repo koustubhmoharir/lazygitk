@@ -3,6 +3,8 @@ package git_commands
 import (
 	"errors"
 	"fmt"
+	"io/fs"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -41,6 +43,152 @@ func TestBranchFastForwardPreservesOtherState(t *testing.T) {
 	assert.Equal(t, []byte("untracked\x00bytes"), mustReadFile(t, filepath.Join(root, "loose")))
 	assert.Equal(t, headBytes, mustReadFile(t, filepath.Join(root, ".git", "HEAD")))
 	assert.Equal(t, indexBytes, mustReadFile(t, filepath.Join(root, ".git", "index")))
+}
+
+func TestBranchFastForwardCheckIsReadOnlyAndApplyAdvancesOnlySelectedRef(t *testing.T) {
+	root, old, target := transactionHistory(t)
+	gitTest(t, root, "branch", "selected", old)
+	gitTest(t, root, "update-ref", "refs/tags/unrelated", old)
+	writeTestFile(t, filepath.Join(root, "tracked"), []byte("staged bytes\n"), 0o644)
+	gitTest(t, root, "add", "tracked")
+	writeTestFile(t, filepath.Join(root, "tracked"), []byte("unstaged bytes\n"), 0o644)
+	writeTestFile(t, filepath.Join(root, "loose"), []byte("untracked\x00bytes"), 0o600)
+	commands := branchSyncTestCommands(t, root)
+	plan, err := commands.PrepareBranchFastForward("selected", old, target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	before := branchFastForwardTreeSnapshot(t, root)
+	if err := commands.CheckBranchFastForward(plan); err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, before, branchFastForwardTreeSnapshot(t, root), "preflight must not alter repository files or metadata")
+	if err := commands.ApplyBranchFastForward(plan); err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, target, gitTest(t, root, "rev-parse", "refs/heads/selected"))
+	assert.Equal(t, target, gitTest(t, root, "rev-parse", "HEAD"))
+	assert.Equal(t, old, gitTest(t, root, "rev-parse", "refs/tags/unrelated"))
+	assert.Equal(t, []byte("unstaged bytes\n"), mustReadFile(t, filepath.Join(root, "tracked")))
+	assert.Equal(t, []byte("untracked\x00bytes"), mustReadFile(t, filepath.Join(root, "loose")))
+}
+
+func TestBranchFastForwardCheckRejectsStaleForeignAndUnpreparedPlansReadOnly(t *testing.T) {
+	root, old, target := transactionHistory(t)
+	gitTest(t, root, "branch", "selected", old)
+	commands := branchSyncTestCommands(t, root)
+	plan, err := commands.PrepareBranchFastForward("selected", old, target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var unprepared BranchFastForwardPlan
+	assertBranchFastForwardCheckReadOnly(t, root, func() error { return commands.CheckBranchFastForward(unprepared) }, "was not prepared")
+	foreign := branchSyncTestCommands(t, root)
+	assertBranchFastForwardCheckReadOnly(t, root, func() error { return foreign.CheckBranchFastForward(plan) }, "different repository instance")
+	gitTest(t, root, "update-ref", "refs/heads/selected", target, old)
+	assertBranchFastForwardCheckReadOnly(t, root, func() error { return commands.CheckBranchFastForward(plan) }, ErrBranchSyncChanged.Error())
+}
+
+func TestBranchFastForwardCheckRejectsWorktreeOccupiedAfterPreparationReadOnly(t *testing.T) {
+	root, old, target := transactionHistory(t)
+	gitTest(t, root, "branch", "selected", old)
+	commands := branchSyncTestCommands(t, root)
+	plan, err := commands.PrepareBranchFastForward("selected", old, target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	linked := filepath.Join(t.TempDir(), "linked")
+	gitTest(t, root, "worktree", "add", "-q", linked, "selected")
+	assertBranchFastForwardCheckReadOnly(t, root, func() error { return commands.CheckBranchFastForward(plan) }, "another worktree")
+}
+
+func TestBranchFastForwardCheckAllowsEqualityAndAlreadyAheadWhenOccupied(t *testing.T) {
+	root, old, target := transactionHistory(t)
+	gitTest(t, root, "branch", "selected", target)
+	linked := filepath.Join(t.TempDir(), "linked")
+	gitTest(t, root, "worktree", "add", "-q", linked, "selected")
+	commands := branchSyncTestCommands(t, root)
+	for _, test := range []struct{ expected, requested string }{{target, target}, {target, old}} {
+		plan, err := commands.PrepareBranchFastForward("selected", test.expected, test.requested)
+		if err != nil {
+			t.Fatal(err)
+		}
+		before := branchFastForwardTreeSnapshot(t, root)
+		if err := commands.CheckBranchFastForward(plan); err != nil {
+			t.Fatal(err)
+		}
+		assert.Equal(t, before, branchFastForwardTreeSnapshot(t, root))
+	}
+}
+
+func assertBranchFastForwardCheckReadOnly(t *testing.T, root string, check func() error, message string) {
+	t.Helper()
+	before := branchFastForwardTreeSnapshot(t, root)
+	err := check()
+	if err == nil || !strings.Contains(err.Error(), message) {
+		t.Fatalf("expected error containing %q, got %v", message, err)
+	}
+	assert.Equal(t, before, branchFastForwardTreeSnapshot(t, root), "rejected preflight must not alter repository files or metadata")
+}
+
+func branchFastForwardTreeSnapshot(t *testing.T, root string) map[string]string {
+	t.Helper()
+	snapshot := map[string]string{}
+	err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() {
+			if path != root && entry.Name() == ".git" {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		rel, err := filepath.Rel(root, path)
+		if err != nil {
+			return err
+		}
+		bytes, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		info, err := entry.Info()
+		if err != nil {
+			return err
+		}
+		snapshot[rel] = fmt.Sprintf("%o:%x", info.Mode(), bytes)
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	gitDir := gitTest(t, root, "rev-parse", "--absolute-git-dir")
+	err = filepath.WalkDir(gitDir, func(path string, entry fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() {
+			return nil
+		}
+		rel, err := filepath.Rel(gitDir, path)
+		if err != nil {
+			return err
+		}
+		bytes, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		info, err := entry.Info()
+		if err != nil {
+			return err
+		}
+		snapshot[".git/"+rel] = fmt.Sprintf("%o:%x", info.Mode(), bytes)
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return snapshot
 }
 
 func TestBranchFastForwardNoopNeverRewinds(t *testing.T) {
