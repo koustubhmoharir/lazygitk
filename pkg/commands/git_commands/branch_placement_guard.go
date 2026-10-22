@@ -18,6 +18,14 @@ type branchPlacementOccupation struct {
 // branchPlacementOccupancy checks Git's shared worktree metadata and active
 // operation state. It deliberately performs no ref or worktree mutations.
 func (self *BranchCommands) branchPlacementOccupancy(fullRef string) (*branchPlacementOccupation, error) {
+	return self.branchOccupancy(fullRef, false)
+}
+
+// branchOccupancy checks Git's shared worktree metadata and active operation
+// state. allowCurrentCheckout permits a caller that will attach this worktree
+// to the branch to ignore only its existing HEAD reservation; other worktrees
+// and operation reservations remain authoritative.
+func (self *BranchCommands) branchOccupancy(fullRef string, allowCurrentCheckout bool) (*branchPlacementOccupation, error) {
 	commonDir, err := canonicalMetadataPath(self.repoPaths.RepoGitDirPath())
 	if err != nil {
 		return nil, fmt.Errorf("resolve common Git directory: %w", err)
@@ -76,7 +84,7 @@ func (self *BranchCommands) branchPlacementOccupancy(fullRef string) (*branchPla
 		if metadataDir == commonDir && bare {
 			continue // A bare repository's own HEAD is not a checkout reservation.
 		}
-		occupation, err := self.occupationInMetadata(metadataDir, currentDir, fullRef)
+		occupation, err := self.occupationInMetadata(metadataDir, currentDir, fullRef, allowCurrentCheckout)
 		if err != nil || occupation != nil {
 			return occupation, err
 		}
@@ -118,7 +126,7 @@ func (self *BranchCommands) commonRepoIsBare(commonDir string) (bool, error) {
 	return false, fmt.Errorf("invalid core.bare value %q", value)
 }
 
-func (self *BranchCommands) occupationInMetadata(metadataDir, currentDir, fullRef string) (*branchPlacementOccupation, error) {
+func (self *BranchCommands) occupationInMetadata(metadataDir, currentDir, fullRef string, allowCurrentCheckout bool) (*branchPlacementOccupation, error) {
 	current := metadataDir == currentDir
 	query := func(args ...string) (string, error) {
 		builder := NewGitCmd(args[0]).GitDir(metadataDir).Arg(args[1:]...)
@@ -131,7 +139,11 @@ func (self *BranchCommands) occupationInMetadata(metadataDir, currentDir, fullRe
 			return nil, fmt.Errorf("malformed symbolic HEAD %q in %q", head, metadataDir)
 		}
 		if head == fullRef {
-			return &branchPlacementOccupation{GitDir: metadataDir, Current: current, Kind: "checkout"}, nil
+			// The caller may replace only this worktree's own checkout reservation.
+			// Continue scanning operation reservations and every other worktree.
+			if !(current && allowCurrentCheckout) {
+				return &branchPlacementOccupation{GitDir: metadataDir, Current: current, Kind: "checkout"}, nil
+			}
 		}
 	} else if !commandExitedWith(err, 1) {
 		return nil, fmt.Errorf("query HEAD in %q: %w", metadataDir, err)

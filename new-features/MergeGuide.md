@@ -265,8 +265,8 @@ about the code that exists, not speculative implementation tasks.
   after a mutating operation, so retrying based on text alone is unsafe.
 - Tests verify default retry behavior, copied/isolated flags, single execution
   and unchanged stdout/stderr/error identity with the opt-out. Both command
-  packages' short tests passed. Existing callers do not opt out yet; the named
-  checkout backend will explicitly choose this behavior.
+  packages' short tests passed. The named-checkout backend explicitly opts out;
+  existing upstream callers retain their retry behavior.
 - `git_commands/object_id.go` now owns the shared full-OID syntax check formerly
   private to historical diffs. The commit-controller helper delegates to it;
   the forthcoming shared checkout-menu helper can use the same cheap check
@@ -289,6 +289,37 @@ about the code that exists, not speculative implementation tasks.
   not stand in for actual commit IDs; native hash shadows must not redirect or
   disable a valid operation. Dedicated real SHA-1/SHA-256 target tests passed,
   including identity/type failures, shadows and unchanged repository state.
+- `named_checkout.go` owns immutable destination/HEAD snapshots and the combined
+  `checkout --no-overwrite-ignore --no-guess -B name OID^{commit}` invocation.
+  Keep the peel suffix: plain OIDs can be shadowed by a same-named branch.
+  Actual current-context bare detection must not reject a linked worktree of a
+  bare common repository. Operation markers are guarded without dirty polling.
+- `branch_placement_guard.go` now shares its scanner with named checkout. The
+  opt-in permits only the current worktree's HEAD reservation, never another
+  worktree or an active-operation reservation. Continue scanning after that
+  permitted match; otherwise a duplicated checkout can mask another worktree.
+- `RefsHelper.CreateCheckoutMenu` has one additive row hook into fork-owned
+  `helpers/named_checkout.go`. Existing checkout handlers remain unchanged.
+  The new flow captures source/repository identity, preserves literal input,
+  warns before tip moves and rechecks before execution. It never routes into
+  upstream's autostash helper. Successful refresh switches panes in its batched
+  `Then` callback; failure refresh shows actual state without forcing a pane.
+- Apply uses input-blocking status. Reprepare a stale snapshot on that same
+  worker and enqueue the fresh modal before releasing buffered input; starting
+  a second read worker from the UI would replay keys before the warning exists.
+  Preserve errors and refresh HEAD/branches/files/commits/subcommits/reflog/
+  worktree/bisect state even after a partially completed Git failure.
+- The new English labels and menu factory require regenerated cheatsheets and
+  inventory. Existing exact checkout-menu integration expectations include the
+  additive row; do not remove existing detached/current-branch entries.
+- The uncached backend short suite passed. Real-Git coverage includes current/
+  detached/unborn checkouts, carried staged/unstaged/untracked changes, rejected
+  tracked/untracked/ignored collisions, upstream retention, active markers,
+  duplicate worktree reservations, a linked worktree of a bare repository,
+  native OID shadows, SHA-256, stale ref/HEAD identity and hook partial failures.
+  The captured checkout command explicitly verifies its no-lock-retry flag and
+  exact argv. Shared command-runner tests verify that flag prevents retries;
+  a dummy Git runner alone cannot prove the opt-out was integrated.
 
 ## Reviewing an upstream merge
 
