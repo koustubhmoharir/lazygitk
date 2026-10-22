@@ -121,6 +121,42 @@ target and reflog position; review the result before retrying.
 Existing detached-head checkout and creation/checkout workflows remain separate;
 the new named workflow does not use their autostash offers.
 
+## Rebase the current branch onto a selected commit
+
+In local history, another branch's history, or reflog, select one commit and
+open `?` → **Rebase current branch onto this commit…**. The action is initially
+unbound; configure `keybinding.commits.rebaseOntoSelectedCommit` if desired.
+Choose ordinary rebase (linear history) or preserve merge topology, then review
+the current source branch/tip and selected target before confirming.
+
+This rebases the checked-out branch, not the branch containing the selected
+commit. It does not use or clear a marked base. An ancestor target can be a
+no-op and a descendant can fast-forward. The selected target is captured;
+changing selection or a branch name cannot silently substitute another commit.
+
+Staged/unstaged tracked changes must be committed first. Harmless untracked
+files remain allowed; Git rejects collisions. Neither this action nor other
+fork-owned rebase starts offer or invoke autostash, even when Git config enables
+it. Ordinary commits and conflict continue/skip/abort retain their workflows.
+The new action suppresses automatic updates to additional branch refs.
+
+Ignored files are different: native Git can overwrite them. If the target or
+potential replay paths may collide with ignored files, a separate warning
+lists the paths. **Cancel is selected by default.** Move/back up files first,
+or explicitly select **Approve ignored-file overwrite risk and rebase**.
+Scroll through the quoted file rows to inspect the complete list. Enter on a
+file row only reopens review; it never approves. The scan is conservative, so
+not every listed file necessarily changes, including in no-op cases.
+
+Approval covers the reviewed source and affected-file snapshot. A changed
+branch/tip, risk list, file type/mode or contents requires fresh confirmation
+and approval. Unrelated ignored files do not require approval. This is a
+pre-launch check, not a file lock: coordinate other Git writers while rebase
+runs. Hooks and Git can report failure after changing state; actual state is
+refreshed without automatic retry or assumed rollback. Resolve conflicts and
+stage explicitly, then use normal continue/skip/abort options. Interactive
+signing uses the terminal subprocess lifecycle.
+
 ## Command palette identity
 
 Equivalent invocation paths share an entry with combined shortcut hints.

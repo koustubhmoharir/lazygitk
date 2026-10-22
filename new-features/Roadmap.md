@@ -415,6 +415,11 @@ binding. Do not remove manual stash commands; their removal is not requested.
 The user clarified that harmless untracked files remain allowed, including
 when the clean-state query would otherwise display them. Let Git reject
 untracked collisions; do not impose an empty-untracked-list prerequisite.
+For the new selected-commit rebase flow, warn about potential ignored-file
+collisions and require explicit approval before proceeding. Cancel is the
+default in the risk menu. A changed affected-file snapshot requires fresh
+review and approval; the scan is conservative, not a guarantee that every
+listed file will be overwritten.
 
 Validation: divergent/ancestor/descendant targets, selected commit on another
 branch or in reflog, root commit, no-op, dirty state, conflicts with continue

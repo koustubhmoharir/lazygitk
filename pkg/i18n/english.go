@@ -137,6 +137,21 @@ type TranslationSet struct {
 	BranchName                            string
 	CreateMoveBranchHere                  string
 	CreateBranchAndCheckout               string
+	RebaseOntoSelectedCommit              string
+	SelectedRebaseTooltip                 string
+	SelectedRebaseSelectCommit            string
+	SelectedRebaseRepositoryChanged       string
+	SelectedRebaseOrdinary                string
+	SelectedRebasePreserveMerges          string
+	SelectedRebaseConfirmTitle            string
+	SelectedRebaseConfirmPrompt           string
+	SelectedRebaseChangedTitle            string
+	SelectedRebaseChangedNote             string
+	SelectedRebaseChecking                string
+	SelectedRebaseApplying                string
+	SelectedRebaseIgnoredTitle            string
+	SelectedRebaseIgnoredPrompt           string
+	SelectedRebaseApproveIgnored          string
 	NamedCheckoutNamePrompt               string
 	NamedCheckoutTooltip                  string
 	NamedCheckoutMoveTitle                string
@@ -1387,6 +1402,21 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchName:                           "Branch name",
 		CreateMoveBranchHere:                 "Create/move branch here…",
 		CreateBranchAndCheckout:              "Create branch and check it out…",
+		RebaseOntoSelectedCommit:             "Rebase current branch onto this commit…",
+		SelectedRebaseTooltip:                "Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base.",
+		SelectedRebaseSelectCommit:           "Select one actual commit to rebase the current branch onto.",
+		SelectedRebaseRepositoryChanged:      "The repository changed. Start the rebase action again.",
+		SelectedRebaseOrdinary:               "Ordinary rebase (linear history)",
+		SelectedRebasePreserveMerges:         "Rebase preserving merge topology",
+		SelectedRebaseConfirmTitle:           "Rebase current branch?",
+		SelectedRebaseConfirmPrompt:          "Rebase current branch %q at %s onto commit %s?\n\n%s\n\nThis may rewrite history. No changes will be stashed and no additional branch refs will be updated. The marked base is not used. Coordinate other Git writers while rebase runs.",
+		SelectedRebaseChangedTitle:           "Rebase changed; review again",
+		SelectedRebaseChangedNote:            "The source branch, tip or potentially affected ignored files changed. Review the fresh state; previous approvals no longer apply.",
+		SelectedRebaseChecking:               "Checking rebase",
+		SelectedRebaseApplying:               "Rebasing current branch",
+		SelectedRebaseIgnoredTitle:           "Ignored files may be overwritten",
+		SelectedRebaseIgnoredPrompt:          "Git may overwrite the ignored files listed below while checking out the target or replaying commits. This conservative list can include files Git leaves unchanged. Scroll to review all paths. Cancel to move or back up files first; approval explicitly accepts this risk.",
+		SelectedRebaseApproveIgnored:         "Approve ignored-file overwrite risk and rebase",
 		CheckoutAsBranch:                     "Checkout as branch",
 		NamedCheckoutNamePrompt:              "Local branch name for checkout at %s",
 		NamedCheckoutTooltip:                 "Check out the selected commit under a literal new or existing local branch name. Git carries dirty changes when safe; files are never forced and changes are never stashed. Coordinate with other Git writers while checkout runs.",

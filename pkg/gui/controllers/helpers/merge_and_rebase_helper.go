@@ -125,11 +125,13 @@ func (self *MergeAndRebaseHelper) genericMergeCommandImpl(command string, showWa
 
 	// we should end up with a command like 'git merge --continue'
 
-	// it's impossible for a rebase to require a commit so we'll use a subprocess only if it's a merge
+	// Fork: rebase continuation can need terminal signing interaction too;
+	// the upstream merge/exec-only subprocess rule would hide that interaction.
 	needsSubprocess := (effectiveStatus == models.WORKING_TREE_STATE_MERGING && command != REBASE_OPTION_ABORT && self.c.UserConfig().Git.Merging.ManualCommit) ||
 		// but we'll also use a subprocess if we have exec todos; those are likely to be lengthy build
 		// tasks whose output the user will want to see in the terminal
-		(effectiveStatus == models.WORKING_TREE_STATE_REBASING && command != REBASE_OPTION_ABORT && self.hasExecTodos(calledFromWorker))
+		(effectiveStatus == models.WORKING_TREE_STATE_REBASING && command != REBASE_OPTION_ABORT &&
+			(self.c.Git().Config.NeedsGpgSubprocessForCommit() || self.hasExecTodos(calledFromWorker)))
 
 	if needsSubprocess {
 		// TODO: see if we should be calling more of the code from self.Git.Rebase.GenericMergeOrRebaseAction

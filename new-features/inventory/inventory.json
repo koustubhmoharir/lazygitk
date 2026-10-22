@@ -19,7 +19,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 54,
+      "line": 56,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"commit.checkout-menu\"",
@@ -35,7 +35,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 64,
+      "line": 66,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"commit.copy-attribute-menu\"",
@@ -51,7 +51,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 74,
+      "line": 76,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"commit.open-browser\"",
@@ -66,7 +66,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 82,
+      "line": 84,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.create-and-checkout\"",
@@ -81,7 +81,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 90,
+      "line": 92,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.move-commits-to-new\"",
@@ -96,7 +96,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 103,
+      "line": 105,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"worktree.create-menu\"",
@@ -111,7 +111,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 111,
+      "line": 113,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.reset-menu\"",
@@ -128,7 +128,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 122,
+      "line": 124,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"commit.copy-for-cherry-pick\"",
@@ -144,7 +144,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 133,
+      "line": 135,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"commit.clear-cherry-pick-selection\"",
@@ -158,7 +158,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 140,
+      "line": 142,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.commit.external\"",
@@ -173,7 +173,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 148,
+      "line": 150,
       "owner": "BasicCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"commit.select-current-branch-history\"",
@@ -188,7 +188,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 180,
+      "line": 182,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-tags\"",
@@ -202,7 +202,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 195,
+      "line": 197,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-hash\"",
@@ -215,7 +215,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 203,
+      "line": 205,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-subject\"",
@@ -229,7 +229,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 212,
+      "line": 214,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-message\"",
@@ -243,7 +243,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 221,
+      "line": 223,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-body\"",
@@ -258,7 +258,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 231,
+      "line": 233,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-url\"",
@@ -272,7 +272,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 240,
+      "line": 242,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-diff\"",
@@ -286,7 +286,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/basic_commits_controller.go",
-      "line": 249,
+      "line": 251,
       "owner": "BasicCommitsController.copyCommitAttribute",
       "fields": {
         "CommandID": "\"clipboard.copy-commit-author\"",
@@ -2973,7 +2973,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 292,
+      "line": 294,
       "owner": "MergeAndRebaseHelper.PromptForConflictHandling",
       "fields": {
         "CommandID": "\"conflict.view\"",
@@ -2986,7 +2986,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 301,
+      "line": 303,
       "owner": "MergeAndRebaseHelper.PromptForConflictHandling",
       "fields": {
         "CommandID": "\"operation.abort\"",
@@ -3000,7 +3000,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 423,
+      "line": 425,
       "owner": "MergeAndRebaseHelper.RebaseOntoRef",
       "fields": {
         "CommandID": "\"branch.rebase-current-onto-selected.simple\"",
@@ -3015,7 +3015,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 451,
+      "line": 453,
       "owner": "MergeAndRebaseHelper.RebaseOntoRef",
       "fields": {
         "CommandID": "\"branch.rebase-current-onto-selected.interactive\"",
@@ -3030,7 +3030,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 484,
+      "line": 486,
       "owner": "MergeAndRebaseHelper.RebaseOntoRef",
       "fields": {
         "CommandID": "\"branch.rebase-current-onto-base\"",
@@ -3045,7 +3045,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 547,
+      "line": 549,
       "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
       "fields": {
         "CommandID": "\"branch.merge.regular\"",
@@ -3060,7 +3060,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 563,
+      "line": 565,
       "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
       "fields": {
         "CommandID": "\"branch.merge.no-ff\"",
@@ -3075,7 +3075,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 578,
+      "line": 580,
       "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
       "fields": {
         "CommandID": "\"branch.merge.regular\"",
@@ -3090,7 +3090,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 593,
+      "line": 595,
       "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
       "fields": {
         "CommandID": "\"branch.merge.ff\"",
@@ -3105,7 +3105,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 627,
+      "line": 629,
       "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
       "fields": {
         "CommandID": "\"branch.merge.squash-uncommitted\"",
@@ -3119,7 +3119,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 640,
+      "line": 642,
       "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
       "fields": {
         "CommandID": "\"branch.merge.squash-committed\"",
@@ -5520,6 +5520,93 @@
         "Handler": "self.nextHistory",
         "Keys": "opts.GetKeys(opts.Config.Universal.NextItem)",
         "Verb": "\"next-history-entry\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "Binding",
+      "file": "pkg/gui/controllers/selected_commit_rebase_actions.go",
+      "line": 17,
+      "owner": "BasicCommitsController.selectedCommitRebaseBinding",
+      "fields": {
+        "CommandID": "\"branch.rebase-current-onto-selected-commit\"",
+        "Description": "self.c.Tr.RebaseOntoSelectedCommit",
+        "GetDisabledReason": "func() *types.DisabledReason {\n\t_, reason := self.selectedRebaseSource()\n\treturn reason\n}",
+        "Handler": "self.beginSelectedCommitRebase",
+        "Keys": "opts.GetKeys(opts.Config.Commits.RebaseOntoSelectedCommit)",
+        "OpensMenu": "true",
+        "Verb": "\"rebase\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/selected_commit_rebase_actions.go",
+      "line": 47,
+      "owner": "BasicCommitsController.beginSelectedCommitRebase",
+      "fields": {
+        "CommandID": "\"branch.rebase-current-onto-selected-commit.ordinary\"",
+        "Keys": "menuKey('r')",
+        "Label": "self.c.Tr.SelectedRebaseOrdinary",
+        "OnPress": "func() error { return flow.prepare(false) }",
+        "OpensMenu": "true",
+        "Verb": "\"rebase\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/selected_commit_rebase_actions.go",
+      "line": 52,
+      "owner": "BasicCommitsController.beginSelectedCommitRebase",
+      "fields": {
+        "CommandID": "\"branch.rebase-current-onto-selected-commit.preserve-merges\"",
+        "Keys": "menuKey('m')",
+        "Label": "self.c.Tr.SelectedRebasePreserveMerges",
+        "OnPress": "func() error { return flow.prepare(true) }",
+        "OpensMenu": "true",
+        "Verb": "\"rebase\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/selected_commit_rebase_actions.go",
+      "line": 121,
+      "owner": "selectedCommitRebaseFlow.reviewIgnoredFiles",
+      "fields": {
+        "CommandID": "\"branch.rebase-current-onto-selected-commit.cancel-risk\"",
+        "Label": "flow.c.Tr.Cancel",
+        "OnPress": "func() error { return nil }",
+        "Verb": "\"cancel\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/selected_commit_rebase_actions.go",
+      "line": 125,
+      "owner": "selectedCommitRebaseFlow.reviewIgnoredFiles",
+      "fields": {
+        "CommandID": "\"branch.rebase-current-onto-selected-commit.approve-ignored-overwrite\"",
+        "Keys": "menuKey('p')",
+        "Label": "flow.c.Tr.SelectedRebaseApproveIgnored",
+        "OnPress": "func() error { return flow.apply(plan.WithIgnoredFilesApproved()) }",
+        "Verb": "\"rebase\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/selected_commit_rebase_actions.go",
+      "line": 135,
+      "owner": "selectedCommitRebaseFlow.reviewIgnoredFiles",
+      "fields": {
+        "CommandID": "\"branch.rebase-current-onto-selected-commit.inspect-ignored-path\"",
+        "Label": "quoted",
+        "OnPress": "func() error { return flow.reviewIgnoredFiles(plan) }",
+        "OpensMenu": "true",
+        "Verb": "\"inspect\""
       },
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
     },
@@ -11610,6 +11697,7 @@
       },
       "Commits": {
         "CreateMoveBranch": null,
+        "RebaseOntoSelectedCommit": null,
         "SquashDown": "s",
         "RenameCommit": "r",
         "RenameCommitWithEditor": "R",
@@ -11832,6 +11920,7 @@
       },
       "Commits": {
         "CreateMoveBranch": null,
+        "RebaseOntoSelectedCommit": null,
         "SquashDown": "s",
         "RenameCommit": "r",
         "RenameCommitWithEditor": "R",
@@ -12054,6 +12143,7 @@
       },
       "Commits": {
         "CreateMoveBranch": null,
+        "RebaseOntoSelectedCommit": null,
         "SquashDown": "s",
         "RenameCommit": "r",
         "RenameCommitWithEditor": "R",

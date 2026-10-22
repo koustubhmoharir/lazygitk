@@ -50,6 +50,14 @@ about the code that exists, not speculative implementation tasks.
   edit-todo, ordinary commits or HEAD amendments. Conflict resolution is
   intentionally allowed to stage changes. Arbitrary custom commands and
   third-party `git flow` executables are not intercepted by these builders.
+- `git_commands/rebase_commit_preflight.go` complements the late clean-start
+  check for `RebaseCommands.AmendTo`: compare the worktree with the index
+  before creating its fixup commit. Staged changes are allowed because that
+  commit consumes them; other tracked edits must be rejected before mutation.
+  Do not replace this with the ordinary clean-index check or remove the late
+  check, which still detects changes made by hooks. HEAD-only amendments stay
+  on their existing path. The fixup-only fallback and automatic stacked-branch
+  movement audit remain open; do not infer approval from this early guard.
 - `worktree_operation_guard.go` extracts named checkout's operation-marker
   guard without changing its diagnostics. The new selected-commit backend
   reuses it and existing exact OID/current-HEAD/ref-occupancy readers through
@@ -57,11 +65,51 @@ about the code that exists, not speculative implementation tasks.
   explicit topology, never marked-base state. A command-scoped
   `rebase.updateRefs=false` protects other branch refs even after continuation;
   the command is not automatically retried or blindly rolled back on failure.
+  `GenericMergeOrRebaseActionCmdObj` disables whole-command retries for rebase
+  continue/skip/abort too: a failed hook can follow a completed replay step.
+  Its merge behavior is unchanged.
 - Feature design and native behavior evidence are in
   [rebase-selected-commit-design.md](rebase-selected-commit-design.md) and
   [rebase-selected-commit-probes.md](rebase-selected-commit-probes.md).
-  The new backend is not yet wired to the UI; ignored-file overwrite policy
-  is awaiting the user's answer. Item 6 remains incomplete.
+  The selected-commit flow now has an additive controller hook; ignored-file
+  risks require explicit approval as described below. Item 6 remains under
+  acceptance testing.
+
+- `git_commands/rebase_ignored_files.go` conservatively intersects ignored paths
+  with target-tree and potential replay-change paths (including merge diffs),
+  with literal NUL parsing and `core.ignoreCase`. Indexed path-prefix lookups
+  avoid an ignored-files × history-paths scan. Fingerprints frame each path,
+  type/mode and content digest; symlinks are read, not followed. The plan copies
+  exposed paths and gates command creation on an explicit approved copy.
+  Fresh state invalidates approval when source, risk set or file bytes change.
+  This is not an atomic file lock and cannot constrain arbitrary hook effects.
+  A real-Git submodule regression verifies that native parent rebase leaves
+  the child checkout and ignored child collision alone even with recursion
+  configured, on the tested Git. If that native behavior changes, extend the
+  safety scan/explicit choices before loosening the regression; do not silently
+  accept newly unreviewed child-file overwrites.
+  Path and unmerged-index queries must use raw stdout from `RunWithOutputs`,
+  not the combined/sanitized `RunWithOutput`: ambiguity warnings or ANSI bytes
+  in literal filenames must not corrupt the risk list or conflict detection.
+- `controllers/selected_commit_rebase_actions.go` owns captured repository/OID,
+  topology choice, history confirmation and risk review. Its one basic-commit
+  hook covers local history, subcommits and reflog. The initially unbound
+  `commits.rebaseOntoSelectedCommit` remains discoverable through `?`. Do not
+  route this action through `RebaseOntoRef`, which reads/clears marked-base mode.
+  Risk-menu Cancel is first; approval is separate, and path rows reopen review.
+  Paths are individually quoted, scrollable and retain full tooltips; a long
+  header must not conceal the list. `HideCancel` avoids a duplicate appended
+  Cancel row without disabling Escape.
+- The controller queues fresh review on its existing blocking worker before
+  buffered keys can replay. Signing starts run through the terminal lifecycle;
+  terminal return uses `helpers/rebase_subprocess_result.go` and the backend's
+  read-only `HasUnmergedFiles` query to distinguish actual conflicts from
+  signing/hook failures whose exit errors do not include displayed diagnostics.
+  The continuation subprocess predicate also includes interactive signing;
+  preserve that fork replacement when upstream changes exec/merge routing.
+- New translation/config fields require development docs/schema generation and
+  command-inventory regeneration. Approval does not imply changing the marked
+  base, stashing, updating another branch or automatically retrying a failure.
 
 The existing out-of-date-submodule conflict scenario now changes its submodule
 after the rebase starts: this preserves its recovery/auto-staging subject while
@@ -81,6 +129,36 @@ the dirty extraction fixture; it was corrected before the four-scenario rerun.
 The standalone probe also passed its explicit assertions. Broader affected
 headless coverage, signing/UI acceptance and minimum-Git/cross-platform runs
 have not been completed. No system dependencies were installed.
+
+Selected-commit UI/approval checkpoint (2026-10-22): debug build, full short
+tests, development generation, inventory generator tests, formatting and scoped
+lint passed. Controller flow tests passed (11.411s), covering captured identity,
+fresh risk review, quoted/scrollable names, cancellation, dirty rejection,
+marked-base isolation and terminal signing dispatch. Backend tests cover raw
+ANSI paths and ambiguity warnings as well as target graphs, SHA-256, submodule
+behavior and approval invalidation by paths/type/mode/bytes. Terminal-result
+tests distinguish real conflicts from other failures; signing continuation
+tests verify continue/skip versus abort and explicit GPG override routing.
+The two new TUI scenarios passed together (30.433s), covering other-branch
+history, risk cancellation/fresh approval, tracked dirt, abort and staged
+conflict continuation. Initial fixture failures were a wrong key namespace,
+missing required setup callbacks and selecting file-conflict options instead
+of rebase options; those were corrected before the passing run. The broader
+409-scenario affected-area run completed in 375.526s: 407 Go passes and two
+failures. One passing subtest was internally skipped by the harness
+(`sync/push_no_follow_tags`), so 406 scenarios actually passed. Both failures
+were existing find-base/amend workflows: upstream creates a fixup commit before
+the clean-rebase check rejects other unstaged tracked changes. Refuse before
+that mutation; the explicit fixup-only fallback versus refusal is awaiting a
+user choice. Audit automatic stacked-branch fixup/amend movement for the same
+compound-operation risk. The dedicated deleted-branch reflog scenario passed
+(6.61s, invocation 20.939s). Its regenerated test list and the new early amend
+guard pass formatting and scoped lint (zero issues); independent focused guard
+tests passed in 2.391s; the full backend short package then passed in 63.983s.
+Final acceptance reruns after the fallback choice remain
+open. The early guard preserves HEAD, index, worktree and stash on rejection,
+and allows staged content plus harmless untracked files.
+Actual verification is Linux/Git 2.51.1; no system dependencies were installed.
 
 ### Explicit-action defaults: audited integration seams
 

@@ -315,6 +315,11 @@ func (self *RebaseCommands) getHashOfLastCommitMade() (string, error) {
 // AmendTo amends the given commit with whatever files are staged
 func (self *RebaseCommands) AmendTo(commits []*models.Commit, commitIndex int) error {
 	commit := commits[commitIndex]
+	// This fork preflight complements the later clean-start check by rejecting
+	// pre-existing tracked worktree changes before creating the fixup commit.
+	if err := self.requireCleanAfterIndexCommitForRebase(); err != nil {
+		return err
+	}
 
 	if err := self.commit.CreateFixupCommit(commit.Hash()); err != nil {
 		return err
@@ -486,8 +491,13 @@ func (self *RebaseCommands) RebaseBranchFromBaseCommit(targetBranchName string, 
 
 func (self *RebaseCommands) GenericMergeOrRebaseActionCmdObj(commandType string, command string) *oscommands.CmdObj {
 	cmdArgs := NewGitCmd(commandType).Arg("--" + command).ToArgv()
-
-	return self.cmd.New(cmdArgs)
+	cmd := self.cmd.New(cmdArgs)
+	// Fork: a rebase step can advance history before a hook reports a lock
+	// error. Never repeat continue/skip/abort implicitly after such a failure.
+	if commandType == "rebase" {
+		cmd.DisableLockRetries()
+	}
+	return cmd
 }
 
 func (self *RebaseCommands) ContinueRebase() error {

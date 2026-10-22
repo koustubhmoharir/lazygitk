@@ -57,8 +57,27 @@ changes. The user explicitly chose to allow harmless untracked files, leaving
 collision checks to Git. Use `--untracked-files=no` and
 `--ignore-submodules=untracked` for the clean-state query so an unrelated
 untracked file, including one inside a submodule, does not block a rebase.
-Ignored-file safety and other native Git limitations still require explicit
-verification, not assumptions.
+The user approved a separate ignored-file warning with explicit approval.
+The new action conservatively compares ignored paths with the target tree and
+paths changed across potential replay commits, including merge-parent diffs.
+Equal paths and file/directory prefix collisions count. Git's `core.ignoreCase`
+is respected. This can include paths Git ultimately leaves untouched (including
+no-op cases); say **may overwrite**, not **will overwrite**.
+
+Fingerprint the sorted affected paths, file types/modes and contents; do not
+follow ignored symlinks. The prepared plan exposes a copied path list and an
+explicit approval-copy method. Revalidate source and risk fingerprint before
+producing an executable command. New/removed risks or changed bytes invalidate
+approval and require fresh review. Read/inspection errors fail closed.
+Unrelated ignored-file changes do not invalidate approval. This remains a
+pre-launch snapshot under Git's normal concurrency model, not an atomic file
+lock or a promise about arbitrary hook side effects.
+
+After history confirmation, show the separately titled ignored-file risk menu
+when needed. Quote paths so control characters cannot forge extra rows. Put
+Cancel first, and a separately selected approval action second. No approval is
+implied by opening the action, confirming the history rewrite, or pressing
+Enter on the risk menu's initial selection.
 
 ## Integration and recovery requirements
 
@@ -77,6 +96,10 @@ verification, not assumptions.
 - Signing must keep its existing terminal interaction when needed. Neither
   signing failures nor hooks justify retrying, rolling back blindly, or hiding
   actual in-progress state.
+- Both start and non-abort continuation use a terminal subprocess when signing
+  needs interaction. After terminal execution, inspect actual rebase/unmerged
+  state for conflict recovery: the subprocess exit error does not capture its
+  displayed diagnostics. Preserve non-conflict signing/hook errors.
 - Refresh branches, commits, files, reflog and operation state after execution
   on both success and failure. Reuse conflict recovery and allow staged
   resolutions through continue. Do not impose start-only checks on recovery.

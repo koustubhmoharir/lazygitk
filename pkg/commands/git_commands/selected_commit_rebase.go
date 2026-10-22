@@ -3,6 +3,7 @@ package git_commands
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
@@ -12,6 +13,9 @@ import (
 // identity. Its fields are private so only preparation can authorize it.
 type SelectedCommitRebasePlan struct {
 	targetOID, headRef, headOID string
+	ignoredPaths                []string
+	ignoredFingerprint          string
+	ignoredApproved             bool
 	preserveMerges              bool
 	prepared                    bool
 }
@@ -21,7 +25,22 @@ func (plan SelectedCommitRebasePlan) HeadRef() string      { return plan.headRef
 func (plan SelectedCommitRebasePlan) HeadOID() string      { return plan.headOID }
 func (plan SelectedCommitRebasePlan) PreserveMerges() bool { return plan.preserveMerges }
 
-var ErrSelectedCommitRebaseChanged = errors.New("the rebase source changed; review it again before proceeding")
+// IgnoredFiles returns a copy of ignored files which may collide with this rebase.
+func (plan SelectedCommitRebasePlan) IgnoredFiles() []string {
+	return slices.Clone(plan.ignoredPaths)
+}
+
+// WithIgnoredFilesApproved returns a copy recording explicit approval for the
+// ignored-file risks found during preparation.
+func (plan SelectedCommitRebasePlan) WithIgnoredFilesApproved() SelectedCommitRebasePlan {
+	plan.ignoredApproved = true
+	return plan
+}
+
+var (
+	ErrSelectedCommitRebaseChanged   = errors.New("the rebase source changed; review it again before proceeding")
+	ErrRebaseIgnoredApprovalRequired = errors.New("ignored files may be overwritten by this rebase; review and explicitly approve them first")
+)
 
 // PrepareSelectedCommitRebase captures an exact commit and current branch
 // snapshot without changing repository state.
@@ -76,7 +95,14 @@ func (self *RebaseCommands) PrepareSelectedCommitRebase(targetOID string, preser
 		}
 		return SelectedCommitRebasePlan{}, fmt.Errorf("current branch is also reserved by another worktree (%s, Git directory %q)", occupation.Kind, occupation.GitDir)
 	}
-	return SelectedCommitRebasePlan{targetOID: strings.ToLower(targetOID), headRef: ref, headOID: oid, preserveMerges: preserveMerges, prepared: true}, nil
+	ignoredPaths, fingerprint, err := self.selectedCommitRebaseIgnoredPaths(strings.ToLower(targetOID), oid)
+	if err != nil {
+		return SelectedCommitRebasePlan{}, err
+	}
+	return SelectedCommitRebasePlan{
+		targetOID: strings.ToLower(targetOID), headRef: ref, headOID: oid,
+		ignoredPaths: ignoredPaths, ignoredFingerprint: fingerprint, preserveMerges: preserveMerges, prepared: true,
+	}, nil
 }
 
 // SelectedCommitRebaseCommand revalidates a prepared snapshot and builds the
@@ -89,8 +115,13 @@ func (self *RebaseCommands) SelectedCommitRebaseCommand(plan SelectedCommitRebas
 	if err != nil {
 		return nil, err
 	}
-	if fresh != plan {
+	if fresh.targetOID != plan.targetOID || fresh.headRef != plan.headRef || fresh.headOID != plan.headOID ||
+		fresh.preserveMerges != plan.preserveMerges || !slices.Equal(fresh.ignoredPaths, plan.ignoredPaths) ||
+		fresh.ignoredFingerprint != plan.ignoredFingerprint {
 		return nil, ErrSelectedCommitRebaseChanged
+	}
+	if len(fresh.ignoredPaths) > 0 && !plan.ignoredApproved {
+		return nil, ErrRebaseIgnoredApprovalRequired
 	}
 	args := NewGitCmd("rebase").Config("rebase.updateRefs=false").Arg("--no-autostash", "--no-fork-point", "--no-autosquash")
 	if plan.preserveMerges {

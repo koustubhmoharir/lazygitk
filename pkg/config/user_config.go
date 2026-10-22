@@ -636,6 +636,7 @@ type KeybindingBranchesConfig struct {
 
 type KeybindingCommitsConfig struct {
 	CreateMoveBranch               Keybinding `yaml:"createMoveBranch"`
+	RebaseOntoSelectedCommit       Keybinding `yaml:"rebaseOntoSelectedCommit"`
 	SquashDown                     Keybinding `yaml:"squashDown"`
 	RenameCommit                   Keybinding `yaml:"renameCommit"`
 	RenameCommitWithEditor         Keybinding `yaml:"renameCommitWithEditor"`

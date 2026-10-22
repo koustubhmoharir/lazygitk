@@ -120,3 +120,13 @@ func TestPrepareInteractiveRebaseCommandCleanPolicy(t *testing.T) {
 		runner.CheckForMissingCalls()
 	})
 }
+
+func TestRebaseRecoveryCommandsDoNotRetry(t *testing.T) {
+	instance := buildRebaseCommands(commonDeps{})
+	for _, step := range []string{"continue", "skip", "abort"} {
+		cmd := instance.GenericMergeOrRebaseActionCmdObj("rebase", step)
+		assert.True(t, cmd.LockRetriesDisabled())
+		assert.Equal(t, []string{"git", "rebase", "--" + step}, cmd.Args())
+	}
+	assert.False(t, instance.GenericMergeOrRebaseActionCmdObj("merge", "continue").LockRetriesDisabled())
+}

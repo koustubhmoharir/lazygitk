@@ -51,6 +51,8 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 	bindings := []*types.Binding{
 		// Fork: ref-only placement is separate from upstream creation/checkout.
 		self.branchPlacementBinding(opts),
+		// Fork: ordinary rebase onto a captured commit is independent of marked base.
+		self.selectedCommitRebaseBinding(opts),
 		{
 			CommandID:         "commit.checkout-menu",
 			Verb:              "checkout",

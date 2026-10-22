@@ -838,6 +838,7 @@ keybinding:
     sortOrder: s
   commits:
     createMoveBranch: null
+    rebaseOntoSelectedCommit: null
     squashDown: s
     renameCommit: r
     renameCommitWithEditor: R

@@ -76,6 +76,7 @@ results; it does not recommend whether the UI should expose an optional
 preserve-merges choice. That choice should follow the TortoiseGit audit and
 the user-facing design review. The untracked-file behavior is settled: allow
 harmless untracked files, while staged or unstaged tracked changes block the
-operation. The ignored-file overwrite result remains a safety design question;
-this probe records Git's behavior but does not choose the guard or user-facing
-policy.
+operation. After reviewing the ignored-file overwrite finding, the user chose
+a warning with explicit approval for the new selected-commit rebase flow.
+The conservative scan and approval snapshot are described in the design;
+this standalone probe records native Git behavior, not that fork guard.
