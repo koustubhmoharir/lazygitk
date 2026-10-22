@@ -213,6 +213,24 @@ type TranslationSet struct {
 	BranchSyncSelectOneLocalBranch        string
 	BranchSyncNoCurrentLocalBranch        string
 	BranchSyncCaptureTooltip              string
+	BranchSyncUpdateMenu                  string
+	BranchSyncUpdateSummary               string
+	BranchSyncFetchForReview              string
+	BranchSyncReviewLocalUpdate           string
+	BranchSyncChooseUpstreamBranch        string
+	BranchSyncUpstreamBranchPrompt        string
+	BranchSyncChooseTrackingRef           string
+	BranchSyncTrackingRefPrompt           string
+	BranchSyncFetchReviewTitle            string
+	BranchSyncFetchReviewPrompt           string
+	BranchSyncUpdateReviewTitle           string
+	BranchSyncUpdateReviewPrompt          string
+	BranchSyncAdvanceBranch               string
+	BranchSyncAlreadyAhead                string
+	BranchSyncOffBranchOnly               string
+	BranchSyncUpdateDiverged              string
+	BranchSyncFetchStatus                 string
+	BranchSyncUpdateStatus                string
 	NewBranchNameBranchOff                string
 	CantDeleteCheckOutBranch              string
 	DeleteBranchTitle                     string
@@ -1514,6 +1532,24 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchSyncSelectOneLocalBranch:       "Select exactly one local branch.",
 		BranchSyncNoCurrentLocalBranch:       "There is no checked-out local branch.",
 		BranchSyncCaptureTooltip:             "Uses the branch selected when the action starts; changing selection cannot redirect an open prompt or running operation.",
+		BranchSyncUpdateMenu:                 "Update selected branch without checkout",
+		BranchSyncUpdateSummary:              "Local branch %q at %s\nUpstream remote: %q\nUpstream branch: %q\nLocal tracking storage: %q\n\nFetching does not move the local branch. A fast-forward needs a separate review. Saved upstream settings will not change.",
+		BranchSyncFetchForReview:             "Fetch upstream for review",
+		BranchSyncReviewLocalUpdate:          "Review local upstream update",
+		BranchSyncChooseUpstreamBranch:       "Choose upstream branch…",
+		BranchSyncUpstreamBranchPrompt:       "Upstream branch (full refs/heads/ ref or branch name)",
+		BranchSyncChooseTrackingRef:          "Choose local tracking storage…",
+		BranchSyncTrackingRefPrompt:          "Local tracking storage (full ref; never a local branch or tag)",
+		BranchSyncFetchReviewTitle:           "Review upstream fetch",
+		BranchSyncFetchReviewPrompt:          "Fetch remote %q, branch %q into local tracking ref %q for local branch %q at %s?\n\nOnly this tracking ref will be updated. No checkout, branch advancement, integration, pruning, tag or submodule update will run. Review the fetched commit separately before moving the local branch.",
+		BranchSyncUpdateReviewTitle:          "Review branch fast-forward",
+		BranchSyncUpdateReviewPrompt:         "Advance local branch %q from %s to reviewed commit %s?\n\nThis is a verified fast-forward. HEAD, index, files and unrelated local branch tips will not change. Moving the upstream later will not substitute a different commit.",
+		BranchSyncAdvanceBranch:              "Fast-forward this branch",
+		BranchSyncAlreadyAhead:               "Local branch %q at %s already contains the reviewed upstream commit %s. No branch update is needed; it will not be rewound.",
+		BranchSyncOffBranchOnly:              "Branch %q is checked out here; use the current-branch fetch and integration review instead.",
+		BranchSyncUpdateDiverged:             "The upstream was inspected but local branch %q has diverged. No local branch was moved. Integration needs an explicit checkout; this action will not reset, merge, rebase, stash or create a worktree.",
+		BranchSyncFetchStatus:                "Fetching upstream for selected branch %q",
+		BranchSyncUpdateStatus:               "Fast-forwarding selected branch %q",
 		NewBranchNameBranchOff:               "New branch name (branch is off of '{{.branchName}}')",
 		CantDeleteCheckOutBranch:             "You cannot delete the checked out branch!",
 		DeleteBranchTitle:                    "Delete branch '{{.selectedBranchName}}'?",

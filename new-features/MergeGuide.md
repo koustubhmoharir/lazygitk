@@ -51,6 +51,16 @@ about the code that exists, not speculative implementation tasks.
   This preparation adds English fallback strings; default shortcut policy is
   unchanged. Regenerate the command inventory/key docs with final binding
   integration, not as evidence that an unused menu is already accessible.
+- `branch_sync_update_flow.go` is the additive off-branch update dialog; default
+  Pull/fast-forward binding integration is still pending. Fetch and ref-only
+  advancement have separate reviews. Local `.` upstreams read exact local
+  branch refs without contacting a transport. Keep custom storage explicit,
+  preserve one-off options through stale-source review, and never use a
+  changed selection or a newly checked-out target as permission to integrate.
+  Divergence and occupied worktrees do not fall through to reset, checkout or
+  worktree creation. English fallback strings belong with this helper, not
+  with a later default-binding change. Focused verification/corrections remain
+  in progress; this helper alone does not complete the selected-branch slice.
 - These modules are preparatory and not wired into push/pull yet. Native
   `PushRef` inspection can return only one of several configured destinations;
   it is a suggestion, not unique resolution or permission to execute. Future
