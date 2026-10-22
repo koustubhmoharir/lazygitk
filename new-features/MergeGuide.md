@@ -123,14 +123,25 @@ about the code that exists, not speculative implementation tasks.
   Native rename may update symbolic branch names in linked worktrees without
   changing their commit, index or files. Refuse active-operation reservations.
   Preserve native partial failures: a config lock can leave the ref renamed
-  even though config migration failed. This backend is not yet the default
-  rename dialog route.
+  even though config migration failed. `BranchesController.rename` now replaces
+  the upstream sanitizing callback with `branch_rename_flow.go`: copy the name
+  and repository generation, inspect before prompting, confirm the literal
+  old/new names and full source OID, and guard worker refresh/reselection.
+  Keep native upstream warnings even when the tracking cache is gone. Refresh
+  after native failures without retry/rollback or successful-rename reselection.
 - `branch_sync_metadata.go` adds captured upstream set/unset plans using exact
   direct tracking refs, including custom fetch namespaces and local branches.
   Native `branch --set-upstream-to` resolves remote mapping; the selected tip,
   tracking tip, effective/primary-local upstream entries and remote config are
   revalidated before launch. Metadata changes do not move a checked-out tip or
-  write its index/files. These plans are not yet wired into the upstream menu.
+  write its index/files. The set/unset entries in
+  `BranchesController.viewUpstreamOptions` now use `branch_upstream_flow.go`,
+  capturing repository/name when the parent menu opens. Full tracking refs
+  replace the old assumed standard namespace. Confirm the old tracking values
+  and exact new target before writing; redact URL credentials in prior remote
+  metadata. Each worker/callback and refresh retains the captured repository.
+  The upstream menu's other read-only/reset/rebase actions remain separate
+  audit work; do not infer their safety from set/unset tests.
   Independent metadata/rename/push tests passed (74.433s), including raw
   dirty-state preservation, linked worktrees, custom namespaces, inherited
   configuration refusals and native rename partial failure. Backend lint
@@ -259,6 +270,14 @@ Controller/i18n lint passed with zero issues. A first headless run found test
 driver misuse (new popup driver instances lost required title checks), corrected
 in the fixtures; use anchored path-segment expressions when selecting tests so
 `push` does not also select legacy `force_push` scenarios.
+
+Metadata-dialog checkpoint (2026-10-22): independent rename/current-pull tests
+passed (43.252s), upstream-dialog tests passed (8.735s), and nine focused
+rename/upstream/view/reset/rebase headless scenarios passed (9.219s). Controller/
+i18n lint reported zero issues. The rename fixture now expects literal input
+and final approval rather than silently replacing spaces with dashes. Native
+failure tests retain the error and refresh observed state without retry or
+rollback. These checks do not finish the remaining upstream-menu/delete audit.
 
 Reviewed integration backend checkpoint (2026-10-22): independent focused
 tests passed (74.603s) and the full backend short package passed (208.045s).

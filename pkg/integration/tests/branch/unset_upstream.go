@@ -34,6 +34,10 @@ var UnsetUpstream = NewIntegrationTest(NewIntegrationTestArgs{
 					Title(Equals("Upstream options")).
 					Select(Contains("Unset upstream of selected branch")).
 					Confirm()
+				t.ExpectPopup().Confirmation().
+					Title(Equals("Review selected branch upstream")).
+					Content(Contains("master").Contains("refs/heads/master")).
+					Confirm()
 			}).
 			SelectedLines(
 				Contains("master").DoesNotContain("origin master"),
@@ -50,6 +54,10 @@ var UnsetUpstream = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().Menu().
 					Title(Equals("Upstream options")).
 					Select(Contains("Unset upstream of selected branch")).
+					Confirm()
+				t.ExpectPopup().Confirmation().
+					Title(Equals("Review selected branch upstream")).
+					Content(Contains("branch_to_remove").Contains("refs/heads/branch_to_remove")).
 					Confirm()
 			}).
 			SelectedLines(

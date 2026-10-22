@@ -153,10 +153,11 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			Keys:              opts.GetKeys(opts.Config.Branches.RebaseBranch),
 			Handler:           opts.Guards.OutsideFilterMode(self.withItem(self.rebase)),
 			GetDisabledReason: self.require(self.singleItemSelected()),
-			Description:       self.c.Tr.RebaseBranch,
-			Tooltip:           self.c.Tr.RebaseBranchTooltip,
-			OpensMenu:         true,
-			DisplayOnScreen:   true,
+			// Fork: name the current destination and selected source explicitly.
+			Description:     self.c.Tr.BranchSyncRebaseCurrentOntoSelected,
+			Tooltip:         self.c.Tr.RebaseBranchTooltip,
+			OpensMenu:       true,
+			DisplayOnScreen: true,
 		},
 		{
 			CommandID:         "branch.merge-selected-into-current",
@@ -164,7 +165,7 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			Keys:              opts.GetKeys(opts.Config.Branches.MergeIntoCurrentBranch),
 			Handler:           opts.Guards.OutsideFilterMode(self.merge),
 			GetDisabledReason: self.require(self.singleItemSelected(self.notMergingIntoYourself)),
-			Description:       self.c.Tr.Merge,
+			Description:       self.c.Tr.BranchSyncMergeSelectedIntoCurrent,
 			Tooltip:           self.c.Tr.MergeBranchTooltip,
 			DisplayOnScreen:   true,
 			OpensMenu:         true,
@@ -200,7 +201,7 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			Keys:              opts.GetKeys(opts.Config.Commits.ViewResetOptions),
 			Handler:           self.withItem(self.createResetMenu),
 			GetDisabledReason: self.require(self.singleItemSelected()),
-			Description:       self.c.Tr.ViewResetOptions,
+			Description:       self.c.Tr.BranchSyncResetCurrentToSelected,
 			OpensMenu:         true,
 			DisplayOnScreen:   true,
 		},
@@ -271,6 +272,9 @@ func (self *BranchesController) GetOnRenderToMain() func() {
 }
 
 func (self *BranchesController) viewUpstreamOptions(selectedBranch *models.Branch) error {
+	// Fork: set/unset callbacks retain this repository and literal source name,
+	// replacing upstream's implicit namespace and live repository lookups.
+	upstreamFlow := newBranchUpstreamFlow(self.c, selectedBranch.Name)
 	upstream := lo.Ternary(selectedBranch.RemoteBranchStoredLocally(),
 		selectedBranch.ShortUpstreamRefName(),
 		self.c.Tr.UpstreamGenericName)
@@ -335,45 +339,16 @@ func (self *BranchesController) viewUpstreamOptions(selectedBranch *models.Branc
 		CommandID:    "branch.unset-upstream",
 		Verb:         "unset-upstream",
 		LabelColumns: []string{self.c.Tr.UnsetUpstream},
-		OnPress: func() error {
-			if err := self.c.Git().Branch.UnsetUpstream(selectedBranch.Name); err != nil {
-				return err
-			}
-			self.c.Refresh(types.RefreshOptions{
-				Scope: []types.RefreshableView{
-					types.BRANCHES,
-					types.COMMITS,
-				},
-			})
-			return nil
-		},
-		Keys: menuKey('u'),
+		OnPress:      upstreamFlow.unset,
+		Keys:         menuKey('u'),
 	}
 
 	setUpstreamItem := &types.MenuItem{
 		CommandID:    "branch.set-upstream",
 		Verb:         "set-upstream",
 		LabelColumns: []string{self.c.Tr.SetUpstream},
-		OnPress: func() error {
-			return self.c.Helpers().Upstream.PromptForUpstreamWithoutInitialContent(selectedBranch, func(upstream string) error {
-				upstreamRemote, upstreamBranch, err := self.c.Helpers().Upstream.ParseUpstream(upstream)
-				if err != nil {
-					return err
-				}
-
-				if err := self.c.Git().Branch.SetUpstream(upstreamRemote, upstreamBranch, selectedBranch.Name); err != nil {
-					return err
-				}
-				self.c.Refresh(types.RefreshOptions{
-					Scope: []types.RefreshableView{
-						types.BRANCHES,
-						types.COMMITS,
-					},
-				})
-				return nil
-			})
-		},
-		Keys: menuKey('s'),
+		OnPress:      upstreamFlow.set,
+		Keys:         menuKey('s'),
 	}
 
 	upstreamResetOptions := utils.ResolvePlaceholderString(
@@ -760,49 +735,9 @@ func (self *BranchesController) createResetMenu(selectedBranch *models.Branch) e
 }
 
 func (self *BranchesController) rename(branch *models.Branch) error {
-	promptForNewName := func() error {
-		self.c.Prompt(types.PromptOpts{
-			Title:          self.c.Tr.NewBranchNamePrompt + " " + branch.Name + ":",
-			InitialContent: branch.Name,
-			HandleConfirm: func(newBranchName string) error {
-				self.c.LogAction(self.c.Tr.Actions.RenameBranch)
-				if err := self.c.Git().Branch.Rename(branch.Name, helpers.SanitizedBranchName(newBranchName)); err != nil {
-					return err
-				}
-
-				// need to find where the branch is now so that we can re-select it. That means we need to
-				// refetch the branches and then find our branch. The branches model update is bounced
-				// onto the UI thread, so the re-selection (which reads Model.Branches) has to run in
-				// Then; reading it inline here would see the previous model.
-				self.c.Refresh(types.RefreshOptions{
-					Scope: []types.RefreshableView{types.BRANCHES, types.WORKTREES},
-					Then: func() error {
-						// now that we've got our stuff again we need to find that branch and reselect it.
-						for i, newBranch := range self.c.Model().Branches {
-							if newBranch.Name == newBranchName {
-								self.context().SetSelection(i)
-								self.context().HandleRender()
-							}
-						}
-						return nil
-					},
-				})
-
-				return nil
-			},
-		})
-
-		return nil
-	}
-
-	// I could do an explicit check here for whether the branch is tracking a remote branch
-	// but if we've selected it we'll already know that via Pullables and Pullables.
-	// Bit of a hack but I'm lazy.
-	return self.c.ConfirmIf(branch.IsTrackingRemote(), types.ConfirmOpts{
-		Title:         self.c.Tr.RenameBranch,
-		Prompt:        self.c.Tr.RenameBranchWarning,
-		HandleConfirm: promptForNewName,
-	})
+	// Fork: replace implicit sanitization and live callbacks with a literal,
+	// repository-pinned rename reviewed against the selected branch's exact tip.
+	return self.renameCapturedBranch(branch.Name)
 }
 
 func (self *BranchesController) newBranch(selectedBranch *models.Branch) error {

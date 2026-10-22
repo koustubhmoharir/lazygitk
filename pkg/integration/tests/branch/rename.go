@@ -6,7 +6,7 @@ import (
 )
 
 var Rename = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Rename a branch, replacing spaces in the name with dashes",
+	Description:  "Review a literal branch rename without changing its commit",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig:  func(config *config.AppConfig) {},
@@ -14,6 +14,7 @@ var Rename = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.EmptyCommit("commit")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		headOID := t.Git().GetCommitHash("HEAD")
 		t.Views().Branches().
 			Focus().
 			Lines(
@@ -25,11 +26,18 @@ var Rename = NewIntegrationTest(NewIntegrationTestArgs{
 					Title(Contains("Enter new branch name")).
 					InitialText(Equals("master")).
 					Clear().
-					Type("new branch name").
+					Type("new-branch-name").
+					Confirm()
+				t.ExpectPopup().Confirmation().
+					Title(Equals("Rename branch")).
+					Content(Contains("master").Contains("new-branch-name").Contains(headOID)).
 					Confirm()
 			}).
 			Lines(
 				Contains("new-branch-name"),
 			)
+		if got := t.Git().GetCommitHash("HEAD"); got != headOID {
+			t.Fail("Renaming a branch changed the checked-out commit")
+		}
 	},
 })

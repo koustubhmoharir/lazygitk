@@ -15,6 +15,7 @@ var SetUpstream = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.CloneIntoRemote("origin")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		headOID := t.Git().GetCommitHash("HEAD")
 		t.Views().Branches().
 			Focus().
 			Press(keys.Universal.NextScreenMode). // we need to enlargen the window to see the upstream
@@ -29,9 +30,13 @@ var SetUpstream = NewIntegrationTest(NewIntegrationTestArgs{
 					Confirm()
 
 				t.ExpectPopup().Prompt().
-					Title(Equals("Enter upstream as '<remote> <branchname>'")).
-					SuggestionLines(Equals("origin master")).
-					ConfirmFirstSuggestion()
+					Title(Contains("Full upstream tracking ref")).
+					Type("refs/remotes/origin/master").
+					Confirm()
+				t.ExpectPopup().Confirmation().
+					Title(Equals("Review selected branch upstream")).
+					Content(Contains("master").Contains(headOID).Contains("refs/remotes/origin/master")).
+					Confirm()
 			}).
 			Lines(
 				Contains("master").Contains("origin master").IsSelected(),

@@ -1393,8 +1393,8 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchRenameReviewPrompt:              "Rename local branch %q to %q at %s?\n\nOnly branch metadata changes. Checked-out commits, index contents and files stay in place; linked worktrees using this branch will use its new name.",
 		BranchUpstreamRefPrompt:               "Full upstream tracking ref (e.g. refs/remotes/origin/main or refs/heads/main):",
 		BranchUpstreamReviewTitle:             "Review selected branch upstream",
-		BranchUpstreamSetReviewPrompt:         "Set upstream of local branch %q at %s to %q at %s?\n\nPrevious upstream remote: %q\nPrevious merge refs: %q\n\nOnly saved tracking metadata changes. No fetch, push, checkout, integration or tip change will run.",
-		BranchUpstreamUnsetReviewPrompt:       "Unset upstream of local branch %q at %s?\n\nPrevious upstream remote: %q\nPrevious merge refs: %q\n\nOnly saved tracking metadata changes. Branch tips, index and files stay in place.",
+		BranchUpstreamSetReviewPrompt:         "Set upstream of local branch %q at %s to %q at %s?\n\nPrevious upstream remote: %s\nPrevious merge refs: %q\n\nOnly saved tracking metadata changes. No fetch, push, checkout, integration or tip change will run. Existing rebase preferences stay unchanged.",
+		BranchUpstreamUnsetReviewPrompt:       "Unset upstream of local branch %q at %s?\n\nPrevious upstream remote: %s\nPrevious merge refs: %q\n\nOnly saved tracking metadata changes. Branch tips, index and files stay in place. Existing rebase preferences stay unchanged.",
 		BranchUpstreamStatus:                  "Updating upstream metadata for branch %q",
 
 		NotEnoughSpace:                       "Not enough space to render panels",
