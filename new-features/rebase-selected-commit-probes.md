@@ -6,6 +6,9 @@ directory, disables system/global Git config and hooks, and removes that
 directory on exit. All repository changes are confined to those disposable
 repositories; the repository under development is not modified. Observed Git version:
 `git version 2.51.1`.
+The command runner removes inherited `GIT_*` variables before supplying its
+own isolated environment, so a caller's repository/index location cannot
+redirect the disposable commands. Git diagnostics use the C locale.
 
 The tested command form was:
 

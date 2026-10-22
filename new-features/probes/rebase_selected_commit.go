@@ -46,7 +46,15 @@ func (p *probe) command(dir string, args ...string) (string, int) {
 	defer cancel()
 	c := exec.CommandContext(ctx, "git", args...)
 	c.Dir = dir
-	c.Env = append(os.Environ(), "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL=/dev/null", "GIT_TERMINAL_PROMPT=0", "GIT_EDITOR=true", "GIT_SEQUENCE_EDITOR=true", "GIT_AUTHOR_NAME=Probe", "GIT_AUTHOR_EMAIL=probe@example.invalid", "GIT_COMMITTER_NAME=Probe", "GIT_COMMITTER_EMAIL=probe@example.invalid")
+	// A caller may have launched this from a Git subprocess. Inherited Git
+	// location/index/object variables must never redirect our disposable work
+	// into that caller's repository, even when cmd.Dir points at a temp repo.
+	for _, entry := range os.Environ() {
+		if !strings.HasPrefix(entry, "GIT_") {
+			c.Env = append(c.Env, entry)
+		}
+	}
+	c.Env = append(c.Env, "LANG=C", "LC_ALL=C", "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL=/dev/null", "GIT_TERMINAL_PROMPT=0", "GIT_EDITOR=true", "GIT_SEQUENCE_EDITOR=true", "GIT_AUTHOR_NAME=Probe", "GIT_AUTHOR_EMAIL=probe@example.invalid", "GIT_COMMITTER_NAME=Probe", "GIT_COMMITTER_EMAIL=probe@example.invalid")
 	var out, er bytes.Buffer
 	c.Stdout, c.Stderr = &out, &er
 	err := c.Run()
