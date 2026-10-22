@@ -18,6 +18,8 @@ switch branches silently. Keep stack-wide operations explicit choices.
    source/destination review before constructing network commands.
    Ref-only plans are backend-bound; remote inspection honors native empty-URL
    list resets. Network plan review and modal integration remain.
+   Configured tracking-ref resolution is implemented, including custom
+   namespaces and explicit/excluded automatic-lease handling.
    Every prompt, command, upstream-setting action and refresh must retain that
    target; neither a later selection nor current HEAD may substitute for it.
 2. Make push target the selected local branch with an explicit remote/refspec.

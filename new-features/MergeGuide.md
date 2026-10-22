@@ -57,6 +57,16 @@ about the code that exists, not speculative implementation tasks.
   only, not a global suppression of Git diagnostics.
   Plans are bound to the original backend instance, not just equivalent
   repository data; a repository replacement must not reuse an old plan.
+- `branch_sync_refspec.go` resolves native push's tracking lookup through
+  configured fetch refspecs, rather than inventing
+  `refs/remotes/<remote>/<branch>`. Do not reuse it as fetch's DWIM source
+  resolver: a native probe distinguishes the two for abbreviated sources.
+  Keep ordered canonical preference separate from the set of positive storage
+  destinations to inspect for side effects. An explicit empty destination or
+  matching exclusion suppresses automatic lease selection; do not fetch to
+  replace missing lease evidence. This is conservative lease policy, not a
+  reimplementation of every version's negative-fetch behavior. Native ref
+  validation, wildcard captures and exact source matching need regression tests.
 
 Read-only checkpoint (2026-10-22): main-agent native probe rerun passed,
 including selected != current with staged/unstaged/untracked preservation,
