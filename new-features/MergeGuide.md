@@ -83,6 +83,21 @@ about the code that exists, not speculative implementation tasks.
   possible storage mappings, refusing branch/tag/special namespaces and
   symbolic aliases before any network operation. Recheck force restrictions
   when constructing the command, not only when opening a menu.
+- Upstream setup is independent of the explicit push destination and defaults
+  off. `branch_sync_push.go` refuses multiple, empty or valueless upstream
+  entries and settings inherited from outside the primary local config before
+  allowing `--set-upstream`. Compare fresh effective entries with an uncached
+  `config --local --no-includes` query; effective values alone cannot establish
+  that native setup can replace them safely. Keep this check at preparation
+  and command construction. Do not repair configuration or silently remove
+  the upstream-setting choice: the UI must offer Cancel or a new review with
+  tracking changes disabled. Preserve `push.autoSetupRemote=false` on the
+  fallback invocation, even if the user's normal Git configuration enables it.
+  Malformed metadata that Git itself cannot inspect retains the native error;
+  never infer an ambiguity sentinel by matching stderr text. Native tests cover
+  primary duplicates and included, global, worktree and command-environment
+  entries. The push backend tests passed independently (38.656s), followed by
+  the expanded config-origin cases (6.458s); scoped lint reported zero issues.
 - `branch_sync_fetch.go` composes an explicit fetch into a reviewed local
   storage ref with the guarded fast-forward primitive. Preserve empty refmap,
   no tags/prune/prune-tags/submodule recursion/FETCH_HEAD writes and no retry.

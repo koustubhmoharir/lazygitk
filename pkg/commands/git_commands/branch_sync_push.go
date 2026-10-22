@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
@@ -67,8 +68,9 @@ func (plan BranchPushPlan) WithMultipleURLsApproved() BranchPushPlan {
 }
 
 var (
-	ErrBranchPushMultipleURLs = errors.New("this remote has multiple configured push destinations; review and explicitly approve them first")
-	ErrBranchPushLeaseChoice  = errors.New("force-with-lease needs a locally reviewed destination tip; fetch and review it or select a known reference explicitly")
+	ErrBranchPushMultipleURLs      = errors.New("this remote has multiple configured push destinations; review and explicitly approve them first")
+	ErrBranchPushLeaseChoice       = errors.New("force-with-lease needs a locally reviewed destination tip; fetch and review it or select a known reference explicitly")
+	ErrBranchPushUpstreamAmbiguous = errors.New("the selected branch has ambiguous or non-local upstream configuration; push without changing tracking")
 )
 
 func (self *SyncCommands) PrepareBranchPush(name, expectedOID string, opts BranchPushOptions) (BranchPushPlan, error) {
@@ -98,6 +100,13 @@ func (self *SyncCommands) PrepareBranchPush(name, expectedOID string, opts Branc
 	if !opts.ForceWithLease && opts.LeaseRef != "" {
 		return BranchPushPlan{}, fmt.Errorf("a lease reference requires force-with-lease")
 	}
+	var trackingSignature, previousRemote, previousMerge string
+	if opts.SetUpstream {
+		trackingSignature, previousRemote, previousMerge, err = self.branchPushTrackingSnapshot(name)
+		if err != nil {
+			return BranchPushPlan{}, err
+		}
+	}
 	remote, err := self.InspectBranchSyncRemote(opts.Remote)
 	if err != nil {
 		return BranchPushPlan{}, err
@@ -123,6 +132,7 @@ func (self *SyncCommands) PrepareBranchPush(name, expectedOID string, opts Branc
 		owner: self.GitCommon, name: name, sourceRef: info.FullRef, sourceOID: info.OID,
 		remoteSignature: remote.Signature, configuredURLs: strings.Join(urls, "\x00"),
 		reservation: info.Reservation, options: opts,
+		trackingSignature: trackingSignature, previousRemote: previousRemote, previousMerge: previousMerge,
 	}
 	if opts.ForceWithLease {
 		plan.leaseRef = opts.LeaseRef
@@ -150,12 +160,6 @@ func (self *SyncCommands) PrepareBranchPush(name, expectedOID string, opts Branc
 			return BranchPushPlan{}, fmt.Errorf("lease reference does not point directly to a commit: %w", err)
 		}
 		plan.leaseOID = state.oid
-	}
-	if opts.SetUpstream {
-		plan.trackingSignature, plan.previousRemote, plan.previousMerge, err = self.branchPushTrackingSnapshot(name)
-		if err != nil {
-			return BranchPushPlan{}, err
-		}
 	}
 	plan.prepared = true
 	return plan, nil
@@ -197,20 +201,65 @@ func (self *SyncCommands) branchPushTrackingSnapshot(name string) (signature, re
 	if err != nil {
 		return "", "", "", err
 	}
-	digest := sha256.New()
+	primary, _, err := self.cmd.New(NewGitCmd("config").Arg("--local", "--no-includes", "--null", "--list").ToArgv()).
+		SetWd(self.repoPaths.WorktreePath()).DontLog().RunWithOutputs()
+	if err != nil {
+		return "", "", "", fmt.Errorf("inspect primary local tracking configuration: %w", err)
+	}
+	localEntries, err := parseBranchSyncConfig(primary)
+	if err != nil {
+		return "", "", "", err
+	}
 	prefix := "branch." + name + "."
-	mergeValues := []string{}
-	for _, entry := range entries {
-		key, found := strings.CutPrefix(entry.key, prefix)
-		if !found || (key != "remote" && key != "merge") {
-			continue
+	filter := func(source []branchSyncConfigEntry) []branchSyncConfigEntry {
+		filtered := []branchSyncConfigEntry{}
+		for _, entry := range source {
+			key, found := strings.CutPrefix(entry.key, prefix)
+			if found && (key == "remote" || key == "merge") {
+				filtered = append(filtered, entry)
+			}
 		}
-		writeBranchSyncConfigEntry(digest, entry)
+		return filtered
+	}
+	effectiveEntries, localTrackingEntries := filter(entries), filter(localEntries)
+	// Git's --set-upstream writes the primary local config. If effective values
+	// come from another config source, it cannot safely replace them there.
+	if !slices.Equal(effectiveEntries, localTrackingEntries) {
+		return "", "", "", ErrBranchPushUpstreamAmbiguous
+	}
+	remoteValues, mergeValues := []string{}, []string{}
+	for _, entry := range effectiveEntries {
+		key, found := strings.CutPrefix(entry.key, prefix)
+		if !found || (key != "remote" && key != "merge") || !entry.hasValue || entry.value == "" {
+			return "", "", "", ErrBranchPushUpstreamAmbiguous
+		}
 		if key == "remote" {
-			remote = entry.value
+			remoteValues = append(remoteValues, entry.value)
 		} else {
 			mergeValues = append(mergeValues, entry.value)
 		}
 	}
-	return hex.EncodeToString(digest.Sum(nil)), remote, strings.Join(mergeValues, "\x00"), nil
+	if len(remoteValues) > 1 || len(mergeValues) > 1 {
+		return "", "", "", ErrBranchPushUpstreamAmbiguous
+	}
+	// Since effective and primary-local entries were proven equal above, this
+	// fingerprint is also the primary-local tracking fingerprint. A later move
+	// to an include/global/worktree source is rejected during fresh preparation.
+	return branchPushTrackingFingerprint(effectiveEntries), firstBranchPushValue(remoteValues),
+		strings.Join(mergeValues, "\x00"), nil
+}
+
+func branchPushTrackingFingerprint(entries []branchSyncConfigEntry) string {
+	digest := sha256.New()
+	for _, entry := range entries {
+		writeBranchSyncConfigEntry(digest, entry)
+	}
+	return hex.EncodeToString(digest.Sum(nil))
+}
+
+func firstBranchPushValue(values []string) string {
+	if len(values) == 0 {
+		return ""
+	}
+	return values[0]
 }

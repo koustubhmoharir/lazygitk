@@ -2,6 +2,7 @@ package git_commands
 
 import (
 	"errors"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -260,9 +261,17 @@ func TestBranchPushPreviousUpstreamSnapshot(t *testing.T) {
 			h := branchPushTestHistory(t)
 			gitTest(t, h.root, "remote", "add", "old-origin", h.bare)
 			gitTest(t, h.root, "config", "branch.selected.remote", "old-origin")
-			merges := []string{"refs/heads/old-one", "refs/heads/old-two"}
-			for _, ref := range merges {
-				gitTest(t, h.root, "config", "--add", "branch.selected.merge", ref)
+			merges := []string{"refs/heads/old-one"}
+			if setUpstream {
+				gitTest(t, h.root, "config", "branch.selected.merge", merges[0])
+			} else {
+				include := filepath.Join(t.TempDir(), "tracking.inc")
+				data := []byte("[branch \"selected\"]\n\tmerge = refs/heads/old-one\n")
+				writeTestFile(t, include, data, 0o600)
+				gitTest(t, h.root, "config", "include.path", include)
+				defer func() {
+					assert.Equal(t, data, mustRead(t, include), "plain push leaves included config bytes untouched")
+				}()
 			}
 			gitTest(t, h.root, "config", "push.autoSetupRemote", "true")
 			opts := h.options()
@@ -274,7 +283,7 @@ func TestBranchPushPreviousUpstreamSnapshot(t *testing.T) {
 				returned := plan.PreviousMergeRefs()
 				returned[0] = "refs/heads/mutated"
 				assert.Equal(t, merges, plan.PreviousMergeRefs())
-				gitTest(t, h.root, "config", "--replace-all", "branch.selected.merge", "refs/heads/changed", "^refs/heads/old-two$")
+				gitTest(t, h.root, "config", "--replace-all", "branch.selected.merge", "refs/heads/changed")
 			}
 			configPath := filepath.Join(h.root, ".git", "config")
 			before := mustRead(t, configPath)
@@ -290,6 +299,139 @@ func TestBranchPushPreviousUpstreamSnapshot(t *testing.T) {
 				assert.Equal(t, h.selected, branchPushGit(t, h.bare, "rev-parse", "refs/heads/selected"))
 			}
 			assert.Equal(t, before, mustRead(t, configPath), "push planning/execution must preserve the previously configured upstream")
+		})
+	}
+}
+
+func TestBranchPushSetUpstreamAmbiguityRefused(t *testing.T) {
+	for _, kind := range []string{"duplicate remote", "multiple merge", "empty merge", "valueless remote", "valueless merge", "included single merge", "global single merge", "worktree single merge", "command environment entries"} {
+		t.Run(kind, func(t *testing.T) {
+			h := branchPushTestHistory(t)
+			var inheritedPath string
+			var inheritedBytes []byte
+			switch kind {
+			case "duplicate remote":
+				gitTest(t, h.root, "config", "branch.selected.remote", "origin")
+				gitTest(t, h.root, "config", "--add", "branch.selected.remote", "origin")
+			case "multiple merge":
+				gitTest(t, h.root, "config", "branch.selected.merge", "refs/heads/old-one")
+				gitTest(t, h.root, "config", "--add", "branch.selected.merge", "refs/heads/old-two")
+			case "empty merge":
+				gitTest(t, h.root, "config", "branch.selected.merge", "")
+			case "valueless remote", "valueless merge":
+				key := "remote"
+				if kind == "valueless merge" {
+					key = "merge"
+				}
+				configPath := filepath.Join(h.root, ".git", "config")
+				file, err := os.OpenFile(configPath, os.O_APPEND|os.O_WRONLY, 0)
+				branchPushRequireNoError(t, err)
+				_, err = file.WriteString("\n[branch \"selected\"]\n\t" + key + "\n")
+				branchPushRequireNoError(t, err)
+				branchPushRequireNoError(t, file.Close())
+			case "included single merge":
+				inheritedPath = filepath.Join(t.TempDir(), "tracking.inc")
+				inheritedBytes = []byte("[branch \"selected\"]\n merge = refs/heads/old-one\n")
+				writeTestFile(t, inheritedPath, inheritedBytes, 0o600)
+				gitTest(t, h.root, "config", "include.path", inheritedPath)
+			case "global single merge":
+				inheritedPath = filepath.Join(t.TempDir(), "global.gitconfig")
+				inheritedBytes = []byte("[branch \"selected\"]\n\tmerge = refs/heads/old-one\n")
+				writeTestFile(t, inheritedPath, inheritedBytes, 0o600)
+			case "worktree single merge":
+				gitTest(t, h.root, "config", "extensions.worktreeConfig", "true")
+				gitTest(t, h.root, "config", "--worktree", "branch.selected.merge", "refs/heads/old-one")
+				inheritedPath = filepath.Join(h.root, ".git", "config.worktree")
+				inheritedBytes = mustRead(t, inheritedPath)
+			case "command environment entries":
+				t.Setenv("GIT_CONFIG_COUNT", "2")
+				t.Setenv("GIT_CONFIG_KEY_0", "branch.selected.remote")
+				t.Setenv("GIT_CONFIG_VALUE_0", "origin")
+				t.Setenv("GIT_CONFIG_KEY_1", "branch.selected.merge")
+				t.Setenv("GIT_CONFIG_VALUE_1", "refs/heads/old-one")
+			}
+			if kind != "valueless remote" && kind != "duplicate remote" && kind != "command environment entries" {
+				gitTest(t, h.root, "config", "branch.selected.remote", "origin")
+			}
+			if kind == "global single merge" {
+				t.Setenv("GIT_CONFIG_GLOBAL", inheritedPath)
+			}
+			configPath := filepath.Join(h.root, ".git", "config")
+			configBefore := mustRead(t, configPath)
+			opts := h.options()
+			opts.SetUpstream = true
+			commands := branchSyncTestCommands(t, h.root)
+			_, err := commands.PrepareBranchPush("selected", h.selected, opts)
+			if kind == "valueless remote" || kind == "valueless merge" {
+				assert.Error(t, err, "native config parsing may refuse malformed metadata")
+			} else {
+				assert.ErrorIs(t, err, ErrBranchPushUpstreamAmbiguous)
+			}
+			assert.Equal(t, h.base, branchPushGit(t, h.bare, "rev-parse", "refs/heads/selected"))
+			assert.Equal(t, configBefore, mustRead(t, configPath), "refusal must not modify local config")
+			if inheritedPath != "" {
+				assert.Equal(t, inheritedBytes, mustRead(t, inheritedPath), "refusal must not modify inherited config")
+			}
+		})
+	}
+}
+
+func TestBranchPushUpstreamSourceMoveInvalidatesApproval(t *testing.T) {
+	h := branchPushTestHistory(t)
+	gitTest(t, h.root, "config", "branch.selected.remote", "origin")
+	gitTest(t, h.root, "config", "branch.selected.merge", "refs/heads/selected")
+	opts := h.options()
+	opts.SetUpstream = true
+	commands, plan := branchPushPlan(t, h, opts)
+	include := filepath.Join(t.TempDir(), "tracking.inc")
+	writeTestFile(t, include, []byte("[branch \"selected\"]\n\tremote = origin\n\tmerge = refs/heads/selected\n"), 0o600)
+	gitTest(t, h.root, "config", "include.path", include)
+	gitTest(t, h.root, "config", "--unset-all", "branch.selected.remote")
+	gitTest(t, h.root, "config", "--unset-all", "branch.selected.merge")
+	cmd, err := commands.BranchPushCommand(plan, nil)
+	assert.ErrorIs(t, err, ErrBranchPushUpstreamAmbiguous)
+	assert.Nil(t, cmd)
+	assert.Equal(t, h.base, branchPushGit(t, h.bare, "rev-parse", "refs/heads/selected"))
+}
+
+func TestBranchPushSetUpstreamReplacementAndStaleConfig(t *testing.T) {
+	for _, existing := range []bool{false, true} {
+		t.Run(map[bool]string{false: "no tracking", true: "single tracking"}[existing], func(t *testing.T) {
+			h := branchPushTestHistory(t)
+			if existing {
+				gitTest(t, h.root, "config", "branch.selected.remote", "old-origin")
+				gitTest(t, h.root, "config", "branch.selected.merge", "refs/heads/old")
+				gitTest(t, h.root, "remote", "add", "old-origin", h.bare)
+			}
+			opts := h.options()
+			opts.SetUpstream = true
+			commands, plan := branchPushPlan(t, h, opts)
+			gitTest(t, h.root, "config", "--replace-all", "branch.selected.merge", "refs/heads/moved")
+			cmd, err := commands.BranchPushCommand(plan, nil)
+			assert.ErrorIs(t, err, ErrBranchSyncChanged)
+			assert.Nil(t, cmd)
+			assert.Equal(t, h.base, branchPushGit(t, h.bare, "rev-parse", "refs/heads/selected"))
+		})
+	}
+}
+
+func TestBranchPushSetUpstreamReplacementSucceeds(t *testing.T) {
+	for _, existing := range []bool{false, true} {
+		t.Run(map[bool]string{false: "no tracking", true: "single tracking"}[existing], func(t *testing.T) {
+			h := branchPushTestHistory(t)
+			if existing {
+				gitTest(t, h.root, "config", "branch.selected.remote", "old-origin")
+				gitTest(t, h.root, "config", "branch.selected.merge", "refs/heads/old")
+				gitTest(t, h.root, "remote", "add", "old-origin", h.bare)
+			}
+			opts := h.options()
+			opts.SetUpstream = true
+			commands, plan := branchPushPlan(t, h, opts)
+			output, err := runBranchPush(t, commands, plan)
+			branchPushRequireNoError(t, err, string(output))
+			assert.Equal(t, "origin", branchPushConfig(t, h.root, "branch.selected.remote"))
+			assert.Equal(t, "refs/heads/selected", branchPushConfig(t, h.root, "branch.selected.merge"))
+			assert.Equal(t, h.selected, branchPushGit(t, h.bare, "rev-parse", "refs/heads/selected"))
 		})
 	}
 }

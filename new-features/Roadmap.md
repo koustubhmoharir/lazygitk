@@ -479,6 +479,12 @@ that scope explicit.
 
 Split sync helpers so remote resolution, divergence, prompts, refspecs,
 upstream-setting, status, and refresh all use the same explicit branch.
+Push destinations are independent of saved upstream settings. Upstream setup
+is a separate, default-off choice. If native setup cannot safely replace
+ambiguous or inherited settings, refuse that change before pushing and offer
+Cancel or a newly reviewed push without changing tracking. Never repair those
+settings silently. Updating a remote-tracking cache ref after a successful
+push is distinct from changing the local branch's saved upstream relationship.
 Audit stacked-branch push/pull menus: changing a selected branch must not
 implicitly push or update branches below it. Preserve those as explicit choices.
 

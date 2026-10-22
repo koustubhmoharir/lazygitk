@@ -23,9 +23,9 @@ switch branches silently. Keep stack-wide operations explicit choices.
    multi-URL approval, reviewed leases and upstream-setting snapshots.
    Finish modal routing and protection/no-upstream/triangular-workflow
    verification. Keep pushing other stack branches an explicit separate choice.
-   Pending user decision: refuse ambiguous multi-ref upstream changes and offer
-   push without changing tracking, or add an explicit replacement flow. Native
-   `push --set-upstream` retained old multi-valued merge refs in the UI fixture.
+   Agreed upstream policy: refuse ambiguous changes before pushing; offer
+   Cancel or an explicitly reviewed push without changing tracking. Do not
+   repair or replace multi-valued/inherited upstream settings automatically.
 3. Make off-branch pull/update an explicit upstream fetch and verified
    fast-forward without checkout. The scoped fetch and guarded ref-only update
    builders are implemented; integrate their modal flow and explain divergence
@@ -34,6 +34,9 @@ switch branches silently. Keep stack-wide operations explicit choices.
    separate current-pull builder with its native-policy precedence and
    clean/no-autostash behavior. Integrate local `.` upstreams through direct
    off-branch advancement or verified native current pull, as appropriate.
+   Pending user choice for current-branch Pull: fetch first and review the
+   exact incoming commit/integration (including ignored-file risks), or retain
+   one confirmation for native pull, whose incoming target is not yet known.
 4. Integrate branch-bearing versus global/current-branch actions, retaining
    selected-ref metadata support and clearly named selected-source merge/
    rebase actions. Do not change shortcut policy ahead of item 8.
