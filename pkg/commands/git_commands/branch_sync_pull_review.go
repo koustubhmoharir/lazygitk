@@ -52,14 +52,22 @@ type CurrentPullIntegrationPlan struct {
 
 func (plan CurrentPullIntegrationPlan) Name() string { return plan.review.name }
 
-func (plan CurrentPullIntegrationPlan) SourceOID() string                      { return plan.review.sourceOID }
-func (plan CurrentPullIntegrationPlan) TargetOID() string                      { return plan.targetOID }
-func (plan CurrentPullIntegrationPlan) ReplayBaseOID() string                  { return plan.replayBaseOID }
-func (plan CurrentPullIntegrationPlan) Method() PullIntegrationMethod          { return plan.method }
+func (plan CurrentPullIntegrationPlan) SourceOID() string { return plan.review.sourceOID }
+
+func (plan CurrentPullIntegrationPlan) TargetOID() string { return plan.targetOID }
+
+func (plan CurrentPullIntegrationPlan) ReplayBaseOID() string { return plan.replayBaseOID }
+
+func (plan CurrentPullIntegrationPlan) Method() PullIntegrationMethod { return plan.method }
+
 func (plan CurrentPullIntegrationPlan) RequestedMethod() PullIntegrationMethod { return plan.requested }
-func (plan CurrentPullIntegrationPlan) Review() CurrentPullReview              { return plan.review }
-func (plan CurrentPullIntegrationPlan) MergeOptions() string                   { return plan.mergeOptions }
-func (plan CurrentPullIntegrationPlan) ConfiguredMergeFF() string              { return plan.mergeFF }
+
+func (plan CurrentPullIntegrationPlan) Review() CurrentPullReview { return plan.review }
+
+func (plan CurrentPullIntegrationPlan) MergeOptions() string { return plan.mergeOptions }
+
+func (plan CurrentPullIntegrationPlan) ConfiguredMergeFF() string { return plan.mergeFF }
+
 func (plan CurrentPullIntegrationPlan) UsesConfiguredRebaseOptions() bool {
 	return plan.requested == PullIntegrationDefault && isPullReviewRebase(plan.method)
 }
