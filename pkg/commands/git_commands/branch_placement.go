@@ -170,7 +170,7 @@ func (self *BranchCommands) readPlacementRef(ref string) (branchPlacementRef, er
 		}
 		return branchPlacementRef{exists: true, symbolic: target}, nil
 	}
-	if !commandExitedWith(err, 1) {
+	if !commandExitedWithOne(err) {
 		return branchPlacementRef{}, err
 	}
 	output, err := self.cmd.New(NewGitCmd("for-each-ref").

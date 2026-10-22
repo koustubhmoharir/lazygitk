@@ -137,7 +137,7 @@ func (self *BranchCommands) namedCheckoutHead() (ref, oid string, err error) {
 		if !strings.HasPrefix(ref, "refs/heads/") || ref == "refs/heads/" {
 			return "", "", fmt.Errorf("HEAD has an unsupported symbolic target %q", ref)
 		}
-	} else if !commandExitedWith(symbolicErr, 1) {
+	} else if !commandExitedWithOne(symbolicErr) {
 		return "", "", fmt.Errorf("query current symbolic HEAD: %w", symbolicErr)
 	}
 
@@ -151,7 +151,7 @@ func (self *BranchCommands) namedCheckoutHead() (ref, oid string, err error) {
 		}
 		return ref, strings.ToLower(oid), nil
 	}
-	if ref == "" || !commandExitedWith(err, 1) {
+	if ref == "" || !commandExitedWithOne(err) {
 		return "", "", fmt.Errorf("resolve current HEAD: %w", err)
 	}
 	state, refErr := self.readPlacementRef(ref)

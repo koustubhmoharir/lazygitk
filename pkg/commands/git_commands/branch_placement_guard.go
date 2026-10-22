@@ -108,7 +108,7 @@ func (self *BranchCommands) commonRepoIsBare(commonDir string) (bool, error) {
 	cmd = ForOtherRepo(cmd).SetWd(self.repoPaths.WorktreePath()).DontLog()
 	output, err := cmd.RunWithOutput()
 	if err != nil {
-		if commandExitedWith(err, 1) {
+		if commandExitedWithOne(err) {
 			return false, nil
 		}
 		return false, fmt.Errorf("query core.bare: %w", err)
@@ -145,7 +145,7 @@ func (self *BranchCommands) occupationInMetadata(metadataDir, currentDir, fullRe
 				return &branchPlacementOccupation{GitDir: metadataDir, Current: current, Kind: "checkout"}, nil
 			}
 		}
-	} else if !commandExitedWith(err, 1) {
+	} else if !commandExitedWithOne(err) {
 		return nil, fmt.Errorf("query HEAD in %q: %w", metadataDir, err)
 	}
 
@@ -229,7 +229,7 @@ func trimTerminalLineEnding(value string) string {
 	return strings.TrimSuffix(value, "\r")
 }
 
-func commandExitedWith(err error, code int) bool {
+func commandExitedWithOne(err error) bool {
 	var exitErr *exec.ExitError
-	return errors.As(err, &exitErr) && exitErr.ExitCode() == code
+	return errors.As(err, &exitErr) && exitErr.ExitCode() == 1
 }
