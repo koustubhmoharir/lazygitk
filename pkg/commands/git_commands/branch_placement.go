@@ -43,16 +43,8 @@ func (self *BranchCommands) PrepareBranchPlacement(name, targetOID string) (Bran
 	if err := self.validatePlacementBranchName(name); err != nil {
 		return BranchPlacementPlan{}, err
 	}
-	if err := validateObjectID(targetOID); err != nil {
+	if err := self.validateLiteralCommitOID(targetOID); err != nil {
 		return BranchPlacementPlan{}, err
-	}
-	objectType, err := self.cmd.New(NewGitCmd("cat-file").Arg("-t", targetOID).ToArgv()).
-		SetWd(self.repoPaths.WorktreePath()).DontLog().RunWithOutput()
-	if err != nil {
-		return BranchPlacementPlan{}, err
-	}
-	if strings.TrimSpace(objectType) != "commit" {
-		return BranchPlacementPlan{}, fmt.Errorf("the selected object is not a commit")
 	}
 	plan := BranchPlacementPlan{name: name, ref: "refs/heads/" + name, targetOID: strings.ToLower(targetOID)}
 	state, err := self.readPlacementRef(plan.ref)

@@ -1,8 +1,8 @@
 # Current work
 
 Roadmap item: [5. Checkout any commit under a supplied branch name](Roadmap.md#5-checkout-any-commit-under-a-supplied-branch-name).
-Status: awaiting the user's checkout-concurrency choice after completed Git
-probes. Lock-retry opt-out and shared pure OID validation are committed.
+Status: implementing checkout after the user chose Git's native concurrency
+model. Lock-retry opt-out and shared pure OID validation are committed.
 
 Scope: check out a captured selected commit under a literal new or existing
 local branch name. Warn before moving an existing name; use Git's combined
@@ -11,34 +11,29 @@ never force files, require an unnecessarily clean tree, or offer stash.
 
 ## Remaining tasks for item 5
 
-Design question: [named-checkout-design.md](named-checkout-design.md) records
-the verified late-ref/alias race. Choose Git's native concurrency contract
-(coordinate other writers during checkout) or investigate stronger in-command
-protection before implementing the backend. No checkout mutation is implemented.
+Agreed contract: [named-checkout-design.md](named-checkout-design.md) records
+the verified late-ref/alias race and the user's choice of Git's native
+concurrency model. Recheck before launch; other writers must be coordinated
+while checkout runs. Do not promise atomic expected-old updates for checkout.
 
-1. Audit checkout-menu construction, branch validation, operation guards,
-   autostash offers, refresh and worker ownership. Consult TortoiseGit and probe
-   `checkout --no-overwrite-ignore -B` with genuinely different trees, dirty
-   index/files, current/other-worktree destinations, hooks and concurrent ref
-   changes. Record the additive design and resolve substantive ambiguities.
-2. Add backend preparation/application APIs reusing literal-name/full-OID/ref
+1. Add backend preparation/application APIs reusing literal-name/full-OID/ref
    validation where appropriate. Permit a safe current-branch destination,
    reject reserved/in-progress states, revalidate before the combined checkout,
    preserve tracking settings and report Git failures without stash or retry.
    Use the verified command-local lock-retry opt-out, not the default retrying
    runner path after a possibly partial checkout.
    The shared pure full-OID guard is now available to both controller packages.
-3. Add **Checkout as branch…** to the shared checkout menu. Capture repository
+2. Add **Checkout as branch…** to the shared checkout menu. Capture repository
    and source identity, prompt for the destination, warn with old/new tips and
    require fresh review of changed destinations. Refresh all checkout-related
    models on actual completion, including uncertain hook/process failures.
-4. Add backend/controller/headless regressions for new/existing/current names,
+3. Add backend/controller/headless regressions for new/existing/current names,
    detached HEAD, differing trees, carried dirty changes, overwritten tracked/
    staged/untracked/ignored paths, cancellation, concurrent changes, occupied
    worktrees and failure recovery. Assert no partial ref move on rejection.
-5. Update usage, inventory and merge guide; generate, debug-build, format, run
+4. Update usage, inventory and merge guide; generate, debug-build, format, run
    full short tests, relevant headless regressions and lint. Record any limits.
-6. Once acceptance criteria pass, complete item 5 accurately in the roadmap and
+5. Once acceptance criteria pass, complete item 5 accurately in the roadmap and
    replace this tracker with item 6's task-level plan in the same commit.
 
 ## How this tracker works

@@ -278,8 +278,17 @@ about the code that exists, not speculative implementation tasks.
   build-ignored probe reproduce native Git behavior. In particular, plain OID
   branch-name shadowing, late direct/symbolic ref changes and post-transition
   failures must not be overlooked when implementing or merging named checkout.
-  The user has not yet chosen the concurrency contract. No hook replacement or
-  checkout backend is implemented. Probe writes stay in owned temporary repos.
+  The user chose native Git concurrency: recheck immediately before launch,
+  and coordinate other ref-mutating tools while checkout runs. Do not add hook
+  replacement or claim expected-old atomicity for named checkout. Probe writes
+  stay in owned temporary repos.
+- `branch_target.go` verifies exact native object identity and commit type with
+  `cat-file --batch-check`, keeping stderr warnings separate. Ref-only placement
+  now uses it too, replacing its type-only combined-output check. Preserve this
+  seam when merging: hash-looking names of the wrong object-format length must
+  not stand in for actual commit IDs; native hash shadows must not redirect or
+  disable a valid operation. Dedicated real SHA-1/SHA-256 target tests passed,
+  including identity/type failures, shadows and unchanged repository state.
 
 ## Reviewing an upstream merge
 

@@ -1,8 +1,9 @@
-# Named checkout: design boundary
+# Named checkout
 
-Roadmap item 5 is current. The command-level lock-retry opt-out and shared
-full-OID syntax check are committed. The checkout backend/UI are not implemented
-yet: the concurrency choice below needs the user's direction.
+Roadmap item 5 is current. The user chose Git's normal concurrency model:
+revalidate immediately before starting, and coordinate other ref-mutating tools
+while checkout runs. The command-level lock-retry opt-out and shared full-OID
+syntax check are committed; backend and modal implementation are next.
 
 ## Intended flow
 
@@ -51,7 +52,7 @@ The command sequence and timing are corroborated by Git's
 and [branch ref-update implementation](https://raw.githubusercontent.com/git/git/v2.51.1/branch.c).
 Ordinary overwrite rejection and post-transition failures are different cases.
 
-## Unresolved concurrency choice
+## Agreed concurrency contract
 
 The deterministic `post-index-change` probes prove that `checkout -B` does not
 perform an expected-old ref update for an existing destination. A direct tip
@@ -61,13 +62,11 @@ No amount of pre-launch rechecking makes that interval atomic. Unlike ref-only
 placement, holding a prepared ref lock through checkout would prevent Git's own
 combined operation from acquiring that lock; it is not a usable drop-in solution.
 
-The user must choose between Git's native concurrency contract (fresh checks
-before launch, coordinate other ref-mutating tools while checkout is running)
-and investigating stronger in-command protection first. Stronger protection
-needs a separately reviewed design, preserving existing hooks and accounting
-for Git's index/files-before-ref ordering; a late rejection can itself leave a
-partial working-tree transition. No hook override, Git patch or weaker
-split-operation workaround has been implemented or implicitly authorized.
+The user explicitly chose Git's native concurrency contract: fresh checks
+before launch, and coordination of other ref-mutating tools while checkout is
+running. Do not imply expected-old atomicity for this command or introduce a
+hook override, Git patch, temporary checkout or split-operation workaround.
+Preserve existing hooks and report Git's partial-transition failure behavior.
 
-Once that choice is resolved, finish the current tracker tasks with backend,
-modal and real-Git/headless regressions. Do not start later roadmap items.
+Finish the current tracker tasks with backend, modal and real-Git/headless
+regressions before advancing to the next roadmap item.
