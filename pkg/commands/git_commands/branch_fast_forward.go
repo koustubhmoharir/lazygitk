@@ -11,6 +11,7 @@ var ErrBranchSyncChanged = errors.New("the branch changed; review its current st
 
 // BranchFastForwardPlan captures a validated, forward-only ref update.
 type BranchFastForwardPlan struct {
+	owner                   *GitCommon
 	name, oldOID, targetOID string
 	placement               BranchPlacementPlan
 	needsUpdate, prepared   bool
@@ -41,7 +42,7 @@ func (self *SyncCommands) PrepareBranchFastForward(name, expectedOID, targetOID 
 	if info.OID != expectedOID {
 		return BranchFastForwardPlan{}, ErrBranchSyncChanged
 	}
-	plan := BranchFastForwardPlan{name: name, oldOID: expectedOID, targetOID: targetOID}
+	plan := BranchFastForwardPlan{owner: self.GitCommon, name: name, oldOID: expectedOID, targetOID: targetOID}
 	if expectedOID == targetOID {
 		plan.prepared = true
 		return plan, nil
@@ -78,6 +79,9 @@ func (self *SyncCommands) PrepareBranchFastForward(name, expectedOID, targetOID 
 func (self *SyncCommands) ApplyBranchFastForward(plan BranchFastForwardPlan) error {
 	if !plan.prepared {
 		return fmt.Errorf("branch fast-forward plan was not prepared")
+	}
+	if plan.owner != self.GitCommon {
+		return fmt.Errorf("branch fast-forward plan belongs to a different repository instance")
 	}
 	fresh, err := self.PrepareBranchFastForward(plan.name, plan.oldOID, plan.targetOID)
 	if err != nil {

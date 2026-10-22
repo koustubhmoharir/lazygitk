@@ -109,7 +109,7 @@ func TestBranchSyncRemoteInvalidAndEmptyConfiguration(t *testing.T) {
 	}
 	gitTest(t, root, "config", "remote.empty.url", "")
 	_, err := commands.InspectBranchSyncRemote("empty")
-	assert.ErrorContains(t, err, "empty configured URL")
+	assert.ErrorContains(t, err, "no configured fetch or push URL")
 	gitTest(t, root, "remote", "add", "broken", "https://example.invalid/repo.git")
 	gitTest(t, root, "config", "remote.broken.mirror", "not-a-boolean")
 	_, err = commands.InspectBranchSyncRemote("broken")
@@ -154,4 +154,22 @@ func TestBranchSyncRemoteIncludesAreFresh(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"https://example.invalid/two.git"}, second.URLs)
 	assert.NotEqual(t, first.Signature, second.Signature)
+}
+
+func TestBranchSyncRemoteEmptyURLValuesResetEarlierLists(t *testing.T) {
+	root, _ := branchSyncTestRepo(t)
+	gitTest(t, root, "remote", "add", "origin", "https://example.invalid/old-fetch.git")
+	gitTest(t, root, "config", "--add", "remote.origin.url", "")
+	gitTest(t, root, "config", "--add", "remote.origin.url", "https://example.invalid/new-fetch.git")
+	gitTest(t, root, "config", "--add", "remote.origin.pushurl", "https://example.invalid/old-push.git")
+	gitTest(t, root, "config", "--add", "remote.origin.pushurl", "")
+	gitTest(t, root, "config", "--add", "remote.origin.pushurl", "https://example.invalid/new-push.git")
+	info, err := branchSyncTestCommands(t, root).InspectBranchSyncRemote("origin")
+	if !assert.NoError(t, err) {
+		return
+	}
+	assert.Equal(t, []string{"https://example.invalid/new-fetch.git"}, info.URLs)
+	assert.Equal(t, []string{"https://example.invalid/new-push.git"}, info.PushURLs)
+	assert.Equal(t, info.URLs[0], gitTest(t, root, "remote", "get-url", "--all", "origin"))
+	assert.Equal(t, info.PushURLs[0], gitTest(t, root, "remote", "get-url", "--push", "--all", "origin"))
 }

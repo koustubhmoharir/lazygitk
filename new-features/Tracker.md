@@ -16,6 +16,8 @@ switch branches silently. Keep stack-wide operations explicit choices.
    Native branch/remote inspection and context-source resolution are implemented;
    finish approved-target validation, transport/config change detection and
    source/destination review before constructing network commands.
+   Ref-only plans are backend-bound; remote inspection honors native empty-URL
+   list resets. Network plan review and modal integration remain.
    Every prompt, command, upstream-setting action and refresh must retain that
    target; neither a later selection nor current HEAD may substitute for it.
 2. Make push target the selected local branch with an explicit remote/refspec.

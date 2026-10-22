@@ -216,3 +216,18 @@ func TestBranchFastForwardOIDNamedRefsUseLiteralCommitAncestry(t *testing.T) {
 	}
 	assert.Equal(t, target, gitTest(t, root, "rev-parse", "refs/heads/selected"))
 }
+
+func TestBranchFastForwardPlanRemainsBoundToItsBackend(t *testing.T) {
+	root, old, target := transactionHistory(t)
+	gitTest(t, root, "branch", "selected", old)
+	commands := branchSyncTestCommands(t, root)
+	plan, err := commands.PrepareBranchFastForward("selected", old, target)
+	if !assert.NoError(t, err) {
+		return
+	}
+	// Even equivalent data must not redirect a prepared operation through a
+	// replacement backend after a repository switch/reload.
+	err = branchSyncTestCommands(t, root).ApplyBranchFastForward(plan)
+	assert.ErrorContains(t, err, "different repository instance")
+	assert.Equal(t, old, gitTest(t, root, "rev-parse", "refs/heads/selected"))
+}

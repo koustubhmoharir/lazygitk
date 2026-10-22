@@ -46,12 +46,17 @@ about the code that exists, not speculative implementation tasks.
   normalization. Dotted remote names must not contaminate a shorter remote's
   profile. The config is not stored in app state or logged as query output;
   future modals must redact credentials when displaying URLs.
+  Empty URL/push-URL values clear earlier values, matching Git's native
+  remote reader; a later nonempty URL remains valid. Keep config parsing
+  shared with execution-plan validation, without logging credential values.
 - `branch_fast_forward.go` is the ref-only forward/update primitive. Preserve
   ancestry-error distinction, source-OID revalidation, ancestor-target no-ops,
   worktree/reservation checks and single delegation to guarded placement.
   Preserve uncertain commit errors before changed-state classification. The
   scoped ambiguity-warning override is for validated literal OID ancestry
   only, not a global suppression of Git diagnostics.
+  Plans are bound to the original backend instance, not just equivalent
+  repository data; a repository replacement must not reuse an old plan.
 
 Read-only checkpoint (2026-10-22): main-agent native probe rerun passed,
 including selected != current with staged/unstaged/untracked preservation,
@@ -71,6 +76,8 @@ uncertain commits, included configuration, multiple mappings/URLs and native
 boolean normalization. The additional standalone probe passed its mirror
 assertions: both configured mirror plus an explicit refspec and an attempted
 `--no-mirror` override fail on Git 2.51.1. No executable sync UI is wired yet.
+Follow-up focused tests passed (2.273s), including native URL-list reset
+comparison and rejection of fast-forward plans on a replacement backend.
 
 ### Selected-commit rebase and clean-start policy (item 6)
 

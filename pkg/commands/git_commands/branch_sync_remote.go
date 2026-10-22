@@ -33,12 +33,7 @@ func (self *SyncCommands) InspectBranchSyncRemote(name string) (BranchSyncRemote
 	if name == "" || name == "." || strings.ContainsAny(name, "\x00\r\n") {
 		return BranchSyncRemoteInfo{}, fmt.Errorf("choose a configured named remote")
 	}
-	stdout, _, err := self.cmd.New(NewGitCmd("config").Arg("--null", "--list", "--includes").ToArgv()).
-		SetWd(self.repoPaths.WorktreePath()).DontLog().RunWithOutputs()
-	if err != nil {
-		return BranchSyncRemoteInfo{}, fmt.Errorf("inspect remote configuration: %w", err)
-	}
-	entries, err := parseBranchSyncConfig(stdout)
+	entries, err := self.branchSyncConfigEntries()
 	if err != nil {
 		return BranchSyncRemoteInfo{}, err
 	}
@@ -58,9 +53,23 @@ func (self *SyncCommands) InspectBranchSyncRemote(name string) (BranchSyncRemote
 		}
 		switch key {
 		case "url":
-			info.URLs = append(info.URLs, entry.value)
+			if !entry.hasValue {
+				return BranchSyncRemoteInfo{}, fmt.Errorf("remote %q has a valueless URL", name)
+			}
+			if entry.value == "" {
+				info.URLs = nil // Git uses an empty value to clear earlier URLs.
+			} else {
+				info.URLs = append(info.URLs, entry.value)
+			}
 		case "pushurl":
-			info.PushURLs = append(info.PushURLs, entry.value)
+			if !entry.hasValue {
+				return BranchSyncRemoteInfo{}, fmt.Errorf("remote %q has a valueless push URL", name)
+			}
+			if entry.value == "" {
+				info.PushURLs = nil
+			} else {
+				info.PushURLs = append(info.PushURLs, entry.value)
+			}
 		case "fetch":
 			info.FetchRefspecs = append(info.FetchRefspecs, entry.value)
 		case "push":
@@ -69,11 +78,6 @@ func (self *SyncCommands) InspectBranchSyncRemote(name string) (BranchSyncRemote
 	}
 	if len(info.URLs) == 0 && len(info.PushURLs) == 0 {
 		return BranchSyncRemoteInfo{}, fmt.Errorf("remote %q has no configured fetch or push URL", name)
-	}
-	for _, url := range append(append([]string{}, info.URLs...), info.PushURLs...) {
-		if url == "" {
-			return BranchSyncRemoteInfo{}, fmt.Errorf("remote %q has an empty configured URL", name)
-		}
 	}
 	// Ask Git to normalize boolean spellings and valueless keys. Its runner
 	// executes a clone, so missing-key detection must use the native exit error.
@@ -97,6 +101,15 @@ func (self *SyncCommands) InspectBranchSyncRemote(name string) (BranchSyncRemote
 	writeFingerprintString(digest, fmt.Sprintf("mirror=%t", info.Mirror))
 	info.Signature = hex.EncodeToString(digest.Sum(nil))
 	return info, nil
+}
+
+func (self *SyncCommands) branchSyncConfigEntries() ([]branchSyncConfigEntry, error) {
+	stdout, _, err := self.cmd.New(NewGitCmd("config").Arg("--null", "--list", "--includes").ToArgv()).
+		SetWd(self.repoPaths.WorktreePath()).DontLog().RunWithOutputs()
+	if err != nil {
+		return nil, fmt.Errorf("inspect sync configuration: %w", err)
+	}
+	return parseBranchSyncConfig(stdout)
 }
 
 func parseBranchSyncConfig(stdout string) ([]branchSyncConfigEntry, error) {
