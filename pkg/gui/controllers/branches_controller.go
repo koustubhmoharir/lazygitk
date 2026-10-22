@@ -176,8 +176,11 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			Keys:              opts.GetKeys(opts.Config.Branches.FastForward),
 			Handler:           self.withItems(self.fastForward),
 			GetDisabledReason: self.require(self.itemRangeSelected(self.branchesAreReal)),
-			Description:       self.c.Tr.FastForward,
-			Tooltip:           self.c.Tr.FastForwardTooltip,
+			Description:       self.c.Tr.BranchSyncFastForwardSelected,
+			// Fork: the upstream tooltip promises rewritten-history resets;
+			// the captured route permits only explicitly reviewed fast-forward.
+			Tooltip:   self.c.Tr.BranchSyncFastForwardTooltip,
+			OpensMenu: true,
 		},
 		{
 			CommandID:         "tag.create-at-selection",
@@ -692,22 +695,10 @@ func (self *BranchesController) rebase(branch *models.Branch) error {
 }
 
 func (self *BranchesController) fastForward(branches []*models.Branch) error {
-	if !lo.EveryBy(branches, func(branch *models.Branch) bool { return branch.IsTrackingRemote() }) {
-		return errors.New(self.c.Tr.FwdNoUpstream)
-	}
-	if !lo.EveryBy(branches, func(branch *models.Branch) bool { return branch.RemoteBranchStoredLocally() }) {
-		return errors.New(self.c.Tr.FwdNoLocalUpstream)
-	}
-	// A branch that is only ahead has nothing to fast-forward to. One that is
-	// both ahead and behind may still be reset to its upstream, so let the
-	// helper look into it.
-	if lo.SomeBy(branches, func(branch *models.Branch) bool {
-		return branch.IsAheadForPull() && !branch.IsBehindForPull()
-	}) {
-		return errors.New(self.c.Tr.FwdCommitsToPush)
-	}
-
-	return self.c.Helpers().BranchesHelper.FastForwardBranches(branches)
+	// Fork: replace cached-tip forwarding (including rewritten-upstream resets
+	// and occupied-worktree updates) with captured, reviewed fast-forward plans.
+	names := lo.Map(branches, func(branch *models.Branch, _ int) string { return branch.Name })
+	return self.fastForwardCapturedBranches(names)
 }
 
 func (self *BranchesController) createTag(branch *models.Branch) error {

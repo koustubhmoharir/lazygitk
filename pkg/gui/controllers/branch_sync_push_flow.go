@@ -28,7 +28,7 @@ func (self *SyncController) pushBranchSource(source branchSyncSource) error {
 	target := newBranchSyncTarget(self.c, source)
 	return target.inspect(func(info git_commands.BranchSyncInfo) error {
 		flow := newBranchSyncPushFlow(target, info)
-		flow.stackChoice = func() error { return self.reviewBranchStackPush(target, info) }
+		flow.stackChoice = func() error { return self.reviewBranchStackPush(target, flow.info) }
 		return flow.menu()
 	})
 }

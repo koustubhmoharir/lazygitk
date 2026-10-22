@@ -28,6 +28,10 @@ var FastForwardBehindBranchWithoutReflogs = NewIntegrationTest(NewIntegrationTes
 		shell.Checkout("master")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		headOID := t.Git().GetCommitHash("HEAD")
+		t.Shell().RunShellCommand("cp .git/index .git/ff-review-index")
+		sourceOID := t.Git().GetCommitHash("feature")
+		targetOID := t.Git().GetCommitHash("refs/remotes/origin/feature")
 		t.Views().Branches().
 			Focus().
 			Lines(
@@ -35,10 +39,23 @@ var FastForwardBehindBranchWithoutReflogs = NewIntegrationTest(NewIntegrationTes
 				Contains("feature ↓2"),
 			).
 			SelectNextItem().
-			Press(keys.Branches.FastForward).
+			Press(keys.Branches.FastForward)
+
+		t.ReviewFastForwardFetch("feature", "origin", "feature")
+		review := t.ExpectFastForwardReview("feature", sourceOID, targetOID, false)
+		if got := t.Git().GetCommitHash("refs/heads/feature"); got != sourceOID {
+			t.Fail("branch moved before approval: " + got)
+		}
+		review.Confirm()
+
+		t.Views().Branches().
 			Lines(
 				Contains("master"),
 				Contains("feature ✓").IsSelected(),
 			)
+		if got := t.Git().GetCommitHash("HEAD"); got != headOID {
+			t.Fail("off-branch fast-forward changed HEAD: " + got)
+		}
+		t.Shell().RunShellCommand("cmp .git/index .git/ff-review-index")
 	},
 })

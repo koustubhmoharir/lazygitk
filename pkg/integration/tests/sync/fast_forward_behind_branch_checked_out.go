@@ -26,6 +26,9 @@ var FastForwardBehindBranchCheckedOut = NewIntegrationTest(NewIntegrationTestArg
 		shell.UpdateFile("file", "changed")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		sourceOID := t.Git().GetCommitHash("master")
+		targetOID := t.Git().GetCommitHash("refs/remotes/origin/master")
+		stagedBlobOID := t.Git().GetCommitHash(":file")
 		t.Views().Commits().
 			Lines(
 				Contains("one"),
@@ -36,7 +39,16 @@ var FastForwardBehindBranchCheckedOut = NewIntegrationTest(NewIntegrationTestArg
 			Lines(
 				Contains("master ↓2").IsSelected(),
 			).
-			Press(keys.Branches.FastForward).
+			Press(keys.Branches.FastForward)
+
+		t.ReviewFastForwardFetch("master", "origin", "master")
+		review := t.ExpectFastForwardReview("master", sourceOID, targetOID, true)
+		if got := t.Git().GetCommitHash("refs/heads/master"); got != sourceOID {
+			t.Fail("branch moved before approval: " + got)
+		}
+		review.Confirm()
+
+		t.Views().Branches().
 			Lines(
 				Contains("master ✓").IsSelected(),
 			)
@@ -49,6 +61,10 @@ var FastForwardBehindBranchCheckedOut = NewIntegrationTest(NewIntegrationTestArg
 			)
 
 		// Moving the branch forward doesn't touch the change
+		if got := t.Git().GetCommitHash(":file"); got != stagedBlobOID {
+			t.Fail("fast-forward changed staged file content: " + got)
+		}
+		t.FileSystem().FileContent("file", Equals("changed"))
 		t.Views().Files().
 			Lines(
 				Contains("file"),

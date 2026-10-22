@@ -66,7 +66,13 @@ type TranslationSet struct {
 	BranchSyncStackUpdatePreflightFailed  string
 	BranchSyncStackUpdateIgnoredApproved  string
 	BranchSyncStackUpdateCurrentLast      string
+	BranchSyncStackUpdateCurrentLabel     string
+	BranchSyncStackUpdateNoopLabel        string
 	BranchSyncStackUpdateChoice           string
+	BranchSyncFastForwardMenu             string
+	BranchSyncFastForwardSummary          string
+	BranchSyncFastForwardSelected         string
+	BranchSyncFastForwardTooltip          string
 
 	NotEnoughSpace                        string
 	DiffTitle                             string
@@ -1432,7 +1438,7 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchSyncStackContinue:               "Continue reviewing remaining branches",
 		BranchSyncStackUpdateTitle:            "Review branch updates",
 		BranchSyncStackUpdateContext:          "Update review: branch %d of %d. Approved fetches may update tracking refs. Local branch tips and worktree integration wait for final batch approval.\n\n",
-		BranchSyncStackUpdatePrompt:           "Review every update below. Approved fetches may already have updated tracking refs, but no local branch tip or worktree integration has been applied.\n\nExecute first advances unoccupied branches by verified fast-forward, then integrates the reviewed commit into the checked-out branch, if included. The rows show this execution order. This is not an atomic transaction: completed updates remain if a later step fails. No automatic retry, rollback, stash, divergent reset or update of another worktree will run.",
+		BranchSyncStackUpdatePrompt:           "Approved fetches may have changed tracking refs; local tips and files have not changed.\n\nApply ref-only fast-forwards first, then the checked-out integration, in the order below. Targets stay pinned: updating a selected local upstream does not retarget another plan.\n\nNot atomic: earlier advances remain after failure. No automatic retries, rollback, stash, divergent resets or updates of other worktrees.",
 		BranchSyncStackUpdateExecute:          "Apply all reviewed branch updates",
 		BranchSyncStackUpdateStatus:           "Applying reviewed branch updates",
 		BranchSyncStackUpdateNoMembers:        "No other unmerged local branch tips were found below the selected branch. No fetch or update ran; use the one-branch update action instead.",
@@ -1441,7 +1447,13 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchSyncStackUpdatePreflightFailed:  "Update preflight failed for %q. No local branch tip or worktree integration was changed by this batch; approved fetches may have updated tracking refs.\n\n%w",
 		BranchSyncStackUpdateIgnoredApproved:  "\n\nIgnored-file overwrite risk was explicitly approved for %d paths. Changed contents invalidate that approval before execution.",
 		BranchSyncStackUpdateCurrentLast:      " (checked-out integration, last)",
+		BranchSyncStackUpdateCurrentLabel:     "%q: integrate %s into %s",
+		BranchSyncStackUpdateNoopLabel:        "%q: keep %s (already contains %s)",
 		BranchSyncStackUpdateChoice:           "Review updates for this branch and branches stacked below…",
+		BranchSyncFastForwardMenu:             "Review selected branch fast-forward",
+		BranchSyncFastForwardSummary:          "Fast-forward only, not the configured pull method. No divergent reset, rebase, autostash or update of another worktree.\n\n",
+		BranchSyncFastForwardSelected:         "Fast-forward selected branches…",
+		BranchSyncFastForwardTooltip:          "Review an upstream fetch and a forward-only update of the captured selected branches. Divergent or rewritten history is never reset; tips occupied by another worktree are not moved. A selected checked-out branch uses native fast-forward integration with explicit review. Multiple selections require final batch approval. Saved upstream settings stay unchanged.",
 
 		NotEnoughSpace:                       "Not enough space to render panels",
 		DiffTitle:                            "Diff",

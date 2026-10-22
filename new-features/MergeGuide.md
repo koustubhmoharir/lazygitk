@@ -51,8 +51,9 @@ about the code that exists, not speculative implementation tasks.
   This preparation adds English fallback strings; default shortcut policy is
   unchanged. Regenerate the command inventory/key docs with final binding
   integration, not as evidence that an unused menu is already accessible.
-- `branch_sync_update_flow.go` is the additive off-branch update dialog; default
-  Pull/fast-forward binding integration is still pending. Fetch and ref-only
+- `branch_sync_update_flow.go` is the off-branch update dialog; default Pull
+  binding integration is still pending. The selected Fast-forward action now
+  uses the captured route described below. Fetch and ref-only
   advancement have separate reviews. Local `.` upstreams read exact local
   branch refs without contacting a transport. Keep custom storage explicit,
   preserve one-off options through stale-source review, and never use a
@@ -81,6 +82,54 @@ about the code that exists, not speculative implementation tasks.
   Stop on any native failure; report completed branches and possible partial
   success of the failing push. Never replay or roll back a consumed approval.
   This additive flow does not itself commit the default sync binding hooks.
+- `branch_sync_stack_target.go` shares native candidate routing between wider
+  push and update dialogs, retaining the captured repository/name and configured
+  local-main exclusions. A stale-source refresh must pass its newly inspected
+  snapshot into a subsequently requested stack review, not retain the original
+  obsolete OID or read another pane's selection.
+- `branch_sync_update_collection.go` adds read-only plan collection to the
+  existing off-branch and current-pull dialogs. An approved fetch may update its
+  reviewed tracking ref; collecting a local-tip/integration approval must not
+  apply it. No-op plans require an explicit Continue during wider review.
+  Keep the captured mode and source; changed collection inputs fail rather than
+  silently reinspecting and fetching a replacement source.
+- `branch_sync_stack_update_flow.go` reviews every member before a final
+  Cancel-first approval. Preflight every plan before the first local tip moves.
+  Execute guarded off-branch fast-forwards first, then the exact reviewed current
+  integration through the terminal executor. Refuse divergence and occupied
+  tip changes; there is no rewritten-upstream reset or worktree creation.
+  Targets remain independently pinned even when a local `.` upstream is another
+  selected member: advancing that member does not implicitly change an already
+  approved integration target. The final prompt states this; using a different
+  target requires another explicit review. Label current integration as an
+  integration, not a promised resulting tip (merge/rebase may create new OIDs),
+  and label ref-only no-ops as unchanged rather than suggesting a rewind.
+  The current phase releases its initial busy flag before queuing the terminal
+  handoff, so deferred ref-phase cleanup cannot clear the executor's new flag.
+  Preserve all launch-time validation and report completed ref advances on
+  current-phase errors, including native/query/repository errors crossing async
+  boundaries. The idempotent progress error preserves native causes through
+  `Unwrap`; `runReviewedIntegrationReporting` adds context without changing
+  ordinary one-branch execution when its reporter is nil. Never automatically
+  repeat a consumed batch or retry/roll back a native partial result.
+- `BranchesController.fastForward` now delegates copied literal selection names
+  to `branch_sync_fast_forward_flow.go`, replacing cached-status gates and the
+  upstream helper's rewritten-history/occupied-worktree updates. Inspect fresh
+  native inputs, use a simple one-branch flow or explicit multi-selection batch,
+  and set one `fastForwardOnly` policy flag. A selected current branch uses
+  explicit native fast-forward even when pull is configured to rebase. It must
+  not inherit autostash or offer other integration methods. Fork translation
+  fields replace the old tooltip that promised divergent resets; shortcut
+  policy and the existing command ID remain unchanged.
+- Verification for the reviewed stack-update/Fast-forward route: all 15 existing
+  affected terminal scenarios pass, including rewritten history, dirty files,
+  disabled reflogs, multi-selection and occupied/rebasing linked worktrees.
+  The full controller/translation and native Git-command short suites pass;
+  additional execution tests cover late stale/risk/config failures, native hook
+  failure and completion-dispatch failure after an earlier ref advance, plus
+  configured rebase with unrelated-ref and harmless-untracked-file preservation.
+  Generation, debug build, inventory tests, formatting and scoped lint pass.
+  This is not yet acceptance of the remaining default push/pull binding hooks.
 - These modules are preparatory and not wired into push/pull yet. Native
   `PushRef` inspection can return only one of several configured destinations;
   it is a suggestion, not unique resolution or permission to execute. Future

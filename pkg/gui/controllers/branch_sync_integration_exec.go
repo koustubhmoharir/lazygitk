@@ -18,16 +18,34 @@ func (target *branchSyncTarget) runReviewedIntegration(
 	onReviewRequired func(error) error,
 	afterExecution func(error) error,
 ) error {
-	if err := target.checkRepository(); err != nil {
+	return target.runReviewedIntegrationReporting(plan, onReviewRequired, afterExecution, nil)
+}
+
+// reportFailure adds workflow progress to errors at asynchronous boundaries.
+// It must be idempotent: synchronous worker dispatch can surface an already
+// reported error through the outer dispatch result as well.
+func (target *branchSyncTarget) runReviewedIntegrationReporting(
+	plan git_commands.CurrentPullIntegrationPlan,
+	onReviewRequired func(error) error,
+	afterExecution func(error) error,
+	reportFailure func(error) error,
+) error {
+	report := func(err error) error {
+		if err != nil && reportFailure != nil {
+			return reportFailure(err)
+		}
 		return err
 	}
+	if err := target.checkRepository(); err != nil {
+		return report(err)
+	}
 	if plan.Name() != target.source.name {
-		return fmt.Errorf("integration plan for branch %q cannot run against captured branch %q", plan.Name(), target.source.name)
+		return report(fmt.Errorf("integration plan for branch %q cannot run against captured branch %q", plan.Name(), target.source.name))
 	}
 	item := syncOperationItem(target.git, target.source.name)
 	ordinary := &models.Branch{Name: target.source.name}
 	if target.c.State().GetItemOperation(item) != types.ItemOperationNone || target.c.State().GetItemOperation(ordinary) != types.ItemOperationNone {
-		return errors.New(target.c.Tr.CantPullOrPushSameBranchTwice)
+		return report(errors.New(target.c.Tr.CantPullOrPushSameBranchTwice))
 	}
 	target.c.State().SetItemOperation(item, types.ItemOperationPulling)
 	active := true
@@ -50,23 +68,23 @@ func (target *branchSyncTarget) runReviewedIntegration(
 	finishWorker := func(err error) error {
 		clear()
 		refreshFromWorker()
-		return err
+		return report(err)
 	}
 	finishUI := func(err error) error {
 		clear()
 		refreshOnUI()
-		return err
+		return report(err)
 	}
 	reviewOnUI := func(reviewErr error) error {
 		clear()
 		refreshOnUI()
 		if onReviewRequired == nil {
-			return reviewErr
+			return report(reviewErr)
 		}
 		if err := target.checkRepository(); err != nil {
-			return errors.Join(reviewErr, err)
+			return report(errors.Join(reviewErr, err))
 		}
-		return onReviewRequired(reviewErr)
+		return report(onReviewRequired(reviewErr))
 	}
 	err := target.c.WithWaitingStatusBlockingInput(types.WaitingStatusOpts{Message: fmt.Sprintf(target.c.Tr.BranchSyncIntegrationStatus, plan.Name())}, func(task gocui.Task) error {
 		if err := target.checkRepository(); err != nil {
@@ -124,5 +142,5 @@ func (target *branchSyncTarget) runReviewedIntegration(
 		clear()
 		refreshOnUI()
 	}
-	return err
+	return report(err)
 }

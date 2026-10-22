@@ -17,6 +17,7 @@ func (self *SyncController) pullBranchSource(source branchSyncSource) error {
 	return target.inspect(func(info git_commands.BranchSyncInfo) error {
 		current := info.HeadRef == info.FullRef
 		flow := &branchSyncUpdateFlow{target: target, info: info, options: branchSyncUpdateDefaults(info), currentMode: current}
+		flow.stackChoice = func() error { return self.reviewBranchStackUpdate(target, flow.info) }
 		return flow.menu()
 	})
 }
@@ -76,6 +77,9 @@ func (flow *branchSyncUpdateFlow) prepareCurrentLocalUpdate() error {
 func (flow *branchSyncUpdateFlow) chooseIntegration(review git_commands.CurrentPullReview, targetOID string) error {
 	if err := flow.currentModeValid(); err != nil {
 		return err
+	}
+	if flow.fastForwardOnly {
+		return flow.prepareIntegration(review, targetOID, git_commands.PullIntegrationFastForwardOnly)
 	}
 	return flow.target.c.WithWaitingStatus(flow.target.c.Tr.BranchSyncInspecting, func(gocui.Task) error {
 		defaultPlan, defaultErr := flow.target.git.Sync.PrepareCurrentPullIntegration(review, targetOID, git_commands.PullIntegrationDefault)
@@ -137,7 +141,7 @@ func (flow *branchSyncUpdateFlow) presentIntegrationChoices(review git_commands.
 		}
 		items = append(items, item)
 	}
-	prompt := fmt.Sprintf(flow.target.c.Tr.BranchSyncIntegrationSummary, review.Name(), review.SourceOID(), targetOID)
+	prompt := flow.collectionContext() + fmt.Sprintf(flow.target.c.Tr.BranchSyncIntegrationSummary, review.Name(), review.SourceOID(), targetOID)
 	return flow.target.c.Menu(types.CreateMenuOptions{Title: flow.target.c.Tr.BranchSyncIntegrationMenu, Prompt: prompt, Items: items, OnCancel: flow.target.checkRepository})
 }
 
@@ -200,7 +204,7 @@ func (flow *branchSyncUpdateFlow) reviewIntegration(plan git_commands.CurrentPul
 }
 
 func (flow *branchSyncUpdateFlow) integrationReviewPrompt(plan git_commands.CurrentPullIntegrationPlan) string {
-	prompt := fmt.Sprintf(flow.target.c.Tr.BranchSyncIntegrationReviewPrompt, plan.TargetOID(), plan.Name(), plan.SourceOID(), flow.integrationMethodLabel(plan))
+	prompt := flow.collectionContext() + fmt.Sprintf(flow.target.c.Tr.BranchSyncIntegrationReviewPrompt, plan.TargetOID(), plan.Name(), plan.SourceOID(), flow.integrationMethodLabel(plan))
 	if plan.UsesConfiguredRebaseOptions() {
 		prompt += flow.target.c.Tr.BranchSyncIntegrationRebaseOptions
 	}
@@ -254,6 +258,9 @@ func (flow *branchSyncUpdateFlow) integrationMethodLabel(plan git_commands.Curre
 func (flow *branchSyncUpdateFlow) executeIntegration(plan git_commands.CurrentPullIntegrationPlan) error {
 	if err := flow.currentModeValid(); err != nil {
 		return err
+	}
+	if flow.collector != nil {
+		return flow.collectIntegration(plan)
 	}
 	helper := flow.target.c.Helpers().MergeAndRebase
 	return flow.target.runReviewedIntegration(plan, func(err error) error {
@@ -381,6 +388,9 @@ func (flow *branchSyncUpdateFlow) executeCurrentFetch(review git_commands.Curren
 func (flow *branchSyncUpdateFlow) reinspectCurrent() error {
 	if err := flow.target.checkRepository(); err != nil {
 		return err
+	}
+	if flow.collector != nil {
+		return git_commands.ErrBranchSyncChanged
 	}
 	return flow.target.inspect(func(info git_commands.BranchSyncInfo) error {
 		if info.HeadRef != info.FullRef {

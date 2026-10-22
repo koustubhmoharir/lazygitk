@@ -14,44 +14,16 @@ import (
 // Stack discovery is read-only. Each member then uses the one-branch dialog to
 // collect an immutable plan; no push runs until the separate batch approval.
 func (self *SyncController) reviewBranchStackPush(target *branchSyncTarget, info git_commands.BranchSyncInfo) error {
-	if err := target.checkRepository(); err != nil {
-		return err
-	}
-	mainBranches := target.c.Model().MainBranches
-	mainNames := slices.Clone(target.c.UserConfig().Git.MainBranches)
-	if mainBranches == nil {
-		return errors.New("main branch information is not loaded; reopen stack review after refreshing")
-	}
-	return target.c.WithWaitingStatus(target.c.Tr.BranchSyncInspecting, func(gocui.Task) error {
-		if err := target.checkRepository(); err != nil {
-			return err
+	return target.inspectStack(info, func(members []git_commands.BranchStackMember) error {
+		if len(members) == 1 {
+			return target.c.Menu(types.CreateMenuOptions{
+				Title: target.c.Tr.BranchSyncStackPushTitle, Prompt: target.c.Tr.BranchSyncStackNoMembers,
+				Items:    []*types.MenuItem{{CommandID: "branch.push-stack.no-members", Verb: "cancel", Label: target.c.Tr.Cancel, OnPress: target.checkRepository}},
+				OnCancel: target.checkRepository,
+			})
 		}
-		below, err := target.git.Sync.InspectBranchStack(info.Name, info.OID, slices.Clone(mainBranches.Get()))
-		if err != nil {
-			return err
-		}
-		// A local main branch can be ahead of its remote main ref; that does
-		// not turn it into a topic-stack member. Match upstream's explicit
-		// configured-name exclusion without excluding other unpublished tips.
-		below = slices.DeleteFunc(below, func(member git_commands.BranchStackMember) bool {
-			return slices.Contains(mainNames, member.Name)
-		})
-		target.c.OnUIThread(func() error {
-			if err := target.checkRepository(); err != nil {
-				return err
-			}
-			if len(below) == 0 {
-				return target.c.Menu(types.CreateMenuOptions{
-					Title: target.c.Tr.BranchSyncStackPushTitle, Prompt: target.c.Tr.BranchSyncStackNoMembers,
-					Items:    []*types.MenuItem{{CommandID: "branch.push-stack.no-members", Verb: "cancel", Label: target.c.Tr.Cancel, OnPress: target.checkRepository}},
-					OnCancel: target.checkRepository,
-				})
-			}
-			members := append([]git_commands.BranchStackMember{{Name: info.Name, OID: info.OID}}, below...)
-			batch := &branchStackPushFlow{target: target, members: members}
-			return batch.reviewNext()
-		})
-		return nil
+		batch := &branchStackPushFlow{target: target, members: members}
+		return batch.reviewNext()
 	})
 }
 

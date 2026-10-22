@@ -19,7 +19,10 @@ type branchSyncUpdateFlow struct {
 	update  *git_commands.BranchFastForwardPlan
 	// currentMode is fixed when the inspected target is routed. In particular,
 	// a later HEAD change must never promote an off-branch flow to current pull.
-	currentMode bool
+	currentMode     bool
+	collector       *branchSyncUpdateCollector
+	stackChoice     func() error
+	fastForwardOnly bool
 }
 
 // updateBranchSource is an additive controller entry point for direct callers
@@ -63,9 +66,15 @@ func (flow *branchSyncUpdateFlow) menu() error {
 		{CommandID: flow.menuID("upstream"), Verb: "configure-fetch", Label: tr.BranchSyncChooseUpstreamBranch, OpensMenu: true, OnPress: flow.promptUpstream},
 		{CommandID: flow.menuID("tracking"), Verb: "configure-fetch", Label: tr.BranchSyncChooseTrackingRef, OpensMenu: true, OnPress: flow.promptTrackingRef},
 	}
+	if flow.stackChoice != nil {
+		items = append(items, &types.MenuItem{CommandID: flow.menuID("stack"), Verb: "update-stack", Label: tr.BranchSyncStackUpdateChoice, OpensMenu: true, OnPress: flow.stackChoice})
+	}
 	title := tr.BranchSyncUpdateMenu
 	if flow.currentMode {
 		title = tr.BranchSyncPullCurrent
+	}
+	if flow.fastForwardOnly {
+		title = tr.BranchSyncFastForwardMenu
 	}
 	return flow.target.c.Menu(types.CreateMenuOptions{Title: title, Prompt: flow.summary(), Items: items, OnCancel: flow.target.checkRepository})
 }
@@ -82,7 +91,11 @@ func (flow *branchSyncUpdateFlow) summary() string {
 	if flow.currentMode {
 		format = flow.target.c.Tr.BranchSyncCurrentPullSummary
 	}
-	return fmt.Sprintf(format, flow.info.Name, utils.ShortHash(flow.info.OID), flow.options.Remote, flow.options.RemoteRef, flow.options.TrackingRef)
+	prefix := flow.collectionContext()
+	if flow.fastForwardOnly {
+		prefix += flow.target.c.Tr.BranchSyncFastForwardSummary
+	}
+	return prefix + fmt.Sprintf(format, flow.info.Name, utils.ShortHash(flow.info.OID), flow.options.Remote, flow.options.RemoteRef, flow.options.TrackingRef)
 }
 
 func (flow *branchSyncUpdateFlow) promptRemote() error {
@@ -291,9 +304,20 @@ func (flow *branchSyncUpdateFlow) reviewUpdate() error {
 	}
 	plan := *flow.update
 	if !plan.NeedsUpdate() {
+		if flow.collector != nil {
+			return flow.target.c.Menu(types.CreateMenuOptions{
+				Title:  flow.target.c.Tr.BranchSyncUpdateReviewTitle,
+				Prompt: flow.collectionContext() + fmt.Sprintf(flow.target.c.Tr.BranchSyncAlreadyAhead, plan.Name(), plan.OldOID(), plan.TargetOID()),
+				Items: []*types.MenuItem{
+					{CommandID: "branch.update-selected.noop-cancel", Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: flow.target.checkRepository},
+					{CommandID: "branch.update-selected.noop-continue", Verb: "review-update", Label: flow.target.c.Tr.BranchSyncStackContinue, OpensMenu: true, OnPress: func() error { return flow.applyUpdate(plan) }},
+				},
+				HideCancel: true, OnCancel: flow.target.checkRepository,
+			})
+		}
 		return flow.target.c.Menu(types.CreateMenuOptions{Title: flow.target.c.Tr.BranchSyncUpdateReviewTitle, Prompt: fmt.Sprintf(flow.target.c.Tr.BranchSyncAlreadyAhead, plan.Name(), utils.ShortHash(plan.OldOID()), utils.ShortHash(plan.TargetOID())), Items: []*types.MenuItem{{CommandID: flow.menuID("noop-cancel"), Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: flow.target.checkRepository}}, OnCancel: flow.target.checkRepository})
 	}
-	prompt := fmt.Sprintf(flow.target.c.Tr.BranchSyncUpdateReviewPrompt, plan.Name(), utils.ShortHash(plan.OldOID()), utils.ShortHash(plan.TargetOID()))
+	prompt := flow.collectionContext() + fmt.Sprintf(flow.target.c.Tr.BranchSyncUpdateReviewPrompt, plan.Name(), plan.OldOID(), plan.TargetOID())
 	flow.target.c.Confirm(types.ConfirmOpts{Title: flow.target.c.Tr.BranchSyncUpdateReviewTitle, Prompt: prompt, HandleConfirm: func() error {
 		if err := flow.target.checkRepository(); err != nil {
 			return err
@@ -304,6 +328,9 @@ func (flow *branchSyncUpdateFlow) reviewUpdate() error {
 }
 
 func (flow *branchSyncUpdateFlow) applyUpdate(plan git_commands.BranchFastForwardPlan) error {
+	if flow.collector != nil {
+		return flow.collectFastForward(plan)
+	}
 	if err := flow.target.checkRepository(); err != nil {
 		return err
 	}
@@ -320,6 +347,9 @@ func (flow *branchSyncUpdateFlow) applyUpdate(plan git_commands.BranchFastForwar
 func (flow *branchSyncUpdateFlow) reinspectOffBranch() error {
 	if err := flow.target.checkRepository(); err != nil {
 		return err
+	}
+	if flow.collector != nil {
+		return git_commands.ErrBranchSyncChanged
 	}
 	return flow.target.inspect(func(info git_commands.BranchSyncInfo) error {
 		if info.HeadRef == info.FullRef {

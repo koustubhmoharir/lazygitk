@@ -5,9 +5,10 @@ Status: source/remote inspection, guarded ref-only advancement and explicit
 push/fetch backend plans (including current-branch fetch) are implemented.
 Additive push-dialog/target helpers are implemented and directly tested.
 The additive off-branch update dialog is implemented and directly tested.
-The current-branch fetch/integration dialog and terminal executor are implemented;
-finish routing and end-to-end acceptance with the explicit wider-stack choices.
-Default binding integration, explicit stack choices and the remaining
+The current-branch fetch/integration dialog and terminal executor are implemented.
+Explicit wider-stack push/update review and selected Fast-forward routing are
+implemented; finish default sync routing and end-to-end acceptance.
+Default binding integration and the remaining
 end-to-end selected-branch workflows remain.
 
 Scope: operate on the explicitly selected local branch wherever no worktree is
@@ -52,10 +53,12 @@ switch branches silently. Keep stack-wide operations explicit choices.
    pre-fetch fork points and ignored-file approval. Finish modal choices and
    routing without dropping those reviewed backend guarantees. The additive
    modal flow and terminal handoff are implemented and directly tested.
-   Read-only fast-forward preflight is implemented for wider updates. Finish
-   the explicit stack/multi-selection flow without resetting divergence or
-   modifying another worktree, and retain terminal integration for the current
-   branch after guarded ref-only updates.
+   The explicit stack/multi-selection flow and selected Fast-forward route are
+   implemented with read-only preflight, pinned per-member targets, ref-only
+   updates before current-worktree integration, and partial-progress reporting.
+   Finish remaining default Pull acceptance without resetting divergence,
+   modifying another worktree, or losing terminal integration and failure
+   reporting across asynchronous handoffs.
 4. Integrate branch-bearing versus global/current-branch actions, retaining
    selected-ref metadata support and clearly named selected-source merge/
    rebase actions. Do not change shortcut policy ahead of item 8.
