@@ -421,6 +421,12 @@ default in the risk menu. A changed affected-file snapshot requires fresh
 review and approval; the scan is conservative, not a guarantee that every
 listed file will be overwritten.
 
+Historical amendments and stacked-branch fixup/amend placement must refuse
+before creating a commit if tracked edits would remain for the required rebase.
+The user explicitly chose refusal, not a fixup-only fallback. A message-only
+amendment does not consume staged changes, so those also prevent placement.
+Ordinary fixup creation without a rebase is not subject to this restriction.
+
 Validation: divergent/ancestor/descendant targets, selected commit on another
 branch or in reflog, root commit, no-op, dirty state, conflicts with continue
 and abort, detached HEAD, marked-base isolation, and `rebase.updateRefs=true`.

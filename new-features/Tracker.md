@@ -1,8 +1,8 @@
 # Current work
 
 Roadmap item: [6. Rebase the current branch onto a selected commit](Roadmap.md#6-rebase-the-current-branch-onto-a-selected-commit).
-Status: feature and explicit ignored-file approval implemented; acceptance
-found a compound amend/rebase safety gap. Its fallback needs a user decision.
+Status: refusal and compound-operation coverage implemented and verified;
+final affected-area acceptance is running.
 
 Scope: rebase the checked-out branch onto a captured selected commit, including
 other-branch history/reflog. Require no staged/unstaged tracked changes; allow
@@ -12,20 +12,13 @@ continue/skip/abort usable. Audit other rebase-start paths for the same policy.
 
 ## Remaining tasks for item 6
 
-1. Resolve the compound amend/rebase safety gap exposed by two affected-area
-   scenarios: the early guard now refuses remaining tracked dirt before
-   creating the fixup commit.
-   Ask whether to offer an explicit fixup-only fallback or simply refuse;
-   never stash. Audit automatic stacked-branch fixup/amend movement for the
-   same partial-operation risk, and cover the agreed behavior in tests.
-   The 409 selected scenarios produced 407 Go passes and two failures; one
-   passing result was an internal harness skip, not an executed scenario.
-2. Verify the final sources/artifacts after any acceptance corrections: repeat
-   necessary generation, formatting, build, short tests and lint, and final
-   affected reruns. The dedicated deleted-branch reflog scenario has passed.
+1. Finish the final 410-scenario affected-area headless run.
+   Generation, inventory checks, formatting, debug build, full short tests,
+   scoped lint, compound-operation controller tests and the fresh serial amendment/stack/
+   conflict rerun passed. The dedicated deleted-branch reflog scenario passed.
    Record actual limits and results in the merge guide and roadmap, without
    claiming an unperformed full suite or cross-platform/minimum-Git matrix.
-3. Once acceptance criteria pass, complete item 6 accurately in the roadmap and
+2. Once acceptance criteria pass, complete item 6 accurately in the roadmap and
    replace this tracker with item 7's task-level plan in the same commit.
 
 ## How this tracker works

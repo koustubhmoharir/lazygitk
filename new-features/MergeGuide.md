@@ -56,8 +56,16 @@ about the code that exists, not speculative implementation tasks.
   commit consumes them; other tracked edits must be rejected before mutation.
   Do not replace this with the ordinary clean-index check or remove the late
   check, which still detects changes made by hooks. HEAD-only amendments stay
-  on their existing path. The fixup-only fallback and automatic stacked-branch
-  movement audit remain open; do not infer approval from this early guard.
+  on their existing path. The user chose refusal without a fixup-only fallback.
+- `controllers/fixup_placement.go` replaces post-commit stacked placement with
+  a pre-commit placement decision and clean-state preflight. Preserve the two
+  integration calls in `LocalCommitsController` for fixup and amend creation.
+  No placement means no rebase restriction. Planned placement consumes staged
+  changes only for a content-bearing commit; message-only amendments require
+  both index and tracked worktree clean. Capture the owner index before the
+  commit and retain the backend's post-commit check for hook-created dirt.
+  Keep the existing version, operation-state, merged-target, updateRefs and
+  owner-branch eligibility checks when reconciling upstream stack changes.
 - `worktree_operation_guard.go` extracts named checkout's operation-marker
   guard without changing its diagnostics. The new selected-commit backend
   reuses it and existing exact OID/current-HEAD/ref-occupancy readers through
@@ -148,17 +156,37 @@ of rebase options; those were corrected before the passing run. The broader
 failures. One passing subtest was internally skipped by the harness
 (`sync/push_no_follow_tags`), so 406 scenarios actually passed. Both failures
 were existing find-base/amend workflows: upstream creates a fixup commit before
-the clean-rebase check rejects other unstaged tracked changes. Refuse before
-that mutation; the explicit fixup-only fallback versus refusal is awaiting a
-user choice. Audit automatic stacked-branch fixup/amend movement for the same
-compound-operation risk. The dedicated deleted-branch reflog scenario passed
+the clean-rebase check rejects other unstaged tracked changes. The fixup-only
+fallback versus refusal was awaiting a user choice at that checkpoint.
+The user subsequently chose refusal without a
+fallback; automatic stacked placement now gets the same pre-mutation check.
+The dedicated deleted-branch reflog scenario passed
 (6.61s, invocation 20.939s). Its regenerated test list and the new early amend
 guard pass formatting and scoped lint (zero issues); independent focused guard
 tests passed in 2.391s; the full backend short package then passed in 63.983s.
-Final acceptance reruns after the fallback choice remain
-open. The early guard preserves HEAD, index, worktree and stash on rejection,
+Final acceptance reruns after that choice remain open. The early guard
+preserves HEAD, index, worktree and stash on rejection,
 and allows staged content plus harmless untracked files.
 Actual verification is Linux/Git 2.51.1; no system dependencies were installed.
+
+Refusal/compound-operation checkpoint (2026-10-22): the user chose refusal,
+leaving all decisions about other edits to them. The updated amendment tests
+check that HEAD, the staged file blob, working files and stash remain unchanged.
+The preflight must inspect the wrapped native exit error, not the original
+`CmdObj.ProcessState`: the application Git runner executes a clone. Controller
+tests retain the real wrapped runner to protect that integration contract.
+Full short tests and the final debug build passed; backend short tests took
+351.999s under high host load. Generation, inventory tests and formatting pass.
+An intermediate 410-scenario run built before the exit-error correction had
+407 Go passes (one internal skip) and three failures: the two expected
+amendment-message mismatches and a 40-second harness deadline in the longer
+selected-rebase conflict scenario. The fresh serial rerun of both amendments,
+clean stacked fixup placement and selected-rebase conflict recovery passed
+together in 20.955s; the conflict scenario itself took 6.66s. Independently
+rerun compound-operation controller tests passed in 14.079s. Final scoped lint
+initially caught a test-helper naming/attribution issue; that helper was
+corrected, and scoped lint then passed with zero issues. The final broad
+rerun remains in progress.
 
 ### Explicit-action defaults: audited integration seams
 

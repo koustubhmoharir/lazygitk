@@ -4148,7 +4148,7 @@
         "DisabledReason": "disabledReasonWhenFilesAreNeeded",
         "Keys": "menuKey('f')",
         "Label": "self.c.Tr.FixupMenu_Fixup",
-        "OnPress": "func() error {\n\treturn self.c.Helpers().WorkingTree.WithEnsureCommittableFiles(func() error {\n\t\tself.c.LogAction(self.c.Tr.Actions.CreateFixupCommit)\n\t\tselectedIdx := self.context().GetSelectedLineIdx()\n\t\tcommits := self.c.Model().Commits\n\t\tbranches := self.c.Model().Branches\n\t\treturn self.c.WithWaitingStatusBlockingInput(types.WaitingStatusOpts{\n\t\t\tMessage:              self.c.Tr.CreatingFixupCommitStatus,\n\t\t\tHideWorkingTreeState: true,\n\t\t}, func(gocui.Task) error {\n\t\t\tif err := self.c.Git().Commit.CreateFixupCommit(commit.Hash()); err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\n\t\t\tif err := self.moveFixupCommitToOwnerStackedBranch(commit, selectedIdx, commits, branches); err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\n\t\t\tself.c.RefreshFromWorker(types.RefreshOptions{BatchUIUpdates: true})\n\t\t\treturn nil\n\t\t})\n\t})\n}",
+        "OnPress": "func() error {\n\treturn self.c.Helpers().WorkingTree.WithEnsureCommittableFiles(func() error {\n\t\tself.c.LogAction(self.c.Tr.Actions.CreateFixupCommit)\n\t\tselectedIdx := self.context().GetSelectedLineIdx()\n\t\tcommits := self.c.Model().Commits\n\t\tbranches := self.c.Model().Branches\n\t\treturn self.c.WithWaitingStatusBlockingInput(types.WaitingStatusOpts{\n\t\t\tMessage:              self.c.Tr.CreatingFixupCommitStatus,\n\t\t\tHideWorkingTreeState: true,\n\t\t}, func(gocui.Task) error {\n\n\t\t\tif err := self.createCommitWithFixupPlacement(commit, selectedIdx, commits, branches, true, func() error {\n\t\t\t\treturn self.c.Git().Commit.CreateFixupCommit(commit.Hash())\n\t\t\t}); err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\n\t\t\tself.c.RefreshFromWorker(types.RefreshOptions{BatchUIUpdates: true})\n\t\t\treturn nil\n\t\t})\n\t})\n}",
         "Verb": "\"create-fixup\""
       },
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
@@ -4156,7 +4156,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/local_commits_controller.go",
-      "line": 1533,
+      "line": 1532,
       "owner": "LocalCommitsController.createFixupCommit",
       "fields": {
         "CommandID": "\"commit.create-amend-with-changes\"",
@@ -4171,7 +4171,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/local_commits_controller.go",
-      "line": 1546,
+      "line": 1545,
       "owner": "LocalCommitsController.createFixupCommit",
       "fields": {
         "CommandID": "\"commit.create-amend-without-changes\"",
@@ -4185,7 +4185,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/local_commits_controller.go",
-      "line": 1655,
+      "line": 1604,
       "owner": "LocalCommitsController.squashFixupCommits",
       "fields": {
         "CommandID": "\"commit.autosquash-current-branch\"",
@@ -4200,7 +4200,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/local_commits_controller.go",
-      "line": 1664,
+      "line": 1613,
       "owner": "LocalCommitsController.squashFixupCommits",
       "fields": {
         "CommandID": "\"commit.autosquash-above-selection\"",
@@ -4215,7 +4215,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/local_commits_controller.go",
-      "line": 1774,
+      "line": 1723,
       "owner": "LocalCommitsController.handleOpenLogMenu",
       "fields": {
         "CommandID": "\"history.toggle-whole-graph\"",
@@ -4228,7 +4228,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/local_commits_controller.go",
-      "line": 1793,
+      "line": 1742,
       "owner": "LocalCommitsController.handleOpenLogMenu",
       "fields": {
         "CommandID": "\"history.graph-visibility-menu\"",
@@ -4242,7 +4242,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/local_commits_controller.go",
-      "line": 1812,
+      "line": 1761,
       "owner": "LocalCommitsController.handleOpenLogMenu",
       "fields": {
         "CommandID": "\"history.set-graph-visibility\"",
@@ -4255,7 +4255,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/local_commits_controller.go",
-      "line": 1819,
+      "line": 1768,
       "owner": "LocalCommitsController.handleOpenLogMenu",
       "fields": {
         "CommandID": "\"history.set-graph-visibility\"",
@@ -4268,7 +4268,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/local_commits_controller.go",
-      "line": 1826,
+      "line": 1775,
       "owner": "LocalCommitsController.handleOpenLogMenu",
       "fields": {
         "CommandID": "\"history.set-graph-visibility\"",
@@ -4281,7 +4281,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/local_commits_controller.go",
-      "line": 1837,
+      "line": 1786,
       "owner": "LocalCommitsController.handleOpenLogMenu",
       "fields": {
         "CommandID": "\"history.sort-menu\"",
@@ -4295,7 +4295,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/local_commits_controller.go",
-      "line": 1862,
+      "line": 1811,
       "owner": "LocalCommitsController.handleOpenLogMenu",
       "fields": {
         "CommandID": "\"history.set-sort-order\"",
@@ -4308,7 +4308,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/local_commits_controller.go",
-      "line": 1869,
+      "line": 1818,
       "owner": "LocalCommitsController.handleOpenLogMenu",
       "fields": {
         "CommandID": "\"history.set-sort-order\"",
@@ -4321,7 +4321,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/local_commits_controller.go",
-      "line": 1876,
+      "line": 1825,
       "owner": "LocalCommitsController.handleOpenLogMenu",
       "fields": {
         "CommandID": "\"history.set-sort-order\"",
@@ -4334,7 +4334,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/local_commits_controller.go",
-      "line": 1883,
+      "line": 1832,
       "owner": "LocalCommitsController.handleOpenLogMenu",
       "fields": {
         "CommandID": "\"history.set-sort-order\"",

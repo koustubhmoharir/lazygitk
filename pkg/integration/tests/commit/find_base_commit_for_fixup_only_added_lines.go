@@ -51,8 +51,8 @@ var FindBaseCommitForFixupOnlyAddedLines = NewIntegrationTest(NewIntegrationTest
 		t.Views().Files().
 			IsFocused().
 			NavigateToLine(Contains("file1")).
-			PressPrimaryAction().
-			Press(keys.Files.FindBaseCommitForFixup)
+			PressPrimaryAction()
+		t.Views().Files().Press(keys.Files.FindBaseCommitForFixup)
 
 		t.Views().Commits().
 			IsFocused().
@@ -61,26 +61,35 @@ var FindBaseCommitForFixupOnlyAddedLines = NewIntegrationTest(NewIntegrationTest
 				Contains("3rd commit").IsSelected(),
 				Contains("2nd commit"),
 				Contains("1st commit"),
-			).
-			Press(keys.Commits.AmendToCommit)
+			)
+		stagedBlob := t.Git().GetCommitHash(":file1")
+		head := t.Git().GetCommitHash("HEAD")
+		t.Views().Commits().Press(keys.Commits.AmendToCommit)
 
 		t.ExpectPopup().Confirmation().
 			Title(Equals("Amend commit")).
 			Content(Contains("Are you sure you want to amend this commit with your staged files?")).
 			Confirm()
 
-		// Now only the other file is modified (and unstaged); this works now
-		t.Views().Files().
-			Focus().
-			Press(keys.Files.FindBaseCommitForFixup)
-
-		t.Views().Commits().
-			IsFocused().
-			Lines(
-				Contains("4th commit").IsSelected(),
-				Contains("3rd commit"),
-				Contains("2nd commit"),
-				Contains("1st commit"),
-			)
+		t.ExpectPopup().Alert().
+			Title(Equals("Error")).
+			Content(Contains("Cannot amend to commit: commit tracked changes first")).
+			Confirm()
+		if got := t.Git().GetCommitHash("HEAD"); got != head {
+			t.Fail("Historical amend changed HEAD despite remaining tracked changes")
+		}
+		if got := t.Git().GetCommitHash(":file1"); got != stagedBlob {
+			t.Fail("Historical amend changed the staged file1 blob")
+		}
+		t.FileSystem().FileContent("file1", Equals("line A\nline B changed\nline B'\nline C\n"))
+		t.FileSystem().FileContent("file2", Equals("line W\nline X\nline Y\nline Z\n"))
+		t.Shell().RunCommandExpectError([]string{"git", "show-ref", "--verify", "--quiet", "refs/stash"})
+		t.Views().Files().Focus().Press(keys.Files.FindBaseCommitForFixup)
+		t.Views().Commits().IsFocused().Lines(
+			Contains("4th commit"),
+			Contains("3rd commit").IsSelected(),
+			Contains("2nd commit"),
+			Contains("1st commit"),
+		)
 	},
 })

@@ -134,9 +134,12 @@ commit. It does not use or clear a marked base. An ancestor target can be a
 no-op and a descendant can fast-forward. The selected target is captured;
 changing selection or a branch name cannot silently substitute another commit.
 
-Staged/unstaged tracked changes must be committed first. Harmless untracked
-files remain allowed; Git rejects collisions. Neither this action nor other
-fork-owned rebase starts offer or invoke autostash, even when Git config enables
+Staged/unstaged tracked changes must be committed first. Historical amendments
+and stacked fixup/amend placement refuse before creating a commit when other
+tracked edits would remain for the rebase. There is no automatic stash or
+fixup-only fallback; plain fixups without a rebase remain available.
+Harmless untracked files remain allowed; Git rejects collisions. Neither this
+action nor other fork-owned rebase starts offer or invoke autostash, even when Git config enables
 it. Ordinary commits and conflict continue/skip/abort retain their workflows.
 The new action suppresses automatic updates to additional branch refs.
 

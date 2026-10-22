@@ -45,6 +45,13 @@ failed precondition with a fake shell command or ignore a failed status query.
 Do not automatically repeat a rebase command after a lock-looking hook error;
 the command may already have changed the repository.
 
+Compound historical-amend and stacked-fixup placement must check before their
+first write, not only before the eventual rebase. The user chose refusal if
+other tracked edits would remain: no fixup-only fallback and no automatic stash.
+Compare worktree with index when the new commit consumes staged changes;
+message-only amendments require the index clean as well. Keep the later check
+for hook-created changes. Plain fixups without a planned rebase remain usable.
+
 Pull is also a rebase-start path when Git configuration enables it. Audit
 `branch.<current>.rebase` precedence over `pull.rebase`, including the target
 worktree context used by existing forwarding flows. Preserve merge/fast-forward
