@@ -17,6 +17,9 @@ type branchSyncUpdateFlow struct {
 	options git_commands.BranchFetchOptions
 	fetch   *git_commands.BranchFetchPlan
 	update  *git_commands.BranchFastForwardPlan
+	// currentMode is fixed when the inspected target is routed. In particular,
+	// a later HEAD change must never promote an off-branch flow to current pull.
+	currentMode bool
 }
 
 // updateBranchSource is an additive controller entry point for direct callers
@@ -55,16 +58,31 @@ func (flow *branchSyncUpdateFlow) menu() error {
 		fetchLabel = tr.BranchSyncReviewLocalUpdate
 	}
 	items := []*types.MenuItem{
-		{CommandID: "branch.update-selected.fetch", Verb: "fetch", Label: fetchLabel, OnPress: flow.beginFetch},
-		{CommandID: "branch.update-selected.remote", Verb: "configure-fetch", Label: tr.BranchSyncChooseRemote, OpensMenu: true, OnPress: flow.promptRemote},
-		{CommandID: "branch.update-selected.upstream", Verb: "configure-fetch", Label: tr.BranchSyncChooseUpstreamBranch, OpensMenu: true, OnPress: flow.promptUpstream},
-		{CommandID: "branch.update-selected.tracking", Verb: "configure-fetch", Label: tr.BranchSyncChooseTrackingRef, OpensMenu: true, OnPress: flow.promptTrackingRef},
+		{CommandID: flow.menuID("fetch"), Verb: "fetch", Label: fetchLabel, OnPress: flow.beginFetch},
+		{CommandID: flow.menuID("remote"), Verb: "configure-fetch", Label: tr.BranchSyncChooseRemote, OpensMenu: true, OnPress: flow.promptRemote},
+		{CommandID: flow.menuID("upstream"), Verb: "configure-fetch", Label: tr.BranchSyncChooseUpstreamBranch, OpensMenu: true, OnPress: flow.promptUpstream},
+		{CommandID: flow.menuID("tracking"), Verb: "configure-fetch", Label: tr.BranchSyncChooseTrackingRef, OpensMenu: true, OnPress: flow.promptTrackingRef},
 	}
-	return flow.target.c.Menu(types.CreateMenuOptions{Title: tr.BranchSyncUpdateMenu, Prompt: flow.summary(), Items: items, OnCancel: flow.target.checkRepository})
+	title := tr.BranchSyncUpdateMenu
+	if flow.currentMode {
+		title = tr.BranchSyncPullCurrent
+	}
+	return flow.target.c.Menu(types.CreateMenuOptions{Title: title, Prompt: flow.summary(), Items: items, OnCancel: flow.target.checkRepository})
+}
+
+func (flow *branchSyncUpdateFlow) menuID(leaf string) string {
+	if flow.currentMode {
+		return "branch.pull-current." + leaf
+	}
+	return "branch.update-selected." + leaf
 }
 
 func (flow *branchSyncUpdateFlow) summary() string {
-	return fmt.Sprintf(flow.target.c.Tr.BranchSyncUpdateSummary, flow.info.Name, utils.ShortHash(flow.info.OID), flow.options.Remote, flow.options.RemoteRef, flow.options.TrackingRef)
+	format := flow.target.c.Tr.BranchSyncUpdateSummary
+	if flow.currentMode {
+		format = flow.target.c.Tr.BranchSyncCurrentPullSummary
+	}
+	return fmt.Sprintf(format, flow.info.Name, utils.ShortHash(flow.info.OID), flow.options.Remote, flow.options.RemoteRef, flow.options.TrackingRef)
 }
 
 func (flow *branchSyncUpdateFlow) promptRemote() error {
@@ -140,7 +158,7 @@ func (flow *branchSyncUpdateFlow) beginFetch() error {
 	return flow.prepareFetch()
 }
 
-func (flow *branchSyncUpdateFlow) prepareLocalUpdate() error {
+func (flow *branchSyncUpdateFlow) prepareOffBranchLocalUpdate() error {
 	if err := flow.target.checkRepository(); err != nil {
 		return err
 	}
@@ -172,7 +190,7 @@ func (flow *branchSyncUpdateFlow) prepareLocalUpdate() error {
 	})
 }
 
-func (flow *branchSyncUpdateFlow) prepareFetch() error {
+func (flow *branchSyncUpdateFlow) prepareOffBranchFetch() error {
 	if err := flow.target.checkRepository(); err != nil {
 		return err
 	}
@@ -207,7 +225,7 @@ func (flow *branchSyncUpdateFlow) showDiverged(name string) error {
 	return flow.target.c.Menu(types.CreateMenuOptions{
 		Title:    flow.target.c.Tr.BranchSyncUpdateReviewTitle,
 		Prompt:   fmt.Sprintf(flow.target.c.Tr.BranchSyncUpdateDiverged, name),
-		Items:    []*types.MenuItem{{CommandID: "branch.update-selected.diverged-cancel", Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: flow.target.checkRepository}},
+		Items:    []*types.MenuItem{{CommandID: flow.menuID("diverged-cancel"), Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: flow.target.checkRepository}},
 		OnCancel: flow.target.checkRepository,
 	})
 }
@@ -273,7 +291,7 @@ func (flow *branchSyncUpdateFlow) reviewUpdate() error {
 	}
 	plan := *flow.update
 	if !plan.NeedsUpdate() {
-		return flow.target.c.Menu(types.CreateMenuOptions{Title: flow.target.c.Tr.BranchSyncUpdateReviewTitle, Prompt: fmt.Sprintf(flow.target.c.Tr.BranchSyncAlreadyAhead, plan.Name(), utils.ShortHash(plan.OldOID()), utils.ShortHash(plan.TargetOID())), Items: []*types.MenuItem{{CommandID: "branch.update-selected.noop-cancel", Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: flow.target.checkRepository}}, OnCancel: flow.target.checkRepository})
+		return flow.target.c.Menu(types.CreateMenuOptions{Title: flow.target.c.Tr.BranchSyncUpdateReviewTitle, Prompt: fmt.Sprintf(flow.target.c.Tr.BranchSyncAlreadyAhead, plan.Name(), utils.ShortHash(plan.OldOID()), utils.ShortHash(plan.TargetOID())), Items: []*types.MenuItem{{CommandID: flow.menuID("noop-cancel"), Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: flow.target.checkRepository}}, OnCancel: flow.target.checkRepository})
 	}
 	prompt := fmt.Sprintf(flow.target.c.Tr.BranchSyncUpdateReviewPrompt, plan.Name(), utils.ShortHash(plan.OldOID()), utils.ShortHash(plan.TargetOID()))
 	flow.target.c.Confirm(types.ConfirmOpts{Title: flow.target.c.Tr.BranchSyncUpdateReviewTitle, Prompt: prompt, HandleConfirm: func() error {
@@ -299,7 +317,7 @@ func (flow *branchSyncUpdateFlow) applyUpdate(plan git_commands.BranchFastForwar
 	})
 }
 
-func (flow *branchSyncUpdateFlow) reinspect() error {
+func (flow *branchSyncUpdateFlow) reinspectOffBranch() error {
 	if err := flow.target.checkRepository(); err != nil {
 		return err
 	}

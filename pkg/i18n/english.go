@@ -11,6 +11,40 @@ Todo list when making a new translation
 package i18n
 
 type TranslationSet struct {
+	// Fork-owned integration strings are separate to avoid reformatting the
+	// upstream table when longer field names are added.
+	BranchSyncCurrentPullSummary          string
+	BranchSyncIntegrationMenu             string
+	BranchSyncIntegrationSummary          string
+	BranchSyncIntegrationDefault          string
+	BranchSyncIntegrationFFOnly           string
+	BranchSyncIntegrationMerge            string
+	BranchSyncIntegrationNoFF             string
+	BranchSyncIntegrationRebase           string
+	BranchSyncIntegrationMerges           string
+	BranchSyncIntegrationInteractive      string
+	BranchSyncIntegrationConfiguredMerge  string
+	BranchSyncIntegrationConfiguredRebase string
+	BranchSyncIntegrationReviewTitle      string
+	BranchSyncIntegrationReviewPrompt     string
+	BranchSyncIntegrationMergeOptions     string
+	BranchSyncIntegrationRebaseOptions    string
+	BranchSyncIntegrationReplayBase       string
+	BranchSyncIntegrationDefaultError     string
+	BranchSyncIntegrationIgnoredTitle     string
+	BranchSyncIntegrationIgnoredPrompt    string
+	BranchSyncIntegrationApproveIgnored   string
+	BranchSyncIntegrationStatus           string
+	BranchSyncMergeSelectedIntoCurrent    string
+	BranchSyncRebaseCurrentOntoSelected   string
+	BranchSyncResetCurrentToSelected      string
+	BranchRenameReviewPrompt              string
+	BranchUpstreamRefPrompt               string
+	BranchUpstreamReviewTitle             string
+	BranchUpstreamSetReviewPrompt         string
+	BranchUpstreamUnsetReviewPrompt       string
+	BranchUpstreamStatus                  string
+
 	NotEnoughSpace                        string
 	DiffTitle                             string
 	FilesTitle                            string
@@ -1331,6 +1365,38 @@ const englishNonReloadableConfigWarning = `The following config settings were ch
 // exporting this so we can use it in tests
 func EnglishTranslationSet() *TranslationSet {
 	return &TranslationSet{
+		BranchSyncCurrentPullSummary:          "Checked-out branch %q at %s\nUpstream remote: %q\nUpstream branch: %q\nLocal tracking storage: %q\n\nFetch first, then review the exact incoming commit and integration method before changing files. Saved upstream settings will not change.",
+		BranchSyncIntegrationMenu:             "Integrate reviewed incoming commit",
+		BranchSyncIntegrationSummary:          "Checked-out branch %q at %s\nReviewed incoming commit: %s\n\nChoose an integration method. The default uses Git configuration; explicit choices replace the corresponding defaults. No second network pull or autostash will run.",
+		BranchSyncIntegrationDefault:          "Use Git's configured pull method",
+		BranchSyncIntegrationFFOnly:           "Fast-forward only",
+		BranchSyncIntegrationMerge:            "Merge (fast-forward if possible)",
+		BranchSyncIntegrationNoFF:             "Merge (create a merge commit)",
+		BranchSyncIntegrationRebase:           "Rebase (linear history)",
+		BranchSyncIntegrationMerges:           "Rebase preserving merges",
+		BranchSyncIntegrationInteractive:      "Interactive rebase",
+		BranchSyncIntegrationConfiguredMerge:  "Configured merge",
+		BranchSyncIntegrationConfiguredRebase: "Configured rebase",
+		BranchSyncIntegrationReviewTitle:      "Review current-branch integration",
+		BranchSyncIntegrationReviewPrompt:     "Integrate reviewed commit %s into checked-out branch %q at %s using %s?\n\nThis worktree's HEAD, index and files may change; conflicts may need resolution. Other local branch tips and nested submodule checkouts will not be updated automatically. No autostash or second network pull will run. Explicit merge choices replace branch.mergeOptions for this invocation only.",
+		BranchSyncIntegrationMergeOptions:     "\n\nConfigured branch.mergeOptions: %q\npull.ff override: %q",
+		BranchSyncIntegrationRebaseOptions:    "\n\nUsing configured rebase topology/autosquash options. Automatic updates of other branch refs remain disabled.",
+		BranchSyncIntegrationReplayBase:       "\n\nReplay base: %s (the captured old upstream boundary). Only local commits after this boundary will be replayed.",
+		BranchSyncIntegrationDefaultError:     "\n\nConfigured method unavailable: %s\nChoose an explicit method or cancel.",
+		BranchSyncIntegrationIgnoredTitle:     "Ignored files may be overwritten",
+		BranchSyncIntegrationIgnoredPrompt:    "\n\nGit may overwrite the listed ignored files even with a clean working tree. Move or back up files first, or explicitly approve this risk. Cancel is selected by default.",
+		BranchSyncIntegrationApproveIgnored:   "Approve ignored-file overwrite risk and integrate",
+		BranchSyncIntegrationStatus:           "Integrating reviewed commit into branch %q",
+		BranchSyncMergeSelectedIntoCurrent:    "Merge selected branch into current…",
+		BranchSyncRebaseCurrentOntoSelected:   "Rebase current onto selected branch…",
+		BranchSyncResetCurrentToSelected:      "Reset checked-out branch to selected ref…",
+		BranchRenameReviewPrompt:              "Rename local branch %q to %q at %s?\n\nOnly branch metadata changes. Checked-out commits, index contents and files stay in place; linked worktrees using this branch will use its new name.",
+		BranchUpstreamRefPrompt:               "Full upstream tracking ref (e.g. refs/remotes/origin/main or refs/heads/main):",
+		BranchUpstreamReviewTitle:             "Review selected branch upstream",
+		BranchUpstreamSetReviewPrompt:         "Set upstream of local branch %q at %s to %q at %s?\n\nPrevious upstream remote: %q\nPrevious merge refs: %q\n\nOnly saved tracking metadata changes. No fetch, push, checkout, integration or tip change will run.",
+		BranchUpstreamUnsetReviewPrompt:       "Unset upstream of local branch %q at %s?\n\nPrevious upstream remote: %q\nPrevious merge refs: %q\n\nOnly saved tracking metadata changes. Branch tips, index and files stay in place.",
+		BranchUpstreamStatus:                  "Updating upstream metadata for branch %q",
+
 		NotEnoughSpace:                       "Not enough space to render panels",
 		DiffTitle:                            "Diff",
 		FilesTitle:                           "Files",
@@ -1527,8 +1593,8 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchSyncForceConfirm:               "Push with reviewed lease",
 		BranchSyncPushSelected:               "Push selected branch…",
 		BranchSyncPushCurrent:                "Push checked-out branch",
-		BranchSyncPullSelected:               "Update selected branch…",
-		BranchSyncPullCurrent:                "Update checked-out branch",
+		BranchSyncPullSelected:               "Pull/update selected branch…",
+		BranchSyncPullCurrent:                "Pull checked-out branch",
 		BranchSyncSelectOneLocalBranch:       "Select exactly one local branch.",
 		BranchSyncNoCurrentLocalBranch:       "There is no checked-out local branch.",
 		BranchSyncCaptureTooltip:             "Uses the branch selected when the action starts; changing selection cannot redirect an open prompt or running operation.",

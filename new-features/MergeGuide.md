@@ -219,6 +219,37 @@ about the code that exists, not speculative implementation tasks.
   FF-only divergence is refused before presenting overwrite-risk approval.
   Local current upstreams read exact local branch refs directly, so a shadowed
   or URL-rewritten remote named `.` cannot redirect this action.
+- `branch_sync_current_pull_flow.go` composes the additive current-branch
+  dialog with the existing update-options flow. Capture review/fork-point
+  context before fetch, inspect the fetched storage tip once, then review a
+  method and exact incoming OID separately. Keep current/off-branch mode fixed
+  for the flow; native validation must reject later HEAD changes. Stale-source
+  or policy changes return to inspection without silently fetching again.
+  Typed method-eligibility errors disable Default while retaining explicit
+  alternatives; query/config errors remain errors. Configured topology and
+  merge option bundles must not be labeled as explicitly linear/default-free.
+  Ignored-file approval is Cancel-first, content-bound and not granted by
+  selecting an individual path row. Reprepare from the immutable plan's
+  `Review()` context, not mutable dialog state.
+- `branch_sync_integration_exec.go` launches reviewed integration through the
+  terminal lifecycle, including interactive rebase and signing. Preserve its
+  synchronous scoped busy flag across worker/UI/terminal/completion handoffs,
+  repository-generation guards, and revalidation immediately before terminal
+  execution (a queued UI callback is not launch approval). Completion records
+  merge/rebase state and checks conflicts; do not substitute the older helper
+  that can auto-skip commits after an error. Never retry a native partial
+  result or refresh a replacement repository. Default sync binding/stack
+  integration remains pending; these modules alone are not feature acceptance.
+
+Current-pull dialog checkpoint (2026-10-22): independent sync-controller tests
+passed (108.023s), followed by current-pull/rename tests (43.252s) and a targeted
+fetch-to-choice stale-policy regression (2.220s). The seven new/updated focused
+push/pull headless scenarios passed (44.461s) against experimental binding hooks;
+those hooks remain separate work until explicit stack choices are preserved.
+Controller/i18n lint passed with zero issues. A first headless run found test
+driver misuse (new popup driver instances lost required title checks), corrected
+in the fixtures; use anchored path-segment expressions when selecting tests so
+`push` does not also select legacy `force_push` scenarios.
 
 Reviewed integration backend checkpoint (2026-10-22): independent focused
 tests passed (74.603s) and the full backend short package passed (208.045s).
