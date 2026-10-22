@@ -111,7 +111,7 @@ func (self *SyncCommands) PrepareBranchPush(name, expectedOID string, opts Branc
 	}
 	branches := NewBranchCommands(self.GitCommon)
 	for _, ref := range mapping.refs {
-		if err := self.checkBranchPushTrackingWrite(ref); err != nil {
+		if err := self.checkBranchSyncTrackingWrite(ref); err != nil {
 			return BranchPushPlan{}, err
 		}
 	}
@@ -190,29 +190,6 @@ func (self *SyncCommands) BranchPushCommand(plan BranchPushPlan, task gocui.Task
 		Arg("--", plan.options.Remote, plan.sourceRef+":"+plan.options.DestinationRef)
 	return self.cmd.New(args.ToArgv()).SetWd(self.repoPaths.WorktreePath()).
 		DisableLockRetries().PromptOnCredentialRequest(task), nil
-}
-
-func (self *SyncCommands) checkBranchPushTrackingWrite(ref string) error {
-	if !strings.HasPrefix(ref, "refs/") || ref == "refs/stash" {
-		return fmt.Errorf("unsafe local tracking destination %q", ref)
-	}
-	if err := self.cmd.New(NewGitCmd("check-ref-format").Arg(ref).ToArgv()).
-		SetWd(self.repoPaths.WorktreePath()).DontLog().Run(); err != nil {
-		return fmt.Errorf("invalid local tracking destination: %w", err)
-	}
-	for _, namespace := range []string{"refs/heads", "refs/tags", "refs/notes", "refs/replace", "refs/bisect", "refs/rewritten", "refs/worktree", "refs/namespaces", "refs/stash"} {
-		if ref == namespace || strings.HasPrefix(ref, namespace+"/") {
-			return fmt.Errorf("remote fetch mapping could make push modify %q; choose a tracking-only mapping", ref)
-		}
-	}
-	state, err := NewBranchCommands(self.GitCommon).readPlacementRef(ref)
-	if err != nil {
-		return err
-	}
-	if state.symbolic != "" {
-		return fmt.Errorf("tracking destination %q is a symbolic alias; it cannot be updated by a branch-only push", ref)
-	}
-	return nil
 }
 
 func (self *SyncCommands) branchPushTrackingSnapshot(name string) (signature, remote, merges string, err error) {

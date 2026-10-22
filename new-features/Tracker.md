@@ -28,11 +28,11 @@ switch branches silently. Keep stack-wide operations explicit choices.
    Finish modal routing and protection/no-upstream/triangular-workflow
    verification. Keep pushing other stack branches an explicit separate choice.
 3. Make off-branch pull/update an explicit upstream fetch and verified
-   fast-forward without checkout, composing the implemented guarded ref-only
-   primitive with the scoped fetch. Explain divergence without attempting
-   integration. Reject tip changes to branches occupied by another worktree;
-   do not reuse paths that mutate that worktree. Preserve current-branch pull
-   and its clean/no-autostash rebase policy.
+   fast-forward without checkout. The scoped fetch and guarded ref-only update
+   builders are implemented; integrate their modal flow and explain divergence
+   without attempting integration. Reject tip changes to branches occupied by
+   another worktree; do not reuse paths that mutate that worktree. Finish the
+   separate current-branch pull path with its clean/no-autostash rebase policy.
 4. Integrate branch-bearing versus global/current-branch actions, retaining
    selected-ref metadata support and clearly named selected-source merge/
    rebase actions. Do not change shortcut policy ahead of item 8.

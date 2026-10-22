@@ -154,6 +154,15 @@ choice or refusal. Every positive matching storage mapping is also inspected
 for possible local side effects of native push. Local branch, tag, special-ref
 and symbolic-alias destinations are refused before contacting the remote.
 
+`PrepareBranchFetch` / `BranchFetchCommand` explicitly name the remote branch
+and safe local storage ref. Empty `--refmap=` suppresses additional configured
+mappings; explicit no-tags, no-prune, no-prune-tags and no-recursion flags bound
+the operation's scope. Existing `FETCH_HEAD` is not written. After successful
+fetch, `PrepareFetchedBranchUpdate` reads the exact storage ref and prepares
+the separate guarded fast-forward. Failure or divergence must never trigger
+an automatic reset, integration, checkout, stash or retry. Shared tracking-ref
+validation lives in `branch_sync_tracking.go`, not in the push-only builder.
+
 The existing push/pull/fast-forward UI still needs the new captured execution
 flows; these backend contracts alone do not complete roadmap item 7.
 

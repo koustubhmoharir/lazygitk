@@ -81,6 +81,17 @@ about the code that exists, not speculative implementation tasks.
   possible storage mappings, refusing branch/tag/special namespaces and
   symbolic aliases before any network operation. Recheck force restrictions
   when constructing the command, not only when opening a menu.
+- `branch_sync_fetch.go` composes an explicit fetch into a reviewed local
+  storage ref with the guarded fast-forward primitive. Preserve empty refmap,
+  no tags/prune/prune-tags/submodule recursion/FETCH_HEAD writes and no retry.
+  Only call `PrepareFetchedBranchUpdate` after a successful command. Missing,
+  divergent or rewritten upstreams must not fall through to reset/integration.
+  A fetch may inspect an occupied branch; advancing its ref still obeys the
+  existing worktree reservation guard. Current-branch pull is a separate path.
+- `branch_sync_tracking.go` now shares local-storage validation across branch
+  network builders. Exact special namespaces and their children are both
+  forbidden. Preserve native ref-format checks and broken-alias detection;
+  generic diagnostics must not describe a fetch refusal as a push failure.
 
 Read-only checkpoint (2026-10-22): main-agent native probe rerun passed,
 including selected != current with staged/unstaged/untracked preservation,
@@ -108,6 +119,12 @@ upstream snapshot changes, raw HEAD/index preservation and unrelated refs.
 The subsequent refspec/fetch-focused run passed (7.863s), including a native
 abbreviated-source probe with an actual changed remote tip. No sync UI routing
 has changed in these backend commits.
+The independent backend short package passed (136.522s); the subsequent focused
+fetch/tracking/current-pull run passed (46.223s), including real advancement,
+an existing FETCH_HEAD sentinel, valid and dangling aliases, and native pull
+precedence. Scoped backend lint passed with zero issues after removing an
+unused fixture return. Earlier verification attempts encountered test files
+still being written; those compile errors are not successful verification.
 
 ### Selected-commit rebase and clean-start policy (item 6)
 
