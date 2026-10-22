@@ -163,13 +163,20 @@ the separate guarded fast-forward. Failure or divergence must never trigger
 an automatic reset, integration, checkout, stash or retry. Shared tracking-ref
 validation lives in `branch_sync_tracking.go`, not in the push-only builder.
 
-For named remotes, `PrepareCurrentBranchPull` / `CurrentBranchPullCommand` retain native pull's
+`PrepareCurrentBranchPull` / `CurrentBranchPullCommand` retain native pull's
 configured merge/rebase and fast-forward precedence. They require an actual
 current-branch identity, recheck tracked cleanliness for configured rebases,
 and always prohibit autostash. The one-branch action disables automatic rebase
 updates of other local refs. Git's pull command does not accept fetch's
 no-prune-tags flag, so both generic and chosen-remote tag-pruning settings are
 overridden only for that invocation. Configuration is not rewritten.
+
+Local `.` upstreams use exact direct local refs. Off-branch updates create a
+captured fast-forward plan without fetching. Current-branch pulls verify that
+`.` really resolves locally before constructing native pull; redirection or a
+shadowing remote configuration is refused. No transport is contacted by that
+verification. `WithFastForwardOnly` further restricts native current pull for
+the explicit fast-forward action without replacing Git's integration logic.
 
 The existing push/pull/fast-forward UI still needs the new captured execution
 flows; these backend contracts alone do not complete roadmap item 7.

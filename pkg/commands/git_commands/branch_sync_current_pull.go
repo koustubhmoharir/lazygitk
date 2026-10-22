@@ -19,6 +19,7 @@ type CurrentBranchPullPlan struct {
 	remoteSignature string
 	policySignature string
 	rebase          bool
+	fastForwardOnly bool
 	prepared        bool
 }
 
@@ -26,6 +27,14 @@ func (plan CurrentBranchPullPlan) Name() string                { return plan.nam
 func (plan CurrentBranchPullPlan) SourceOID() string           { return plan.sourceOID }
 func (plan CurrentBranchPullPlan) Options() BranchFetchOptions { return plan.options }
 func (plan CurrentBranchPullPlan) UsesRebase() bool            { return plan.rebase }
+func (plan CurrentBranchPullPlan) FastForwardOnly() bool       { return plan.fastForwardOnly }
+
+// WithFastForwardOnly returns a copy with native pull restricted to a
+// fast-forward. The option is monotonic and cannot broaden a prepared plan.
+func (plan CurrentBranchPullPlan) WithFastForwardOnly() CurrentBranchPullPlan {
+	plan.fastForwardOnly = true
+	return plan
+}
 
 func (self *SyncCommands) PrepareCurrentBranchPull(name, expectedOID string, opts BranchFetchOptions) (CurrentBranchPullPlan, error) {
 	if err := validateObjectID(expectedOID); err != nil {
@@ -49,12 +58,19 @@ func (self *SyncCommands) PrepareCurrentBranchPull(name, expectedOID string, opt
 	if err := self.checkBranchSyncTrackingWrite(opts.TrackingRef); err != nil {
 		return CurrentBranchPullPlan{}, err
 	}
-	remote, err := self.InspectBranchSyncRemote(opts.Remote)
+	var remoteSignature string
+	if opts.Remote == "." {
+		remoteSignature, err = self.inspectLocalCurrentPullTarget(opts.RemoteRef)
+	} else {
+		var remote BranchSyncRemoteInfo
+		remote, err = self.InspectBranchSyncRemote(opts.Remote)
+		if err == nil && len(remote.URLs) == 0 {
+			err = fmt.Errorf("remote %q has no configured fetch URL; a push-only URL is not safe for fetching", opts.Remote)
+		}
+		remoteSignature = remote.Signature
+	}
 	if err != nil {
 		return CurrentBranchPullPlan{}, err
-	}
-	if len(remote.URLs) == 0 {
-		return CurrentBranchPullPlan{}, fmt.Errorf("remote %q has no configured fetch URL; a push-only URL is not safe for fetching", opts.Remote)
 	}
 	policy, err := self.effectivePullRebasePolicy(PullOptions{})
 	if err != nil {
@@ -71,7 +87,7 @@ func (self *SyncCommands) PrepareCurrentBranchPull(name, expectedOID string, opt
 	}
 	return CurrentBranchPullPlan{
 		owner: self.GitCommon, name: name, sourceOID: expectedOID, options: opts,
-		remoteSignature: remote.Signature, policySignature: policySignature,
+		remoteSignature: remoteSignature, policySignature: policySignature,
 		rebase: policy.rebase, prepared: true,
 	}, nil
 }
@@ -101,6 +117,7 @@ func (self *SyncCommands) CurrentBranchPullCommand(plan CurrentBranchPullPlan, t
 	if err != nil {
 		return nil, err
 	}
+	fresh.fastForwardOnly = plan.fastForwardOnly
 	if fresh != plan {
 		return nil, ErrBranchSyncChanged
 	}
@@ -108,8 +125,9 @@ func (self *SyncCommands) CurrentBranchPullCommand(plan CurrentBranchPullPlan, t
 	// generic and selected-remote settings for this invocation instead.
 	args := NewGitCmd("pull").Config("rebase.updateRefs=false").Config("merge.autostash=false").
 		Config("fetch.pruneTags=false").Config("remote."+plan.options.Remote+".pruneTags=false").
-		Arg("--no-edit", "--no-autostash", "--refmap=", "--no-tags", "--no-prune", "--no-recurse-submodules", "--", plan.options.Remote,
-			"+"+plan.options.RemoteRef+":"+plan.options.TrackingRef).ToArgv()
+		Arg("--no-edit", "--no-autostash", "--refmap=", "--no-tags", "--no-prune", "--no-recurse-submodules").
+		ArgIf(plan.fastForwardOnly, "--ff-only").Arg("--", plan.options.Remote,
+		"+"+plan.options.RemoteRef+":"+plan.options.TrackingRef).ToArgv()
 	return self.cmd.New(args).SetWd(self.repoPaths.WorktreePath()).
 		AddEnvVars("GIT_SEQUENCE_EDITOR=:").DisableLockRetries().PromptOnCredentialRequest(task), nil
 }

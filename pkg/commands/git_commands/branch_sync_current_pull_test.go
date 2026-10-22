@@ -1,6 +1,7 @@
 package git_commands
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -273,4 +274,134 @@ func TestCurrentBranchPullRejectsChangedSourceHeadAndBackend(t *testing.T) {
 	gitTest(t, root3, "checkout", "-q", "elsewhere")
 	_, err = commands3.CurrentBranchPullCommand(headPlan, nil)
 	assert.ErrorIs(t, err, ErrBranchSyncChanged)
+}
+
+func localCurrentPullOptions(ref string) BranchFetchOptions {
+	return BranchFetchOptions{Remote: ".", RemoteRef: ref, TrackingRef: "refs/remotes/local-cache/master"}
+}
+
+func localDotPullFixture(t *testing.T) (string, string) {
+	t.Helper()
+	root, _, _ := transactionHistory(t)
+	gitTest(t, root, "checkout", "-q", "master")
+	gitTest(t, root, "config", "core.editor", "true")
+	return root, gitTest(t, root, "rev-parse", "HEAD")
+}
+
+func TestCurrentBranchPullLocalDotUsesNativeMergeAndPreservesConfig(t *testing.T) {
+	root, local := localDotPullFixture(t)
+	gitTest(t, root, "remote", "add", "origin", "file:///unrelated/origin.git")
+	gitTest(t, root, "config", "remote...unrelated.url", "file:///another-unrelated.git")
+	gitTest(t, root, "branch", "local-upstream", local)
+	gitTest(t, root, "checkout", "-q", "local-upstream")
+	remoteTip := branchPlacementTestCommit(t, root, "local-incoming", "local incoming\n", "local incoming")
+	gitTest(t, root, "checkout", "-q", "master")
+	gitTest(t, root, "config", "pull.rebase", "false")
+	configPath := filepath.Join(root, ".git", "config")
+	before, err := os.ReadFile(configPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	commands := branchSyncTestCommands(t, root)
+	plan, err := commands.PrepareCurrentBranchPull("master", local, localCurrentPullOptions("refs/heads/local-upstream"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	cmd, err := commands.CurrentBranchPullCommand(plan, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Contains(t, cmd.Args(), ".")
+	assert.Contains(t, cmd.Args(), "remote...pruneTags=false")
+	refsBefore := gitTest(t, root, "for-each-ref", "--format=%(refname) %(objectname)", "refs/heads/local-upstream", "refs/tags")
+	output, err := cmd.GetCmd().CombinedOutput()
+	if err != nil {
+		t.Fatalf("local pull: %v\n%s", err, output)
+	}
+	assert.Equal(t, remoteTip, gitTest(t, root, "rev-parse", "HEAD"))
+	after, err := os.ReadFile(configPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, before, after)
+	assert.Equal(t, remoteTip, gitTest(t, root, "rev-parse", "refs/remotes/local-cache/master"))
+	assert.Equal(t, refsBefore, gitTest(t, root, "for-each-ref", "--format=%(refname) %(objectname)", "refs/heads/local-upstream", "refs/tags"))
+}
+
+func TestCurrentBranchPullLocalDotRebaseFromLocalBranch(t *testing.T) {
+	root, local := localDotPullFixture(t)
+	gitTest(t, root, "config", "pull.rebase", "true")
+	gitTest(t, root, "branch", "local-upstream", local)
+	gitTest(t, root, "checkout", "-q", "local-upstream")
+	upstreamCommit := branchPlacementTestCommit(t, root, "upstream-only", "upstream\n", "upstream only")
+	gitTest(t, root, "checkout", "-q", "master")
+	localCommit := branchPlacementTestCommit(t, root, "current-only", "current\n", "current only")
+	commands := branchSyncTestCommands(t, root)
+	plan, err := commands.PrepareCurrentBranchPull("master", localCommit, localCurrentPullOptions("refs/heads/local-upstream"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.True(t, plan.UsesRebase())
+	refsBefore := gitTest(t, root, "for-each-ref", "--format=%(refname) %(objectname)", "refs/heads/local-upstream", "refs/tags")
+	output, err := executeCurrentPull(t, commands, plan)
+	if err != nil {
+		t.Fatalf("local rebase pull: %v\n%s", err, output)
+	}
+	assert.Empty(t, gitTest(t, root, "merge-base", "--is-ancestor", upstreamCommit, "HEAD"))
+	assert.Equal(t, upstreamCommit, gitTest(t, root, "rev-parse", "refs/heads/local-upstream"))
+	assert.Equal(t, refsBefore, gitTest(t, root, "for-each-ref", "--format=%(refname) %(objectname)", "refs/heads/local-upstream", "refs/tags"))
+	assert.NotEqual(t, localCommit, gitTest(t, root, "rev-parse", "HEAD"))
+	assert.Equal(t, "current\n", string(mustRead(t, filepath.Join(root, "current-only"))))
+	assert.Equal(t, "upstream\n", string(mustRead(t, filepath.Join(root, "upstream-only"))))
+}
+
+func TestCurrentBranchPullLocalDotRejectsRedirectsShadowingAndChangedConfig(t *testing.T) {
+	root, local := localDotPullFixture(t)
+	upstream := "refs/heads/master"
+	commands := branchSyncTestCommands(t, root)
+	gitTest(t, root, "config", "url.https://example.invalid/secret?token=secret.insteadOf", ".")
+	_, err := commands.PrepareCurrentBranchPull("master", local, localCurrentPullOptions(upstream))
+	assert.Error(t, err)
+	assert.NotContains(t, err.Error(), "secret")
+
+	root2, local2 := localDotPullFixture(t)
+	commands2 := branchSyncTestCommands(t, root2)
+	plan, err := commands2.PrepareCurrentBranchPull("master", local2, localCurrentPullOptions(upstream))
+	if err != nil {
+		t.Fatal(err)
+	}
+	gitTest(t, root2, "config", "url.ssh://unrelated.invalid/path.insteadOf", "not-a-dot-prefix")
+	_, err = commands2.CurrentBranchPullCommand(plan, nil)
+	assert.ErrorIs(t, err, ErrBranchSyncChanged, "even a nonmatching rewrite entry is part of the reviewed configuration")
+
+	root3, local3 := localDotPullFixture(t)
+	commands3 := branchSyncTestCommands(t, root3)
+	gitTest(t, root3, "config", "remote...vcs", "foreign-helper")
+	_, err = commands3.PrepareCurrentBranchPull("master", local3, localCurrentPullOptions(upstream))
+	assert.Error(t, err)
+	assert.NotContains(t, err.Error(), "foreign-helper")
+}
+
+func TestCurrentBranchPullFastForwardOnlyRejectsDivergence(t *testing.T) {
+	root, bare, initial := currentPullFixture(t)
+	gitTest(t, root, "config", "pull.rebase", "false")
+	advanceCurrentPullRemote(t, bare, "remote-only", "remote\n")
+	localTip := branchPlacementTestCommit(t, root, "local-only", "local\n", "local divergence")
+	commands := branchSyncTestCommands(t, root)
+	plan, err := commands.PrepareCurrentBranchPull("master", localTip, currentPullOptions())
+	if err != nil {
+		t.Fatal(err)
+	}
+	strict := plan.WithFastForwardOnly()
+	assert.True(t, strict.FastForwardOnly())
+	cmd, err := commands.CurrentBranchPullCommand(strict, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Contains(t, cmd.Args(), "--ff-only")
+	output, err := cmd.GetCmd().CombinedOutput()
+	assert.Error(t, err, "native --ff-only must refuse divergence")
+	assert.NotContains(t, string(output), "Merge made by")
+	assert.Equal(t, localTip, gitTest(t, root, "rev-parse", "HEAD"))
+	assert.NotEqual(t, initial, localTip)
 }

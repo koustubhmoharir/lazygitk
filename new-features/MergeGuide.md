@@ -103,6 +103,17 @@ about the code that exists, not speculative implementation tasks.
   query/cleanliness errors as generic stale-plan errors. `pull` rejects
   `--no-prune-tags`; preserve invocation-only overrides for both global and
   selected-remote tag pruning instead. No persistent config rewrite is needed.
+- `branch_sync_local.go` resolves exact direct local upstream refs without a
+  fetch for off-branch advancement. Keep its source checks and guarded
+  fast-forward application; approval captures a commit, not a live ref that
+  may silently retarget later. For a current-branch `.` pull, verify transport
+  resolution with the read-only `ls-remote --get-url`, fingerprint local source
+  state and rewrite settings, and refuse redirected/shadowed local transports.
+  Only the exact remote named `.` is a shadow; unrelated dotted names must not
+  be rejected. Diagnostics must not reveal a rewritten credential-bearing URL.
+- `CurrentBranchPullPlan.WithFastForwardOnly` adds only the stricter native
+  ff-only option. Revalidation retains that reviewed restriction without
+  broadening a plan's source, destination, repository or ref-update scope.
 
 Read-only checkpoint (2026-10-22): main-agent native probe rerun passed,
 including selected != current with staged/unstaged/untracked preservation,
@@ -136,6 +147,10 @@ an existing FETCH_HEAD sentinel, valid and dangling aliases, and native pull
 precedence. Scoped backend lint passed with zero issues after removing an
 unused fixture return. Earlier verification attempts encountered test files
 still being written; those compile errors are not successful verification.
+Local-upstream follow-up: focused backend tests passed (69.428s), the added
+unrelated-dotted-remote regression passed (4.168s), and actual local-source
+rebase replay passed (2.630s). The backend short package passed (145.401s) and
+backend lint passed with zero issues after the declaration-only cleanup.
 
 ### Selected-commit rebase and clean-start policy (item 6)
 

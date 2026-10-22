@@ -2,8 +2,8 @@
 
 Roadmap item: [7. Selected-branch operations without checkout](Roadmap.md#7-selected-branch-operations-without-checkout).
 Status: source/remote inspection, guarded ref-only advancement and explicit
-push/fetch/current-pull backend plans are implemented. Modal integration,
-local-upstream handling and end-to-end selected-branch workflows remain.
+push/fetch/current-pull backend plans (including local upstreams) are implemented.
+Modal integration and end-to-end selected-branch workflows remain.
 
 Scope: operate on the explicitly selected local branch wherever no worktree is
 needed. Preserve current HEAD, index, worktree and unrelated refs. Keep general
@@ -12,15 +12,10 @@ switch branches silently. Keep stack-wide operations explicit choices.
 
 ## Remaining tasks for item 7
 
-1. Complete the captured branch/repository target with executable-plan
-   validation, fresh remote/upstream resolution and explicit modal choices.
-   Native branch/remote inspection and context-source resolution are implemented;
-   Backend plans validate approved inputs and detect transport/config changes;
-   finish source/destination review and routing before constructing commands.
-   Ref-only plans are backend-bound; remote inspection honors native empty-URL
-   list resets. Modal review/integration and local `.` upstream handling remain.
-   Configured tracking-ref resolution is implemented, including custom
-   namespaces and explicit/excluded automatic-lease handling.
+1. Integrate the captured branch/repository target into source/destination
+   review and routing, using the backend's fresh approved-input validation and
+   transport/config change detection. Include custom tracking namespaces,
+   local upstreams and explicit/excluded automatic-lease choices.
    Every prompt, command, upstream-setting action and refresh must retain that
    target; neither a later selection nor current HEAD may substitute for it.
 2. Make push target the selected local branch with an explicit remote/refspec.
@@ -28,13 +23,17 @@ switch branches silently. Keep stack-wide operations explicit choices.
    multi-URL approval, reviewed leases and upstream-setting snapshots.
    Finish modal routing and protection/no-upstream/triangular-workflow
    verification. Keep pushing other stack branches an explicit separate choice.
+   Pending user decision: refuse ambiguous multi-ref upstream changes and offer
+   push without changing tracking, or add an explicit replacement flow. Native
+   `push --set-upstream` retained old multi-valued merge refs in the UI fixture.
 3. Make off-branch pull/update an explicit upstream fetch and verified
    fast-forward without checkout. The scoped fetch and guarded ref-only update
    builders are implemented; integrate their modal flow and explain divergence
    without attempting integration. Reject tip changes to branches occupied by
    another worktree; do not reuse paths that mutate that worktree. Integrate the
-   separate named-remote current-pull builder with its native-policy precedence
-   and clean/no-autostash behavior; finish local `.` upstream support.
+   separate current-pull builder with its native-policy precedence and
+   clean/no-autostash behavior. Integrate local `.` upstreams through direct
+   off-branch advancement or verified native current pull, as appropriate.
 4. Integrate branch-bearing versus global/current-branch actions, retaining
    selected-ref metadata support and clearly named selected-source merge/
    rebase actions. Do not change shortcut policy ahead of item 8.
