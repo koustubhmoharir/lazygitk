@@ -19,6 +19,37 @@ about the code that exists, not speculative implementation tasks.
 
 ## Live integration record
 
+### Selected-branch operations (item 7 in progress)
+
+- Audit and captured-source contracts are in
+  [selected-branch-operations.md](selected-branch-operations.md); native
+  routing/scope evidence is in
+  [selected-branch-sync-probes.md](selected-branch-sync-probes.md). The probes
+  use owned disposable repositories, not configured application remotes.
+- `git_commands/branch_sync_info.go` adds read-only native inspection using
+  the existing literal-name, exact-ref, HEAD and worktree-reservation readers.
+  Preserve their error handling and repository-pinned builder when merging
+  upstream changes. Parse NUL-framed fields from raw stdout, with record
+  terminators separate: remote/config metadata can contain newlines. Preserve
+  the exact tracking namespace; do not derive it from a remote name.
+- `controllers/branch_sync_source.go` defines context-to-source resolution,
+  including stored local-branch history and rejection of non-local history,
+  range selections and detached pseudo-branches. Capture the name, not a model
+  pointer. Other panes must not inherit an old local-branch selection.
+- These modules are preparatory and not wired into push/pull yet. Native
+  `PushRef` inspection can return only one of several configured destinations;
+  it is a suggestion, not unique resolution or permission to execute. Future
+  execution plans must revalidate source, occupancy and remote configuration.
+
+Read-only checkpoint (2026-10-22): main-agent native probe rerun passed,
+including selected != current with staged/unstaged/untracked preservation,
+explicit stale-lease rejection, multiple configured push destinations and
+suppressed extra fetch mappings/pruning/tags/`FETCH_HEAD` writes. Independently
+rerun source tests passed (backend 6.648s, controller 0.030s), including an
+unborn checkout with another valid selected branch. Formatting and scoped lint
+passed with zero issues. No executable push/pull routing has changed yet;
+these checks are not end-to-end acceptance for item 7.
+
 ### Selected-commit rebase and clean-start policy (item 6)
 
 - `git_commands/rebase_start_policy.go` owns the shared fresh tracked/index

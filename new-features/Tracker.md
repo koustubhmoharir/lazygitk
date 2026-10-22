@@ -1,7 +1,8 @@
 # Current work
 
 Roadmap item: [7. Selected-branch operations without checkout](Roadmap.md#7-selected-branch-operations-without-checkout).
-Status: auditing existing selected-ref support and implicit current-branch sync.
+Status: selected-ref/sync audit, native probes and read-only source foundation
+verified; executable sync plans and modal flows are next.
 
 Scope: operate on the explicitly selected local branch wherever no worktree is
 needed. Preserve current HEAD, index, worktree and unrelated refs. Keep general
@@ -10,33 +11,30 @@ switch branches silently. Keep stack-wide operations explicit choices.
 
 ## Remaining tasks for item 7
 
-1. Audit branch metadata, history/diff and sync entry points, workers and
-   prompts. Record existing selected-ref support, current-branch assumptions
-   and integration seams in `selected-branch-operations.md`. Consult
-   TortoiseGit and native Git for design questions; ask the user about choices
-   not already settled by the roadmap.
-2. Design and implement a captured branch/repository target for sync, with
-   fresh remote/upstream resolution and explicit source/destination labels.
+1. Complete the captured branch/repository target with executable-plan
+   validation, fresh remote/upstream resolution and explicit modal choices.
+   Native inspection and context-source resolution are implemented; their
+   tests and integration constraints are recorded in the audit and merge guide.
    Every prompt, command, upstream-setting action and refresh must retain that
    target; neither a later selection nor current HEAD may substitute for it.
-3. Make push target the selected local branch with an explicit remote/refspec.
+2. Make push target the selected local branch with an explicit remote/refspec.
    Preserve protection, force-with-lease, no-upstream and triangular-workflow
    behavior. Keep pushing other stack branches an explicit separate choice.
-4. Make off-branch pull/update an explicit upstream fetch and verified
+3. Make off-branch pull/update an explicit upstream fetch and verified
    fast-forward without checkout. Explain divergence without attempting
    integration. Reject tip changes to branches occupied by another worktree;
    do not reuse paths that mutate that worktree. Preserve current-branch pull
    and its clean/no-autostash rebase policy.
-5. Integrate branch-bearing versus global/current-branch actions, retaining
+4. Integrate branch-bearing versus global/current-branch actions, retaining
    selected-ref metadata support and clearly named selected-source merge/
    rebase actions. Do not change shortcut policy ahead of item 8.
-6. Verify with local fake remotes: selected != current, absent/gone upstream,
+5. Verify with local fake remotes: selected != current, absent/gone upstream,
    distinct push/pull remotes, force-with-lease rejection, fast-forward,
    divergence/rewritten upstream, concurrent ref changes, occupied worktrees
    and branch stacks. Assert HEAD/index/worktree and unrelated refs unchanged.
    Maintain usage, inventory and merge guide; run generation, formatting,
    build, short tests, relevant headless scenarios and lint.
-7. When acceptance passes, complete item 7 accurately in the roadmap and
+6. When acceptance passes, complete item 7 accurately in the roadmap and
    replace this tracker with item 8's task-level plan in the same commit.
 
 ## How this tracker works
