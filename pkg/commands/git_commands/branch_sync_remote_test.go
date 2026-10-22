@@ -107,6 +107,13 @@ func TestBranchSyncRemoteInvalidAndEmptyConfiguration(t *testing.T) {
 		_, err := commands.InspectBranchSyncRemote(name)
 		assert.Error(t, err, "remote %q", name)
 	}
+	for _, url := range []string{"https://user:secret@example.invalid/repo", "user:secret@example.invalid:repo"} {
+		_, err := commands.InspectBranchSyncRemote(url)
+		assert.Error(t, err)
+		if err != nil {
+			assert.NotContains(t, err.Error(), "secret")
+		}
+	}
 	gitTest(t, root, "config", "remote.empty.url", "")
 	_, err := commands.InspectBranchSyncRemote("empty")
 	assert.ErrorContains(t, err, "no configured fetch or push URL")

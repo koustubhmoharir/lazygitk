@@ -30,7 +30,9 @@ type branchSyncConfigEntry struct {
 // destinations for one source. It never resolves ambiguity by taking the first.
 // Remote "." is a local-upstream case, handled separately from named remotes.
 func (self *SyncCommands) InspectBranchSyncRemote(name string) (BranchSyncRemoteInfo, error) {
-	if name == "" || name == "." || strings.ContainsAny(name, "\x00\r\n") {
+	// A URL is not a configured remote name. Reject it without echoing it:
+	// branch.<name>.pushRemote can contain a credential-bearing literal URL.
+	if name == "" || name == "." || strings.ContainsAny(name, "\x00\r\n:") {
 		return BranchSyncRemoteInfo{}, fmt.Errorf("choose a configured named remote")
 	}
 	entries, err := self.branchSyncConfigEntries()

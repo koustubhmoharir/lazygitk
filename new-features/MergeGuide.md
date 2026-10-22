@@ -49,6 +49,8 @@ about the code that exists, not speculative implementation tasks.
   Empty URL/push-URL values clear earlier values, matching Git's native
   remote reader; a later nonempty URL remains valid. Keep config parsing
   shared with execution-plan validation, without logging credential values.
+  This API accepts configured remote names, not literal URLs. Reject URL-like
+  input without echoing it: native push-remote metadata can contain credentials.
 - `branch_fast_forward.go` is the ref-only forward/update primitive. Preserve
   ancestry-error distinction, source-OID revalidation, ancestor-target no-ops,
   worktree/reservation checks and single delegation to guarded placement.
