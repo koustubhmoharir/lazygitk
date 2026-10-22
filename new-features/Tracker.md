@@ -1,8 +1,9 @@
 # Current work
 
 Roadmap item: [7. Selected-branch operations without checkout](Roadmap.md#7-selected-branch-operations-without-checkout).
-Status: source/remote inspection and the guarded ref-only fast-forward primitive
-are implemented; network execution plans and modal integration remain.
+Status: source/remote inspection, guarded ref-only advancement and explicit
+push/fetch/current-pull backend plans are implemented. Modal integration,
+local-upstream handling and end-to-end selected-branch workflows remain.
 
 Scope: operate on the explicitly selected local branch wherever no worktree is
 needed. Preserve current HEAD, index, worktree and unrelated refs. Keep general
@@ -14,10 +15,10 @@ switch branches silently. Keep stack-wide operations explicit choices.
 1. Complete the captured branch/repository target with executable-plan
    validation, fresh remote/upstream resolution and explicit modal choices.
    Native branch/remote inspection and context-source resolution are implemented;
-   finish approved-target validation, transport/config change detection and
-   source/destination review before constructing network commands.
+   Backend plans validate approved inputs and detect transport/config changes;
+   finish source/destination review and routing before constructing commands.
    Ref-only plans are backend-bound; remote inspection honors native empty-URL
-   list resets. Network plan review and modal integration remain.
+   list resets. Modal review/integration and local `.` upstream handling remain.
    Configured tracking-ref resolution is implemented, including custom
    namespaces and explicit/excluded automatic-lease handling.
    Every prompt, command, upstream-setting action and refresh must retain that
@@ -31,8 +32,9 @@ switch branches silently. Keep stack-wide operations explicit choices.
    fast-forward without checkout. The scoped fetch and guarded ref-only update
    builders are implemented; integrate their modal flow and explain divergence
    without attempting integration. Reject tip changes to branches occupied by
-   another worktree; do not reuse paths that mutate that worktree. Finish the
-   separate current-branch pull path with its clean/no-autostash rebase policy.
+   another worktree; do not reuse paths that mutate that worktree. Integrate the
+   separate named-remote current-pull builder with its native-policy precedence
+   and clean/no-autostash behavior; finish local `.` upstream support.
 4. Integrate branch-bearing versus global/current-branch actions, retaining
    selected-ref metadata support and clearly named selected-source merge/
    rebase actions. Do not change shortcut policy ahead of item 8.

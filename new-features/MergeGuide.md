@@ -92,6 +92,15 @@ about the code that exists, not speculative implementation tasks.
   network builders. Exact special namespaces and their children are both
   forbidden. Preserve native ref-format checks and broken-alias detection;
   generic diagnostics must not describe a fetch refusal as a push failure.
+- `branch_sync_current_pull.go` retains native pull rather than emulating its
+  merge/rebase/ff-only precedence with separate commands. Keep the shared
+  clean-rebase refusal before network activity, actual HEAD validation,
+  no-autostash/no-retry policy, and branch-only `rebase.updateRefs=false` scope.
+  Fingerprint native pull/rebase/merge settings, including the exact
+  case-sensitive branch subsection's rebase and merge options. Do not swallow
+  query/cleanliness errors as generic stale-plan errors. `pull` rejects
+  `--no-prune-tags`; preserve invocation-only overrides for both global and
+  selected-remote tag pruning instead. No persistent config rewrite is needed.
 
 Read-only checkpoint (2026-10-22): main-agent native probe rerun passed,
 including selected != current with staged/unstaged/untracked preservation,
