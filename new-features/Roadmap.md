@@ -38,6 +38,8 @@ Supporting evidence: [repository map](repository-map.md) and
   carry dirty changes without stashing whenever Git can avoid overwriting them;
   moving a non-current branch is only a ref change.
 - Palette usage counts are shared across repositories.
+- Pull is intentionally less prominent: no single-letter default binding;
+  keep it reachable through a multi-key menu path and the command palette.
 
 ## Delivery sequence
 
@@ -488,6 +490,13 @@ push is distinct from changing the local branch's saved upstream relationship.
 Audit stacked-branch push/pull menus: changing a selected branch must not
 implicitly push or update branches below it. Preserve those as explicit choices.
 
+For the checked-out branch, Pull fetches first, then presents the exact fetched
+commit and integration choices before changing files. Default the integration
+choice from Git configuration, retain explicit fast-forward/merge/rebase
+choices, and check ignored-file overwrite risks against the captured target.
+Do not perform a second network pull that could substitute another incoming
+commit after review. Fetching alone must preserve HEAD, the index and files.
+
 Validation: local fake remote; selected != current, no upstream, gone upstream,
 different push/pull remotes, force-with-lease rejection, fast-forward/diverged
 and rewritten upstream, occupied worktree, concurrent ref changes, and branch
@@ -534,6 +543,10 @@ into suitable groups during the full audit. Fetch, fast-forward, fixup, rebase,
 push/pull, checkout, rename, refresh and staging all need distinct keys or
 complete menu paths. A shared verb can act on different selected object types.
 Audit collisions among globals, parents and locals, not just within one view.
+Pull must not have a single-letter default shortcut. Keep it in a multi-key
+menu path and independently accessible from `?`; prefer direct keys for more
+frequently used operations. Do not add a shortcut that immediately runs Pull
+as the default action on opening that group.
 
 Known changes include splitting `r` (files refresh / branch rebase / commit
 rename), `f` (fetch / fast-forward / fixup), and `c` (commit / checkout by name /

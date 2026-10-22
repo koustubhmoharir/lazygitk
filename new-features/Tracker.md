@@ -35,12 +35,12 @@ switch branches silently. Keep stack-wide operations explicit choices.
    builders are implemented; integrate their modal flow and explain divergence
    without attempting integration. Reject tip changes to branches occupied by
    another worktree; do not reuse paths that mutate that worktree. Integrate the
-   separate current-pull builder with its native-policy precedence and
-   clean/no-autostash behavior. Integrate local `.` upstreams through direct
-   off-branch advancement or verified native current pull, as appropriate.
-   Pending user choice for current-branch Pull: fetch first and review the
-   exact incoming commit/integration (including ignored-file risks), or retain
-   one confirmation for native pull, whose incoming target is not yet known.
+   current-branch fetch-first flow: review the exact fetched commit and
+   integration choices (defaulting from Git configuration), check ignored-file
+   risks, and integrate only that captured target without another network pull.
+   Retain clean/no-autostash behavior. Integrate local `.` upstreams through
+   direct off-branch advancement or captured current integration, as appropriate.
+   The earlier one-step current-pull primitive is not the approved UI path.
 4. Integrate branch-bearing versus global/current-branch actions, retaining
    selected-ref metadata support and clearly named selected-source merge/
    rebase actions. Do not change shortcut policy ahead of item 8.
