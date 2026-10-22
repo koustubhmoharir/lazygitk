@@ -103,6 +103,32 @@ nor the first native push-mapping result is sufficient authority. Snapshot
 validation and a user's modal choices must precede executable commands.
 Shortcut redesign stays in item 8.
 
+## Implemented internal primitives, not yet wired into sync
+
+- `InspectBranchSyncRemote` retains all configured URLs, push URLs, fetch and
+  push refspecs. It normalizes mirroring through Git and fingerprints selected
+  remote settings plus URL-rewrite rules, including included config files.
+  Results are inspection data, not executable permission. Signatures stay in
+  memory; do not persist raw configuration or credential-bearing URLs in usage
+  history. A push-only named remote is distinct from a fetch-capable remote.
+- `PrepareBranchFastForward` / `ApplyBranchFastForward` compare captured source
+  OID with fresh state and distinguish native ancestry failure from divergence.
+  Equal or already-ahead history is a no-op, never a rewind. Real advancement
+  delegates to the existing expected-old guarded placement transaction, which
+  rejects checkout/operation reservations, including ones appearing after
+  preparation. No-op plans perform no writes even for occupied branches.
+- Full validated OIDs remain authoritative despite hash-named refs. Ancestry
+  queries use explicit commit peeling and command-scoped ambiguity-warning
+  suppression so an ordinary negative result remains a typed native exit
+  error. Do not classify arbitrary stderr as non-ancestry.
+- Uncertain ref commits must remain uncertain errors, not changed-state signals
+  that a controller could treat as safe to retry. The primitive neither
+  retries nor rolls back a failed update.
+
+These primitives do not fetch, select a remote/destination, update upstream
+configuration, check out a branch, stash, merge or rebase. The existing
+push/pull/fast-forward UI still needs the new captured execution flows.
+
 ## Usability and native references
 
 [TortoiseGit's Push dialog](https://tortoisegit.org/docs/tortoisegit/tgit-dug-push.html)

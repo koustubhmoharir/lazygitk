@@ -247,6 +247,14 @@ func (p *probe) explicitPush() {
 	fmt.Printf("concurrent-change leased push status=%d output=%q\n", code, out)
 	check(code == 1 && strings.Contains(out, "!\trefs/heads/topic:refs/heads/topic\t[rejected] (stale info)"), "explicit expected OID lease reports porcelain stale info")
 	check(p.mustGit(p.root, "--git-dir", bare, "rev-parse", "refs/heads/topic") == mainTip, "lease rejection preserves concurrent remote tip")
+	// An explicit source refspec must not silently turn into a mirror push.
+	p.config(local, "remote.origin.mirror", "true")
+	out, code = p.git(local, "push", "--dry-run", "--porcelain", "origin", "refs/heads/topic:refs/heads/topic")
+	fmt.Printf("configured mirror plus explicit refspec status=%d output=%q\n", code, out)
+	check(code != 0, "configured mirror is rejected with explicit refspec rather than widening its scope")
+	out, code = p.git(local, "push", "--dry-run", "--no-mirror", "--porcelain", "origin", "refs/heads/topic:refs/heads/topic")
+	fmt.Printf("explicit no-mirror plus explicit refspec status=%d output=%q\n", code, out)
+	check(code != 0 && strings.Contains(out, "--mirror can't be combined with refspecs"), "no-mirror does not override configured mirror mode on the tested Git")
 }
 
 func snapshotFiles(dir string) map[string][]byte {

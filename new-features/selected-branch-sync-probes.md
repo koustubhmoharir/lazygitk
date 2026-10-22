@@ -174,6 +174,13 @@ is not a universal mapping. `--no-tags` suppresses configured tag following;
 for `remote.<name>.mirror`, whose mirror behavior can widen a push beyond one
 selected ref.
 
+An additional mirror-mode probe on Git 2.51.1 confirmed that combining an
+explicit refspec with `remote.origin.mirror=true` exits 128 rather than silently
+widening the push. Adding `--no-mirror` still exits 128 with the same
+incompatibility. A branch-scoped action therefore cannot treat `--no-mirror`
+as a reliable override of configured mirror mode; it must reject that route
+or obtain explicit consent for a supported command-scoped configuration change.
+
 ## Design context and limits
 
 TortoiseGit's [Push](https://tortoisegit.org/docs/tortoisegit/tgit-dug-push.html),

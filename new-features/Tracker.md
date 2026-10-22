@@ -1,8 +1,8 @@
 # Current work
 
 Roadmap item: [7. Selected-branch operations without checkout](Roadmap.md#7-selected-branch-operations-without-checkout).
-Status: selected-ref/sync audit, native probes and read-only source foundation
-verified; executable sync plans and modal flows are next.
+Status: source/remote inspection and the guarded ref-only fast-forward primitive
+are implemented; network execution plans and modal integration remain.
 
 Scope: operate on the explicitly selected local branch wherever no worktree is
 needed. Preserve current HEAD, index, worktree and unrelated refs. Keep general
@@ -13,15 +13,17 @@ switch branches silently. Keep stack-wide operations explicit choices.
 
 1. Complete the captured branch/repository target with executable-plan
    validation, fresh remote/upstream resolution and explicit modal choices.
-   Native inspection and context-source resolution are implemented; their
-   tests and integration constraints are recorded in the audit and merge guide.
+   Native branch/remote inspection and context-source resolution are implemented;
+   finish approved-target validation, transport/config change detection and
+   source/destination review before constructing network commands.
    Every prompt, command, upstream-setting action and refresh must retain that
    target; neither a later selection nor current HEAD may substitute for it.
 2. Make push target the selected local branch with an explicit remote/refspec.
    Preserve protection, force-with-lease, no-upstream and triangular-workflow
    behavior. Keep pushing other stack branches an explicit separate choice.
 3. Make off-branch pull/update an explicit upstream fetch and verified
-   fast-forward without checkout. Explain divergence without attempting
+   fast-forward without checkout, composing the implemented guarded ref-only
+   primitive with the scoped fetch. Explain divergence without attempting
    integration. Reject tip changes to branches occupied by another worktree;
    do not reuse paths that mutate that worktree. Preserve current-branch pull
    and its clean/no-autostash rebase policy.

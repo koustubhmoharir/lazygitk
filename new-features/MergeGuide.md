@@ -40,6 +40,18 @@ about the code that exists, not speculative implementation tasks.
   `PushRef` inspection can return only one of several configured destinations;
   it is a suggestion, not unique resolution or permission to execute. Future
   execution plans must revalidate source, occupancy and remote configuration.
+- `branch_sync_remote.go` adds uncached remote inspection, including multiple
+  mappings/URLs and included configuration. Its signature frames raw selected
+  settings, valueless versus empty keys, URL-rewrite rules and native mirror
+  normalization. Dotted remote names must not contaminate a shorter remote's
+  profile. The config is not stored in app state or logged as query output;
+  future modals must redact credentials when displaying URLs.
+- `branch_fast_forward.go` is the ref-only forward/update primitive. Preserve
+  ancestry-error distinction, source-OID revalidation, ancestor-target no-ops,
+  worktree/reservation checks and single delegation to guarded placement.
+  Preserve uncertain commit errors before changed-state classification. The
+  scoped ambiguity-warning override is for validated literal OID ancestry
+  only, not a global suppression of Git diagnostics.
 
 Read-only checkpoint (2026-10-22): main-agent native probe rerun passed,
 including selected != current with staged/unstaged/untracked preservation,
@@ -49,6 +61,16 @@ rerun source tests passed (backend 6.648s, controller 0.030s), including an
 unborn checkout with another valid selected branch. Formatting and scoped lint
 passed with zero issues. No executable push/pull routing has changed yet;
 these checks are not end-to-end acceptance for item 7.
+
+Ref-only/remote checkpoint (2026-10-22): independent focused tests passed
+(4.752s), followed by the full backend short package (35.469s). Formatting and
+scoped lint passed with zero issues. Coverage includes staged/index/HEAD bytes,
+unstaged and untracked content, same-tree rewritten divergence, occupied and
+newly reserved worktrees, stale sources, no rewind, literal OID shadow refs,
+uncertain commits, included configuration, multiple mappings/URLs and native
+boolean normalization. The additional standalone probe passed its mirror
+assertions: both configured mirror plus an explicit refspec and an attempted
+`--no-mirror` override fail on Git 2.51.1. No executable sync UI is wired yet.
 
 ### Selected-commit rebase and clean-start policy (item 6)
 
