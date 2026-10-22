@@ -44,6 +44,29 @@ type TranslationSet struct {
 	BranchUpstreamSetReviewPrompt         string
 	BranchUpstreamUnsetReviewPrompt       string
 	BranchUpstreamStatus                  string
+	BranchSyncStackPushChoice             string
+	BranchSyncStackPushTitle              string
+	BranchSyncStackPushPrompt             string
+	BranchSyncStackPushExecute            string
+	BranchSyncStackReviewStatus           string
+	BranchSyncStackPushStatus             string
+	BranchSyncStackNoMembers              string
+	BranchSyncStackPushFailed             string
+	BranchSyncStackPreparePush            string
+	BranchSyncStackMemberReview           string
+	BranchSyncStackContinue               string
+	BranchSyncStackUpdateTitle            string
+	BranchSyncStackUpdateContext          string
+	BranchSyncStackUpdatePrompt           string
+	BranchSyncStackUpdateExecute          string
+	BranchSyncStackUpdateStatus           string
+	BranchSyncStackUpdateNoMembers        string
+	BranchSyncStackUpdateStopped          string
+	BranchSyncStackUpdateCurrentStopped   string
+	BranchSyncStackUpdatePreflightFailed  string
+	BranchSyncStackUpdateIgnoredApproved  string
+	BranchSyncStackUpdateCurrentLast      string
+	BranchSyncStackUpdateChoice           string
 
 	NotEnoughSpace                        string
 	DiffTitle                             string
@@ -1396,6 +1419,29 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchUpstreamSetReviewPrompt:         "Set upstream of local branch %q at %s to %q at %s?\n\nPrevious upstream remote: %s\nPrevious merge refs: %q\n\nOnly saved tracking metadata changes. No fetch, push, checkout, integration or tip change will run. Existing rebase preferences stay unchanged.",
 		BranchUpstreamUnsetReviewPrompt:       "Unset upstream of local branch %q at %s?\n\nPrevious upstream remote: %s\nPrevious merge refs: %q\n\nOnly saved tracking metadata changes. Branch tips, index and files stay in place. Existing rebase preferences stay unchanged.",
 		BranchUpstreamStatus:                  "Updating upstream metadata for branch %q",
+		BranchSyncStackPushChoice:             "Review push for this branch and branches stacked below…",
+		BranchSyncStackPushTitle:              "Review stack push",
+		BranchSyncStackPushPrompt:             "Review every source and destination below. No branch has been pushed yet.\n\nExecute pushes these branches in the listed order. Git's normal concurrency checks apply; this is not an atomic transaction. On failure, completed pushes remain and later pushes stop. There is no automatic retry or rollback.",
+		BranchSyncStackPushExecute:            "Push all reviewed branches",
+		BranchSyncStackReviewStatus:           "Reviewing push for branch %q",
+		BranchSyncStackPushStatus:             "Pushing reviewed branches",
+		BranchSyncStackNoMembers:              "No other unmerged local branch tips were found below the selected branch. Nothing was pushed; use the one-branch push action instead.",
+		BranchSyncStackPushFailed:             "Stack push stopped at branch %q. Completed branches: %q. Later branches were not attempted. Inspect remote state before retrying; Git may have partly pushed the failing branch.\n\n%w",
+		BranchSyncStackPreparePush:            "Review this branch's push",
+		BranchSyncStackMemberReview:           "Stack review: branch %d of %d. Approval here only collects a plan; no branch is pushed until the final stack approval.\n\n",
+		BranchSyncStackContinue:               "Continue reviewing remaining branches",
+		BranchSyncStackUpdateTitle:            "Review branch updates",
+		BranchSyncStackUpdateContext:          "Update review: branch %d of %d. Approved fetches may update tracking refs. Local branch tips and worktree integration wait for final batch approval.\n\n",
+		BranchSyncStackUpdatePrompt:           "Review every update below. Approved fetches may already have updated tracking refs, but no local branch tip or worktree integration has been applied.\n\nExecute first advances unoccupied branches by verified fast-forward, then integrates the reviewed commit into the checked-out branch, if included. The rows show this execution order. This is not an atomic transaction: completed updates remain if a later step fails. No automatic retry, rollback, stash, divergent reset or update of another worktree will run.",
+		BranchSyncStackUpdateExecute:          "Apply all reviewed branch updates",
+		BranchSyncStackUpdateStatus:           "Applying reviewed branch updates",
+		BranchSyncStackUpdateNoMembers:        "No other unmerged local branch tips were found below the selected branch. No fetch or update ran; use the one-branch update action instead.",
+		BranchSyncStackUpdateStopped:          "Branch updates stopped at %q. Ref-only branches already advanced: %q. Later updates were not attempted. Inspect refs before retrying; a failing native ref transaction may have committed.\n\n%w",
+		BranchSyncStackUpdateCurrentStopped:   "Checked-out branch integration for %q stopped. Ref-only branches already advanced: %q. Do not repeat the batch automatically; inspect the current state and review any remaining work explicitly.\n\n%w",
+		BranchSyncStackUpdatePreflightFailed:  "Update preflight failed for %q. No local branch tip or worktree integration was changed by this batch; approved fetches may have updated tracking refs.\n\n%w",
+		BranchSyncStackUpdateIgnoredApproved:  "\n\nIgnored-file overwrite risk was explicitly approved for %d paths. Changed contents invalidate that approval before execution.",
+		BranchSyncStackUpdateCurrentLast:      " (checked-out integration, last)",
+		BranchSyncStackUpdateChoice:           "Review updates for this branch and branches stacked below…",
 
 		NotEnoughSpace:                       "Not enough space to render panels",
 		DiffTitle:                            "Diff",

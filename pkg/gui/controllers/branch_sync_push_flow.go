@@ -17,21 +17,32 @@ type branchSyncPushFlow struct {
 	info   git_commands.BranchSyncInfo
 	opts   git_commands.BranchPushOptions
 	plan   *git_commands.BranchPushPlan
+	// Stack review collects validated plans before any network push. Nil keeps
+	// the ordinary one-branch execution path.
+	acceptPlan    func(git_commands.BranchPushPlan) error
+	stackChoice   func() error
+	reviewContext string
 }
 
 func (self *SyncController) pushBranchSource(source branchSyncSource) error {
 	target := newBranchSyncTarget(self.c, source)
 	return target.inspect(func(info git_commands.BranchSyncInfo) error {
-		flow := &branchSyncPushFlow{target: target, info: info}
-		flow.opts = git_commands.BranchPushOptions{Remote: info.PushRemote, DestinationRef: info.PushRef, RequireCurrent: !source.selected, Submodules: git_commands.BranchPushNoSubmoduleRecursion}
-		if looksLikeBranchSyncRemoteURL(flow.opts.Remote) {
-			flow.opts.Remote = ""
-		}
-		if !strings.HasPrefix(flow.opts.DestinationRef, "refs/heads/") || flow.opts.DestinationRef == "refs/heads/" {
-			flow.opts.DestinationRef = "refs/heads/" + info.Name
-		}
+		flow := newBranchSyncPushFlow(target, info)
+		flow.stackChoice = func() error { return self.reviewBranchStackPush(target, info) }
 		return flow.menu()
 	})
+}
+
+func newBranchSyncPushFlow(target *branchSyncTarget, info git_commands.BranchSyncInfo) *branchSyncPushFlow {
+	flow := &branchSyncPushFlow{target: target, info: info}
+	flow.opts = git_commands.BranchPushOptions{Remote: info.PushRemote, DestinationRef: info.PushRef, RequireCurrent: !target.source.selected, Submodules: git_commands.BranchPushNoSubmoduleRecursion}
+	if looksLikeBranchSyncRemoteURL(flow.opts.Remote) {
+		flow.opts.Remote = ""
+	}
+	if !strings.HasPrefix(flow.opts.DestinationRef, "refs/heads/") || flow.opts.DestinationRef == "refs/heads/" {
+		flow.opts.DestinationRef = "refs/heads/" + info.Name
+	}
+	return flow
 }
 
 func looksLikeBranchSyncRemoteURL(remote string) bool {
@@ -43,8 +54,12 @@ func (flow *branchSyncPushFlow) menu() error {
 		return err
 	}
 	tr := flow.target.c.Tr
+	executeLabel := tr.BranchSyncPushThisBranch
+	if flow.acceptPlan != nil {
+		executeLabel = tr.BranchSyncStackPreparePush
+	}
 	items := []*types.MenuItem{
-		{CommandID: "branch.push-selected.execute", Verb: "push", Label: tr.BranchSyncPushThisBranch, OnPress: func() error {
+		{CommandID: "branch.push-selected.execute", Verb: "push", Label: executeLabel, OnPress: func() error {
 			if flow.opts.Remote == "" {
 				return flow.promptRemote(false)
 			}
@@ -63,7 +78,10 @@ func (flow *branchSyncPushFlow) menu() error {
 		}},
 		{CommandID: "branch.push-selected.force-with-lease", Verb: "push", Label: tr.BranchSyncForceLease, OpensMenu: true, OnPress: flow.beginForce},
 	}
-	return flow.target.c.Menu(types.CreateMenuOptions{Title: tr.BranchSyncPushMenu, Prompt: flow.menuSummary(), Items: items, OnCancel: flow.target.checkRepository})
+	if flow.stackChoice != nil {
+		items = append(items, &types.MenuItem{CommandID: "branch.push-selected.stack", Verb: "push-stack", Label: tr.BranchSyncStackPushChoice, OpensMenu: true, OnPress: flow.stackChoice})
+	}
+	return flow.target.c.Menu(types.CreateMenuOptions{Title: tr.BranchSyncPushMenu, Prompt: flow.reviewContext + flow.menuSummary(), Items: items, OnCancel: flow.target.checkRepository})
 }
 
 func (flow *branchSyncPushFlow) menuSummary() string {
@@ -200,13 +218,9 @@ func (flow *branchSyncPushFlow) review() error {
 	plan := *flow.plan
 	opts := plan.Options()
 	title := flow.target.c.Tr.BranchSyncReviewTitle
-	prompt := fmt.Sprintf(flow.target.c.Tr.BranchSyncReviewPrompt, flow.info.Name, utils.ShortHash(plan.SourceOID()), opts.Remote, opts.DestinationRef, opts.SetUpstream, opts.Submodules == git_commands.BranchPushCheckSubmodules)
-	if opts.SetUpstream {
-		prompt += flow.upstreamReplacementSummary(plan)
-	}
+	prompt := flow.planReviewPrompt(plan)
 	if opts.ForceWithLease {
 		title = flow.target.c.Tr.BranchSyncLeaseConfirmTitle
-		prompt += fmt.Sprintf(flow.target.c.Tr.BranchSyncLeaseConfirmPrompt, flow.info.Name, utils.ShortHash(plan.SourceOID()), opts.DestinationRef, plan.LeaseRef(), utils.ShortHash(plan.LeaseOID()))
 		return flow.target.c.Menu(types.CreateMenuOptions{Title: title, Prompt: prompt, HideCancel: true, Items: []*types.MenuItem{
 			{CommandID: "branch.push-selected.force-cancel", Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: func() error {
 				if err := flow.target.checkRepository(); err != nil {
@@ -268,7 +282,10 @@ func (flow *branchSyncPushFlow) execute(plan git_commands.BranchPushPlan) error 
 	if err := flow.target.checkRepository(); err != nil {
 		return err
 	}
-	return flow.target.withOperation(types.ItemOperationPushing, flow.target.c.Tr.BranchSyncPushStatus, func(task gocui.Task) error {
+	run := func(task gocui.Task) error {
+		if err := flow.target.checkRepository(); err != nil {
+			return err
+		}
 		cmd, err := flow.target.git.Sync.BranchPushCommand(plan, task)
 		if errors.Is(err, git_commands.ErrBranchPushUpstreamAmbiguous) {
 			opts := plan.Options()
@@ -281,6 +298,11 @@ func (flow *branchSyncPushFlow) execute(plan git_commands.BranchPushPlan) error 
 			return nil
 		}
 		if errors.Is(err, git_commands.ErrBranchSyncChanged) {
+			if flow.acceptPlan != nil {
+				// A wider review is tied to its captured member tips. Do not
+				// silently substitute another snapshot partway through it.
+				return err
+			}
 			flow.target.c.OnUIThread(func() error {
 				return flow.target.inspect(func(info git_commands.BranchSyncInfo) error {
 					flow.info = info
@@ -317,20 +339,39 @@ func (flow *branchSyncPushFlow) execute(plan git_commands.BranchPushPlan) error 
 		if err != nil {
 			return err
 		}
+		if flow.acceptPlan != nil {
+			flow.target.c.OnUIThread(func() error {
+				if err := flow.target.checkRepository(); err != nil {
+					return err
+				}
+				return flow.acceptPlan(plan)
+			})
+			return nil
+		}
 		return cmd.Run()
-	})
+	}
+	if flow.acceptPlan != nil {
+		// Collection is read-only. Do not hold a one-branch push flag across
+		// the callback into final batch approval; execution claims all flags.
+		return flow.target.c.WithWaitingStatus(fmt.Sprintf(flow.target.c.Tr.BranchSyncStackReviewStatus, plan.Name()), run)
+	}
+	return flow.target.withOperation(types.ItemOperationPushing, flow.target.c.Tr.BranchSyncPushStatus, run)
 }
 
 func (flow *branchSyncPushFlow) multipleURLsPrompt(plan git_commands.BranchPushPlan) string {
+	return flow.planReviewPrompt(plan) + "\n\n" + flow.target.c.Tr.BranchSyncMultipleURLsPrompt
+}
+
+func (flow *branchSyncPushFlow) planReviewPrompt(plan git_commands.BranchPushPlan) string {
 	options := plan.Options()
-	prompt := fmt.Sprintf(flow.target.c.Tr.BranchSyncReviewPrompt, flow.info.Name, utils.ShortHash(plan.SourceOID()), options.Remote, options.DestinationRef, options.SetUpstream, options.Submodules == git_commands.BranchPushCheckSubmodules)
+	prompt := flow.reviewContext + fmt.Sprintf(flow.target.c.Tr.BranchSyncReviewPrompt, plan.Name(), plan.SourceOID(), options.Remote, options.DestinationRef, options.SetUpstream, options.Submodules == git_commands.BranchPushCheckSubmodules)
 	if options.SetUpstream {
 		prompt += flow.upstreamReplacementSummary(plan)
 	}
 	if options.ForceWithLease {
-		prompt += fmt.Sprintf(flow.target.c.Tr.BranchSyncLeaseConfirmPrompt, flow.info.Name, utils.ShortHash(plan.SourceOID()), options.DestinationRef, plan.LeaseRef(), utils.ShortHash(plan.LeaseOID()))
+		prompt += fmt.Sprintf(flow.target.c.Tr.BranchSyncLeaseConfirmPrompt, plan.Name(), plan.SourceOID(), options.DestinationRef, plan.LeaseRef(), plan.LeaseOID())
 	}
-	return prompt + "\n\n" + flow.target.c.Tr.BranchSyncMultipleURLsPrompt
+	return prompt
 }
 
 func safeBranchSyncURL(raw string) string {

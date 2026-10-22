@@ -30,8 +30,9 @@ switch branches silently. Keep stack-wide operations explicit choices.
    verification. Keep pushing other stack branches an explicit separate choice.
    The one-branch dialog and upstream-refusal fallback are implemented;
    integrate them without losing the explicit wider stack workflow.
-   Native stack-candidate inspection is implemented; finish per-member review,
-   final batch approval and preflight/partial-failure verification.
+   Native stack inspection and the additive wider-push flow are implemented and
+   verified: per-member review, final batch approval, preflight and partial
+   failure handling. Finish default routing and remaining acceptance checks.
    Agreed upstream policy: refuse ambiguous changes before pushing; offer
    Cancel or an explicitly reviewed push without changing tracking. Do not
    repair or replace multi-valued/inherited upstream settings automatically.

@@ -68,6 +68,19 @@ about the code that exists, not speculative implementation tasks.
   occupied linked-worktree refusal, cache-only fetch effects, cancellation,
   generation/pointer changes and literal input capture. Scoped lint is clean.
   This helper alone does not complete the selected-branch slice.
+- `branch_sync_stack_push_flow.go` composes one-branch dialogs into an explicit
+  wider push. `branch_sync_push_flow.go` collects already validated opaque
+  plans through `acceptPlan` instead of running push during member review.
+  Collection is read-only and holds no one-branch push flag across callbacks;
+  the final Cancel-first batch menu claims every source flag synchronously.
+  Preserve captured member tips, full-OID destination/lease review, per-member
+  upstream consent and immutable multiple-URL approval. Refuse overlapping
+  configured destinations, including exact URL overlaps between remote aliases,
+  without echoing credential-bearing URLs. Inspection rows never authorize writes.
+  Preflight all plans before the first push, then revalidate each at launch.
+  Stop on any native failure; report completed branches and possible partial
+  success of the failing push. Never replay or roll back a consumed approval.
+  This additive flow does not itself commit the default sync binding hooks.
 - These modules are preparatory and not wired into push/pull yet. Native
   `PushRef` inspection can return only one of several configured destinations;
   it is a suggestion, not unique resolution or permission to execute. Future
@@ -298,6 +311,15 @@ i18n lint reported zero issues. The rename fixture now expects literal input
 and final approval rather than silently replacing spaces with dashes. Native
 failure tests retain the error and refresh observed state without retry or
 rollback. These checks do not finish the remaining upstream-menu/delete audit.
+
+Stack-push checkpoint (2026-10-23): independent focused controller tests passed
+(19.413s), covering edited destinations, retained leases and stale-lease refusal,
+explicit multi-URL consent and changed-profile refusal, pointer/generation guards,
+Cancel-first inspection, raw dirty-state preservation, busy cleanup and native
+three-branch partial failure without attempting the third branch. Eight focused
+push/pull headless scenarios passed (101.769s), including the actual selected-stack
+menu and no remote writes before final approval, against experimental hooks.
+Default routing and stack-update integration still require their own acceptance.
 
 Reviewed integration backend checkpoint (2026-10-22): independent focused
 tests passed (74.603s) and the full backend short package passed (208.045s).
