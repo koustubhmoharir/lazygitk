@@ -117,6 +117,9 @@ func (self *SyncCommands) BranchUpstreamCommand(plan BranchUpstreamPlan) (*oscom
 	if opts.Unset {
 		cmd.Arg("--unset-upstream", "--", plan.branchName)
 	} else {
+		// Fork: changing tracking must not also rewrite branch.rebase through
+		// Git's automatic setup policy; preserve the user's existing preference.
+		cmd.Config("branch.autoSetupRebase=never")
 		cmd.Arg("--set-upstream-to="+plan.trackingRef, "--", plan.branchName)
 	}
 	return self.cmd.New(cmd.ToArgv()).SetWd(self.repoPaths.WorktreePath()).DisableLockRetries(), nil

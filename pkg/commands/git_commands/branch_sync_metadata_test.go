@@ -34,7 +34,7 @@ func TestBranchUpstreamSelectedBranchMetadata(t *testing.T) {
 	assert.Empty(t, plan.PreviousMergeRefs())
 	cmd, err := commands.BranchUpstreamCommand(plan)
 	branchPushRequireNoError(t, err)
-	assert.Equal(t, []string{"git", "branch", "--set-upstream-to=refs/remotes/origin/selected", "--", "selected"}, cmd.Args())
+	assert.Equal(t, []string{"git", "-c", "branch.autoSetupRebase=never", "branch", "--set-upstream-to=refs/remotes/origin/selected", "--", "selected"}, cmd.Args())
 	assert.True(t, cmd.LockRetriesDisabled())
 	output, err := cmd.GetCmd().CombinedOutput()
 	branchPushRequireNoError(t, err, string(output))
@@ -59,6 +59,44 @@ func TestBranchUpstreamSelectedBranchMetadata(t *testing.T) {
 	assert.Equal(t, ".", gitTest(t, h.root, "config", "branch.master.remote"))
 	assert.Equal(t, "refs/heads/selected", gitTest(t, h.root, "config", "branch.master.merge"))
 	assert.Equal(t, h.selected, gitTest(t, h.root, "rev-parse", "refs/heads/selected"))
+}
+
+func TestBranchUpstreamSetPreservesRebaseConfiguration(t *testing.T) {
+	for _, scope := range []string{"global", "repository"} {
+		for _, previous := range []string{"", "false", "merges", "true"} {
+			t.Run(scope+"/"+map[string]string{"": "absent", "false": "false", "merges": "merges", "true": "true"}[previous], func(t *testing.T) {
+				h := branchPushTestHistory(t)
+				if scope == "global" {
+					global := filepath.Join(t.TempDir(), "global-config")
+					writeTestFile(t, global, []byte("[branch]\n\tautoSetupRebase = always\n"), 0o600)
+					t.Setenv("GIT_CONFIG_GLOBAL", global)
+				} else {
+					gitTest(t, h.root, "config", "branch.autoSetupRebase", "always")
+				}
+				if previous != "" {
+					gitTest(t, h.root, "config", "branch.selected.rebase", previous)
+				}
+				commands := branchSyncTestCommands(t, h.root)
+				plan, err := commands.PrepareBranchUpstream("selected", h.selected, BranchUpstreamOptions{TrackingRef: "refs/remotes/origin/selected"})
+				branchPushRequireNoError(t, err)
+				cmd, err := commands.BranchUpstreamCommand(plan)
+				branchPushRequireNoError(t, err)
+				output, err := cmd.GetCmd().CombinedOutput()
+				branchPushRequireNoError(t, err, string(output))
+				assert.Equal(t, previous, branchPushConfig(t, h.root, "branch.selected.rebase"))
+				assert.Equal(t, "origin", gitTest(t, h.root, "config", "branch.selected.remote"))
+				assert.Equal(t, "refs/heads/selected", gitTest(t, h.root, "config", "branch.selected.merge"))
+
+				unset, err := commands.PrepareBranchUpstream("selected", h.selected, BranchUpstreamOptions{Unset: true})
+				branchPushRequireNoError(t, err)
+				cmd, err = commands.BranchUpstreamCommand(unset)
+				branchPushRequireNoError(t, err)
+				output, err = cmd.GetCmd().CombinedOutput()
+				branchPushRequireNoError(t, err, string(output))
+				assert.Equal(t, previous, branchPushConfig(t, h.root, "branch.selected.rebase"))
+			})
+		}
+	}
 }
 
 func TestBranchUpstreamRejectsStaleAndUnsafePlans(t *testing.T) {

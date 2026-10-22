@@ -146,6 +146,15 @@ about the code that exists, not speculative implementation tasks.
   the upstream-setting choice: the UI must offer Cancel or a new review with
   tracking changes disabled. Preserve `push.autoSetupRemote=false` on the
   fallback invocation, even if the user's normal Git configuration enables it.
+  Explicit setup (both push and metadata-only) also sets
+  `branch.autoSetupRebase=never` for that invocation: native Git otherwise
+  overwrites an existing branch.rebase value when automatic setup is enabled.
+  Preserve existing preferences rather than changing reconciliation policy
+  alongside a tracking-only edit. Unset already leaves that preference intact.
+  Native probes confirmed this on Git 2.51.1. Regression tests cover absent,
+  false, true and merges preferences under global/repository automatic setup;
+  independent focused cases passed (5.646s) and backend lint reported zero
+  issues. The expanded upstream/push suite also passed (44.236s).
   Malformed metadata that Git itself cannot inspect retains the native error;
   never infer an ambiguity sentinel by matching stderr text. Native tests cover
   primary duplicates and included, global, worktree and command-environment

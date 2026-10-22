@@ -189,6 +189,11 @@ func (self *SyncCommands) BranchPushCommand(plan BranchPushPlan, task gocui.Task
 		ArgIf(plan.options.ForceWithLease, "--force-with-lease="+plan.options.DestinationRef+":"+plan.leaseOID).
 		ArgIf(plan.options.SetUpstream, "--set-upstream").
 		Arg("--", plan.options.Remote, plan.sourceRef+":"+plan.options.DestinationRef)
+	if plan.options.SetUpstream {
+		// Fork: explicit tracking consent does not authorize Git's automatic
+		// setup policy to overwrite this branch's existing rebase preference.
+		args.Config("branch.autoSetupRebase=never")
+	}
 	return self.cmd.New(args.ToArgv()).SetWd(self.repoPaths.WorktreePath()).
 		DisableLockRetries().PromptOnCredentialRequest(task), nil
 }

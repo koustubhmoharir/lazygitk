@@ -159,6 +159,55 @@ func TestBranchPushSetUpstreamAndLease(t *testing.T) {
 	})
 }
 
+func TestBranchPushSetUpstreamPreservesRebaseConfiguration(t *testing.T) {
+	for _, scope := range []string{"global", "repository"} {
+		for _, previous := range []string{"", "false", "merges", "true"} {
+			t.Run(scope+"/"+map[string]string{"": "absent", "false": "false", "merges": "merges", "true": "true"}[previous], func(t *testing.T) {
+				h := branchPushTestHistory(t)
+				if scope == "global" {
+					global := filepath.Join(t.TempDir(), "global-config")
+					writeTestFile(t, global, []byte("[branch]\n\tautoSetupRebase = always\n"), 0o600)
+					t.Setenv("GIT_CONFIG_GLOBAL", global)
+				} else {
+					gitTest(t, h.root, "config", "branch.autoSetupRebase", "always")
+				}
+				if previous != "" {
+					gitTest(t, h.root, "config", "branch.selected.rebase", previous)
+				}
+				opts := h.options()
+				opts.SetUpstream = true
+				commands, plan := branchPushPlan(t, h, opts)
+				out, err := runBranchPush(t, commands, plan)
+				branchPushRequireNoError(t, err, string(out))
+				assert.Equal(t, previous, branchPushConfig(t, h.root, "branch.selected.rebase"))
+				assert.Equal(t, "origin", gitTest(t, h.root, "config", "branch.selected.remote"))
+				assert.Equal(t, "refs/heads/selected", gitTest(t, h.root, "config", "branch.selected.merge"))
+			})
+		}
+	}
+}
+
+func TestBranchPushWithoutSetUpstreamPreservesRebaseConfiguration(t *testing.T) {
+	for _, previous := range []string{"", "false", "merges", "true"} {
+		t.Run(map[string]string{"": "absent", "false": "false", "merges": "merges", "true": "true"}[previous], func(t *testing.T) {
+			h := branchPushTestHistory(t)
+			global := filepath.Join(t.TempDir(), "global-config")
+			writeTestFile(t, global, []byte("[branch]\n\tautoSetupRebase = always\n"), 0o600)
+			t.Setenv("GIT_CONFIG_GLOBAL", global)
+			gitTest(t, h.root, "config", "push.autoSetupRemote", "true")
+			if previous != "" {
+				gitTest(t, h.root, "config", "branch.selected.rebase", previous)
+			}
+			commands, plan := branchPushPlan(t, h, h.options())
+			out, err := runBranchPush(t, commands, plan)
+			branchPushRequireNoError(t, err, string(out))
+			assert.Equal(t, previous, branchPushConfig(t, h.root, "branch.selected.rebase"))
+			assert.Empty(t, branchPushConfig(t, h.root, "branch.selected.remote"))
+			assert.Empty(t, branchPushConfig(t, h.root, "branch.selected.merge"))
+		})
+	}
+}
+
 func TestBranchPushLeaseChoicesAndValidation(t *testing.T) {
 	h := branchPushTestHistory(t)
 	commands := branchSyncTestCommands(t, h.root)
