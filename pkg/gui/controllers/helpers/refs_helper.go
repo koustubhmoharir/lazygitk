@@ -326,6 +326,8 @@ func (self *RefsHelper) CreateCheckoutMenu(commit *models.Commit) error {
 			},
 			Keys: menuKey('d'),
 		},
+		// Fork: additive named checkout bypasses upstream's autostash path.
+		self.namedCheckoutItem(hash),
 	}
 
 	if len(branches) > 0 {

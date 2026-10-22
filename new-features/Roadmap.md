@@ -321,6 +321,13 @@ changes, upstream retention, and recovery through reflog.
 
 ## 5. Checkout any commit under a supplied branch name
 
+The user chose Git's normal concurrency model: recheck destination/HEAD before
+launch and coordinate other ref-mutating tools while checkout runs. Do not
+promise expected-old atomicity during combined checkout. See the
+[design and verified limitations](named-checkout-design.md). Native Git can
+report failure after changing index/files or even completing checkout; refresh
+the actual state and preserve that error without retry or assumed rollback.
+
 Extend `RefsHelper.CreateCheckoutMenu` with **Checkout as branch…**. Prompt for
 a new or existing local name. If the name already points elsewhere, warn about
 moving it before attempting checkout. This is a different operation from

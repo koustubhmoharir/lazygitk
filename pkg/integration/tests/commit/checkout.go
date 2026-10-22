@@ -35,6 +35,7 @@ var Checkout = NewIntegrationTest(NewIntegrationTestArgs{
 			Title(Contains("Checkout branch or commit")).
 			Lines(
 				MatchesRegexp("Checkout commit [a-f0-9]+ as detached head").IsSelected(),
+				Contains("Checkout as branch"),
 				Contains("Checkout branch"),
 				Contains("Cancel"),
 			).
@@ -60,6 +61,7 @@ var Checkout = NewIntegrationTest(NewIntegrationTestArgs{
 			Title(Contains("Checkout branch or commit")).
 			Lines(
 				MatchesRegexp("Checkout commit [a-f0-9]+ as detached head").IsSelected(),
+				Contains("Checkout as branch"),
 				Contains("Checkout branch 'branch1'"),
 				Contains("Checkout branch 'master'"),
 				Contains("Cancel"),

@@ -309,6 +309,9 @@ about the code that exists, not speculative implementation tasks.
   a second read worker from the UI would replay keys before the warning exists.
   Preserve errors and refresh HEAD/branches/files/commits/subcommits/reflog/
   worktree/bisect state even after a partially completed Git failure.
+  Failure refresh retains the selected commit/reflog position, unlike successful
+  checkout's deliberate navigation to HEAD. An overwrite rejection must not
+  lose the target the user may want to inspect or retry.
 - The new English labels and menu factory require regenerated cheatsheets and
   inventory. Existing exact checkout-menu integration expectations include the
   additive row; do not remove existing detached/current-branch entries.
@@ -320,6 +323,19 @@ about the code that exists, not speculative implementation tasks.
   The captured checkout command explicitly verifies its no-lock-retry flag and
   exact argv. Shared command-runner tests verify that flag prevents retries;
   a dummy Git runner alone cannot prove the opt-out was integrated.
+- The 170-scenario branch/commit/reflog/worktree/undo headless selection passed
+  in 433.042s, including all three new named-checkout scenarios. An early run
+  found rejected checkout selecting HEAD instead of retaining its source; the
+  failure refresh now keeps the commit/reflog selection, with modal assertions.
+  A later fixture-only error used an IsSelected matcher with a content assertion;
+  the corrected selected-line assertion passed in the full affected rerun.
+- Full short tests, debug build, generation, standalone inventory/checker tests,
+  formatting, lint (zero issues) and targeted backend/helper race checks passed.
+  Generation initially caught a scenario variable not matching its filename;
+  headless checks must wait for successful generation and a stable source list.
+  Sparse-checkout/submodule-specific acceptance checks remain in progress.
+  These are Linux/Git 2.51.1 checks, not a new full-suite, minimum-Git or
+  cross-platform/ref-storage matrix.
 
 ## Reviewing an upstream merge
 

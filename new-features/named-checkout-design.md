@@ -2,8 +2,9 @@
 
 Roadmap item 5 is current. The user chose Git's normal concurrency model:
 revalidate immediately before starting, and coordinate other ref-mutating tools
-while checkout runs. The command-level lock-retry opt-out and shared full-OID
-syntax check are committed; backend and modal implementation are next.
+while checkout runs. The command-level lock-retry opt-out, shared literal-OID
+checks and backend are implemented; the modal flow and regressions are in final
+verification. See the tracker for remaining acceptance checks.
 
 ## Intended flow
 
@@ -68,5 +69,11 @@ running. Do not imply expected-old atomicity for this command or introduce a
 hook override, Git patch, temporary checkout or split-operation workaround.
 Preserve existing hooks and report Git's partial-transition failure behavior.
 
-Finish the current tracker tasks with backend, modal and real-Git/headless
-regressions before advancing to the next roadmap item.
+The implementation uses input-blocking status for apply. When a snapshot becomes
+stale, prepare its replacement on that same worker and queue the fresh warning
+before buffered input is released. Failure refresh preserves the selected
+history target/reflog position while updating actual HEAD, refs, index and files;
+successful checkout deliberately selects HEAD/the checked-out branch and switches
+to the branch pane after the batched refresh.
+
+Finish the current tracker's acceptance checks before advancing to the next item.

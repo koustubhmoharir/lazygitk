@@ -1,8 +1,9 @@
 # Current work
 
 Roadmap item: [5. Checkout any commit under a supplied branch name](Roadmap.md#5-checkout-any-commit-under-a-supplied-branch-name).
-Status: implementing checkout after the user chose Git's native concurrency
-model. Lock-retry opt-out and shared pure OID validation are committed.
+Status: backend and modal flow verified; 170 affected headless scenarios and
+targeted race checks pass. Finishing sparse-checkout/submodule acceptance cases
+and the final documentation/checkpoint.
 
 Scope: check out a captured selected commit under a literal new or existing
 local branch name. Warn before moving an existing name; use Git's combined
@@ -16,17 +17,13 @@ the verified late-ref/alias race and the user's choice of Git's native
 concurrency model. Recheck before launch; other writers must be coordinated
 while checkout runs. Do not promise atomic expected-old updates for checkout.
 
-1. Add **Checkout as branch…** to the shared checkout menu. Capture repository
-   and source identity, prompt for the destination, warn with old/new tips and
-   require fresh review of changed destinations. Refresh all checkout-related
-   models on actual completion, including uncertain hook/process failures.
-2. Finish controller/headless regressions for new/existing/current names,
-   detached HEAD, differing trees, carried dirty changes, overwritten tracked/
-   staged/untracked/ignored paths, cancellation, concurrent changes, occupied
-   worktrees and failure recovery. Assert no partial ref move on rejection.
-3. Update usage, inventory and merge guide; generate, debug-build, format, run
+1. Finish sparse-checkout/submodule compatibility tests against Git's native
+   behavior, including dirty nested-file protection. The remaining backend,
+   modal and affected headless regressions have passed, including failed-hook
+   state refresh, no retries, retained failure selection and fresh confirmation.
+2. Update usage, inventory and merge guide; generate, debug-build, format, run
    full short tests, relevant headless regressions and lint. Record any limits.
-4. Once acceptance criteria pass, complete item 5 accurately in the roadmap and
+3. Once acceptance criteria pass, complete item 5 accurately in the roadmap and
    replace this tracker with item 6's task-level plan in the same commit.
 
 ## How this tracker works
@@ -59,5 +56,9 @@ while checkout runs. Do not promise atomic expected-old updates for checkout.
 runs successfully. Headless invocations share `/tmp/lazygit/test_lazygit` and
 fixture directories: serialize their builds/runs. Use bounded eventual checks
 for background events, not immediate UI assertions or synthetic refreshes.
+Finish generation successfully before starting headless checks, and keep
+integration-test sources frozen during the run. Each scenario variable must be
+its filename converted from snake_case to PascalCase, using unqualified
+`NewIntegrationTest`; compile-only checks do not validate those generator rules.
 The shared integration config explicitly disables fetch/file/ref polling;
 default-policy tests must restore values from the real default constructor.

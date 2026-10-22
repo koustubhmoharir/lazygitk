@@ -123,6 +123,7 @@ type TranslationSet struct {
 	NestedRepositoryChangesWouldBeLost    string
 	StageConflictsRangeDisabled           string
 	Checkout                              string
+	CheckoutAsBranch                      string
 	CheckoutTooltip                       string
 	CantCheckoutBranchWhilePulling        string
 	TagCheckoutTooltip                    string
@@ -136,6 +137,19 @@ type TranslationSet struct {
 	BranchName                            string
 	CreateMoveBranchHere                  string
 	CreateBranchAndCheckout               string
+	NamedCheckoutNamePrompt               string
+	NamedCheckoutTooltip                  string
+	NamedCheckoutMoveTitle                string
+	NamedCheckoutMovePrompt               string
+	NamedCheckoutChangedTitle             string
+	NamedCheckoutChangedNote              string
+	NamedCheckoutCurrentStatePrompt       string
+	NamedCheckoutCreatePrompt             string
+	NamedCheckoutAttachPrompt             string
+	NamedCheckoutWorkingStatus            string
+	NamedCheckoutApplyingStatus           string
+	NamedCheckoutSelectCommit             string
+	NamedCheckoutRepositoryChanged        string
 	PlaceBranchNamePrompt                 string
 	PlaceBranchTooltip                    string
 	PlaceBranchMoveTitle                  string
@@ -1373,6 +1387,20 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchName:                           "Branch name",
 		CreateMoveBranchHere:                 "Create/move branch here…",
 		CreateBranchAndCheckout:              "Create branch and check it out…",
+		CheckoutAsBranch:                     "Checkout as branch",
+		NamedCheckoutNamePrompt:              "Local branch name for checkout at %s",
+		NamedCheckoutTooltip:                 "Check out the selected commit under a literal new or existing local branch name. Git carries dirty changes when safe; files are never forced and changes are never stashed. Coordinate with other Git writers while checkout runs.",
+		NamedCheckoutMoveTitle:               "Move branch and check out?",
+		NamedCheckoutMovePrompt:              "Move branch %q from %s to %s and check it out?\n\nGit preserves local changes when safe; no files will be forced or changes stashed. Existing upstream settings are preserved.",
+		NamedCheckoutChangedTitle:            "Checkout changed; review again",
+		NamedCheckoutChangedNote:             "The destination branch or current checkout changed while this dialog was open. Review the fresh state before proceeding.",
+		NamedCheckoutCurrentStatePrompt:      "Current checkout: %s.",
+		NamedCheckoutCreatePrompt:            "Create and check out branch %q at %s? No changes will be stashed and no files will be forced.",
+		NamedCheckoutAttachPrompt:            "Check out existing branch %q at %s? Its tip will not change.",
+		NamedCheckoutWorkingStatus:           "Checking checkout",
+		NamedCheckoutApplyingStatus:          "Checking out named branch",
+		NamedCheckoutSelectCommit:            "Select one actual commit to check out under a branch name.",
+		NamedCheckoutRepositoryChanged:       "The repository changed. Start the named checkout again.",
 		PlaceBranchNamePrompt:                "Local branch name at %s (without checkout)",
 		PlaceBranchTooltip:                   "Create or move a local branch to the selected commit without changing HEAD, the index or working files.",
 		PlaceBranchMoveTitle:                 "Move existing branch?",

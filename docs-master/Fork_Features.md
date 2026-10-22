@@ -84,6 +84,38 @@ branch's reflog for explicit recovery. Ref changes are expected-old transactions
 occupancy is freshly checked, not locked against arbitrary external checkouts.
 An uncertain Git transaction failure is reported, never silently retried.
 
+## Check out a commit under a branch name
+
+Select one commit in local history, another branch's history, or reflog. Open
+**Checkout** and choose **Checkout as branch…** (`b` inside that menu). Enter a
+literal local branch name; suggestions include existing local branches.
+
+A new name creates and checks out the branch. An existing different tip needs
+a warning showing its old/new commits and the current checkout. An already
+matching branch is checked out without a tip-movement warning. The current
+branch can also be moved and checked out with this workflow. Cancel changes
+nothing; destination or HEAD changes before execution require fresh review.
+Existing upstream settings are preserved.
+
+There is no blanket clean-tree requirement: Git carries staged, unstaged and
+untracked changes when it can preserve them. Files are never forced or stashed.
+An ignored file that would be overwritten also blocks checkout. Commit changes
+or move the blocking files yourself, then retry. Invalid names, active operations,
+occupied worktrees, locks and hooks can independently prevent completion; finish or abort an active
+merge/rebase/cherry-pick/revert/bisect first. Symbolic branch aliases are refused.
+
+This uses Git's normal concurrency model. The destination and HEAD are checked
+again immediately before starting; coordinate other ref-mutating Git tools
+while checkout runs. Do not expect ref-only placement's atomic expected-old
+protection during combined checkout.
+
+Git can report failure after changing HEAD, the index or files, particularly
+when a hook fails. The error is preserved and the actual state refreshed; no
+automatic retry or rollback is attempted. Failure keeps the selected history
+target and reflog position; review the result before retrying.
+Existing detached-head checkout and creation/checkout workflows remain separate;
+the new named workflow does not use their autostash offers.
+
 ## Command palette identity
 
 Equivalent invocation paths share an entry with combined shortcut hints.

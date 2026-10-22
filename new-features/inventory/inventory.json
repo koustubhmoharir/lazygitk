@@ -3132,6 +3132,22 @@
     },
     {
       "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/named_checkout.go",
+      "line": 21,
+      "owner": "RefsHelper.namedCheckoutItem",
+      "fields": {
+        "CommandID": "\"branch.checkout-at-selected-commit\"",
+        "DisabledReason": "disabled",
+        "Keys": "menuKey('b')",
+        "Label": "self.c.Tr.CheckoutAsBranch",
+        "OnPress": "flow.begin",
+        "OpensMenu": "true",
+        "Verb": "\"checkout\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/refresh_helper.go",
       "line": 1849,
       "owner": "RefreshHelper.promptForBaseGithubRepo",
@@ -3214,7 +3230,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/refs_helper.go",
-      "line": 337,
+      "line": 339,
       "owner": "RefsHelper.CreateCheckoutMenu",
       "fields": {
         "CommandID": "\"branch.checkout\"",
@@ -3229,7 +3245,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/refs_helper.go",
-      "line": 349,
+      "line": 351,
       "owner": "RefsHelper.CreateCheckoutMenu",
       "fields": {
         "CommandID": "\"branch.checkout\"",
@@ -3245,7 +3261,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/refs_helper.go",
-      "line": 521,
+      "line": 523,
       "owner": "RefsHelper.MoveCommitsToNewBranch",
       "fields": {
         "CommandID": "\"branch.move-commits-to-new-from-base\"",
@@ -3258,7 +3274,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/refs_helper.go",
-      "line": 534,
+      "line": 536,
       "owner": "RefsHelper.MoveCommitsToNewBranch",
       "fields": {
         "CommandID": "\"branch.move-commits-to-new-stacked\"",
