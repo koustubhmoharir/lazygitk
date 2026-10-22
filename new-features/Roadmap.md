@@ -53,8 +53,8 @@ tasks with the next item's plan in the same completion commit.
 | 2 | Stable command identity and complete key/action inventory | Complete | None | Medium |
 | 3 | Separate commit/file diff actions and arbitrary-file comparison | Complete | 2 for command metadata | Medium |
 | 4 | Create/move a branch without checkout | Complete | Git probe review | Medium |
-| 5 | Checkout selected commit under a branch name | Current | 4's shared prompts/validation | Medium |
-| 6 | Rebase current branch onto a selected commit | Pending | 2 | Small–medium |
+| 5 | Checkout selected commit under a branch name | Complete | 4's shared prompts/validation | Medium |
+| 6 | Rebase current branch onto a selected commit | Current | 2 | Small–medium |
 | 7 | Operate on selected branches without checkout | Pending | 4; explicit target design | Large |
 | 8 | Consistent default shortcuts and inactive-key behavior | Pending | 2–7's action inventory | Large |
 | 9 | Frequency-ordered command palette | Pending | 2; works before or after 8 | Medium |
@@ -320,6 +320,27 @@ names, detached HEAD, dirty index/worktree, occupied worktrees, concurrent ref
 changes, upstream retention, and recovery through reflog.
 
 ## 5. Checkout any commit under a supplied branch name
+
+Complete (2026-10-22). The shared checkout menu adds **Checkout as branch…**
+with a `b` accelerator. An additive backend validates literal commit identity,
+captures destination/HEAD state and invokes a single dirty-preserving checkout.
+The target uses `OID^{commit}` because a bare OID can be shadowed by a same-named
+branch. Current destinations are allowed without masking another worktree's
+reservation. New and already matching names still perform checkout; tip moves
+require a warning, and pre-launch destination/HEAD changes require fresh review.
+Successful refresh selects the new checkout; failure refresh keeps the selected
+history target/reflog position while showing Git's actual state. Existing
+checkout/autostash helpers remain separate and unchanged.
+
+Verified: debug build, full short tests, generation, formatting, inventory tool
+tests, lint (zero issues), backend/helper race checks and all 170 selected
+branch/commit/reflog/worktree/undo headless scenarios (433.042s). Additional
+real-Git tests cover sparse-cone preservation, explicit submodule recursion and
+dirty nested-file rejection, alongside SHA-256, alias/name validation, occupied
+worktrees, pre-launch changes and hook partial failures. The first named-flow
+run exposed a failure-selection bug; subsequent fixture naming/matcher issues
+were corrected and the affected selection passed. Verification is Linux/Git
+2.51.1, not a new full-suite, minimum-Git or cross-platform/ref-storage matrix.
 
 The user chose Git's normal concurrency model: recheck destination/HEAD before
 launch and coordinate other ref-mutating tools while checkout runs. Do not

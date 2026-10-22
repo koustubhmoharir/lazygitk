@@ -1,10 +1,10 @@
 # Named checkout
 
-Roadmap item 5 is current. The user chose Git's normal concurrency model:
+Roadmap item 5 is implemented. The user chose Git's normal concurrency model:
 revalidate immediately before starting, and coordinate other ref-mutating tools
 while checkout runs. The command-level lock-retry opt-out, shared literal-OID
-checks and backend are implemented; the modal flow and regressions are in final
-verification. See the tracker for remaining acceptance checks.
+checks, backend and modal flow are implemented. The roadmap and merge guide
+record verification and limits; the tracker now owns the next item's work.
 
 ## Intended flow
 
@@ -76,4 +76,6 @@ history target/reflog position while updating actual HEAD, refs, index and files
 successful checkout deliberately selects HEAD/the checked-out branch and switches
 to the branch pane after the batched refresh.
 
-Finish the current tracker's acceptance checks before advancing to the next item.
+Sparse checkout and the user's submodule recursion setting remain Git-owned.
+Real-Git acceptance tests verify cone preservation, non-recursive checkout,
+clean recursive checkout and dirty nested-file rejection.

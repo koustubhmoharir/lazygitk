@@ -97,6 +97,11 @@ branch can also be moved and checked out with this workflow. Cancel changes
 nothing; destination or HEAD changes before execution require fresh review.
 Existing upstream settings are preserved.
 
+Sparse-checkout settings stay in effect. Submodule working trees are updated
+only according to Git's recursion configuration; dirty nested files are not
+forced over. With recursion disabled, Git may leave a submodule at its existing
+commit while the parent index records the selected commit's gitlink.
+
 There is no blanket clean-tree requirement: Git carries staged, unstaged and
 untracked changes when it can preserve them. Files are never forced or stashed.
 An ignored file that would be overwritten also blocks checkout. Commit changes

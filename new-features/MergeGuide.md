@@ -255,7 +255,7 @@ about the code that exists, not speculative implementation tasks.
   goroutine wrapper and a test allocation lint warning; a concurrent generated-
   list change also required restarting lint against the stable source tree.
 
-### Named checkout foundations (item 5 in progress)
+### Named checkout (item 5 complete)
 
 - `oscommands/lock_retries.go` adds an opt-in, command-local
   `DisableLockRetries` flag, copied by `CmdObj.Clone`. Two early hooks in
@@ -333,7 +333,11 @@ about the code that exists, not speculative implementation tasks.
   formatting, lint (zero issues) and targeted backend/helper race checks passed.
   Generation initially caught a scenario variable not matching its filename;
   headless checks must wait for successful generation and a stable source list.
-  Sparse-checkout/submodule-specific acceptance checks remain in progress.
+  Additional sparse-checkout/submodule tests passed, preserving the cone and
+  respecting explicit recursion while rejecting dirty nested-file overwrites.
+  Their direct-Git control checks optional parent-index preservation against
+  native behavior without comparing unrelated repositories' commit IDs. The
+  final full short suite and scoped test-file lint passed (zero issues).
   These are Linux/Git 2.51.1 checks, not a new full-suite, minimum-Git or
   cross-platform/ref-storage matrix.
 

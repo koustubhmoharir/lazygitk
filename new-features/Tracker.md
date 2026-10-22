@@ -1,30 +1,40 @@
 # Current work
 
-Roadmap item: [5. Checkout any commit under a supplied branch name](Roadmap.md#5-checkout-any-commit-under-a-supplied-branch-name).
-Status: backend and modal flow verified; 170 affected headless scenarios and
-targeted race checks pass. Finishing sparse-checkout/submodule acceptance cases
-and the final documentation/checkpoint.
+Roadmap item: [6. Rebase the current branch onto a selected commit](Roadmap.md#6-rebase-the-current-branch-onto-a-selected-commit).
+Status: auditing existing rebase entry points and target/clean-tree semantics.
 
-Scope: check out a captured selected commit under a literal new or existing
-local branch name. Warn before moving an existing name; use Git's combined
-operation, carry dirty changes when safe, preserve ignored collisions, and
-never force files, require an unnecessarily clean tree, or offer stash.
+Scope: rebase the checked-out branch onto a captured selected commit, including
+other-branch history/reflog. Require a clean index/worktree, never invoke or
+offer autostash, and do not rewrite additional branch refs. Keep conflict
+continue/skip/abort usable. Audit other rebase-start paths for the same policy.
 
-## Remaining tasks for item 5
+## Remaining tasks for item 6
 
-Agreed contract: [named-checkout-design.md](named-checkout-design.md) records
-the verified late-ref/alias race and the user's choice of Git's native
-concurrency model. Recheck before launch; other writers must be coordinated
-while checkout runs. Do not promise atomic expected-old updates for checkout.
-
-1. Finish sparse-checkout/submodule compatibility tests against Git's native
-   behavior, including dirty nested-file protection. The remaining backend,
-   modal and affected headless regressions have passed, including failed-hook
-   state refresh, no retries, retained failure selection and fresh confirmation.
-2. Update usage, inventory and merge guide; generate, debug-build, format, run
-   full short tests, relevant headless regressions and lint. Record any limits.
-3. Once acceptance criteria pass, complete item 5 accurately in the roadmap and
-   replace this tracker with item 6's task-level plan in the same commit.
+1. Audit Git rebase builders, shared UI helpers, marked-base behavior, signing,
+   operation guards, autostash and update-refs configuration. Consult TortoiseGit
+   and probe ordinary selected-target semantics, clean/dirty states, configuration
+   overrides, no-op/conflict behavior and supported Git-version options. Record
+   the additive design and raise substantive unresolved choices.
+2. Add backend preparation/application for captured target and current branch/
+   tip identity. Reject detached/unborn HEAD, dirt and incompatible operations;
+   recheck before starting, use explicit no-autostash, suppress other-ref updates
+   compatibly, and keep marked-base state out of this action's meaning.
+3. Apply the clean/no-autostash policy to other rebase-start entry points, with
+   commit-first errors rather than stash offers. Preserve intentional conflict
+   resolution and continue/skip/abort; do not require a clean index to continue
+   a paused rebase with staged resolutions.
+4. Add a discoverable shared commit-list action and modal warning naming the
+   checked-out source branch/tip and captured target. Preserve repository/source
+   identity, require fresh review if pre-launch state changes, and reuse normal
+   conflict recovery and refresh without silent target/base substitution.
+5. Add unit/real-Git/headless regressions for divergent/ancestor/descendant/root
+   targets, other history/reflog, no-op, dirty tracked/index/untracked states,
+   detached HEAD, marked-base isolation, updateRefs/autostash opt-ins, conflicts
+   with continue/abort, and representative existing rebase entry points.
+6. Update usage, inventory and merge guide; generate, debug-build, format, run
+   full short tests, affected headless regressions and lint. Record limits.
+7. Once acceptance criteria pass, complete item 6 accurately in the roadmap and
+   replace this tracker with item 7's task-level plan in the same commit.
 
 ## How this tracker works
 
