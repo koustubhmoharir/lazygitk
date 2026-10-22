@@ -36,6 +36,21 @@ about the code that exists, not speculative implementation tasks.
   including stored local-branch history and rejection of non-local history,
   range selections and detached pseudo-branches. Capture the name, not a model
   pointer. Other panes must not inherit an old local-branch selection.
+- Additive GUI modules `branch_sync_bindings.go`, `branch_sync_target.go` and
+  `branch_sync_push_flow.go` implement focused-source resolution, captured
+  repository/generation guards and one-branch push review. They are not yet
+  the committed default binding route: wider stack choices and the remaining
+  sync integration still need completion. Keep direct unit-test invocation
+  separate from claims about the default binding's end-to-end behavior.
+  Preserve synchronous repository-scoped busy flags, worker cleanup/refresh,
+  callback repository checks, immutable approved plans and Cancel-first lease,
+  multi-URL and upstream-refusal menus. A tracking-disabled fallback must
+  reprepare and review the captured source/options, never execute immediately
+  or turn a force-with-lease request into an ordinary/unleased push. Explicit
+  lease prompts retain their captured options/OID across later callbacks.
+  This preparation adds English fallback strings; default shortcut policy is
+  unchanged. Regenerate the command inventory/key docs with final binding
+  integration, not as evidence that an unused menu is already accessible.
 - These modules are preparatory and not wired into push/pull yet. Native
   `PushRef` inspection can return only one of several configured destinations;
   it is a suggestion, not unique resolution or permission to execute. Future
@@ -129,6 +144,20 @@ about the code that exists, not speculative implementation tasks.
 - `CurrentBranchPullPlan.WithFastForwardOnly` adds only the stricter native
   ff-only option. Revalidation retains that reviewed restriction without
   broadening a plan's source, destination, repository or ref-update scope.
+
+Additive push-modal checkpoint (2026-10-22): independent focused controller
+tests passed (18.609s), including normal single-upstream replacement,
+ambiguity introduced after review, Cancel/no-tracking fallback, retained
+explicit force leases and stale repository callbacks. Formatting and scoped
+backend/controller/i18n/sync-fixture lint passed with zero issues. A working-tree
+binding experiment passed five serial push TUI scenarios (10.626s), including
+exact config preservation; that hook and its scenarios remain uncommitted
+pending wider integration. These are not item 7 acceptance or a full sync-suite
+run, and no new default routing is claimed by the additive-modal commit.
+The staged source was also exported and checked without the experimental
+binding: controller tests passed (33.208s) and scoped lint reported zero issues.
+That isolation initially found an unused binding entry point; it remains with
+the uncommitted integration hook rather than introducing a lint suppression.
 
 Read-only checkpoint (2026-10-22): main-agent native probe rerun passed,
 including selected != current with staged/unstaged/untracked preservation,

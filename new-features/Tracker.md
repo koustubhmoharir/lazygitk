@@ -3,7 +3,9 @@
 Roadmap item: [7. Selected-branch operations without checkout](Roadmap.md#7-selected-branch-operations-without-checkout).
 Status: source/remote inspection, guarded ref-only advancement and explicit
 push/fetch/current-pull backend plans (including local upstreams) are implemented.
-Modal integration and end-to-end selected-branch workflows remain.
+Additive push-dialog/target helpers are implemented and directly tested.
+Default binding integration, explicit stack choices and the remaining
+end-to-end selected-branch workflows remain.
 
 Scope: operate on the explicitly selected local branch wherever no worktree is
 needed. Preserve current HEAD, index, worktree and unrelated refs. Keep general
@@ -23,6 +25,8 @@ switch branches silently. Keep stack-wide operations explicit choices.
    multi-URL approval, reviewed leases and upstream-setting snapshots.
    Finish modal routing and protection/no-upstream/triangular-workflow
    verification. Keep pushing other stack branches an explicit separate choice.
+   The one-branch dialog and upstream-refusal fallback are implemented;
+   integrate them without losing the explicit wider stack workflow.
    Agreed upstream policy: refuse ambiguous changes before pushing; offer
    Cancel or an explicitly reviewed push without changing tracking. Do not
    repair or replace multi-valued/inherited upstream settings automatically.

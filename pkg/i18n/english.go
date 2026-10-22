@@ -178,6 +178,41 @@ type TranslationSet struct {
 	PlaceBranchApplyingStatus             string
 	PlaceBranchSelectCommit               string
 	PlaceBranchRepositoryChanged          string
+	BranchSyncRepositoryChanged           string
+	BranchSyncNoLongerCurrent             string
+	BranchSyncInspecting                  string
+	BranchSyncPushMenu                    string
+	BranchSyncPushSummary                 string
+	BranchSyncPushThisBranch              string
+	BranchSyncChooseRemote                string
+	BranchSyncChooseDestination           string
+	BranchSyncSetUpstream                 string
+	BranchSyncUpstreamReplacement         string
+	BranchSyncUpstreamAmbiguousTitle      string
+	BranchSyncUpstreamAmbiguousPrompt     string
+	BranchSyncPushWithoutTracking         string
+	BranchSyncCheckSubmodules             string
+	BranchSyncForceLease                  string
+	BranchSyncRemotePrompt                string
+	BranchSyncNamedRemoteRequired         string
+	BranchSyncDestinationPrompt           string
+	BranchSyncReviewTitle                 string
+	BranchSyncReviewPrompt                string
+	BranchSyncPushStatus                  string
+	BranchSyncLeasePrompt                 string
+	BranchSyncLeaseConfirmTitle           string
+	BranchSyncLeaseConfirmPrompt          string
+	BranchSyncMultipleURLsTitle           string
+	BranchSyncMultipleURLsPrompt          string
+	BranchSyncApproveMultipleURLs         string
+	BranchSyncForceConfirm                string
+	BranchSyncPushSelected                string
+	BranchSyncPushCurrent                 string
+	BranchSyncPullSelected                string
+	BranchSyncPullCurrent                 string
+	BranchSyncSelectOneLocalBranch        string
+	BranchSyncNoCurrentLocalBranch        string
+	BranchSyncCaptureTooltip              string
 	NewBranchNameBranchOff                string
 	CantDeleteCheckOutBranch              string
 	DeleteBranchTitle                     string
@@ -1444,6 +1479,41 @@ func EnglishTranslationSet() *TranslationSet {
 		PlaceBranchApplyingStatus:            "Placing branch",
 		PlaceBranchSelectCommit:              "Select exactly one commit to create or move a branch.",
 		PlaceBranchRepositoryChanged:         "The repository changed. Start the branch placement again.",
+		BranchSyncRepositoryChanged:          "The repository changed. Start the branch sync action again.",
+		BranchSyncNoLongerCurrent:            "Branch %q is no longer the checked-out branch. Start the action again.",
+		BranchSyncInspecting:                 "Inspecting branch sync target",
+		BranchSyncPushMenu:                   "Push selected branch",
+		BranchSyncPushSummary:                "Source %q at %s\nRemote: %q\nDestination: %q\nSet upstream for selected branch: %t\nCheck submodules: %t\nConfigured push mappings beyond this explicit destination will not be used.",
+		BranchSyncPushThisBranch:             "Push this branch",
+		BranchSyncChooseRemote:               "Choose remote…",
+		BranchSyncChooseDestination:          "Choose destination branch…",
+		BranchSyncSetUpstream:                "Toggle set upstream for selected local branch",
+		BranchSyncUpstreamReplacement:        "\n\nExisting upstream settings before this push: remote %s; merge refs %q.",
+		BranchSyncUpstreamAmbiguousTitle:     "Upstream settings need attention",
+		BranchSyncUpstreamAmbiguousPrompt:    "Source %q at %s, remote %q, destination %q.\n\nThis branch has multiple, inherited, or invalid upstream settings that Git cannot safely replace with this push. No push has run and tracking settings are unchanged. Cancel, or prepare a new push review without changing tracking.",
+		BranchSyncPushWithoutTracking:        "Push without changing tracking",
+		BranchSyncCheckSubmodules:            "Toggle check submodules vs no recursion",
+		BranchSyncForceLease:                 "Force with reviewed lease…",
+		BranchSyncRemotePrompt:               "Remote name",
+		BranchSyncNamedRemoteRequired:        "The configured push target is a URL. Enter a configured remote name to continue.",
+		BranchSyncDestinationPrompt:          "Destination branch name or refs/heads/...",
+		BranchSyncReviewTitle:                "Review branch push",
+		BranchSyncReviewPrompt:               "Push source %q at %s to remote %q, destination %q?\n\nSet upstream for selected local branch: %t\nCheck submodules: %t\n\nOnly this branch ref will be pushed. Configuration-wide push mappings, extra heads, and tags will not be pushed.",
+		BranchSyncPushStatus:                 "Pushing selected branch %q",
+		BranchSyncLeasePrompt:                "Full locally available lease reference",
+		BranchSyncLeaseConfirmTitle:          "Confirm force with lease",
+		BranchSyncLeaseConfirmPrompt:         "Force push source %q at %s to %q using lease %q at %s?\n\nCancel to leave the remote unchanged.",
+		BranchSyncMultipleURLsTitle:          "Approve multiple push destinations",
+		BranchSyncMultipleURLsPrompt:         "The reviewed push will contact every destination shown below. Git may partially succeed when some destinations fail. No extra heads or tags are included.",
+		BranchSyncApproveMultipleURLs:        "Approve push to all listed destinations",
+		BranchSyncForceConfirm:               "Push with reviewed lease",
+		BranchSyncPushSelected:               "Push selected branch…",
+		BranchSyncPushCurrent:                "Push checked-out branch",
+		BranchSyncPullSelected:               "Update selected branch…",
+		BranchSyncPullCurrent:                "Update checked-out branch",
+		BranchSyncSelectOneLocalBranch:       "Select exactly one local branch.",
+		BranchSyncNoCurrentLocalBranch:       "There is no checked-out local branch.",
+		BranchSyncCaptureTooltip:             "Uses the branch selected when the action starts; changing selection cannot redirect an open prompt or running operation.",
 		NewBranchNameBranchOff:               "New branch name (branch is off of '{{.branchName}}')",
 		CantDeleteCheckOutBranch:             "You cannot delete the checked out branch!",
 		DeleteBranchTitle:                    "Delete branch '{{.selectedBranchName}}'?",

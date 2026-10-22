@@ -178,8 +178,34 @@ shadowing remote configuration is refused. No transport is contacted by that
 verification. `WithFastForwardOnly` further restricts native current pull for
 the explicit fast-forward action without replacing Git's integration logic.
 
-The existing push/pull/fast-forward UI still needs the new captured execution
-flows; these backend contracts alone do not complete roadmap item 7.
+## Push UI checkpoint (additive helpers; routing still a working-tree experiment)
+
+The additive helpers implement captured branch/context routing,
+with explicit review, cancel-first force and multi-URL approval, scoped status
+flags and repository-generation checks. A working-tree hook connects the push
+binding to them. Pull and fast-forward routing and explicit stack workflows
+remain unfinished. The hook, headless fixtures and generated routing inventory
+are not yet committed as a finished UI slice; these changes do not complete
+roadmap item 7.
+
+Independent focused controller tests passed (18.609s), including credential-safe
+display, upstream-refusal fallback, retained leases and stale repository
+callbacks. Five serial working-tree TUI scenarios passed (10.626s): ordinary
+push, selected branch with dirty files, stored local-branch history, stale
+review without automatic execution and refusal/fallback with exact config
+preservation. Initial new fixtures incorrectly expected
+review instead of the required remote-name prompt for an unconfigured branch;
+the corrected tests choose the remote explicitly. Generation, inventory tests,
+formatting and scoped backend/controller/i18n lint passed with zero issues.
+
+The user approved refusing ambiguous upstream changes before pushing, with
+Cancel or a separately reviewed push without changing tracking. Native
+`push --set-upstream` in the multi-valued merge-ref fixture retained old refs
+and appended the new one; that postcondition is not accepted for the fork.
+Inherited settings also need refusal when native setup would leave old merge
+entries effective. The fallback must disable automatic upstream setup for
+that invocation and preserve configuration; normal remote-tracking cache
+updates after a successful push remain distinct from saved branch tracking.
 
 ## Usability and native references
 
