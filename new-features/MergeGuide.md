@@ -83,6 +83,19 @@ about the code that exists, not speculative implementation tasks.
   shared with execution-plan validation, without logging credential values.
   This API accepts configured remote names, not literal URLs. Reject URL-like
   input without echoing it: native push-remote metadata can contain credentials.
+- `branch_sync_stack.go` discovers stack candidates from native direct local
+  heads and one topological commit walk, not whichever history pane is loaded.
+  It pins the selected OID, excludes commits reachable from exact supplied main
+  refs, skips symbolic head aliases and orders equal-tip names consistently.
+  Results are inspection only: review and revalidate every chosen source before
+  writes. Callers must also retain configured local-main-name exclusions when
+  the corresponding main ref is a remote branch. Discovery never checks out or
+  modifies an occupied worktree. Preserve raw stdout framing and native query
+  errors, rather than treating failed inspection as an empty/safe stack.
+  Independent focused stack-inspection tests passed (9.173s), including a real
+  split DAG, stable shared-tip order, root tips, symbolic heads, raw dirty-index
+  preservation and linked-worktree occupancy. Native query-failure injection
+  is not covered by this checkpoint; failed commands still return their errors.
 - `branch_fast_forward.go` is the ref-only forward/update primitive. Preserve
   ancestry-error distinction, source-OID revalidation, ancestor-target no-ops,
   worktree/reservation checks and single delegation to guarded placement.
