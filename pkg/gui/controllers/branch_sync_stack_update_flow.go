@@ -332,11 +332,7 @@ func (batch *branchStackUpdateFlow) integrateCurrent(plan git_commands.CurrentPu
 		c: batch.target.c, git: batch.target.git, generation: batch.target.generation,
 		source: branchSyncSource{name: plan.Name(), selected: true},
 	}
-	helper := target.c.Helpers().MergeAndRebase
-	return target.runReviewedIntegrationReporting(plan, nil, func(result error) error {
-		helper.RecordWhetherMergeOrRebaseStartedInLazygit()
-		return helper.CheckForConflicts(result)
-	}, stopped)
+	return target.runReviewedIntegrationReporting(plan, nil, target.integrationSubprocessResult, stopped)
 }
 
 type branchUpdateProgressError struct {

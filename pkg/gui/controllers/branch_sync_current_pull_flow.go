@@ -262,7 +262,6 @@ func (flow *branchSyncUpdateFlow) executeIntegration(plan git_commands.CurrentPu
 	if flow.collector != nil {
 		return flow.collectIntegration(plan)
 	}
-	helper := flow.target.c.Helpers().MergeAndRebase
 	return flow.target.runReviewedIntegration(plan, func(err error) error {
 		if errors.Is(err, git_commands.ErrBranchSyncChanged) {
 			return flow.reprepareAfterChange(plan)
@@ -271,10 +270,7 @@ func (flow *branchSyncUpdateFlow) executeIntegration(plan git_commands.CurrentPu
 			return flow.reprepareRisk(plan)
 		}
 		return err
-	}, func(result error) error {
-		helper.RecordWhetherMergeOrRebaseStartedInLazygit()
-		return helper.CheckForConflicts(result)
-	})
+	}, flow.target.integrationSubprocessResult)
 }
 
 func (flow *branchSyncUpdateFlow) reprepareAfterChange(plan git_commands.CurrentPullIntegrationPlan) error {

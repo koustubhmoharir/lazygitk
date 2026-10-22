@@ -87,6 +87,23 @@ about the code that exists, not speculative implementation tasks.
   local-main exclusions. A stale-source refresh must pass its newly inspected
   snapshot into a subsequently requested stack review, not retain the original
   obsolete OID or read another pane's selection.
+- `branch_sync_integration_result.go` handles terminal merge/rebase results
+  for both one-branch pull and the current phase of a wider update. Terminal
+  output is not captured in the exit error: do not search `exit status 1` for
+  conflict diagnostics. Inspect native merge/rebase markers and unmerged index
+  entries using the captured backend, retain repository-generation checks, and
+  record that the operation was started here. Only actual unmerged entries
+  open conflict handling; paused hook/signing failures preserve their errors.
+  Never automatically skip or continue. The earlier text-only callback missed
+  real conflicts, which the terminal acceptance scenarios exposed.
+  Independent integration/current-pull/stack-update unit tests and scoped lint
+  pass. The focused terminal run passed the merge/rebase conflicts, configured
+  interactive todo/drop behavior, all five force-lease scenarios and dirty
+  current/stack integration. Its three fixture failures (menu-row matching and
+  the repository-fetch forwarding route) were corrected and passed on a
+  separate three-scenario rerun; the whole group was not repeated afterward.
+  Interactive fixtures explicitly accept the initial native todo list with
+  `sequence.editor=true`, rather than leaving a headless editor waiting.
 - `branch_sync_update_collection.go` adds read-only plan collection to the
   existing off-branch and current-pull dialogs. An approved fetch may update its
   reviewed tracking ref; collecting a local-tip/integration approval must not

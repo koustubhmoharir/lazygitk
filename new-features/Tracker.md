@@ -34,6 +34,10 @@ switch branches silently. Keep stack-wide operations explicit choices.
    Native stack inspection and the additive wider-push flow are implemented and
    verified: per-member review, final batch approval, preflight and partial
    failure handling. Finish default routing and remaining acceptance checks.
+   Resolve batch-member selection before final integration: native discovery
+   includes local-only branches that the old implicit stack push omitted.
+   The user has been asked about an explicit member-selection step, with
+   tracked branches selected and local-only branches unselected by default.
    Agreed upstream policy: refuse ambiguous changes before pushing; offer
    Cancel or an explicitly reviewed push without changing tracking. Do not
    repair or replace multi-valued/inherited upstream settings automatically.
