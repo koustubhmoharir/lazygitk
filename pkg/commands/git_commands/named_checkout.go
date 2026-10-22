@@ -167,9 +167,12 @@ func (self *BranchCommands) namedCheckoutHead() (ref, oid string, err error) {
 func (self *BranchCommands) rejectNamedCheckoutOperation() error {
 	gitDir := self.repoPaths.WorktreeGitDirPath()
 	markers := []struct{ name, operation string }{
-		{"rebase-merge", "rebase"}, {"rebase-apply", "rebase"},
-		{"MERGE_HEAD", "merge"}, {"CHERRY_PICK_HEAD", "cherry-pick"},
-		{"REVERT_HEAD", "revert"}, {"sequencer", "sequencer operation"},
+		{"rebase-merge", "rebase"},
+		{"rebase-apply", "rebase"},
+		{"MERGE_HEAD", "merge"},
+		{"CHERRY_PICK_HEAD", "cherry-pick"},
+		{"REVERT_HEAD", "revert"},
+		{"sequencer", "sequencer operation"},
 		{"BISECT_START", "bisect"},
 	}
 	for _, marker := range markers {
