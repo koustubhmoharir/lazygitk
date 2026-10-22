@@ -1,11 +1,8 @@
 package git_commands
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
@@ -70,7 +67,7 @@ func (plan BranchPushPlan) WithMultipleURLsApproved() BranchPushPlan {
 var (
 	ErrBranchPushMultipleURLs      = errors.New("this remote has multiple configured push destinations; review and explicitly approve them first")
 	ErrBranchPushLeaseChoice       = errors.New("force-with-lease needs a locally reviewed destination tip; fetch and review it or select a known reference explicitly")
-	ErrBranchPushUpstreamAmbiguous = errors.New("the selected branch has ambiguous or non-local upstream configuration; push without changing tracking")
+	ErrBranchPushUpstreamAmbiguous = ErrBranchUpstreamAmbiguous
 )
 
 func (self *SyncCommands) PrepareBranchPush(name, expectedOID string, opts BranchPushOptions) (BranchPushPlan, error) {
@@ -102,7 +99,7 @@ func (self *SyncCommands) PrepareBranchPush(name, expectedOID string, opts Branc
 	}
 	var trackingSignature, previousRemote, previousMerge string
 	if opts.SetUpstream {
-		trackingSignature, previousRemote, previousMerge, err = self.branchPushTrackingSnapshot(name)
+		trackingSignature, previousRemote, previousMerge, err = self.branchUpstreamTrackingSnapshot(name)
 		if err != nil {
 			return BranchPushPlan{}, err
 		}
@@ -194,72 +191,4 @@ func (self *SyncCommands) BranchPushCommand(plan BranchPushPlan, task gocui.Task
 		Arg("--", plan.options.Remote, plan.sourceRef+":"+plan.options.DestinationRef)
 	return self.cmd.New(args.ToArgv()).SetWd(self.repoPaths.WorktreePath()).
 		DisableLockRetries().PromptOnCredentialRequest(task), nil
-}
-
-func (self *SyncCommands) branchPushTrackingSnapshot(name string) (signature, remote, merges string, err error) {
-	entries, err := self.branchSyncConfigEntries()
-	if err != nil {
-		return "", "", "", err
-	}
-	primary, _, err := self.cmd.New(NewGitCmd("config").Arg("--local", "--no-includes", "--null", "--list").ToArgv()).
-		SetWd(self.repoPaths.WorktreePath()).DontLog().RunWithOutputs()
-	if err != nil {
-		return "", "", "", fmt.Errorf("inspect primary local tracking configuration: %w", err)
-	}
-	localEntries, err := parseBranchSyncConfig(primary)
-	if err != nil {
-		return "", "", "", err
-	}
-	prefix := "branch." + name + "."
-	filter := func(source []branchSyncConfigEntry) []branchSyncConfigEntry {
-		filtered := []branchSyncConfigEntry{}
-		for _, entry := range source {
-			key, found := strings.CutPrefix(entry.key, prefix)
-			if found && (key == "remote" || key == "merge") {
-				filtered = append(filtered, entry)
-			}
-		}
-		return filtered
-	}
-	effectiveEntries, localTrackingEntries := filter(entries), filter(localEntries)
-	// Git's --set-upstream writes the primary local config. If effective values
-	// come from another config source, it cannot safely replace them there.
-	if !slices.Equal(effectiveEntries, localTrackingEntries) {
-		return "", "", "", ErrBranchPushUpstreamAmbiguous
-	}
-	remoteValues, mergeValues := []string{}, []string{}
-	for _, entry := range effectiveEntries {
-		key, found := strings.CutPrefix(entry.key, prefix)
-		if !found || (key != "remote" && key != "merge") || !entry.hasValue || entry.value == "" {
-			return "", "", "", ErrBranchPushUpstreamAmbiguous
-		}
-		if key == "remote" {
-			remoteValues = append(remoteValues, entry.value)
-		} else {
-			mergeValues = append(mergeValues, entry.value)
-		}
-	}
-	if len(remoteValues) > 1 || len(mergeValues) > 1 {
-		return "", "", "", ErrBranchPushUpstreamAmbiguous
-	}
-	// Since effective and primary-local entries were proven equal above, this
-	// fingerprint is also the primary-local tracking fingerprint. A later move
-	// to an include/global/worktree source is rejected during fresh preparation.
-	return branchPushTrackingFingerprint(effectiveEntries), firstBranchPushValue(remoteValues),
-		strings.Join(mergeValues, "\x00"), nil
-}
-
-func branchPushTrackingFingerprint(entries []branchSyncConfigEntry) string {
-	digest := sha256.New()
-	for _, entry := range entries {
-		writeBranchSyncConfigEntry(digest, entry)
-	}
-	return hex.EncodeToString(digest.Sum(nil))
-}
-
-func firstBranchPushValue(values []string) string {
-	if len(values) == 0 {
-		return ""
-	}
-	return values[0]
 }

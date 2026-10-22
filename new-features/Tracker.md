@@ -49,6 +49,9 @@ switch branches silently. Keep stack-wide operations explicit choices.
 4. Integrate branch-bearing versus global/current-branch actions, retaining
    selected-ref metadata support and clearly named selected-source merge/
    rebase actions. Do not change shortcut policy ahead of item 8.
+   Literal rename and exact tracking-ref set/unset backend plans are implemented;
+   finish their captured modal routing and stale-callback verification before
+   replacing the existing metadata entry points.
 5. Verify with local fake remotes: selected != current, absent/gone upstream,
    distinct push/pull remotes, force-with-lease rejection, fast-forward,
    divergence/rewritten upstream, concurrent ref changes, occupied worktrees

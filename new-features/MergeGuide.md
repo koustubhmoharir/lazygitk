@@ -115,8 +115,29 @@ about the code that exists, not speculative implementation tasks.
   possible storage mappings, refusing branch/tag/special namespaces and
   symbolic aliases before any network operation. Recheck force restrictions
   when constructing the command, not only when opening a menu.
+- `branch_rename.go` adds literal, backend-bound metadata rename plans. Recheck
+  the exact source OID and destination before native `branch --move`, with no
+  force, checkout, retry or rollback. Refuse direct or symbolic destinations
+  (including dangling aliases) and existing destination branch configuration;
+  subsection names are case-sensitive. Same-name plans are zero-write no-ops.
+  Native rename may update symbolic branch names in linked worktrees without
+  changing their commit, index or files. Refuse active-operation reservations.
+  Preserve native partial failures: a config lock can leave the ref renamed
+  even though config migration failed. This backend is not yet the default
+  rename dialog route.
+- `branch_sync_metadata.go` adds captured upstream set/unset plans using exact
+  direct tracking refs, including custom fetch namespaces and local branches.
+  Native `branch --set-upstream-to` resolves remote mapping; the selected tip,
+  tracking tip, effective/primary-local upstream entries and remote config are
+  revalidated before launch. Metadata changes do not move a checked-out tip or
+  write its index/files. These plans are not yet wired into the upstream menu.
+  Independent metadata/rename/push tests passed (74.433s), including raw
+  dirty-state preservation, linked worktrees, custom namespaces, inherited
+  configuration refusals and native rename partial failure. Backend lint
+  passed with zero issues after correcting two test-only unused assignments.
 - Upstream setup is independent of the explicit push destination and defaults
-  off. `branch_sync_push.go` refuses multiple, empty or valueless upstream
+  off. `branch_sync_metadata.go` shares the guard with `branch_sync_push.go`,
+  refusing multiple, empty or valueless upstream
   entries and settings inherited from outside the primary local config before
   allowing `--set-upstream`. Compare fresh effective entries with an uncached
   `config --local --no-includes` query; effective values alone cannot establish
