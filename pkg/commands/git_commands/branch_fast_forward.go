@@ -7,7 +7,7 @@ import (
 )
 
 // ErrBranchSyncChanged asks callers to review the source branch again.
-var ErrBranchSyncChanged = errors.New("the branch changed; review its current state before proceeding")
+var ErrBranchSyncChanged = errors.New("the branch or sync target changed; review the current state before proceeding")
 
 // BranchFastForwardPlan captures a validated, forward-only ref update.
 type BranchFastForwardPlan struct {

@@ -1,7 +1,8 @@
 # Selected-branch operations: audit and design
 
 Roadmap item 7, audited against this fork after item 6. The read-only foundation
-is verified; executable sync flows are not implemented yet. Native experiments
+is verified; explicit command builders are under verification and not yet
+wired into the sync UI. Native experiments
 are recorded separately in
 [selected-branch-sync-probes.md](selected-branch-sync-probes.md).
 
@@ -125,9 +126,36 @@ Shortcut redesign stays in item 8.
   that a controller could treat as safe to retry. The primitive neither
   retries nor rolls back a failed update.
 
-These primitives do not fetch, select a remote/destination, update upstream
-configuration, check out a branch, stash, merge or rebase. The existing
-push/pull/fast-forward UI still needs the new captured execution flows.
+These inspection/ref-update primitives do not fetch, select a remote/destination,
+update upstream configuration, check out a branch, stash, merge or rebase.
+
+## Explicit sync command contracts under verification
+
+The new network builders remain separate from existing UI routing. They pin
+the backend instance and copied branch name/OID, re-read native state before
+constructing a command, and disable whole-command lock retries. Revalidation
+is not a lock: Git's normal concurrency model applies after launch.
+
+`PrepareBranchPush` / `BranchPushCommand` require one full destination branch
+ref and a named remote. The command overrides implicit tag following,
+submodule pushes and automatic upstream setup. Upstream setup is an explicit
+choice, with the branch's old remote and all merge entries captured for review.
+Configured mirroring is refused, not overridden with an ineffective flag.
+Multiple configured push URLs require separate approval bound to the reviewed
+profile; partial success across URLs is possible and must be refreshed even
+after an error.
+
+Force-with-lease captures an existing, locally reviewed commit OID. It does not
+fetch to replace that expectation, fall back to plain force, or treat an absent
+tracking ref as permission to overwrite a remote branch. Configured fetch
+refspecs determine tracking storage; no standard namespace is assumed. An
+excluded or unavailable automatic lease requires an explicit known local ref
+choice or refusal. Every positive matching storage mapping is also inspected
+for possible local side effects of native push. Local branch, tag, special-ref
+and symbolic-alias destinations are refused before contacting the remote.
+
+The existing push/pull/fast-forward UI still needs the new captured execution
+flows; these backend contracts alone do not complete roadmap item 7.
 
 ## Usability and native references
 

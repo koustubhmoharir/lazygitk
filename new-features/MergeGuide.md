@@ -67,6 +67,20 @@ about the code that exists, not speculative implementation tasks.
   replace missing lease evidence. This is conservative lease policy, not a
   reimplementation of every version's negative-fetch behavior. Native ref
   validation, wildcard captures and exact source matching need regression tests.
+- `branch_sync_push.go` adds a backend-bound branch-only push plan. Preserve
+  exact source/destination refspecs, explicit recursion/upstream choices,
+  no-follow-tags, no automatic upstream setup, mirror refusal and disabled
+  lock retries. Multi-URL approval belongs to one immutable reviewed profile;
+  revalidation must invalidate it on transport/config changes. URLs stay in
+  memory and require redaction before UI display. Native partial success is
+  not grounds to retry the whole command.
+- Explicit expected-OID leases use locally reviewed refs, never a preparatory
+  fetch or a fallback to plain force. Keep the selected branch's upstream
+  snapshot (including every merge entry) separate from its push destination.
+  Native push can opportunistically update local tracking refs: validate all
+  possible storage mappings, refusing branch/tag/special namespaces and
+  symbolic aliases before any network operation. Recheck force restrictions
+  when constructing the command, not only when opening a menu.
 
 Read-only checkpoint (2026-10-22): main-agent native probe rerun passed,
 including selected != current with staged/unstaged/untracked preservation,
@@ -88,6 +102,12 @@ assertions: both configured mirror plus an explicit refspec and an attempted
 `--no-mirror` override fail on Git 2.51.1. No executable sync UI is wired yet.
 Follow-up focused tests passed (2.273s), including native URL-list reset
 comparison and rejection of fast-forward plans on a replacement backend.
+Independent push/refspec tests passed (20.659s), including real pushes to two
+approved bare repositories, invalidated approvals, stale server/local leases,
+upstream snapshot changes, raw HEAD/index preservation and unrelated refs.
+The subsequent refspec/fetch-focused run passed (7.863s), including a native
+abbreviated-source probe with an actual changed remote tip. No sync UI routing
+has changed in these backend commits.
 
 ### Selected-commit rebase and clean-start policy (item 6)
 

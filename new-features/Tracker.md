@@ -23,8 +23,10 @@ switch branches silently. Keep stack-wide operations explicit choices.
    Every prompt, command, upstream-setting action and refresh must retain that
    target; neither a later selection nor current HEAD may substitute for it.
 2. Make push target the selected local branch with an explicit remote/refspec.
-   Preserve protection, force-with-lease, no-upstream and triangular-workflow
-   behavior. Keep pushing other stack branches an explicit separate choice.
+   The branch-only backend now handles explicit destinations, immutable
+   multi-URL approval, reviewed leases and upstream-setting snapshots.
+   Finish modal routing and protection/no-upstream/triangular-workflow
+   verification. Keep pushing other stack branches an explicit separate choice.
 3. Make off-branch pull/update an explicit upstream fetch and verified
    fast-forward without checkout, composing the implemented guarded ref-only
    primitive with the scoped fetch. Explain divergence without attempting
