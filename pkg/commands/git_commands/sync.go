@@ -100,9 +100,25 @@ type PullOptions struct {
 }
 
 func (self *SyncCommands) Pull(task gocui.Task, opts PullOptions) error {
+	// Fork: pull can start a rebase through configuration, bypassing the
+	// interactive rebase builder. Apply the same start-only safety policy.
+	policy, err := self.effectivePullRebasePolicy(opts)
+	if err != nil {
+		return err
+	}
+	if policy.rebase {
+		status := cleanRebaseStatusCommand().
+			GitDirIf(opts.WorktreeGitDir != "", opts.WorktreeGitDir).
+			WorktreePathIf(opts.WorktreePath != "", opts.WorktreePath)
+		if err := requireCleanRebaseStatus(self.cmd.New(status.ToArgv())); err != nil {
+			return err
+		}
+	}
+
 	cmdArgs := NewGitCmd("pull").
 		Arg("--no-edit").
 		ArgIf(opts.FastForwardOnly, "--ff-only").
+		ArgIf(policy.rebase, "--no-autostash").
 		ArgIf(opts.RemoteName != "", opts.RemoteName).
 		ArgIf(opts.BranchName != "", "refs/heads/"+opts.BranchName).
 		GitDirIf(opts.WorktreeGitDir != "", opts.WorktreeGitDir).
@@ -111,7 +127,11 @@ func (self *SyncCommands) Pull(task gocui.Task, opts PullOptions) error {
 
 	// setting GIT_SEQUENCE_EDITOR to ':' as a way of skipping it, in case the user
 	// has 'pull.rebase = interactive' configured.
-	return self.cmd.New(cmdArgs).AddEnvVars("GIT_SEQUENCE_EDITOR=:").PromptOnCredentialRequest(task).Run()
+	cmd := self.cmd.New(cmdArgs).AddEnvVars("GIT_SEQUENCE_EDITOR=:").PromptOnCredentialRequest(task)
+	if policy.rebase {
+		cmd.DisableLockRetries()
+	}
+	return cmd.Run()
 }
 
 // Fetches the given branches of the given remote, updating their

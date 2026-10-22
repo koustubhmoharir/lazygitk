@@ -65,7 +65,7 @@ func (self *RebaseCommands) RewordCommitInEditor(commits []*models.Commit, index
 	return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{
 		baseHashOrRoot: getBaseHashOrRoot(commits, index+1),
 		instruction:    daemon.NewChangeTodoActionsInstruction(changes),
-	}), nil
+	})
 }
 
 func (self *RebaseCommands) ResetCommitAuthor(commits []*models.Commit, start, end int) error {
@@ -133,11 +133,11 @@ func (self *RebaseCommands) MoveCommits(commits []*models.Commit, startIdx int, 
 		instruction = daemon.NewMoveTodosUpInstruction(hashes, -offset)
 	}
 
-	return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{
+	return self.runInteractiveRebase(PrepareInteractiveRebaseCommandOpts{
 		baseHashOrRoot: baseHashOrRoot,
 		instruction:    instruction,
 		overrideEditor: true,
-	}).Run()
+	})
 }
 
 func (self *RebaseCommands) InteractiveRebase(commits []*models.Commit, startIdx int, endIdx int, action todo.TodoCommand, flag string) error {
@@ -158,11 +158,11 @@ func (self *RebaseCommands) InteractiveRebase(commits []*models.Commit, startIdx
 
 	self.os.LogCommand(logTodoChanges(changes), false)
 
-	return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{
+	return self.runInteractiveRebase(PrepareInteractiveRebaseCommandOpts{
 		baseHashOrRoot: baseHashOrRoot,
 		overrideEditor: true,
 		instruction:    daemon.NewChangeTodoActionsInstruction(changes),
-	}).Run()
+	})
 }
 
 func (self *RebaseCommands) EditRebase(branchRef string) error {
@@ -173,10 +173,10 @@ func (self *RebaseCommands) EditRebase(branchRef string) error {
 		},
 	)
 	self.os.LogCommand(msg, false)
-	return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{
+	return self.runInteractiveRebase(PrepareInteractiveRebaseCommandOpts{
 		baseHashOrRoot: branchRef,
 		instruction:    daemon.NewInsertBreakInstruction(),
-	}).Run()
+	})
 }
 
 func (self *RebaseCommands) EditRebaseFromBaseCommit(targetBranchName string, baseCommit string) error {
@@ -188,11 +188,11 @@ func (self *RebaseCommands) EditRebaseFromBaseCommit(targetBranchName string, ba
 		},
 	)
 	self.os.LogCommand(msg, false)
-	return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{
+	return self.runInteractiveRebase(PrepareInteractiveRebaseCommandOpts{
 		baseHashOrRoot: baseCommit,
 		onto:           targetBranchName,
 		instruction:    daemon.NewInsertBreakInstruction(),
-	}).Run()
+	})
 }
 
 func logTodoChanges(changes []daemon.ChangeTodoAction) string {
@@ -213,12 +213,17 @@ type PrepareInteractiveRebaseCommandOpts struct {
 // PrepareInteractiveRebaseCommand returns the cmd for an interactive rebase
 // we tell git to run lazygit to edit the todo list, and we pass the client
 // lazygit instructions what to do with the todo file
-func (self *RebaseCommands) PrepareInteractiveRebaseCommand(opts PrepareInteractiveRebaseCommandOpts) *oscommands.CmdObj {
+func (self *RebaseCommands) PrepareInteractiveRebaseCommand(opts PrepareInteractiveRebaseCommandOpts) (*oscommands.CmdObj, error) {
+	if err := self.requireCleanRebaseStart(); err != nil {
+		return nil, err
+	}
+
 	ex := oscommands.GetLazygitPath()
 
 	cmdArgs := NewGitCmd("rebase").
 		Arg("--interactive").
-		Arg("--autostash").
+		// Replace the upstream autostash default: callers must commit changes first.
+		Arg("--no-autostash").
 		Arg("--keep-empty").
 		ArgIf(opts.keepCommitsThatBecomeEmpty, "--empty=keep").
 		Arg("--no-autosquash").
@@ -234,7 +239,9 @@ func (self *RebaseCommands) PrepareInteractiveRebaseCommand(opts PrepareInteract
 
 	self.Log.WithField("command", cmdArgs).Debug("RunCommand")
 
-	cmdObj := self.cmd.New(cmdArgs)
+	// Rebase may have changed repository state before reporting a lock error, so
+	// retrying its start command could repeat a partially completed operation.
+	cmdObj := self.cmd.New(cmdArgs).DisableLockRetries()
 
 	gitSequenceEditor := ex
 
@@ -256,7 +263,17 @@ func (self *RebaseCommands) PrepareInteractiveRebaseCommand(opts PrepareInteract
 		cmdObj.AddEnvVars("GIT_EDITOR=" + ex)
 	}
 
-	return cmdObj
+	return cmdObj, nil
+}
+
+// runInteractiveRebase replaces direct preparation and execution at rebase
+// start sites so they all enforce the fork's clean-tree, no-autostash policy.
+func (self *RebaseCommands) runInteractiveRebase(opts PrepareInteractiveRebaseCommandOpts) error {
+	cmdObj, err := self.PrepareInteractiveRebaseCommand(opts)
+	if err != nil {
+		return err
+	}
+	return cmdObj.Run()
 }
 
 // GitRebaseEditTodo runs "git rebase --edit-todo", saving the given todosFileContent to the file
@@ -308,11 +325,11 @@ func (self *RebaseCommands) AmendTo(commits []*models.Commit, commitIndex int) e
 		return err
 	}
 
-	return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{
+	return self.runInteractiveRebase(PrepareInteractiveRebaseCommandOpts{
 		baseHashOrRoot: getBaseHashOrRoot(commits, commitIndex+1),
 		overrideEditor: true,
 		instruction:    daemon.NewMoveFixupCommitDownInstruction(commit.Hash(), fixupHash, true),
-	}).Run()
+	})
 }
 
 func (self *RebaseCommands) MoveFixupCommitDown(commits []*models.Commit, targetCommitIndex int) error {
@@ -321,11 +338,11 @@ func (self *RebaseCommands) MoveFixupCommitDown(commits []*models.Commit, target
 		return err
 	}
 
-	return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{
+	return self.runInteractiveRebase(PrepareInteractiveRebaseCommandOpts{
 		baseHashOrRoot: getBaseHashOrRoot(commits, targetCommitIndex+1),
 		overrideEditor: true,
 		instruction:    daemon.NewMoveFixupCommitDownInstruction(commits[targetCommitIndex].Hash(), fixupHash, false),
-	}).Run()
+	})
 }
 
 func todoFromCommit(commit *models.Commit) utils.Todo {
@@ -393,11 +410,15 @@ func (self *RebaseCommands) SquashAllAboveFixupCommits(commit *models.Commit) er
 		hashOrRoot = "--root"
 	}
 
+	if err := self.requireCleanRebaseStart(); err != nil {
+		return err
+	}
+
 	cmdArgs := NewGitCmd("rebase").
-		Arg("--interactive", "--rebase-merges", "--autostash", "--autosquash", hashOrRoot).
+		Arg("--interactive", "--rebase-merges", "--no-autostash", "--autosquash", hashOrRoot).
 		ToArgv()
 
-	return self.runSkipEditorCommand(self.cmd.New(cmdArgs))
+	return self.runSkipEditorCommand(self.cmd.New(cmdArgs).DisableLockRetries())
 }
 
 // BeginInteractiveRebaseForCommit starts an interactive rebase to edit the current
@@ -410,11 +431,11 @@ func (self *RebaseCommands) BeginInteractiveRebaseForCommit(
 			return errors.New(self.Tr.DisabledForGPG)
 		}
 
-		return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{
+		return self.runInteractiveRebase(PrepareInteractiveRebaseCommandOpts{
 			baseHashOrRoot:             getBaseHashOrRoot(commits, commitIndex),
 			instruction:                daemon.NewInsertBreakInstruction(),
 			keepCommitsThatBecomeEmpty: keepCommitsThatBecomeEmpty,
-		}).Run()
+		})
 	}
 
 	return self.BeginInteractiveRebaseForCommitRange(commits, commitIndex, commitIndex, keepCommitsThatBecomeEmpty)
@@ -443,24 +464,24 @@ func (self *RebaseCommands) BeginInteractiveRebaseForCommitRange(
 	}
 	self.os.LogCommand(logTodoChanges(changes), false)
 
-	return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{
+	return self.runInteractiveRebase(PrepareInteractiveRebaseCommandOpts{
 		baseHashOrRoot:             getBaseHashOrRoot(commits, end+1),
 		overrideEditor:             true,
 		keepCommitsThatBecomeEmpty: keepCommitsThatBecomeEmpty,
 		instruction:                daemon.NewChangeTodoActionsInstruction(changes),
-	}).Run()
+	})
 }
 
 // RebaseBranch interactive rebases onto a branch
 func (self *RebaseCommands) RebaseBranch(branchName string) error {
-	return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{baseHashOrRoot: branchName}).Run()
+	return self.runInteractiveRebase(PrepareInteractiveRebaseCommandOpts{baseHashOrRoot: branchName})
 }
 
 func (self *RebaseCommands) RebaseBranchFromBaseCommit(targetBranchName string, baseCommit string) error {
-	return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{
+	return self.runInteractiveRebase(PrepareInteractiveRebaseCommandOpts{
 		baseHashOrRoot: baseCommit,
 		onto:           targetBranchName,
-	}).Run()
+	})
 }
 
 func (self *RebaseCommands) GenericMergeOrRebaseActionCmdObj(commandType string, command string) *oscommands.CmdObj {
@@ -569,10 +590,10 @@ func (self *RebaseCommands) CherryPickCommits(commits []*models.Commit) error {
 }
 
 func (self *RebaseCommands) DropMergeCommit(commits []*models.Commit, commitIndex int) error {
-	return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{
+	return self.runInteractiveRebase(PrepareInteractiveRebaseCommandOpts{
 		baseHashOrRoot: getBaseHashOrRoot(commits, commitIndex+1),
 		instruction:    daemon.NewDropMergeCommitInstruction(commits[commitIndex].Hash()),
-	}).Run()
+	})
 }
 
 // we can't start an interactive rebase from the first commit without passing the

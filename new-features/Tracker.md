@@ -1,39 +1,36 @@
 # Current work
 
 Roadmap item: [6. Rebase the current branch onto a selected commit](Roadmap.md#6-rebase-the-current-branch-onto-a-selected-commit).
-Status: auditing existing rebase entry points and target/clean-tree semantics.
+Status: backend and shared clean-start policy implemented; UI integration and
+the ignored-file collision policy remain open.
 
 Scope: rebase the checked-out branch onto a captured selected commit, including
-other-branch history/reflog. Require a clean index/worktree, never invoke or
-offer autostash, and do not rewrite additional branch refs. Keep conflict
+other-branch history/reflog. Require no staged/unstaged tracked changes; allow
+harmless untracked files and let Git reject collisions. Never invoke or offer
+autostash, and do not rewrite additional branch refs. Keep conflict
 continue/skip/abort usable. Audit other rebase-start paths for the same policy.
 
 ## Remaining tasks for item 6
 
-1. Audit Git rebase builders, shared UI helpers, marked-base behavior, signing,
-   operation guards, autostash and update-refs configuration. Consult TortoiseGit
-   and probe ordinary selected-target semantics, clean/dirty states, configuration
-   overrides, no-op/conflict behavior and supported Git-version options. Record
-   the additive design and raise substantive unresolved choices.
-2. Add backend preparation/application for captured target and current branch/
-   tip identity. Reject detached/unborn HEAD, dirt and incompatible operations;
-   recheck before starting, use explicit no-autostash, suppress other-ref updates
-   compatibly, and keep marked-base state out of this action's meaning.
-3. Apply the clean/no-autostash policy to other rebase-start entry points, with
-   commit-first errors rather than stash offers. Preserve intentional conflict
-   resolution and continue/skip/abort; do not require a clean index to continue
-   a paused rebase with staged resolutions.
-4. Add a discoverable shared commit-list action and modal warning naming the
+1. Finish the signing/recovery integration design and resolve the ignored-file
+   safety choice. Native Git can overwrite an ignored target-path collision;
+   the user has been asked whether to warn and require explicit approval or
+   retain native behavior. The design/probe documents record the audit and
+   settled harmless-untracked-file policy. Check legacy pull-mode compatibility
+   against the minimum supported Git version before finishing the audit.
+2. Add a discoverable shared commit-list action and modal warning naming the
    checked-out source branch/tip and captured target. Preserve repository/source
    identity, require fresh review if pre-launch state changes, and reuse normal
    conflict recovery and refresh without silent target/base substitution.
-5. Add unit/real-Git/headless regressions for divergent/ancestor/descendant/root
-   targets, other history/reflog, no-op, dirty tracked/index/untracked states,
-   detached HEAD, marked-base isolation, updateRefs/autostash opt-ins, conflicts
-   with continue/abort, and representative existing rebase entry points.
-6. Update usage, inventory and merge guide; generate, debug-build, format, run
+3. Complete regression coverage around the UI: other history/reflog, captured
+   source/repository, fresh review, cancellation, marked-base isolation,
+   signing routing, ignored-file policy and conflict continue/abort. Expand
+   affected headless coverage beyond the four start-policy scenarios already
+   verified. Backend real-Git tests cover target graphs, identity, topology,
+   clean/untracked states, SHA-256 and auxiliary-ref preservation.
+4. Update usage, inventory and merge guide; generate, debug-build, format, run
    full short tests, affected headless regressions and lint. Record limits.
-7. Once acceptance criteria pass, complete item 6 accurately in the roadmap and
+5. Once acceptance criteria pass, complete item 6 accurately in the roadmap and
    replace this tracker with item 7's task-level plan in the same commit.
 
 ## How this tracker works

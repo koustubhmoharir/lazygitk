@@ -19,6 +19,65 @@ about the code that exists, not speculative implementation tasks.
 
 ## Live integration record
 
+### Rebase-start policy (item 6 in progress)
+
+- `git_commands/rebase_start_policy.go` owns the shared fresh tracked/index
+  clean-state query and commit-first error. Untracked files, including those
+  inside submodules, remain allowed by explicit user choice. The query overrides
+  submodule ignore configuration so tracked child changes are not hidden.
+- `RebaseCommands.PrepareInteractiveRebaseCommand` now returns `(command,
+  error)` and checks before constructing an executable command. Preserve this
+  error contract for editor subprocesses too. Its private prepare/run wrapper
+  replaces direct chained execution; `SquashAllAboveFixupCommits` is a separate
+  start builder with the same check. Both explicitly use `--no-autostash` and
+  disable whole-command lock retries. Existing topology/update-ref behavior of
+  these upstream history-editing actions is otherwise retained.
+- `PatchCommands.MovePatchIntoIndex` no longer takes a stash argument or
+  pushes/pops changes. `CustomPatchOptionsMenuAction` replaces its stash modal
+  with the normal worker/backend check. Keep clean patch extraction working;
+  dirty extraction must leave changes/history alone and explain commit-first.
+- `SyncCommands.Pull` consults the additive `pull_rebase_policy.go` before
+  fetching. Fresh native config reads resolve branch-specific rebase settings
+  before `pull.rebase`, including bool normalization and explicit worktree
+  context. Only configured rebase pulls get the clean check, no-autostash flag
+  and no-retry policy; merge pulls retain their existing behavior. Do not pin
+  `--rebase=<mode>` on the command: that changes Git's `pull.ff=only` precedence.
+- Do not move start checks into generic rebase continuation, skip, abort,
+  edit-todo, ordinary commits or HEAD amendments. Conflict resolution is
+  intentionally allowed to stage changes. Arbitrary custom commands and
+  third-party `git flow` executables are not intercepted by these builders.
+- `worktree_operation_guard.go` extracts named checkout's operation-marker
+  guard without changing its diagnostics. The new selected-commit backend
+  reuses it and existing exact OID/current-HEAD/ref-occupancy readers through
+  the same pinned `GitCommon`. Its plan captures source branch/tip, target and
+  explicit topology, never marked-base state. A command-scoped
+  `rebase.updateRefs=false` protects other branch refs even after continuation;
+  the command is not automatically retried or blindly rolled back on failure.
+- Feature design and native behavior evidence are in
+  [rebase-selected-commit-design.md](rebase-selected-commit-design.md) and
+  [rebase-selected-commit-probes.md](rebase-selected-commit-probes.md).
+  The new backend is not yet wired to the UI; ignored-file overwrite policy
+  is awaiting the user's answer. Item 6 remains incomplete.
+
+The existing out-of-date-submodule conflict scenario now changes its submodule
+after the rebase starts: this preserves its recovery/auto-staging subject while
+respecting the new clean-start rule. The dirty patch-extraction scenario now
+expects refusal rather than an automatic stash.
+
+Backend/start-policy checkpoint (2026-10-22): debug build, full short tests,
+generation, formatting and scoped lint (zero issues) passed. Focused backend/
+named-checkout tests passed in 23.775s; the additional pull tests for actual
+divergent replay and clean/dirty linked-worktree isolation passed in 6.480s.
+The four headless scenarios `branch/rebase`,
+`branch/rebase_conflicts_fix_build_errors_with_out_of_date_submodule`,
+`main_view/move_patch_to_index` and
+`main_view/move_patch_to_index_with_modified_file` passed together (11.664s).
+The first headless attempt found one obsolete secondary-pane expectation in
+the dirty extraction fixture; it was corrected before the four-scenario rerun.
+The standalone probe also passed its explicit assertions. Broader affected
+headless coverage, signing/UI acceptance and minimum-Git/cross-platform runs
+have not been completed. No system dependencies were installed.
+
 ### Explicit-action defaults: audited integration seams
 
 - `pkg/config/fork_defaults.go:applyForkDefaults` replaces the four upstream

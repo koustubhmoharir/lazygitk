@@ -3,8 +3,6 @@ package git_commands
 import (
 	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -165,25 +163,5 @@ func (self *BranchCommands) namedCheckoutHead() (ref, oid string, err error) {
 }
 
 func (self *BranchCommands) rejectNamedCheckoutOperation() error {
-	gitDir := self.repoPaths.WorktreeGitDirPath()
-	markers := []struct{ name, operation string }{
-		{"rebase-merge", "rebase"},
-		{"rebase-apply", "rebase"},
-		{"MERGE_HEAD", "merge"},
-		{"CHERRY_PICK_HEAD", "cherry-pick"},
-		{"REVERT_HEAD", "revert"},
-		{"sequencer", "sequencer operation"},
-		{"BISECT_START", "bisect"},
-	}
-	for _, marker := range markers {
-		path := filepath.Join(gitDir, marker.name)
-		_, err := os.Lstat(path)
-		if err == nil {
-			return fmt.Errorf("cannot check out a named branch while a %s is in progress; finish or abort it first", marker.operation)
-		}
-		if !os.IsNotExist(err) {
-			return fmt.Errorf("inspect %s operation state: %w", marker.name, err)
-		}
-	}
-	return nil
+	return self.rejectWorktreeOperation("check out a named branch")
 }

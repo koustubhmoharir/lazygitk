@@ -15,13 +15,11 @@ var RebaseConflictsFixBuildErrorsWithOutOfDateSubmodule = NewIntegrationTest(New
 		config.GetUserConfig().Git.AutoStageResolvedConflicts = true
 	},
 	SetupRepo: func(shell *Shell) {
-		// Create an out-of-date submodule to verify that we don't try to stage it
+		// Start clean; the submodule will become out of date after rebase starts.
 		shell.
 			EmptyCommit("Initial commit").
 			CloneIntoSubmodule("submodule", "submodule").
-			Commit("Add submodule").
-			AddFileInWorktreeOrSubmodule("submodule", "file", "content").
-			CommitInWorktreeOrSubmodule("submodule", "add file in submodule")
+			Commit("Add submodule")
 
 		shared.MergeConflictsSetup(shell)
 
@@ -51,6 +49,12 @@ var RebaseConflictsFixBuildErrorsWithOutOfDateSubmodule = NewIntegrationTest(New
 			Confirm()
 
 		t.Common().AcknowledgeConflicts()
+
+		// Start-only clean checks must not block recovery when a submodule
+		// changes during the pause, nor auto-stage its new gitlink.
+		t.Shell().
+			AddFileInWorktreeOrSubmodule("submodule", "file", "content").
+			CommitInWorktreeOrSubmodule("submodule", "add file in submodule")
 
 		t.Views().Files().
 			IsFocused().

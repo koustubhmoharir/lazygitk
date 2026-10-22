@@ -163,19 +163,14 @@ func (self *CustomPatchOptionsMenuAction) handleMovePatchToSelectedCommit() erro
 }
 
 func (self *CustomPatchOptionsMenuAction) handleMovePatchIntoWorkingTree() error {
-	mustStash := self.c.Helpers().WorkingTree.IsWorkingTreeDirtyExceptSubmodules()
-	return self.c.ConfirmIf(mustStash, types.ConfirmOpts{
-		Title:  self.c.Tr.MustStashTitle,
-		Prompt: self.c.Tr.MustStashWarning,
-		HandleConfirm: func() error {
-			commits := self.c.Model().Commits
-			commitIndex := self.getPatchCommitIndex()
-			return self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(gocui.Task) error {
-				self.c.LogAction(self.c.Tr.Actions.MovePatchIntoIndex)
-				err := self.c.Git().Patch.MovePatchIntoIndex(commits, commitIndex, mustStash)
-				return self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err)
-			})
-		},
+	commits := self.c.Model().Commits
+	commitIndex := self.getPatchCommitIndex()
+	// This replaces the upstream stash confirmation; the backend clean check
+	// reports that changes must be committed before patch movement can rebase.
+	return self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(gocui.Task) error {
+		self.c.LogAction(self.c.Tr.Actions.MovePatchIntoIndex)
+		err := self.c.Git().Patch.MovePatchIntoIndex(commits, commitIndex)
+		return self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err)
 	})
 }
 

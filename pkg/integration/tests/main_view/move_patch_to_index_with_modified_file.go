@@ -6,7 +6,7 @@ import (
 )
 
 var MovePatchToIndexWithModifiedFile = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Move a patch from a commit to the index with a conflicting working-tree change",
+	Description:  "Refuse patch extraction before rebasing a dirty working tree, without stashing or rewriting history",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig: func(config *config.AppConfig) {
@@ -47,18 +47,23 @@ var MovePatchToIndexWithModifiedFile = NewIntegrationTest(NewIntegrationTestArgs
 
 		t.Common().SelectPatchOption(Contains("Move patch out into index"))
 
-		t.ExpectPopup().Confirmation().Title(Equals("Must stash")).
-			Content(Contains("Pulling a patch out into the index requires stashing and unstashing your changes.")).
+		t.ExpectPopup().Alert().Title(Equals("Error")).
+			Content(Contains("Cannot start rebase: commit your changes first")).
 			Confirm()
+		t.Views().Secondary().Content(Contains("-1\n+11\n"))
 
 		t.Views().Files().
 			Focus().
 			Lines(
-				Equals("MM file1"),
+				Equals(" M file1"),
 			)
 
 		t.Views().Main().Content(Contains("-11\n+111\n"))
-		t.Views().Secondary().Content(Contains("-1\n+11\n"))
 		t.Views().Stash().IsEmpty()
+		t.FileSystem().FileContent("file1", Equals("111\n2\n3\n4\n"))
+		t.Views().Commits().Lines(
+			Contains("second commit").IsSelected(),
+			Contains("first commit"),
+		)
 	},
 })

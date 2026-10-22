@@ -1,7 +1,6 @@
 package git_commands
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -251,11 +250,13 @@ func (self *PatchCommands) MovePatchToSelectedCommit(commits []*models.Commit, s
 	}
 	self.os.LogCommand(logTodoChanges(changes), false)
 
-	err := self.rebase.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{
+	// This replaces the upstream direct rebase start so patch movement follows
+	// the fork's clean-tree and no-autostash policy.
+	err := self.rebase.runInteractiveRebase(PrepareInteractiveRebaseCommandOpts{
 		baseHashOrRoot: getBaseHashOrRoot(commits, baseIndex),
 		overrideEditor: true,
 		instruction:    daemon.NewChangeTodoActionsInstruction(changes),
-	}).Run()
+	})
 	if err != nil {
 		return err
 	}
@@ -306,13 +307,7 @@ func (self *PatchCommands) MovePatchToSelectedCommit(commits []*models.Commit, s
 	return self.rebase.ContinueRebase()
 }
 
-func (self *PatchCommands) MovePatchIntoIndex(commits []*models.Commit, commitIdx int, stash bool) error {
-	if stash {
-		if err := self.stash.Push(fmt.Sprintf(self.Tr.AutoStashForMovingPatchToIndex, commits[commitIdx].ShortHash())); err != nil {
-			return err
-		}
-	}
-
+func (self *PatchCommands) MovePatchIntoIndex(commits []*models.Commit, commitIdx int) error {
 	if err := self.rebase.BeginInteractiveRebaseForCommit(commits, commitIdx, false); err != nil {
 		return err
 	}
@@ -346,12 +341,6 @@ func (self *PatchCommands) MovePatchIntoIndex(commits []*models.Commit, commitId
 				_ = self.rebase.AbortRebase()
 			}
 			return err
-		}
-
-		if stash {
-			if err := self.stash.Pop(0); err != nil {
-				return err
-			}
 		}
 
 		self.PatchBuilder.Reset()
