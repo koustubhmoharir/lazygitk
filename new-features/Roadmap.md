@@ -31,8 +31,9 @@ Supporting evidence: [repository map](repository-map.md) and
 - Distinguish the selected object, the checked-out branch, and the operation's
   destination in labels and confirmations. Selection must not silently change
   while a prompt or worker is running.
-- Rebase requires a clean worktree and index; the user commits changes instead
-  of stashing. The new workflow must not invoke or offer autostash.
+- Rebase requires no staged or unstaged tracked changes; harmless untracked
+  files are allowed, with Git rejecting collisions. The user commits changes
+  instead of stashing. The new workflow must not invoke or offer autostash.
 - Keep existing reset for current-branch pointer movement. Named checkout must
   carry dirty changes without stashing whenever Git can avoid overwriting them;
   moving a non-current branch is only a ref change.
@@ -411,6 +412,9 @@ updates to other branch refs for this action. Show a commit-first message when
 dirty, with no stash suggestion. Apply the same no-autostash, clean-tree policy
 to the fork's other rebase entry points during the audit, not just this new
 binding. Do not remove manual stash commands; their removal is not requested.
+The user clarified that harmless untracked files remain allowed, including
+when the clean-state query would otherwise display them. Let Git reject
+untracked collisions; do not impose an empty-untracked-list prerequisite.
 
 Validation: divergent/ancestor/descendant targets, selected commit on another
 branch or in reflog, root commit, no-op, dirty state, conflicts with continue
