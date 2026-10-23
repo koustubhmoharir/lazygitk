@@ -274,7 +274,7 @@ func TestBranchActionCreateNativeTrackingPolicies(t *testing.T) {
 			if err := cmd.Run(); err != nil {
 				t.Fatal(err)
 			}
-			_, remoteErr := runBranchCreateGit(root, "config", "--get", "branch."+policy.destination+".remote")
+			remoteErr := runBranchCreateGit(root, "config", "--get", "branch."+policy.destination+".remote")
 			assert.Equal(t, policy.wantTracked, remoteErr == nil)
 			if policy.wantTracked {
 				assert.Equal(t, "origin", gitTest(t, root, "config", "--get", "branch."+policy.destination+".remote"))
@@ -303,7 +303,7 @@ func TestBranchActionCreateNativeTrackingPolicies(t *testing.T) {
 		if err := cmd.Run(); err != nil {
 			t.Fatal(err)
 		}
-		_, err = runBranchCreateGit(root, "config", "--get", "branch.chosen-name.remote")
+		err = runBranchCreateGit(root, "config", "--get", "branch.chosen-name.remote")
 		assert.Error(t, err)
 	})
 	t.Run("no-track preserves orphan upstream metadata", func(t *testing.T) {
@@ -439,7 +439,7 @@ func TestBranchActionCreateBareUnbornAndIgnoredCollision(t *testing.T) {
 			t.Fatal(err)
 		}
 		assert.Error(t, cmd.Run())
-		_, err = runBranchCreateGit(root, "show-ref", "--verify", "refs/heads/ignored-fail")
+		err = runBranchCreateGit(root, "show-ref", "--verify", "refs/heads/ignored-fail")
 		assert.Error(t, err)
 	})
 }
@@ -451,17 +451,21 @@ func TestBranchActionCreateCheckoutCollisions(t *testing.T) {
 		prepareLocal  func(*testing.T, string)
 	}{{
 		name: "dirty tracked", prepareTarget: func(t *testing.T, root string) {
+			t.Helper()
 			writeTestFile(t, filepath.Join(root, "tracked"), []byte("target change\n"), 0o644)
 		},
 		prepareLocal: func(t *testing.T, root string) {
+			t.Helper()
 			writeTestFile(t, filepath.Join(root, "tracked"), []byte("local dirty change\n"), 0o644)
 		},
 	}, {
 		name: "untracked", prepareTarget: func(t *testing.T, root string) {
+			t.Helper()
 			writeTestFile(t, filepath.Join(root, "collision-path"), []byte("target file"), 0o644)
 			gitTest(t, root, "add", "collision-path")
 		},
 		prepareLocal: func(t *testing.T, root string) {
+			t.Helper()
 			writeTestFile(t, filepath.Join(root, "collision-path"), []byte("local untracked file"), 0o644)
 		},
 	}} {
@@ -490,16 +494,15 @@ func TestBranchActionCreateCheckoutCollisions(t *testing.T) {
 				t.Fatal(err)
 			}
 			assert.Error(t, cmd.Run())
-			_, err = runBranchCreateGit(root, "show-ref", "--verify", "refs/heads/collision-fail")
+			err = runBranchCreateGit(root, "show-ref", "--verify", "refs/heads/collision-fail")
 			assert.Error(t, err)
 		})
 	}
 }
 
-func runBranchCreateGit(root string, args ...string) (string, error) {
+func runBranchCreateGit(root string, args ...string) error {
 	commandArgs := append([]string{"-C", root}, args...)
-	output, err := exec.Command("git", commandArgs...).CombinedOutput()
-	return string(output), err
+	return exec.Command("git", commandArgs...).Run()
 }
 
 func transactionCommandsForBareRepo(t *testing.T, root string) *BranchCommands {
