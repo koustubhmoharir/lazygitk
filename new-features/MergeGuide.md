@@ -33,6 +33,23 @@ requirements to restore a deferred multi-branch push.
 
 ### Selected-branch operations (item 7 in progress)
 
+- `branch_action_merge_plan.go` prepares immutable-source merge commands from
+  those reviews. Clear implicit `branch.<current>.mergeOptions` and supply its
+  captured arguments exactly once before app arguments and the selected mode.
+  Disable autostash and command-runner retries. Preserve native `--ff` semantics
+  (divergence permits a merge), FF-only rejection, no-FF/squash incompatibilities
+  and unborn-HEAD restrictions. Reservation checks depend on actual tip movement;
+  the selected source remains read-only even when occupied elsewhere.
+  Ignored-file approval binds paths, bytes and modes. Cache ort predictions;
+  final validation must not rerun configured drivers. Preserve other strategies
+  with an explicitly explained conservative review of all ignored files.
+  `branch_action_merge_commit.go` separately captures the post-squash index,
+  message and commit options. No-op/unchanged results never authorize an
+  unrelated-only commit; conflicts and stale HEAD/config/index stop phase two.
+  Keep terminal signing/editor/hook options and actual native failure state.
+  Normal merge abort checks original HEAD, MERGE_HEAD and ORIG_HEAD, not a later
+  source-ref lookup. Native plan/commit/abort tests and backend lint passed;
+  normal concurrency remains Git's, without custom locks, retries or rollback.
 - `branch_action_merge_review.go` adds backend-owned, read-only merge reviews
   binding source/current HEAD, effective configuration, semantic staged entries
   and staged path names. Native last-value branch merge options precede captured

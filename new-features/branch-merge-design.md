@@ -30,7 +30,7 @@ and the [native probes](branch-merge-probes.md).
   dispatch abort/quit/continue. Tokenize as arguments without shell expansion;
   preserve supported options and fail clearly rather than guessing unknown ones.
 
-## Next implementation boundaries
+## Native plan and remaining GUI boundary
 
 Prepare an opaque source/current-HEAD plan using `BranchActionTarget`. Capture
 the application's merge settings on the UI thread. Inspect effective native
@@ -47,8 +47,14 @@ Intersect them with native ignored paths, with case/prefix collision handling,
 and fingerprint the affected bytes/modes. Present a Cancel-first risk review.
 Validate the cached prediction's inputs and fresh filesystem risk snapshot at
 launch; changed inputs require review, not automatic retry. The ort preview API
-does not claim support for arbitrary other strategies; resolve that capability
-explicitly rather than silently substituting a strategy.
+does not claim support for arbitrary other strategies. Preserve their arguments
+and conservatively review all ignored files as potential overwrite risks when
+an exact preview is unavailable for the configured strategy. Explain this in the
+modal and require explicit approval; never silently substitute ort. For a true
+fast-forward, the source tree supplies paths without running merge drivers. If
+no ignored files exist, skip preview and require a fresh review if any appear
+before launch. A failed or malformed ort preview remains an error, not permission
+to proceed with an incomplete prediction.
 
 For squash-and-commit, explicitly review any already-staged changes before they
 can enter the commit. Retain an index snapshot across phases, and recheck HEAD,
@@ -65,6 +71,20 @@ configured editor interaction, with repository checks at every queued boundary.
 
 The native probes establish that a clean unborn destination supports an ordinary
 fast-forward, while forced no-FF and squash fail. Preserve those distinctions.
-Message/configuration handling and strategy capability checks still need their
-concrete native plan and GUI implementation; the preview and argument parser
-alone do not complete this audit.
+The native review, merge plan and separately prepared squash-commit plan now
+exist in `branch_action_merge_{review,plan,commit}.go`. They bind configuration
+and staged entries, preserve configured message/signing/editor choices, and
+construct immutable-source commands with autostash and lock retries disabled.
+The post-squash plan rejects conflicts and unchanged staged results; its queued
+commit checks the fresh staged snapshot again. A queued normal-merge abort
+checks current HEAD plus `MERGE_HEAD` and `ORIG_HEAD`, rather than resolving a
+possibly moved source branch again. The repository-bound GUI routing and its
+acceptance checks remain necessary before this audit is complete.
+
+Native option folding follows Git's callbacks, including their non-obvious
+reset behavior: `--no-strategy` does nothing, and `--no-message` clears the
+buffer while retaining the indication that a custom message was supplied.
+Squash disables only the default automatic commit after option parsing; it
+conflicts with an explicit `--commit` in either order. Disabling squash restores
+the default commit policy unless a separate `--no-commit` remains effective.
+See [Git 2.51.1's merge implementation](https://github.com/git/git/blob/v2.51.1/builtin/merge.c).
