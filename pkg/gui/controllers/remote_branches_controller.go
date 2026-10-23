@@ -232,7 +232,7 @@ func (self *RemoteBranchesController) newLocalBranch(selectedBranch *models.Remo
 	// will set to the remote's branch name without the remote name
 	nameSuggestion := strings.SplitAfterN(selectedBranch.RefName(), "/", 2)[1]
 
-	return self.c.Helpers().Refs.NewBranch(selectedBranch.RefName(), selectedBranch.RefName(), nameSuggestion)
+	return self.c.Helpers().Refs.NewBranch(selectedBranch.FullRefName(), selectedBranch.RefName(), nameSuggestion)
 }
 
 func (self *RemoteBranchesController) checkoutBranch(selectedBranch *models.RemoteBranch) error {

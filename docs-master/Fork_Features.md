@@ -205,6 +205,32 @@ set/unset remain available to repair tracking metadata. Reset and rebase are
 explicitly actions on the checked-out branch; they check the reviewed source,
 checkout and upstream again before opening their submenus.
 
+## Create branches and tags from the selected source
+
+**New branch** retains the selected source while you enter a literal name,
+then shows the source/current commits and three tracking choices: do not set
+up tracking, use Git's configured policy, or track the source branch directly.
+This action creates and checks out the new branch. Pointer-only create/move
+and **Checkout as branch…** remain separate actions for existing names.
+
+The initial tracking choice preserves the existing name-suggestion convention,
+but is now visible before execution. Git owns configured/inherited tracking;
+“do not set up” does not remove orphan metadata already configured for that
+name. A commit source cannot provide direct branch tracking. Source/config
+changes after review stop the operation. Git resolves branch sources for its
+tracking policy under its normal concurrency model after the final check.
+
+Checkout carries harmless dirty and untracked files. It refuses paths it would
+overwrite, including ignored files, and offers no automatic stash. A native
+error can follow a hook that already changed state; the UI refreshes actual
+state without rollback or retry. Checkout-by-name creation retains the branch
+selected when name entry began, even if selection changes later.
+
+Tag creation retains the selected commit and supports descriptions and
+configured signing. Replacing a tag reviews its exact old object and new
+source; matching peeled commits do not bypass overwrite approval. Changed
+sources, tag objects, signing configuration or repositories stop stale actions.
+
 ## Delete selected branches
 
 The branches pane offers local, remote and both deletion. Reviews show exact

@@ -244,7 +244,8 @@ func (self *StashController) postStashRefresh(switchToFiles bool) {
 }
 
 func (self *StashController) handleNewBranchOffStashEntry(stashEntry *models.StashEntry) error {
-	return self.c.Helpers().Refs.NewBranch(stashEntry.FullRefName(), stashEntry.Description(), "")
+	// Fork: a stash index can shift while a prompt is open; retain its commit.
+	return self.c.Helpers().Refs.NewBranch(stashEntry.Hash, stashEntry.Description(), "")
 }
 
 func (self *StashController) handleRenameStashEntry(stashEntry *models.StashEntry) error {

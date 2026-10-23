@@ -54,6 +54,29 @@ requirements to restore a deferred multi-branch push.
   generation, debug build and inventory checks also passed; scoped backend,
   controller and i18n lint reports zero issues. This completes the
   deletion subtask; creation audit and final item 7 acceptance remain pending.
+- `RefsHelper.NewBranch` and `TagsHelper.OpenCreateTagPrompt` are thin hooks
+  into fork-owned `captured_branch_create.go` and `captured_tag_create.go`.
+  They replace upstream name sanitization/live callbacks and creation autostash
+  fallback while retaining native creation, tracking, tag description/signing
+  and overwrite choices. Branch policy rows retain worker-prepared native plans;
+  do not recapture changed config only after a row is chosen. Keep default row
+  ordering based on the suggested/entered name, and explicit no-setup wording.
+  Confirm/cancel/duplicate callbacks retain repository generation and consumed
+  execution state. Tag signing revalidates again before terminal launch; its
+  guarded refresh-Then invokes the success callback at most once. Preserve
+  annotation versus signing as distinct captured facts. Refresh actual errors;
+  failed checkout keeps selection instead of selecting a presumed new HEAD.
+  Remote branch creation supplies a full ref; stash creation supplies its full
+  immutable commit, never a mutable stash index. `checkoutByName` captures its
+  original selected source and backend/generation before name entry; its
+  missing-ref creation uses `NewBranchWithNameFromRef` without another name
+  prompt. Generic existing checkout behavior outside creation remains separate.
+  Focused captured branch tests passed (29.781s), tag tests passed independently
+  (16.824s), all nine affected branch/commit/stash terminal cases passed
+  (32.157s), and the full tag terminal group passed (13.937s). Generation,
+  formatting, debug build, scoped lint and the 549-factory inventory/parser
+  checks pass.
+  This completes the creation audit; final item 7 short-suite acceptance remains.
 - The branch-creation terminal fixtures now review source/HEAD and select
   tracking policy explicitly through `Common.ReviewBranchCreateMenu`. Check
   policy rows independently because their default order depends on name entry;
@@ -86,7 +109,7 @@ requirements to restore a deferred multi-branch push.
   native creation checks passed (26.521s), including raw dirty-state retention,
   stale/foreign plans, tracking policies and real checkout obstructions.
   [Design](branch-create-design.md) and [native probes](branch-create-probes.md)
-  record these constraints. Live creation routing and acceptance remain pending.
+  record these constraints. Live creation now uses the captured GUI hooks; final item 7 acceptance remains pending.
 - `git_literal_config.go` extends the command builder in a fork-owned file for
   literal subsection names containing `=`. Git's `-c key=value` splits at the
   first equals sign; use native `--config-env=key=VARIABLE` for those names and

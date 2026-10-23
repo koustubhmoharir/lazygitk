@@ -42,4 +42,6 @@ backend and repository generation. Repeated approval must not launch twice.
 These are read-only preparations followed by native Git commands, with native
 errors and actual partial state. See [the native probe](branch-create-probes.md)
 for the verified start-point/tracking distinction. Native creation plans and
-focused checks are implemented; live GUI integration and acceptance are pending.
+focused checks are implemented and the captured GUI hooks are integrated.
+Nine branch/commit/stash terminal scenarios and the tag terminal group pass;
+final item 7 acceptance remains in the tracker.

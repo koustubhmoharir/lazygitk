@@ -324,94 +324,10 @@ func (self *RefsHelper) CreateCheckoutMenu(commit *models.Commit) error {
 	})
 }
 
+// Fork: capture the selected source and repository across literal-name entry,
+// explicit tracking review and native checkout; never offer an automatic stash.
 func (self *RefsHelper) NewBranch(from string, fromFormattedName string, suggestedBranchName string) error {
-	message := utils.ResolvePlaceholderString(
-		self.c.Tr.NewBranchNameBranchOff,
-		map[string]string{
-			"branchName": fromFormattedName,
-		},
-	)
-
-	if suggestedBranchName == "" {
-		var err error
-
-		suggestedBranchName, err = self.getSuggestedBranchName()
-		if err != nil {
-			return err
-		}
-	}
-
-	refresh := func() {
-		self.c.RefreshFromWorker(types.RefreshOptions{
-			BatchUIUpdates:        true,
-			BranchSelection:       types.SelectCheckedOutBranch,
-			CommitSelection:       types.SelectHeadCommit,
-			SelectTopReflogCommit: true,
-			Then: func() error {
-				// Switch to the branches panel only now, in the same batched
-				// frame that applies the refreshed data, so the panel switch
-				// and the new branch appear together rather than flashing the
-				// old branch list while the checkout is still in progress.
-				if self.c.Context().Current() != self.c.Contexts().Branches {
-					self.c.Context().Push(self.c.Contexts().Branches, types.OnFocusOpts{})
-				}
-				return nil
-			},
-		})
-	}
-
-	self.c.Prompt(types.PromptOpts{
-		Title:          message,
-		InitialContent: suggestedBranchName,
-		HandleConfirm: func(response string) error {
-			self.c.LogAction(self.c.Tr.Actions.CreateBranch)
-			newBranchName := SanitizedBranchName(response)
-			newBranchFunc := self.c.Git().Branch.New
-			if newBranchName != suggestedBranchName {
-				newBranchFunc = self.c.Git().Branch.NewWithoutTracking
-			}
-
-			// Creating the branch checks it out, which can take a while when
-			// the ref we're branching off is distant, so do it on a worker.
-			return self.c.WithWaitingStatus(self.c.Tr.CreatingBranchStatus, func(gocui.Task) error {
-				if err := newBranchFunc(newBranchName, from); err != nil {
-					if IsSwitchBranchUncommittedChangesError(err) {
-						// offer to autostash changes
-						self.c.OnUIThread(func() error {
-							self.c.Confirm(types.ConfirmOpts{
-								Title:  self.c.Tr.AutoStashTitle,
-								Prompt: self.c.Tr.AutoStashPrompt,
-								HandleConfirm: func() error {
-									return self.c.WithWaitingStatus(self.c.Tr.CreatingBranchStatus, func(gocui.Task) error {
-										if err := self.c.Git().Stash.Push(fmt.Sprintf(self.c.Tr.AutoStashForNewBranch, newBranchName)); err != nil {
-											return err
-										}
-										if err := newBranchFunc(newBranchName, from); err != nil {
-											return err
-										}
-										err := self.c.Git().Stash.Pop(0)
-										// Branch switch successful so re-render the UI even if the pop operation failed (e.g. conflict).
-										refresh()
-										return err
-									})
-								},
-							})
-							return nil
-						})
-
-						return nil
-					}
-
-					return err
-				}
-
-				refresh()
-				return nil
-			})
-		},
-	})
-
-	return nil
+	return self.newCapturedBranch(from, fromFormattedName, suggestedBranchName)
 }
 
 func (self *RefsHelper) MoveCommitsToNewBranch() error {

@@ -403,10 +403,27 @@ func (self *BranchesController) checkoutPreviousBranch() error {
 }
 
 func (self *BranchesController) checkoutByName() error {
+	// Fork: retain the selected creation source before name entry. A failed
+	// checkout must not create from a later selection or another repository.
+	git, generation := self.c.Git(), self.c.State().GetRepoGeneration()
+	sourceRef, sourceLabel := "", ""
+	if branch := self.context().GetSelected(); branch != nil {
+		sourceRef, sourceLabel = branch.FullRefName(), branch.RefName()
+	}
+	checkRepository := func() error {
+		if self.c.Git() != git || self.c.State().GetRepoGeneration() != generation {
+			return errors.New(self.c.Tr.BranchSyncRepositoryChanged)
+		}
+		return nil
+	}
 	self.c.Prompt(types.PromptOpts{
 		Title:               self.c.Tr.BranchName + ":",
 		FindSuggestionsFunc: self.c.Helpers().Suggestions.GetRefsSuggestionsFunc(),
+		HandleClose:         checkRepository,
 		HandleConfirm: func(response string) error {
+			if err := checkRepository(); err != nil {
+				return err
+			}
 			self.c.LogAction("Checkout branch")
 			_, branchName, found := self.c.Helpers().Refs.ParseRemoteBranchName(response)
 			if found {
@@ -414,38 +431,27 @@ func (self *BranchesController) checkoutByName() error {
 			}
 			return self.c.Helpers().Refs.CheckoutRef(response, types.CheckoutRefOptions{
 				OnRefNotFound: func(ref string) error {
+					if err := checkRepository(); err != nil {
+						return err
+					}
 					self.c.Confirm(types.ConfirmOpts{
-						Title:  self.c.Tr.BranchNotFoundTitle,
-						Prompt: fmt.Sprintf("%s %s%s", self.c.Tr.BranchNotFoundPrompt, ref, "?"),
+						Title:       self.c.Tr.BranchNotFoundTitle,
+						Prompt:      fmt.Sprintf("%s %s?", self.c.Tr.BranchNotFoundPrompt, ref),
+						HandleClose: checkRepository,
 						HandleConfirm: func() error {
-							return self.createNewBranchWithName(ref)
+							if err := checkRepository(); err != nil {
+								return err
+							}
+							if sourceRef == "" {
+								return errors.New(self.c.Tr.NoBranchesThisRepo)
+							}
+							return self.c.Helpers().Refs.NewBranchWithNameFromRef(sourceRef, sourceLabel, ref)
 						},
 					})
-
 					return nil
 				},
 			})
 		},
-	},
-	)
-
-	return nil
-}
-
-func (self *BranchesController) createNewBranchWithName(newBranchName string) error {
-	branch := self.context().GetSelected()
-	if branch == nil {
-		return nil
-	}
-
-	if err := self.c.Git().Branch.New(newBranchName, branch.FullRefName()); err != nil {
-		return err
-	}
-
-	self.c.Refresh(types.RefreshOptions{
-		BranchSelection:       types.SelectCheckedOutBranch,
-		CommitSelection:       types.SelectHeadCommit,
-		SelectTopReflogCommit: true,
 	})
 	return nil
 }

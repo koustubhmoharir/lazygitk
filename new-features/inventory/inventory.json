@@ -1345,7 +1345,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 526,
+      "line": 532,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request\"",
@@ -1358,7 +1358,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 534,
+      "line": 540,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-to-chosen-target\"",
@@ -1371,7 +1371,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 567,
+      "line": 573,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-current-to-selected\"",
@@ -3343,6 +3343,47 @@
     },
     {
       "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_branch_create.go",
+      "line": 171,
+      "owner": "capturedBranchCreateFlow.policyMenu",
+      "fields": {
+        "CommandID": "\"branch.create.direct-tracking\"",
+        "DisabledReason": "trackingDisabled",
+        "Label": "c.Tr.BranchActionCreateDirectTracking",
+        "OnPress": "func() error { return flow.execute(git_commands.BranchActionCreateDirectTracking) }",
+        "Verb": "\"create\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_branch_create.go",
+      "line": 172,
+      "owner": "capturedBranchCreateFlow.policyMenu",
+      "fields": {
+        "CommandID": "\"branch.create.cancel\"",
+        "Label": "c.Tr.Cancel",
+        "OnPress": "flow.cancel",
+        "Verb": "\"cancel\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_branch_create.go",
+      "line": 187,
+      "owner": "capturedBranchCreateFlow.policyItem",
+      "fields": {
+        "CommandID": "id",
+        "DisabledReason": "disabled",
+        "Label": "label",
+        "OnPress": "func() error { return flow.execute(policy) }",
+        "Verb": "\"create\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/captured_branch_delete.go",
       "line": 173,
       "owner": "capturedBranchDeleteFlow.menu",
@@ -3878,7 +3919,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/refs_helper.go",
-      "line": 483,
+      "line": 399,
       "owner": "RefsHelper.MoveCommitsToNewBranch",
       "fields": {
         "CommandID": "\"branch.move-commits-to-new-from-base\"",
@@ -3891,7 +3932,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/refs_helper.go",
-      "line": 496,
+      "line": 412,
       "owner": "RefsHelper.MoveCommitsToNewBranch",
       "fields": {
         "CommandID": "\"branch.move-commits-to-new-stacked\"",

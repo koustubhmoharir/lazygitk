@@ -11,42 +11,49 @@ Todo list when making a new translation
 package i18n
 
 type TranslationSet struct {
-	BranchActionResetReviewPrompt     string
-	BranchActionResetHardWarning      string
-	BranchActionDetachedHead          string
-	BranchActionUnbornHead            string
-	BranchActionRebaseDefaultRange    string
-	BranchActionRebaseReviewPrompt    string
-	BranchActionRebasePausedError     string
-	BranchActionMergeReviewPrompt     string
-	BranchActionMergeConfigured       string
-	BranchActionMergeAllowFF          string
-	BranchActionMergeNoFF             string
-	BranchActionMergeDefaultMessage   string
-	BranchActionMergeOptions          string
-	BranchActionMergeMessageTitle     string
-	BranchActionMergeChosenMessage    string
-	BranchActionMergeStagedTitle      string
-	BranchActionMergeStagedPrompt     string
-	BranchActionMergeApproveStaged    string
-	BranchActionMergeIgnoredTitle     string
-	BranchActionMergeIgnoredPrompt    string
-	BranchActionMergeAllIgnoredPrompt string
-	BranchActionMergeApproveIgnored   string
-	BranchActionMergeSquashConflicts  string
-	BranchActionDeleteSources         string
-	BranchActionDeleteHead            string
-	BranchActionDeleteReserved        string
-	BranchActionDeleteNoRemote        string
-	BranchActionDeleteChooseRemoteRef string
-	BranchActionDeleteNotBranch       string
-	BranchActionDeleteManualTitle     string
-	BranchActionDeleteManualAction    string
-	BranchActionDeleteRemoteNameTitle string
-	BranchActionDeleteRemoteRefTitle  string
-	BranchActionDeleteRemotePrompt    string
-	BranchActionDeleteLocalUpstream   string
-	BranchActionDeleteForcePrompt     string
+	BranchActionResetReviewPrompt        string
+	BranchActionResetHardWarning         string
+	BranchActionDetachedHead             string
+	BranchActionUnbornHead               string
+	BranchActionRebaseDefaultRange       string
+	BranchActionRebaseReviewPrompt       string
+	BranchActionRebasePausedError        string
+	BranchActionMergeReviewPrompt        string
+	BranchActionMergeConfigured          string
+	BranchActionMergeAllowFF             string
+	BranchActionMergeNoFF                string
+	BranchActionMergeDefaultMessage      string
+	BranchActionMergeOptions             string
+	BranchActionMergeMessageTitle        string
+	BranchActionMergeChosenMessage       string
+	BranchActionMergeStagedTitle         string
+	BranchActionMergeStagedPrompt        string
+	BranchActionMergeApproveStaged       string
+	BranchActionMergeIgnoredTitle        string
+	BranchActionMergeIgnoredPrompt       string
+	BranchActionMergeAllIgnoredPrompt    string
+	BranchActionMergeApproveIgnored      string
+	BranchActionMergeSquashConflicts     string
+	BranchActionCreateTitle              string
+	BranchActionCreateReview             string
+	BranchActionCreateNoTracking         string
+	BranchActionCreateConfiguredTracking string
+	BranchActionCreateDirectTracking     string
+	BranchActionCreateDirectUnavailable  string
+	BranchActionTagCreateReview          string
+	BranchActionDeleteSources            string
+	BranchActionDeleteHead               string
+	BranchActionDeleteReserved           string
+	BranchActionDeleteNoRemote           string
+	BranchActionDeleteChooseRemoteRef    string
+	BranchActionDeleteNotBranch          string
+	BranchActionDeleteManualTitle        string
+	BranchActionDeleteManualAction       string
+	BranchActionDeleteRemoteNameTitle    string
+	BranchActionDeleteRemoteRefTitle     string
+	BranchActionDeleteRemotePrompt       string
+	BranchActionDeleteLocalUpstream      string
+	BranchActionDeleteForcePrompt        string
 	// Fork-owned integration strings are separate to avoid reformatting the
 	// upstream table when longer field names are added.
 	BranchSyncCurrentPullSummary          string
@@ -1454,6 +1461,13 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchActionMergeAllIgnoredPrompt:     "The configured merge strategy has no exact path preview here. All ignored files are listed as potential overwrite risks. Cancel to inspect or back up files first, or explicitly approve this conservative risk list. The configured strategy will be retained.",
 		BranchActionMergeApproveIgnored:       "Proceed and accept the reviewed ignored-file risks",
 		BranchActionMergeSquashConflicts:      "The squash left unresolved conflicts. Resolve them and explicitly commit the staged result. Git did not start a normal merge, so merge --abort is unavailable. No automatic commit ran.",
+		BranchActionCreateTitle:               "Create branch and check it out",
+		BranchActionCreateReview:              "Create branch %q and check it out.\nSource: %s (%s)\nCurrent HEAD: %s (%s)\nChoose upstream tracking:",
+		BranchActionCreateNoTracking:          "Do not set up upstream tracking",
+		BranchActionCreateConfiguredTracking:  "Use Git's configured tracking policy",
+		BranchActionCreateDirectTracking:      "Track the selected source branch directly",
+		BranchActionCreateDirectUnavailable:   "Direct tracking needs a local or remote branch source.",
+		BranchActionTagCreateReview:           "Tag %q currently names object %s.\nSource: %s (%s).\nOverwrite this tag with the reviewed source commit?",
 		BranchActionDeleteSources:             "Selected refs:\n%s",
 		BranchActionDeleteHead:                "\n\nCurrent HEAD: %q at %s",
 		BranchActionDeleteReserved:            "%s is reserved by %s in Git directory %q. Finish the operation or manage that worktree explicitly before deleting its branch.",
