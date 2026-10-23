@@ -45,7 +45,7 @@ var (
 
 func (plan BranchActionMergePlan) Review() BranchActionMergeReview { return plan.review }
 func (plan BranchActionMergePlan) Mode() BranchActionMergeMode     { return plan.mode }
-func (plan BranchActionMergePlan) IgnoredFiles() []string { return slices.Clone(plan.ignoredPaths) }
+func (plan BranchActionMergePlan) IgnoredFiles() []string          { return slices.Clone(plan.ignoredPaths) }
 
 func (plan BranchActionMergePlan) ConservativeIgnoredReview() bool {
 	return plan.allIgnoredAtRisk && len(plan.ignoredPaths) > 0
