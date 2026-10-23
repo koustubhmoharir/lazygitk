@@ -44,6 +44,17 @@ requirements to restore a deferred multi-branch push.
   upstream changes. Parse NUL-framed fields from raw stdout, with record
   terminators separate: remote/config metadata can contain newlines. Preserve
   the exact tracking namespace; do not derive it from a remote name.
+- `git_commands/branch_action_target.go` prepares a read-only source/current-HEAD
+  snapshot for remaining selected-branch actions. Accept only full direct refs
+  or full commit OIDs; preserve native query errors and distinguish a missing
+  or moved ref from an inspection failure. The opaque snapshot is bound to the
+  original backend instance, including when another instance opens the same
+  filesystem repository. Check both HEAD's ref identity and OID; detached and
+  unborn HEAD remain representable because reset can operate there. This guard
+  does not authorize a mutation or replace operation-specific occupancy/risk
+  checks, and it must not blanket-reject a merge that reset may explicitly abort.
+  Callers still bind their repository generation, commands and refreshes, use
+  the captured source OID, and preserve Git's normal concurrency after launch.
 - `controllers/branch_sync_source.go` defines context-to-source resolution,
   including stored local-branch history and rejection of non-local history,
   range selections and detached pseudo-branches. Capture the name, not a model

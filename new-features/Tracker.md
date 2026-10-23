@@ -27,6 +27,9 @@ deferred and must not be offered. Keep wider updates explicit choices.
    choices and signing support while binding each prompt/command/refresh to
    the original source and repository. Keep native errors and Git's normal
    concurrency model; no implicit retry, rollback, checkout or stash.
+   Use the prepared native source/current-HEAD snapshot guard for the remaining
+   current-destination actions; keep operation-specific reservation and data-loss
+   checks in their own command/review flows, not in the read-only guard.
 2. Verify remaining menus and preserve the sync acceptance baseline with local
    fake remotes: selected != current, absent/gone upstream,
    distinct push/pull remotes, force-with-lease rejection, fast-forward,
