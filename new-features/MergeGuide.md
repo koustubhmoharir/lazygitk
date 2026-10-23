@@ -47,6 +47,25 @@ requirements to restore a deferred multi-branch push.
   The helper requires Git's `--config-env` support (2.31+, already below the
   merge-preview requirement). Focused merge/current-Pull/helper checks and
   backend lint passed; see [Git's option documentation](https://git-scm.com/docs/git).
+- `branch_action_delete_{local,remote,choices,context}.go` adds backend-owned
+  deletion reviews. Bind source refs, current HEAD, effective configuration,
+  reservations and retained-history proofs to the original backend. Each source
+  uses its own upstream plus current/main proofs; selected refs and tracking
+  caches scheduled for deletion cannot prove retained history. Refuse occupied
+  local branches, including paused-operation reservations; bare common HEAD
+  alone is not a checkout. Local execution is one native `branch -D --` after
+  applicable unmerged-history approval. Remote inspection retains every merge
+  entry and inverse-fetch candidate; the GUI must resolve ambiguity explicitly.
+  Remote execution uses exact full server branch refs and configured named
+  remotes, suppresses mirroring, followed tags and recursive submodule pushes,
+  and rejects protected/symbolic cache writes. Keep native multiple-push-URL
+  partial success, one push per remote, and no retries or rollback. Between
+  remote groups validate HEAD/configuration/cache safety without requiring a
+  cached source intentionally deleted by an earlier push to reappear. Compound
+  callers must retain local branches on any remote error. Getter results are
+  copied; config digests stay private. These APIs do not yet replace live GUI
+  deletion. Native tests cover literal names, dirty/index byte preservation,
+  reservations, stale/foreign plans, cache mappings and actual partial failures.
 - `branch_sync_reverse_refspec.go` adds preparatory inverse fetch mapping for
   remote-pane deletion. Return every deduplicated full source in configuration
   order; multiple candidates require explicit choice. Retain positive mapping

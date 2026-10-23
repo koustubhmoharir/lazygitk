@@ -39,5 +39,7 @@ is maintained in [branch-delete-probes.md](branch-delete-probes.md).
   error and refresh actual state. Do not retry earlier successful deletions or
   invent an atomic transaction. A later local failure also leaves actual state.
 
-Concrete native review/command and GUI integration remain to be implemented;
-the inverse-mapping helper is preparatory inspection only.
+The native review/command APIs now implement these checks in
+`branch_action_delete_{local,remote,choices,context}.go`. Live GUI routing and
+its acceptance checks remain in progress; the tracker retains the deletion
+subtask until those pass.

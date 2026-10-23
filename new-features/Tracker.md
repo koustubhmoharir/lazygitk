@@ -26,7 +26,9 @@ deferred and must not be offered. Keep wider updates explicit choices.
      errors. Refuse occupied/reserved branches; never detach or remove another
      worktree implicitly. Use exact native tracking refs and literal names.
      Follow [the current deletion design](branch-delete-design.md), including
-     warning-proof exclusions for refs scheduled to be removed together.
+     warning-proof exclusions for refs scheduled to be removed together. Native
+     review/command APIs are implemented; finish live GUI routing and acceptance
+     before removing this subtask.
    - Audit branch/tag creation, retaining existing checkout/tracking choices,
      annotation/signing and overwrite warnings without later model or repository
      substitution. Keep pointer-only placement separate from named checkout.
