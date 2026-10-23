@@ -6,7 +6,7 @@ import (
 )
 
 var MergeNonFastForward = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Merge a branch into another using non-fast-forward merge",
+	Description:  "Merge selected branches with configured and no-fast-forward modes",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig: func(config *config.AppConfig) {
@@ -23,54 +23,35 @@ var MergeNonFastForward = NewIntegrationTest(NewIntegrationTestArgs{
 			Checkout("original-branch")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
-		t.Views().Branches().
-			Focus().
-			Lines(
-				Contains("original-branch").IsSelected(),
-				Contains("branch1"),
-				Contains("branch2"),
+		t.Views().Branches().Focus().
+			Lines(Contains("original-branch").IsSelected(), Contains("branch1"), Contains("branch2")).
+			NavigateToLine(Contains("branch2")).Press(keys.Branches.MergeIntoCurrentBranch)
+
+		t.ExpectPopup().Menu().Title(Equals("Merge")).
+			ContainsLines(
+				Contains("Merge using configured options"),
+				Contains("Merge (allow fast-forward)"),
+				Contains("Merge (no fast-forward)"),
+				Contains("Squash merge and leave uncommitted"),
+				Contains("Squash merge and commit"),
 			).
-			SelectNextItem().
-			Press(keys.Branches.MergeIntoCurrentBranch)
+			Select(MatchesRegexp(`^[[:space:]]*n Merge \(no fast-forward\)`)).Confirm()
+		t.Common().ReviewBranchMerge("original-branch", "branch2", "Merge (no fast-forward)")
 
-		t.ExpectPopup().Menu().
-			Title(Equals("Merge")).
-			TopLines(
-				Contains("Regular merge (fast-forward)"),
-				Contains("Regular merge (with merge commit)"),
-			).
-			Select(Contains("Regular merge (with merge commit)")).
-			Confirm()
+		t.Views().Commits().EventuallyContent(Contains(`Merge branch "branch2" into "original-branch"`)).ContainsLines(
+			Contains(`Merge branch "branch2" into "original-branch"`).IsSelected(),
+			Contains("branch2"),
+		)
 
-		t.Views().Commits().
-			Lines(
-				Contains("◎─╮ Merge branch 'branch1' into original-branch").IsSelected(),
-				Contains("│ ○ * branch1"),
-				Contains("○─╯ one"),
-			)
+		t.Views().Branches().Focus().NavigateToLine(Contains("branch1")).Press(keys.Branches.MergeIntoCurrentBranch)
+		t.ExpectPopup().Menu().Title(Equals("Merge")).
+			Select(MatchesRegexp(`^[[:space:]]*m Merge using configured options`)).Confirm()
+		t.Common().ReviewBranchMerge("original-branch", "branch1", "Merge using configured options")
 
-		// Check that branch2 shows the non-fast-forward option first
-		t.Views().Branches().
-			Focus().
-			NavigateToLine(Contains("branch2")).
-			Press(keys.Branches.MergeIntoCurrentBranch)
-
-		t.ExpectPopup().Menu().
-			Title(Equals("Merge")).
-			TopLines(
-				Contains("Regular merge (with merge commit)"),
-				Contains("Regular merge (fast-forward)"),
-			).
-			Select(Contains("Regular merge (with merge commit)")).
-			Confirm()
-
-		t.Views().Commits().
-			Lines(
-				Contains("◎─╮ Merge branch 'branch2' into original-branch").IsSelected(),
-				Contains("│ ○ * branch2"),
-				Contains("◎─│─╮ Merge branch 'branch1' into original-branch"),
-				Contains("│ │ ○ * branch1"),
-				Contains("○─┴─╯ one"),
-			)
+		t.Views().Commits().EventuallyContent(Contains(`Merge branch "branch1" into "original-branch"`)).ContainsLines(
+			Contains(`Merge branch "branch1" into "original-branch"`).IsSelected(),
+			Contains("branch1"),
+			Contains(`Merge branch "branch2" into "original-branch"`),
+		)
 	},
 })

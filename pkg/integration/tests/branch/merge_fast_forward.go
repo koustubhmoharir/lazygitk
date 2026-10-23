@@ -6,7 +6,7 @@ import (
 )
 
 var MergeFastForward = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Merge a branch into another using fast-forward merge",
+	Description:  "Allow-fast-forward merge a selected divergent branch into current",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig: func(config *config.AppConfig) {
@@ -23,46 +23,47 @@ var MergeFastForward = NewIntegrationTest(NewIntegrationTestArgs{
 			Checkout("original-branch")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
-		t.Views().Branches().
-			Focus().
-			Lines(
-				Contains("original-branch").IsSelected(),
-				Contains("branch1"),
-				Contains("branch2"),
+		t.Views().Branches().Focus().
+			Lines(Contains("original-branch").IsSelected(), Contains("branch1"), Contains("branch2")).
+			NavigateToLine(Contains("branch1")).Press(keys.Branches.MergeIntoCurrentBranch)
+
+		firstSourceOID := t.Git().GetCommitHash("refs/heads/branch1")
+		t.ExpectPopup().Menu().Title(Equals("Merge")).
+			Select(MatchesRegexp(`^[[:space:]]*f Merge \(allow fast-forward\)`)).Confirm()
+		t.Common().ReviewBranchMerge("original-branch", "branch1", "Merge (allow fast-forward)")
+		t.Views().Commits().EventuallyContent(Contains("branch1"))
+		if got := t.Git().GetCommitHash("HEAD"); got != firstSourceOID {
+			t.Fail("allow-fast-forward merge did not fast-forward current HEAD")
+		}
+		t.Views().Branches().Focus().NavigateToLine(Contains("branch2")).Press(keys.Branches.MergeIntoCurrentBranch)
+
+		headOID := t.Git().GetCommitHash("HEAD")
+		unrelatedOID := t.Git().GetCommitHash("refs/heads/branch1")
+		sourceOID := t.Git().GetCommitHash("refs/heads/branch2")
+		t.ExpectPopup().Menu().Title(Equals("Merge")).
+			ContainsLines(
+				Contains("Merge using configured options"),
+				Contains("Merge (allow fast-forward)"),
+				Contains("Merge (no fast-forward)"),
+				Contains("Squash merge and leave uncommitted"),
+				Contains("Squash merge and commit"),
 			).
-			SelectNextItem().
-			Press(keys.Branches.MergeIntoCurrentBranch)
+			Select(MatchesRegexp(`^[[:space:]]*f Merge \(allow fast-forward\)`)).Confirm()
+		t.Common().ReviewBranchMerge("original-branch", "branch2", "Merge (allow fast-forward)")
 
-		t.ExpectPopup().Menu().
-			Title(Equals("Merge")).
-			TopLines(
-				Contains("Regular merge (fast-forward)"),
-				Contains("Regular merge (with merge commit)"),
-			).
-			Select(Contains("Regular merge (fast-forward)")).
-			Confirm()
-
-		t.Views().Commits().
-			Lines(
-				Contains("branch1").IsSelected(),
-				Contains("one"),
-			)
-
-		// Check that branch2 can't be merged using fast-forward
-		t.Views().Branches().
-			Focus().
-			NavigateToLine(Contains("branch2")).
-			Press(keys.Branches.MergeIntoCurrentBranch)
-
-		t.ExpectPopup().Menu().
-			Title(Equals("Merge")).
-			TopLines(
-				Contains("Regular merge (with merge commit)"),
-				Contains("Regular merge (fast-forward)"),
-			).
-			Select(Contains("Regular merge (fast-forward)")).
-			Confirm()
-
-		t.ExpectToast(Contains("Cannot fast-forward 'original-branch' to 'branch2'"))
+		t.Views().Commits().EventuallyContent(Contains("branch2")).ContainsLines(
+			Contains(`Merge branch "branch2" into "original-branch"`).IsSelected(),
+			Contains("branch2"),
+		)
+		t.Git().CurrentBranchName("original-branch")
+		if got := t.Git().GetCommitHash("HEAD"); got == headOID || got == sourceOID {
+			t.Fail("allow-fast-forward merge of divergent branches did not create a merge commit")
+		}
+		if got := t.Git().GetCommitHash("refs/heads/branch1"); got != unrelatedOID {
+			t.Fail("unexpectedly changed unrelated branch tip")
+		}
+		if got := t.Git().GetCommitHash("refs/heads/branch2"); got != sourceOID {
+			t.Fail("selected source branch ref changed during merge")
+		}
 	},
 })

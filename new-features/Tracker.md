@@ -1,14 +1,16 @@
 # Current work
 
 Roadmap item: [7. Selected-branch operations without checkout](Roadmap.md#7-selected-branch-operations-without-checkout).
-Status: selected-branch sync, tracking metadata, reset and rebase flows are
-integrated. Remaining work is the selected-source merge, deletion and branch/tag
-creation audit and its acceptance checks; see
+Status: selected-branch sync, tracking metadata, reset, rebase and merge flows are
+integrated. Remaining work is the deletion and branch/tag creation audit and
+its acceptance checks; see
 [the inspected integration points](branch-menu-audit.md).
 
 Scope: operate on the explicitly selected local branch wherever no worktree is
-needed. Preserve current HEAD, index, worktree and unrelated refs. Keep general
-off-branch merge/rebase/cherry-pick deferred; never create another worktree or
+needed. Ref-only actions preserve current HEAD, index and worktree; explicitly
+current-destination reset, rebase and merge retain their reviewed effects.
+Preserve unrelated refs. Keep general off-branch merge/rebase/cherry-pick
+deferred; never create another worktree or
 switch branches silently. Push only the selected branch; wider-stack push is
 deferred and must not be offered. Keep wider updates explicit choices.
 
@@ -20,12 +22,6 @@ deferred and must not be offered. Keep wider updates explicit choices.
    Use the native source/current-HEAD snapshot and captured repository-generation
    guard; keep mutation-specific reservation and data-loss checks in each flow.
 
-   - Merge the selected source into current HEAD. Retain regular/allow-FF/no-FF
-     choices, both squash modes, merge-message options and signing support.
-     Do not infer capture safety from the now-integrated rebase flow.
-     Finish routing and acceptance of the captured native merge reviews/plans
-     through the repository-bound GUI flow; see the current
-     [merge design](branch-merge-design.md).
    - Audit local/remote/both deletion, retaining force warnings and native partial
      errors. Refuse occupied/reserved branches; never detach or remove another
      worktree implicitly. Use exact native tracking refs and literal names.
@@ -34,7 +30,7 @@ deferred and must not be offered. Keep wider updates explicit choices.
      substitution. Keep pointer-only placement separate from named checkout.
 
    Preserve Git's normal concurrency model, errors and actual partial state;
-   no implicit retry, rollback, checkout or stash. Reset/rebase remain explicitly
+   no implicit retry, rollback, checkout or stash. Reset/rebase/merge remain explicitly
    current-destination actions; do not invent off-branch worktree operations.
 2. Verify remaining menus and preserve the sync acceptance baseline with local
    fake remotes: selected != current, absent/gone upstream,

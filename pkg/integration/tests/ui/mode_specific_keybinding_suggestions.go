@@ -103,8 +103,9 @@ var ModeSpecificKeybindingSuggestions = NewIntegrationTest(NewIntegrationTestArg
 			Tap(func() {
 				t.ExpectPopup().Menu().
 					Title(Equals("Merge")).
-					Select(Contains("Regular merge (with merge commit)")).
+					Select(MatchesRegexp(`^[[:space:]]*n Merge \(no fast-forward\)`)).
 					Confirm()
+				t.Common().ReviewBranchMerge("first-change-branch", "second-change-branch", "Merge (no fast-forward)")
 
 				t.Common().AcknowledgeConflicts()
 

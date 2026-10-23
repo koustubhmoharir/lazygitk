@@ -209,6 +209,22 @@ updates after a successful push remain distinct from saved branch tracking.
 
 ## Usability and native references
 
+### Selected-source merge
+
+The local and remote branch merge menus explicitly show the source and current
+destination with their commit IDs. Choose configured options, allow-fast-forward,
+no-fast-forward, squash without committing, or squash-and-commit. Allow-FF can
+create a merge commit on divergent histories; it does not mean FF-only.
+
+Squash-and-commit reviews the message and requires explicit approval before
+including already-staged changes. Ignored-file risks have a separate Cancel-first
+review. Closing either review changes nothing. A stale source, current HEAD,
+configuration, staged snapshot or approved risk set requires a new review.
+Both native phases support terminal signing/editor interaction without autostash.
+Conflicts stop automatic completion; resolve squash conflicts and commit
+explicitly. An already-merged source never triggers an unrelated-only commit.
+See [the merge implementation notes](branch-merge-design.md).
+
 ### Fetch-first current Pull backend
 
 The user approved fetching first and reviewing the exact incoming commit before

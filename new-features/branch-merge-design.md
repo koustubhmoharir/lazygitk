@@ -79,7 +79,21 @@ The post-squash plan rejects conflicts and unchanged staged results; its queued
 commit checks the fresh staged snapshot again. A queued normal-merge abort
 checks current HEAD plus `MERGE_HEAD` and `ORIG_HEAD`, rather than resolving a
 possibly moved source branch again. The repository-bound GUI routing and its
-acceptance checks remain necessary before this audit is complete.
+acceptance checks are integrated in `helpers/captured_merge*.go`. Local and
+remote branch entry points supply exact full refs. Ordinary modal navigation
+checks repository identity without running Git on each keypress; native checks
+remain on inspection/execution boundaries. Five explicit mode rows retain
+configured options alongside allow-FF/no-FF and both squash choices.
+Squash-and-commit reviews its message and existing staged changes before
+application. Both phases use the terminal for signing and editor interaction.
+Conflicted squash offers viewing conflicts and explicit manual completion,
+without a normal merge-abort action.
+
+All packages' short tests passed, with backend and remaining packages run
+separately and the final controller suite rerun after its fixture correction.
+The three branch merge terminal scenarios and the UI mode-suggestion scenario
+passed. Generation, debug build, inventory checks, formatting and scoped lint
+were verified. These are Linux/Git 2.51.1 checks, not a cross-platform matrix.
 
 Native option folding follows Git's callbacks, including their non-obvious
 reset behavior: `--no-strategy` does nothing, and `--no-message` clears the

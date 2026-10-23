@@ -33,6 +33,32 @@ requirements to restore a deferred multi-branch push.
 
 ### Selected-branch operations (item 7 in progress)
 
+- `helpers/captured_merge*.go` now routes local/remote branch merge entry points
+  through captured reviews. `MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch`
+  is a thin replacement hook; its old public merge methods remain dormant for
+  upstream structure and must not acquire new live callers during merges.
+  The obsolete private FF-preference helper was removed. Branch controllers
+  supply full refs, not display names. Five fixed modal rows retain configured,
+  allow-FF, no-FF and both squash modes. Allow-FF must remain available for
+  divergent histories; it is not FF-only. Keep source/current commit identities
+  and configured options visible, with captured message/sign-off/hook settings.
+  UI navigation performs repository checks; native review checks stay on worker
+  or terminal-launch boundaries. Ignored/staged loss reviews are Cancel-first,
+  and selecting a path cannot approve it. Squash commit has its own queued
+  validation; native conflicts/errors cannot fall through into commit.
+  Native operation identity guards queued abort; squash conflicts do not offer
+  normal merge abort. Guard result inspection, refresh and refresh-Then against
+  repository generation/backend replacement, including an actual second repo.
+  Shared status/repository-change text is now action-neutral for reset/rebase/
+  merge and sync. Regenerate inventory after factory/line changes. The shared
+  `Common.ReviewBranchMerge` headless helper checks roles and mode; menu headers
+  contain review text and rows have shortcut prefixes/ellipsis, so avoid exact
+  five-line assertions and label-only anchored selectors. All packages' short
+  tests passed in separate backend/remaining-package runs, including a final
+  controller rerun (264.050s). Three branch merge scenarios (22.075s), the UI
+  mode-suggestion scenario (53.169s), generation, build, inventory checks,
+  formatting and scoped lint passed. This completes the merge subtask, not
+  Roadmap 7's remaining deletion and creation audit.
 - `branch_action_merge_plan.go` prepares immutable-source merge commands from
   those reviews. Clear implicit `branch.<current>.mergeOptions` and supply its
   captured arguments exactly once before app arguments and the selected mode.

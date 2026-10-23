@@ -1387,7 +1387,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 602,
+      "line": 603,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request\"",
@@ -1400,7 +1400,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 610,
+      "line": 611,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-to-chosen-target\"",
@@ -1413,7 +1413,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 643,
+      "line": 644,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-current-to-selected\"",
@@ -3385,6 +3385,130 @@
     },
     {
       "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_merge.go",
+      "line": 114,
+      "owner": "capturedMergeFlow.menu",
+      "fields": {
+        "CommandID": "choice.id",
+        "DisabledReason": "disabled",
+        "Keys": "menuKey(choice.key)",
+        "Label": "choice.label",
+        "OnPress": "func() error { return flow.choose(choice) }",
+        "OpensMenu": "true",
+        "Verb": "choice.verb"
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_merge.go",
+      "line": 214,
+      "owner": "capturedMergeReview.reviewStaged",
+      "fields": {
+        "CommandID": "review.choice.id + \".cancel-staged-risk\"",
+        "Label": "c.Tr.Cancel",
+        "OnPress": "review.flow.repository.checkRepository",
+        "Verb": "\"cancel\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_merge.go",
+      "line": 215,
+      "owner": "capturedMergeReview.reviewStaged",
+      "fields": {
+        "CommandID": "review.choice.id + \".approve-staged\"",
+        "Label": "c.Tr.BranchActionMergeApproveStaged",
+        "OnPress": "func() error {\n\treview.plan = review.plan.WithStagedFilesApproved()\n\treturn review.reviewIgnored()\n}",
+        "Verb": "review.choice.verb"
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_merge.go",
+      "line": 222,
+      "owner": "capturedMergeReview.reviewStaged",
+      "fields": {
+        "CommandID": "review.choice.id + \".inspect-staged-path\"",
+        "Label": "quoted",
+        "OnPress": "review.reviewStaged",
+        "OpensMenu": "true",
+        "Verb": "\"inspect\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_merge.go",
+      "line": 240,
+      "owner": "capturedMergeReview.reviewIgnored",
+      "fields": {
+        "CommandID": "review.choice.id + \".cancel-ignored-risk\"",
+        "Label": "c.Tr.Cancel",
+        "OnPress": "review.flow.repository.checkRepository",
+        "Verb": "\"cancel\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_merge.go",
+      "line": 241,
+      "owner": "capturedMergeReview.reviewIgnored",
+      "fields": {
+        "CommandID": "review.choice.id + \".approve-ignored\"",
+        "Label": "c.Tr.BranchActionMergeApproveIgnored",
+        "OnPress": "func() error {\n\treturn review.execute(review.plan.WithIgnoredFilesApproved())\n}",
+        "Verb": "review.choice.verb"
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_merge.go",
+      "line": 247,
+      "owner": "capturedMergeReview.reviewIgnored",
+      "fields": {
+        "CommandID": "review.choice.id + \".inspect-ignored-path\"",
+        "Label": "quoted",
+        "OnPress": "review.reviewIgnored",
+        "OpensMenu": "true",
+        "Verb": "\"inspect\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_merge_execution.go",
+      "line": 149,
+      "owner": "capturedMergeReview.conflicts",
+      "fields": {
+        "CommandID": "\"conflict.view\"",
+        "Label": "c.Tr.ViewConflictsMenuItem",
+        "OnPress": "func() error {\n\tif err := repository.checkRepository(); err != nil {\n\t\treturn err\n\t}\n\tc.Context().Push(c.Contexts().Files, types.OnFocusOpts{})\n\treturn nil\n}",
+        "Verb": "\"view-conflicts\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_merge_execution.go",
+      "line": 162,
+      "owner": "capturedMergeReview.conflicts",
+      "fields": {
+        "CommandID": "\"operation.abort\"",
+        "Keys": "menuKey('a')",
+        "Label": "fmt.Sprintf(c.Tr.AbortMenuItem, \"merge\")",
+        "OnPress": "func() error {\n\tif err := repository.checkRepository(); err != nil {\n\t\treturn err\n\t}\n\tif abortStarted {\n\t\treturn git_commands.ErrBranchActionChanged\n\t}\n\tabortStarted = true\n\treturn c.WithWaitingStatusBlockingInput(types.WaitingStatusOpts{Message: c.Tr.MergingStatus}, func(gocui.Task) error {\n\t\tif err := repository.checkRepository(); err != nil {\n\t\t\treturn err\n\t\t}\n\t\tif err := repository.git.Branch.CheckBranchActionMergeInProgress(review.plan); err != nil {\n\t\t\treturn err\n\t\t}\n\t\tcmd := repository.git.Rebase.GenericMergeOrRebaseActionCmdObj(\"merge\", \"abort\").\n\t\t\tSetWd(repository.git.RepoPaths.WorktreePath()).DisableLockRetries()\n\t\tif err := repository.checkRepository(); err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn review.finish(cmd.Run())\n\t})\n}",
+        "Verb": "\"abort\""
+      },
+      "enclosingCondition": "(merging)",
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/captured_rebase.go",
       "line": 146,
       "owner": "capturedRebaseFlow.menu",
@@ -3576,94 +3700,6 @@
         "Label": "fmt.Sprintf(self.c.Tr.AbortMenuItem, mode)",
         "OnPress": "func() error {\n\treturn self.genericMergeCommand(REBASE_OPTION_ABORT)\n}",
         "Verb": "\"abort\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 430,
-      "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
-      "fields": {
-        "CommandID": "\"branch.merge.regular\"",
-        "Keys": "menuKey('m')",
-        "Label": "self.c.Tr.RegularMergeFastForward",
-        "OnPress": "self.RegularMerge(refName, git_commands.MERGE_VARIANT_REGULAR)",
-        "Verb": "\"merge\""
-      },
-      "enclosingCondition": "(!wantNonFastForward \u0026\u0026 (wantFastForward || canFastForward))",
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 446,
-      "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
-      "fields": {
-        "CommandID": "\"branch.merge.no-ff\"",
-        "Keys": "menuKey('n')",
-        "Label": "self.c.Tr.RegularMergeNonFastForward",
-        "OnPress": "self.RegularMerge(refName, git_commands.MERGE_VARIANT_NON_FAST_FORWARD)",
-        "Verb": "\"merge-no-ff\""
-      },
-      "enclosingCondition": "(!wantNonFastForward \u0026\u0026 (wantFastForward || canFastForward))",
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 461,
-      "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
-      "fields": {
-        "CommandID": "\"branch.merge.regular\"",
-        "Keys": "menuKey('m')",
-        "Label": "self.c.Tr.RegularMergeNonFastForward",
-        "OnPress": "self.RegularMerge(refName, git_commands.MERGE_VARIANT_REGULAR)",
-        "Verb": "\"merge\""
-      },
-      "enclosingCondition": "!(!wantNonFastForward \u0026\u0026 (wantFastForward || canFastForward))",
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 476,
-      "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
-      "fields": {
-        "CommandID": "\"branch.merge.ff\"",
-        "Keys": "menuKey('f')",
-        "Label": "self.c.Tr.RegularMergeFastForward",
-        "OnPress": "self.RegularMerge(refName, git_commands.MERGE_VARIANT_FAST_FORWARD)",
-        "Verb": "\"merge-fast-forward\""
-      },
-      "enclosingCondition": "!(!wantNonFastForward \u0026\u0026 (wantFastForward || canFastForward))",
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 510,
-      "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
-      "fields": {
-        "CommandID": "\"branch.merge.squash-uncommitted\"",
-        "Keys": "menuKey('s')",
-        "Label": "self.c.Tr.SquashMergeUncommitted",
-        "OnPress": "self.SquashMergeUncommitted(refName)",
-        "Verb": "\"squash-merge\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 523,
-      "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
-      "fields": {
-        "CommandID": "\"branch.merge.squash-committed\"",
-        "Keys": "menuKey('S')",
-        "Label": "self.c.Tr.SquashMergeCommitted",
-        "OnPress": "self.SquashMergeCommitted(refName, checkedOutBranchName)",
-        "Verb": "\"squash-merge-and-commit\""
       },
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
     },

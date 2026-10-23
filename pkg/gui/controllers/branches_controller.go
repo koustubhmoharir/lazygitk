@@ -538,8 +538,9 @@ func (self *BranchesController) delete(branches []*models.Branch) error {
 }
 
 func (self *BranchesController) merge() error {
-	selectedBranchName := self.context().GetSelected().Name
-	return self.c.Helpers().MergeAndRebase.MergeRefIntoCheckedOutBranch(selectedBranchName)
+	// Fork: retain the selected literal full ref across merge review callbacks.
+	ref := self.context().GetSelected().FullRefName()
+	return self.c.Helpers().MergeAndRebase.MergeRefIntoCheckedOutBranch(ref)
 }
 
 func (self *BranchesController) rebase(branch *models.Branch) error {

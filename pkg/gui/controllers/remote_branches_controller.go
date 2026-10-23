@@ -165,7 +165,8 @@ func (self *RemoteBranchesController) delete(selectedBranches []*models.RemoteBr
 }
 
 func (self *RemoteBranchesController) merge(selectedBranch *models.RemoteBranch) error {
-	return self.c.Helpers().MergeAndRebase.MergeRefIntoCheckedOutBranch(selectedBranch.FullName())
+	// Fork: preserve the exact selected source namespace through merge review.
+	return self.c.Helpers().MergeAndRebase.MergeRefIntoCheckedOutBranch(selectedBranch.FullRefName())
 }
 
 func (self *RemoteBranchesController) rebase(selectedBranch *models.RemoteBranch) error {

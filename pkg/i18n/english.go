@@ -11,13 +11,29 @@ Todo list when making a new translation
 package i18n
 
 type TranslationSet struct {
-	BranchActionResetReviewPrompt  string
-	BranchActionResetHardWarning   string
-	BranchActionDetachedHead       string
-	BranchActionUnbornHead         string
-	BranchActionRebaseDefaultRange string
-	BranchActionRebaseReviewPrompt string
-	BranchActionRebasePausedError  string
+	BranchActionResetReviewPrompt     string
+	BranchActionResetHardWarning      string
+	BranchActionDetachedHead          string
+	BranchActionUnbornHead            string
+	BranchActionRebaseDefaultRange    string
+	BranchActionRebaseReviewPrompt    string
+	BranchActionRebasePausedError     string
+	BranchActionMergeReviewPrompt     string
+	BranchActionMergeConfigured       string
+	BranchActionMergeAllowFF          string
+	BranchActionMergeNoFF             string
+	BranchActionMergeDefaultMessage   string
+	BranchActionMergeOptions          string
+	BranchActionMergeMessageTitle     string
+	BranchActionMergeChosenMessage    string
+	BranchActionMergeStagedTitle      string
+	BranchActionMergeStagedPrompt     string
+	BranchActionMergeApproveStaged    string
+	BranchActionMergeIgnoredTitle     string
+	BranchActionMergeIgnoredPrompt    string
+	BranchActionMergeAllIgnoredPrompt string
+	BranchActionMergeApproveIgnored   string
+	BranchActionMergeSquashConflicts  string
 	// Fork-owned integration strings are separate to avoid reformatting the
 	// upstream table when longer field names are added.
 	BranchSyncCurrentPullSummary          string
@@ -1409,6 +1425,22 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchActionRebaseDefaultRange:        "No marked base (use the selected upstream)",
 		BranchActionRebaseReviewPrompt:        "Rebase current branch %q at %s onto selected source %q (%s) at %s?\n\nMode: %s\nMarked range base: %s\n\nOnly the current branch is rebased. Commit tracked changes before proceeding.",
 		BranchActionRebasePausedError:         "The reviewed rebase is paused without unresolved conflicts. Inspect the pending commits, then open Rebase options to choose continue, skip or abort.",
+		BranchActionMergeReviewPrompt:         "Current branch: %q at %s\nSelected source: %q (%s) at %s\n\nMode: %s\n\nThe selected source is merged into the current branch. Its ref is not moved.",
+		BranchActionMergeConfigured:           "Merge using configured options",
+		BranchActionMergeAllowFF:              "Merge (allow fast-forward)",
+		BranchActionMergeNoFF:                 "Merge (no fast-forward)",
+		BranchActionMergeDefaultMessage:       "Merge branch %q into %q",
+		BranchActionMergeOptions:              "\n\nConfigured merge arguments: %s",
+		BranchActionMergeMessageTitle:         "Squash commit message",
+		BranchActionMergeChosenMessage:        "Chosen commit message: %q",
+		BranchActionMergeStagedTitle:          "Include already-staged changes?",
+		BranchActionMergeStagedPrompt:         "The files below already have staged changes. Squash-and-commit would include those staged changes as well as the merge result. Cancel to manage them first, or explicitly approve their inclusion. Git may still refuse the merge if staged changes obstruct it.",
+		BranchActionMergeApproveStaged:        "Include the reviewed staged changes",
+		BranchActionMergeIgnoredTitle:         "Review ignored files before merging",
+		BranchActionMergeIgnoredPrompt:        "Git may overwrite the ignored files listed below while applying this merge. The list can include files Git leaves unchanged. Cancel to move or back up files first; approval explicitly accepts this risk.",
+		BranchActionMergeAllIgnoredPrompt:     "The configured merge strategy has no exact path preview here. All ignored files are listed as potential overwrite risks. Cancel to inspect or back up files first, or explicitly approve this conservative risk list. The configured strategy will be retained.",
+		BranchActionMergeApproveIgnored:       "Proceed and accept the reviewed ignored-file risks",
+		BranchActionMergeSquashConflicts:      "The squash left unresolved conflicts. Resolve them and explicitly commit the staged result. Git did not start a normal merge, so merge --abort is unavailable. No automatic commit ran.",
 		BranchSyncCurrentPullSummary:          "Checked-out branch %q at %s\nUpstream remote: %q\nUpstream branch: %q\nLocal tracking storage: %q\n\nFetch first, then review the exact incoming commit and integration method before changing files. Saved upstream settings will not change.",
 		BranchSyncIntegrationMenu:             "Integrate reviewed incoming commit",
 		BranchSyncIntegrationSummary:          "Checked-out branch %q at %s\nReviewed incoming commit: %s\n\nChoose an integration method. The default uses Git configuration; explicit choices replace the corresponding defaults. No second network pull or autostash will run.",
@@ -1637,9 +1669,9 @@ func EnglishTranslationSet() *TranslationSet {
 		PlaceBranchApplyingStatus:            "Placing branch",
 		PlaceBranchSelectCommit:              "Select exactly one commit to create or move a branch.",
 		PlaceBranchRepositoryChanged:         "The repository changed. Start the branch placement again.",
-		BranchSyncRepositoryChanged:          "The repository changed. Start the branch sync action again.",
+		BranchSyncRepositoryChanged:          "The repository changed. Start this action again.",
 		BranchSyncNoLongerCurrent:            "Branch %q is no longer the checked-out branch. Start the action again.",
-		BranchSyncInspecting:                 "Inspecting branch sync target",
+		BranchSyncInspecting:                 "Inspecting branch target",
 		BranchSyncPushMenu:                   "Push selected branch",
 		BranchSyncPushSummary:                "Source %q at %s\nRemote: %q\nDestination: %q\nSet upstream for selected branch: %t\nCheck submodules: %t\nConfigured push mappings beyond this explicit destination will not be used.",
 		BranchSyncPushThisBranch:             "Push this branch",
