@@ -54,6 +54,16 @@ requirements to restore a deferred multi-branch push.
   generation, debug build and inventory checks also passed; scoped backend,
   controller and i18n lint reports zero issues. This completes the
   deletion subtask; creation audit and final item 7 acceptance remain pending.
+- The branch-creation terminal fixtures now review source/HEAD and select
+  tracking policy explicitly through `Common.ReviewBranchCreateMenu`. Check
+  policy rows independently because their default order depends on name entry;
+  wrapped source lines must not require the OID twice on one line. Use full refs
+  for stash/branch shadowing and the actual selected commit, including one-row
+  history lists. The former autostash fixture now verifies native overwrite
+  refusal, preserved dirty bytes/HEAD and no branch or stash creation. Missing-ref
+  assertions must propagate query errors rather than treating any Git error as
+  absence. All nine affected branch/commit/stash scenarios passed (32.157s)
+  against the captured creation integration being finalized below.
 - `branch_action_create.go`, `branch_action_tag_create.go` and
   `branch_action_head_target.go` add native creation plans for the remaining
   creation audit. Bind backend/source/current HEAD/configuration and destination

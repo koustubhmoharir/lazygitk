@@ -10,12 +10,14 @@ import (
 func (self *Common) ReviewBranchCreateMenu(sourceRef, sourceOID, headRef, headOID string) *MenuDriver {
 	menu := self.t.ExpectPopup().Menu()
 	menu.Title(Equals("Create branch and check it out"))
-	menu.getViewDriver().Content(Contains(fmt.Sprintf("Source: %s (%s)", sourceRef, sourceOID)).Contains(fmt.Sprintf("Current HEAD: %s (%s)", headRef, headOID)))
-	menu.ContainsLines(
-		MatchesRegexp(`^[[:space:]]*Do not set up upstream tracking`),
-		MatchesRegexp(`^[[:space:]]*Use Git's configured tracking policy`),
-		MatchesRegexp(`^[[:space:]]*Track the selected source branch directly`),
-	)
+	menu.getViewDriver().Content(Contains("Source: " + sourceRef).Contains("(" + sourceOID + ")").Contains("Current HEAD: " + headRef).Contains(headOID))
+	for _, label := range []string{
+		"Do not set up upstream tracking",
+		"Use Git's configured tracking policy",
+		"Track the selected source branch directly",
+	} {
+		menu.ContainsLines(MatchesRegexp(`^[[:space:]]*` + label))
+	}
 	return menu
 }
 
@@ -30,12 +32,14 @@ func (self *Common) AssertNoStashes() *Common {
 
 // AssertBranchRefAbsent checks that a refused creation left no target ref.
 func (self *Common) AssertBranchRefAbsent(name string) *Common {
-	self.t.Git().assertWithRetries(func() (bool, string) {
-		output, err := self.t.Git().shell.runCommandWithOutput([]string{"git", "show-ref", "--verify", "--hash", "refs/heads/" + name})
-		if err != nil {
-			return true, ""
+	ref := "refs/heads/" + name
+	self.t.Git().expect([]string{"git", "for-each-ref", "--format=%(refname)", "--", ref}, func(output string) (bool, string) {
+		for _, actual := range strings.Split(output, "\n") {
+			if actual == ref {
+				return false, fmt.Sprintf("Expected %s to be absent", ref)
+			}
 		}
-		return false, fmt.Sprintf("Expected refs/heads/%s to be absent, but it resolves to %s", name, strings.TrimSpace(output))
+		return true, ""
 	})
 	return self
 }

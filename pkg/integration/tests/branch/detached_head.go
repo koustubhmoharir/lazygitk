@@ -29,7 +29,7 @@ var DetachedHead = NewIntegrationTest(NewIntegrationTestArgs{
 			Type("new-branch").
 			Confirm()
 
-		t.Common().ReviewBranchCreateMenu("HEAD", t.Git().GetCommitHash("HEAD"), "HEAD", t.Git().GetCommitHash("HEAD")).
+		t.Common().ReviewBranchCreateMenu(t.Git().GetCommitHash("HEAD"), t.Git().GetCommitHash("HEAD"), "HEAD (detached)", t.Git().GetCommitHash("HEAD")).
 			Select(MatchesRegexp(`^[[:space:]]*Do not set up upstream tracking`)).Confirm()
 
 		t.Views().Branches().

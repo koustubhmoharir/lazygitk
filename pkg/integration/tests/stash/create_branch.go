@@ -32,7 +32,7 @@ var CreateBranch = NewIntegrationTest(NewIntegrationTestArgs{
 					Title(Contains("New branch name (branch is off of 'stash@{0}: On master: stash one'")).
 					Type("new_branch").
 					Confirm()
-				t.Common().ReviewBranchCreateMenu("refs/stash", t.Git().GetCommitHash("stash@{0}"), "master", t.Git().GetCommitHash("HEAD")).
+				t.Common().ReviewBranchCreateMenu(t.Git().GetCommitHash("refs/stash"), t.Git().GetCommitHash("refs/stash@{0}"), "refs/heads/master", t.Git().GetCommitHash("HEAD")).
 					Select(MatchesRegexp(`^[[:space:]]*Do not set up upstream tracking`)).Confirm()
 			})
 

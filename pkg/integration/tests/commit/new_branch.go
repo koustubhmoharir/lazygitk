@@ -29,7 +29,7 @@ var NewBranch = NewIntegrationTest(NewIntegrationTestArgs{
 			Tap(func() {
 				branchName := "my-branch-name"
 				t.ExpectPopup().Prompt().Title(Contains("New branch name")).Type(branchName).Confirm()
-				t.Common().ReviewBranchCreateMenu("HEAD^", t.Git().GetCommitHash("HEAD^"), "master", t.Git().GetCommitHash("HEAD")).
+				t.Common().ReviewBranchCreateMenu(t.Git().GetCommitHash("HEAD^"), t.Git().GetCommitHash("HEAD^"), "refs/heads/master", t.Git().GetCommitHash("HEAD")).
 					Select(MatchesRegexp(`^[[:space:]]*Do not set up upstream tracking`)).Confirm()
 
 				t.Git().CurrentBranchName(branchName)

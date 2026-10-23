@@ -41,10 +41,10 @@ var NewBranchAutostash = NewIntegrationTest(NewIntegrationTestArgs{
 			Type("new-branch").
 			Confirm()
 
-		t.Common().ReviewBranchCreateMenu("refs/heads/master", t.Git().GetCommitHash("refs/heads/master"), "HEAD", t.Git().GetCommitHash("HEAD")).
+		t.Common().ReviewBranchCreateMenu("refs/heads/master", t.Git().GetCommitHash("refs/heads/master"), "HEAD (detached)", t.Git().GetCommitHash("HEAD")).
 			Select(MatchesRegexp(`^[[:space:]]*Do not set up upstream tracking`)).Confirm()
 
-		t.ExpectPopup().Alert().Cancel()
+		t.ExpectPopup().Alert().Title(Equals("Error")).Content(Contains("would be overwritten")).Confirm()
 
 		t.Common().AssertBranchRefAbsent("new-branch").AssertNoStashes().AssertRefOID("HEAD", headOID)
 		t.Git().CurrentBranchName("HEAD")
@@ -52,11 +52,9 @@ var NewBranchAutostash = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().Branches().
 			Lines(
-				Contains("new-branch").IsSelected(),
-				Contains("master"),
+				MatchesRegexp(`\*.*HEAD`),
+				Contains("master").IsSelected(),
 			)
-
-		t.Git().CurrentBranchName("new-branch")
 
 		t.Views().Files().
 			Lines(
