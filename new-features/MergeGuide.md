@@ -76,7 +76,8 @@ requirements to restore a deferred multi-branch push.
   custom/local upstreams, stale callbacks, raw dirty bytes, native index locks,
   detached/unborn HEAD and active merges. All seven branch/tag/reflog reset
   terminal scenarios passed (68.997s); generation, inventory checks, formatting,
-  build and scoped lint passed. The broader short suite is running separately.
+  build and scoped lint passed. The full short suite subsequently passed,
+  including native commands (347.452s) and controllers (190.559s).
 - `controllers/branch_sync_source.go` defines context-to-source resolution,
   including stored local-branch history and rejection of non-local history,
   range selections and detached pseudo-branches. Capture the name, not a model
@@ -298,8 +299,23 @@ requirements to restore a deferred multi-branch push.
   replace the old assumed standard namespace. Confirm the old tracking values
   and exact new target before writing; redact URL credentials in prior remote
   metadata. Each worker/callback and refresh retains the captured repository.
-  The upstream menu's other read-only/reset/rebase actions remain separate
-  audit work; do not infer their safety from set/unset tests.
+  `branch_upstream_menu.go` now replaces the parent menu's live selection and
+  reconstructed upstream namespace. Inspect native metadata on a worker;
+  construct a new branch model without copying its atomic fields, and retain
+  the original context/repository generation in every callback. Divergence
+  uses the native full tracking ref, including custom namespaces and local `.`
+  upstreams. Missing refs disable dependent rows; other resolution errors remain
+  visible while set/unset stay available for repair. Base-query errors propagate.
+  Before opening reset/rebase submenus, freshly check the selected tip, HEAD
+  identity/tip, exact upstream mapping and target commit. Reset uses the shared
+  captured flow. Rebase receives a full ref; preserve the full-ref self-rebase
+  check in `MergeAndRebaseHelper.RebaseOntoRef`. That helper's nested execution
+  remains under audit; parent-menu checks alone do not protect its later workers.
+  Independent reset/upstream controller checks passed (33.501s). All nine
+  selected-upstream terminal scenarios passed (39.263s), including custom/local
+  divergence with dirty files, standard/base divergence, tracking edits and
+  current-destination reset/rebase. Generation, inventory checks, build and
+  controller/helper/i18n lint passed.
   Independent metadata/rename/push tests passed (74.433s), including raw
   dirty-state preservation, linked worktrees, custom namespaces, inherited
   configuration refusals and native rename partial failure. Backend lint

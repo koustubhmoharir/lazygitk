@@ -175,6 +175,13 @@ abort a merge in this worktree. A tip-changing reset refuses a branch reserved
 by another worktree. Native failures are reported and actual state refreshed
 without automatic retries, stashing or rollback.
 
+In the branches pane, **Upstream options** shows the selected branch and Git's
+exact upstream tracking ref. Divergence works with custom tracking namespaces
+and local `.` upstreams. Missing upstreams disable dependent actions while
+set/unset remain available to repair tracking metadata. Reset and rebase are
+explicitly actions on the checked-out branch; they check the reviewed source,
+checkout and upstream again before opening their submenus.
+
 ## Command palette identity
 
 Equivalent invocation paths share an entry with combined shortcut hints.

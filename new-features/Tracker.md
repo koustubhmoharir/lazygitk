@@ -18,9 +18,11 @@ deferred and must not be offered. Keep wider updates explicit choices.
    rebase actions. Do not change shortcut policy ahead of item 8.
    Literal rename and exact tracking-ref set/unset now use captured modal
    flows with native backend plans and stale-callback verification. Audit the
-   remaining upstream-view/rebase callbacks, selected-source merge/rebase,
-   delete paths and branch/tag creation. Retain their capabilities without
-   live selection/repository substitution. Use native exact tracking refs for
+   remaining selected-source merge/rebase, delete paths and branch/tag creation.
+   The captured upstream menu now uses native exact tracking refs; its rebase
+   submenu still needs the shared merge/rebase execution audit below.
+   Retain their capabilities without live selection/repository substitution.
+   Use native exact tracking refs for
    custom namespaces and local `.` upstreams. Reset remains a current-HEAD
    operation, including explicit merge abortion; do not invent off-branch
    soft/mixed/hard modes. Preserve squash, interactive/marked-base, tracking

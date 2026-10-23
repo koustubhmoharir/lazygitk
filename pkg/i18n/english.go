@@ -44,6 +44,7 @@ type TranslationSet struct {
 	BranchSyncResetCurrentToSelected      string
 	BranchRenameReviewPrompt              string
 	BranchUpstreamRefPrompt               string
+	BranchUpstreamMenuPrompt              string
 	BranchUpstreamReviewTitle             string
 	BranchUpstreamSetReviewPrompt         string
 	BranchUpstreamUnsetReviewPrompt       string
@@ -1429,6 +1430,7 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchSyncResetCurrentToSelected:      "Reset checked-out branch to selected ref…",
 		BranchRenameReviewPrompt:              "Rename local branch %q to %q at %s?\n\nOnly branch metadata changes. Checked-out commits, index contents and files stay in place; linked worktrees using this branch will use its new name.",
 		BranchUpstreamRefPrompt:               "Full upstream tracking ref (e.g. refs/remotes/origin/main or refs/heads/main):",
+		BranchUpstreamMenuPrompt:              "Selected branch %q at %s\nUpstream: %s",
 		BranchUpstreamReviewTitle:             "Review selected branch upstream",
 		BranchUpstreamSetReviewPrompt:         "Set upstream of local branch %q at %s to %q at %s?\n\nPrevious upstream remote: %s\nPrevious merge refs: %q\n\nOnly saved tracking metadata changes. No fetch, push, checkout, integration or tip change will run. Existing rebase preferences stay unchanged.",
 		BranchUpstreamUnsetReviewPrompt:       "Unset upstream of local branch %q at %s?\n\nPrevious upstream remote: %s\nPrevious merge refs: %q\n\nOnly saved tracking metadata changes. Branch tips, index and files stay in place. Existing rebase preferences stay unchanged.",

@@ -86,6 +86,8 @@ var tests = []*components.IntegrationTest{
 	branch.SelectCommitsOfCurrentBranch,
 	branch.SetUpstream,
 	branch.ShowDivergenceFromBaseBranch,
+	branch.ShowDivergenceFromCustomUpstream,
+	branch.ShowDivergenceFromLocalUpstream,
 	branch.ShowDivergenceFromUpstream,
 	branch.ShowDivergenceFromUpstreamNoDivergence,
 	branch.SortLocalBranches,

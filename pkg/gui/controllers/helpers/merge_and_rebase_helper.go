@@ -408,7 +408,7 @@ func (self *MergeAndRebaseHelper) RebaseOntoRef(ref string) error {
 	checkedOutBranch := self.c.Model().Branches[0]
 	checkedOutBranchName := checkedOutBranch.Name
 	var disabledReason, baseBranchDisabledReason *types.DisabledReason
-	if checkedOutBranchName == ref {
+	if checkedOutBranchName == ref || checkedOutBranch.FullRefName() == ref {
 		disabledReason = &types.DisabledReason{Text: self.c.Tr.CantRebaseOntoSelf}
 	}
 

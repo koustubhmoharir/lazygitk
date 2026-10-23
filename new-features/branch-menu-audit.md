@@ -5,7 +5,7 @@ scope or a plan for later roadmap items.
 
 | Entry point | Finding | Behavior to retain |
 | --- | --- | --- |
-| `BranchesController.viewUpstreamOptions` | Divergence callbacks read the selection again. `FullUpstreamRefName` reconstructs `refs/remotes/<remote>/<branch>`, which is wrong for local `.` upstreams and custom tracking namespaces. | Selected-branch/base divergence; separate set/unset; explicitly current-destination reset/rebase. |
+| `BranchesController.viewUpstreamOptions` → `branch_upstream_menu.go` | Captured parent menu now retains the selected name, model and repository generation, resolves native full tracking refs, and revalidates before reset/rebase submenus. Divergence and reset use the captured native ref. The rebase helper's nested execution remains under audit below. | Selected-branch/base divergence; separate set/unset; explicitly current-destination reset/rebase. |
 | `BranchesController.createResetMenu` / `RefsHelper.CreateGitResetMenu` → `helpers.ResetCurrentToCapturedSource` | Captured shared flow now binds source commit, current HEAD, repository and generation; hard reset always confirms. Files/upstream resolves the captured current branch's native tracking ref; tag refs peel to commits. The upstream-options parent menu still needs its namespace/selection audit. | Soft/mixed/hard reset of current HEAD, including detached HEAD and explicitly aborting a merge. This is not a soft/mixed/hard reset of an off-branch ref. |
 | `BranchesController.merge/rebase` → `MergeAndRebaseHelper` | Nested workers use live `c.Git()`; rebase also reads marked-base state at a later callback. | Merge selected source into current; rebase current onto selected. Retain regular/no-FF, both squash modes, interactive todo editing, marked-base and base-branch rebase choices. |
 | `BranchesController.delete` → `BranchesHelper` | Nested menus retain mutable model pointers and live repository lookups. Single occupied-branch deletion can offer detaching/removing its worktree. | Explicit local/remote/both choices, force warnings and native partial-failure reporting; enforce the roadmap's occupied-branch policy without silently altering another worktree. |
@@ -25,3 +25,9 @@ index/worktree effects, and mixed/hard can abort a merge. Consequently, do not
 blanket-disable reset merely because a merge is in progress. Hard reset can
 discard uncommitted data; its explicit warning must not rely only on a stale
 cached dirty-file model.
+
+[TortoiseGit's rebase guide](https://tortoisegit.org/docs/tortoisegit/tgit-dug-rebase.html)
+distinguishes the branch being rewritten from the upstream target. Retain that
+distinction in the remaining branch rebase flow, including its marked-base and
+interactive-break choices. Its off-branch rebase capability remains outside
+this fork's agreed first-version scope.

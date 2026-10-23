@@ -927,6 +927,95 @@
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
     },
     {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_upstream_menu.go",
+      "line": 120,
+      "owner": "capturedUpstreamMenu.menu",
+      "fields": {
+        "CommandID": "\"branch.view-upstream-divergence\"",
+        "DisabledReason": "captured.upstreamDisabled",
+        "LabelColumns": "[]string{c.Tr.ViewDivergenceFromUpstream}",
+        "OnPress": "func() error {\n\tif err := captured.checkRepository(); err != nil {\n\t\treturn err\n\t}\n\treturn c.Helpers().SubCommits.ViewSubCommits(helpers.ViewSubCommitsOpts{\n\t\tRef: branch, TitleRef: fmt.Sprintf(\"%s \u003c-\u003e %s\", branch.RefName(), upstreamLabel),\n\t\tRefToShowDivergenceFrom: captured.upstreamRef, Context: captured.branchContext, ShowBranchHeads: false,\n\t})\n}",
+        "Verb": "\"view-divergence\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_upstream_menu.go",
+      "line": 133,
+      "owner": "capturedUpstreamMenu.menu",
+      "fields": {
+        "CommandID": "\"branch.view-base-divergence\"",
+        "DisabledReason": "baseDisabled",
+        "Keys": "menuKey('b')",
+        "LabelColumns": "[]string{baseDivergenceLabel}",
+        "OnPress": "func() error {\n\tif err := captured.checkRepository(); err != nil {\n\t\treturn err\n\t}\n\treturn c.Helpers().SubCommits.ViewSubCommits(helpers.ViewSubCommitsOpts{\n\t\tRef: branch, TitleRef: fmt.Sprintf(\"%s \u003c-\u003e %s\", branch.RefName(), baseLabel),\n\t\tRefToShowDivergenceFrom: captured.baseBranch, Context: captured.branchContext, ShowBranchHeads: false,\n\t})\n}",
+        "Verb": "\"view-divergence\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_upstream_menu.go",
+      "line": 146,
+      "owner": "capturedUpstreamMenu.menu",
+      "fields": {
+        "CommandID": "\"branch.unset-upstream\"",
+        "Keys": "menuKey('u')",
+        "LabelColumns": "[]string{c.Tr.UnsetUpstream}",
+        "OnPress": "captured.upstreamFlow.unset",
+        "Verb": "\"unset-upstream\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_upstream_menu.go",
+      "line": 153,
+      "owner": "capturedUpstreamMenu.menu",
+      "fields": {
+        "CommandID": "\"branch.set-upstream\"",
+        "Keys": "menuKey('s')",
+        "LabelColumns": "[]string{c.Tr.SetUpstream}",
+        "OnPress": "captured.upstreamFlow.set",
+        "Verb": "\"set-upstream\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_upstream_menu.go",
+      "line": 161,
+      "owner": "capturedUpstreamMenu.menu",
+      "fields": {
+        "CommandID": "\"branch.reset-selected-upstream-menu\"",
+        "DisabledReason": "captured.upstreamDisabled",
+        "Keys": "menuKey('g')",
+        "LabelColumns": "[]string{resetLabel}",
+        "OnPress": "func() error {\n\treturn captured.review(func() error {\n\t\treturn helpers.ResetCurrentToCapturedSource(c.HelperCommon, upstreamLabel, captured.upstreamRef)\n\t})\n}",
+        "OpensMenu": "true",
+        "Verb": "\"reset\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_upstream_menu.go",
+      "line": 170,
+      "owner": "capturedUpstreamMenu.menu",
+      "fields": {
+        "CommandID": "\"branch.rebase-current-onto-selected-upstream\"",
+        "DisabledReason": "captured.upstreamDisabled",
+        "Keys": "menuKey('r')",
+        "LabelColumns": "[]string{rebaseLabel}",
+        "OnPress": "func() error {\n\treturn captured.review(func() error { return c.Helpers().MergeAndRebase.RebaseOntoRef(captured.upstreamRef) })\n}",
+        "OpensMenu": "true",
+        "Verb": "\"rebase\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
       "line": 43,
@@ -1256,93 +1345,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 285,
-      "owner": "BranchesController.viewUpstreamOptions",
-      "fields": {
-        "CommandID": "\"branch.view-upstream-divergence\"",
-        "LabelColumns": "[]string{self.c.Tr.ViewDivergenceFromUpstream}",
-        "OnPress": "func() error {\n\tbranch := self.context().GetSelected()\n\tif branch == nil {\n\t\treturn nil\n\t}\n\n\treturn self.c.Helpers().SubCommits.ViewSubCommits(helpers.ViewSubCommitsOpts{\n\t\tRef:                     branch,\n\t\tTitleRef:                fmt.Sprintf(\"%s \u003c-\u003e %s\", branch.RefName(), upstream),\n\t\tRefToShowDivergenceFrom: branch.FullUpstreamRefName(),\n\t\tContext:                 self.context(),\n\t\tShowBranchHeads:         false,\n\t})\n}",
-        "Verb": "\"view-divergence\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 319,
-      "owner": "BranchesController.viewUpstreamOptions",
-      "fields": {
-        "CommandID": "\"branch.view-base-divergence\"",
-        "DisabledReason": "disabledReason",
-        "Keys": "menuKey('b')",
-        "LabelColumns": "[]string{label}",
-        "OnPress": "func() error {\n\tbranch := self.context().GetSelected()\n\tif branch == nil {\n\t\treturn nil\n\t}\n\n\treturn self.c.Helpers().SubCommits.ViewSubCommits(helpers.ViewSubCommitsOpts{\n\t\tRef:                     branch,\n\t\tTitleRef:                fmt.Sprintf(\"%s \u003c-\u003e %s\", branch.RefName(), shortBaseBranchName),\n\t\tRefToShowDivergenceFrom: baseBranch,\n\t\tContext:                 self.context(),\n\t\tShowBranchHeads:         false,\n\t})\n}",
-        "Verb": "\"view-divergence\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 341,
-      "owner": "BranchesController.viewUpstreamOptions",
-      "fields": {
-        "CommandID": "\"branch.unset-upstream\"",
-        "Keys": "menuKey('u')",
-        "LabelColumns": "[]string{self.c.Tr.UnsetUpstream}",
-        "OnPress": "upstreamFlow.unset",
-        "Verb": "\"unset-upstream\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 349,
-      "owner": "BranchesController.viewUpstreamOptions",
-      "fields": {
-        "CommandID": "\"branch.set-upstream\"",
-        "Keys": "menuKey('s')",
-        "LabelColumns": "[]string{self.c.Tr.SetUpstream}",
-        "OnPress": "upstreamFlow.set",
-        "Verb": "\"set-upstream\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 375,
-      "owner": "BranchesController.viewUpstreamOptions",
-      "fields": {
-        "CommandID": "\"branch.reset-selected-upstream-menu\"",
-        "Keys": "menuKey('g')",
-        "LabelColumns": "[]string{upstreamResetOptions}",
-        "OnPress": "func() error {\n\n\terr := self.c.Helpers().Refs.CreateGitResetMenu(upstream, selectedBranch.FullUpstreamRefName())\n\tif err != nil {\n\t\treturn err\n\t}\n\treturn nil\n}",
-        "OpensMenu": "true",
-        "Verb": "\"reset\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 392,
-      "owner": "BranchesController.viewUpstreamOptions",
-      "fields": {
-        "CommandID": "\"branch.rebase-current-onto-selected-upstream\"",
-        "Keys": "menuKey('r')",
-        "LabelColumns": "[]string{upstreamRebaseOptions}",
-        "OnPress": "func() error {\n\tif err := self.c.Helpers().MergeAndRebase.RebaseOntoRef(upstream); err != nil {\n\t\treturn err\n\t}\n\treturn nil\n}",
-        "OpensMenu": "true",
-        "Verb": "\"rebase\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 625,
+      "line": 477,
       "owner": "BranchesController.delete",
       "fields": {
         "CommandID": "\"branch.delete-local\"",
@@ -1356,7 +1359,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 638,
+      "line": 490,
       "owner": "BranchesController.delete",
       "fields": {
         "CommandID": "\"remote-branch.delete\"",
@@ -1370,7 +1373,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 653,
+      "line": 505,
       "owner": "BranchesController.delete",
       "fields": {
         "CommandID": "\"branch.delete-local-and-remote\"",
@@ -1384,7 +1387,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 749,
+      "line": 601,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request\"",
@@ -1397,7 +1400,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 757,
+      "line": 609,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-to-chosen-target\"",
@@ -1410,7 +1413,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 790,
+      "line": 642,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-current-to-selected\"",
