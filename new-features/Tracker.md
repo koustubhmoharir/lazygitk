@@ -18,13 +18,12 @@ deferred and must not be offered. Keep wider updates explicit choices.
 
 ## Remaining tasks for item 7
 
-1. Finish acceptance for the captured menus and preserve the sync acceptance
-   baseline with local fake remotes: selected != current, absent/gone upstream,
-   distinct push/pull remotes, force-with-lease rejection, fast-forward,
-   divergence/rewritten upstream, concurrent ref changes, occupied worktrees
-   and branch stacks. Assert HEAD/index/worktree and unrelated refs unchanged.
-   Maintain usage, inventory and merge guide; run generation, formatting,
-   build, short tests, relevant headless scenarios and lint.
+1. Finish the serialized full branch/sync terminal acceptance run. The full
+   short suite, generation, formatting, build, scoped lint, inventory checks and
+   focused creation/deletion/tag/worktree scenarios pass. The first concurrent
+   broad run hit the harness's 40-second deadline in two long deletion scenarios;
+   both passed on focused rerun. Keep the timeout unchanged and finish the
+   one-scenario-at-a-time run before marking item 7 complete.
 2. When acceptance passes, complete item 7 accurately in the roadmap and
    replace this tracker with item 8's task-level plan in the same commit.
 

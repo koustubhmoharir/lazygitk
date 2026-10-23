@@ -17,6 +17,15 @@ is recorded in [branch-menu-audit.md](branch-menu-audit.md). Preparatory/histori
 checkpoints below describe their verification at the time, not remaining
 requirements to restore a deferred multi-branch push.
 
+Final item 7 acceptance is in progress. The complete short suite passed,
+including backend tests (457.330s), controllers (356.556s) and helpers (13.146s).
+Generation, formatting, debug build, scoped lint and inventory checks pass.
+The first broad branch/sync terminal run reached the fixed 40-second per-case
+limit in `branch/delete` and `branch/delete_multiple` while the short suite was
+also running. Both passed together on focused rerun (19.208s). The broad group
+is being rerun with `-parallel 1`; no test timeout or application behavior was
+changed to bypass that deadline. Keep the tracker on item 7 until it finishes.
+
 ## Baseline and current divergence
 
 - Upstream: `https://github.com/jesseduffield/lazygit.git`, currently remote

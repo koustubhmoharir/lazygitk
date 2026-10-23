@@ -1,4 +1,4 @@
-# Remaining selected-branch menu audit
+# Selected-branch menu integration audit
 
 Current item: Roadmap 7. This records inspected integration points, not new
 scope or a plan for later roadmap items.
@@ -29,6 +29,6 @@ cached dirty-file model.
 
 [TortoiseGit's rebase guide](https://tortoisegit.org/docs/tortoisegit/tgit-dug-rebase.html)
 distinguishes the branch being rewritten from the upstream target. Retain that
-distinction in the remaining branch rebase flow, including its marked-base and
+distinction in the captured branch rebase flow, including its marked-base and
 interactive-break choices. Its off-branch rebase capability remains outside
 this fork's agreed first-version scope.

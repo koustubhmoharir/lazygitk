@@ -1,12 +1,17 @@
 # Selected-branch operations: audit and design
 
-Roadmap item 7, audited against this fork after item 6. The read-only foundation
-is verified; explicit command builders are under verification and not yet
-wired into the sync UI. Native experiments
-are recorded separately in
+Roadmap item 7, initially audited after item 6. Captured sync, metadata,
+reset/rebase/merge, deletion and branch/tag creation are now integrated. Final
+acceptance is tracked in [Tracker.md](Tracker.md); current integration seams
+are recorded in [branch-menu-audit.md](branch-menu-audit.md) and
+[MergeGuide.md](MergeGuide.md). Native experiments are recorded separately in
 [selected-branch-sync-probes.md](selected-branch-sync-probes.md).
 
-## Existing behavior and integration seams
+## Initial behavior and integration seams
+
+This table and the following location notes describe the original audit,
+before the captured routing changes. They explain the integration boundaries;
+use the current audit and merge guide for the live replacements.
 
 | Area | Existing target | Required fork treatment |
 | --- | --- | --- |
@@ -52,8 +57,8 @@ Primary code locations:
 ## Captured-source contract
 
 The initial additive modules are `git_commands/branch_sync_info.go` and
-`controllers/branch_sync_source.go`. Neither is wired into executable push/pull
-yet. Native inspection captures exact source OID, actual symbolic HEAD/tip,
+`controllers/branch_sync_source.go`, now used by captured push/pull routing.
+Native inspection captures exact source OID, actual symbolic HEAD/tip,
 upstream remote/ref/tracking namespace, suggested push metadata and fresh
 worktree reservations. It rejects aliases and missing or non-commit branch
 tips without requiring a clean current checkout. Returned inspection data is
@@ -75,7 +80,7 @@ name is copied rather than retaining a mutable model pointer. Existing current
 pull callbacks used by local-commit operations must remain explicitly current,
 not become context-dependent accidentally.
 
-## Execution contract for the following slices
+## Execution contract
 
 Keep additive backend and controller modules with small integration hooks.
 Separate a captured local source branch from its pull upstream and push
@@ -104,7 +109,7 @@ nor the first native push-mapping result is sufficient authority. Snapshot
 validation and a user's modal choices must precede executable commands.
 Shortcut redesign stays in item 8.
 
-## Implemented internal primitives, not yet wired into sync
+## Internal native primitives
 
 - `InspectBranchSyncRemote` retains all configured URLs, push URLs, fetch and
   push refspecs. It normalizes mirroring through Git and fingerprints selected
@@ -129,9 +134,10 @@ Shortcut redesign stays in item 8.
 These inspection/ref-update primitives do not fetch, select a remote/destination,
 update upstream configuration, check out a branch, stash, merge or rebase.
 
-## Explicit sync command contracts under verification
+## Explicit sync command contracts
 
-The new network builders remain separate from existing UI routing. They pin
+The network builders remain separate native APIs used by captured UI routing.
+They pin
 the backend instance and copied branch name/OID, re-read native state before
 constructing a command, and disable whole-command lock retries. Revalidation
 is not a lock: Git's normal concurrency model applies after launch.
@@ -178,25 +184,20 @@ shadowing remote configuration is refused. No transport is contacted by that
 verification. `WithFastForwardOnly` further restricts native current pull for
 the explicit fast-forward action without replacing Git's integration logic.
 
-## Push UI checkpoint (additive helpers; routing still a working-tree experiment)
+## Current sync routing
 
-The additive helpers implement captured branch/context routing,
-with explicit review, cancel-first force and multi-URL approval, scoped status
-flags and repository-generation checks. A working-tree hook connects the push
-binding to them. Pull and fast-forward routing and explicit stack workflows
-remain unfinished. The hook, headless fixtures and generated routing inventory
-are not yet committed as a finished UI slice; these changes do not complete
-roadmap item 7.
+`branch_sync_bindings.go` routes branch-bearing contexts to the captured local
+branch, and other supported contexts to an explicitly named current branch.
+Push reviews one source and destination, with Cancel-first force/multiple-URL
+approval, explicit upstream setup and repository-scoped operation flags.
+The prepared wider-stack push code remains dormant; no multi-branch push
+menu is offered. Pull/update and multi-selected fast-forward retain their
+separate, explicit wider choices.
 
-Independent focused controller tests passed (18.609s), including credential-safe
-display, upstream-refusal fallback, retained leases and stale repository
-callbacks. Five serial working-tree TUI scenarios passed (10.626s): ordinary
-push, selected branch with dirty files, stored local-branch history, stale
-review without automatic execution and refusal/fallback with exact config
-preservation. Initial new fixtures incorrectly expected
-review instead of the required remote-name prompt for an unconfigured branch;
-the corrected tests choose the remote explicitly. Generation, inventory tests,
-formatting and scoped backend/controller/i18n lint passed with zero issues.
+Pull fetches first and reviews the exact captured incoming commit before
+integration. Off-branch updates are restricted to safe ref-only fast-forwards;
+no implicit checkout, stash, worktree creation or rewritten-upstream reset.
+Native errors retain actual partial state and do not trigger automatic retry.
 
 The user approved refusing ambiguous upstream changes before pushing, with
 Cancel or a separately reviewed push without changing tracking. Native
@@ -248,8 +249,8 @@ The old tracking history identifies which commits should be replayed after an
 upstream rewrite; capturing only the new upstream would risk resurrecting
 dropped commits. Related ignored-file risks need separate explicit approval,
 and changed contents require new review. A no-op merge needs no overwrite-risk
-approval. These backend contracts are verified; modal/default-route integration
-is still unfinished. Pull's eventual default shortcut must be a multi-key path,
+approval. These contracts are integrated in the captured current-Pull GUI flow. Item 8
+will give Pull a multi-key default path,
 not a single letter, while remaining independently available in `?`.
 
 [TortoiseGit's Push dialog](https://tortoisegit.org/docs/tortoisegit/tgit-dug-push.html)
@@ -266,3 +267,15 @@ precedence, configured mirroring, and explicit expected-OID leases. The
 empty `--refmap=` disables additional configured fetch mappings. Exact ref
 selection alone is not sufficient evidence that tags, extra tracking refs,
 submodules or prune effects are suppressed.
+
+## Selected-ref menu integration
+
+The selected-ref audit now includes literal rename/upstream metadata,
+current-destination reset/rebase/merge, local/remote deletion and branch/tag
+creation. Deletion refuses occupied/reserved local refs, retains explicit
+remote destinations and excludes removed tracking caches from history-retention
+proofs. Creation exposes native tracking policy and exact tag-object overwrite
+approval, with captured signing and repository identity. See the linked audit
+and operation-specific design documents for the implemented boundaries.
+Generic checkout and explicit Worktrees-pane removal remain distinct actions;
+this audit does not silently extend ref-only operations to other worktrees.

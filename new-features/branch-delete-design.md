@@ -1,6 +1,6 @@
 # Captured branch deletion (current item 7)
 
-This is the remaining deletion audit, not a later roadmap item. Preserve local,
+This is item 7's captured deletion audit. Preserve local,
 remote and both choices, multiple selection, unmerged-commit warnings and native
 partial failures. [TortoiseGit's reference browser](https://tortoisegit.org/docs/tortoisegit/tgit-dug-browse-ref.html)
 provides selected-ref deletion and explicit tracking metadata. Native evidence
