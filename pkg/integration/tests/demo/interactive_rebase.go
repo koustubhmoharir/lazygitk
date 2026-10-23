@@ -53,10 +53,10 @@ var InteractiveRebase = NewIntegrationTest(NewIntegrationTestArgs{
 			Press(keys.Universal.NextScreenMode).
 			Press(keys.Universal.Push).
 			Tap(func() {
-				t.ExpectPopup().Confirmation().
-					Title(Contains("Force push")).
-					Content(AnyString()).
-					Confirm()
+				sourceOID := t.Git().GetCommitHash("refs/heads/feature/demo")
+				leaseOID := t.Git().GetCommitHash("refs/remotes/origin/feature/demo")
+				t.ReviewBranchForcePush("feature/demo", "feature/demo", sourceOID, "refs/remotes/origin/feature/demo", leaseOID).
+					Select(Contains("Push with reviewed lease")).Confirm()
 			})
 	},
 })

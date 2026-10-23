@@ -21,6 +21,10 @@ var ForcePush = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.HardReset("HEAD^")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		sourceOID := t.Git().GetCommitHash("refs/heads/master")
+		leaseOID := t.Git().GetCommitHash("refs/remotes/origin/master")
+		t.Shell().RunShellCommand("git rev-parse HEAD > .git/force-push-head && cp .git/index .git/force-push-index && git diff --binary > .git/force-push-worktree")
+
 		t.Views().Commits().
 			Lines(
 				Contains("one"),
@@ -29,11 +33,9 @@ var ForcePush = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Status().Content(Equals("↓1 repo → master"))
 
 		t.Views().Files().IsFocused().Press(keys.Universal.Push)
-
-		t.ExpectPopup().Confirmation().
-			Title(Equals("Force push")).
-			Content(Equals("Your branch has diverged from the remote branch. Press <esc> to cancel, or <enter> to force push.")).
-			Confirm()
+		menu := t.ReviewBranchForcePush("master", "master", sourceOID, "refs/remotes/origin/master", leaseOID)
+		t.Shell().RunShellCommand("test \"$(git --git-dir=../origin rev-parse refs/heads/master)\" = \"" + leaseOID + "\"")
+		menu.Select(Contains("Push with reviewed lease")).Confirm()
 
 		t.Views().Commits().
 			Lines(
@@ -52,5 +54,6 @@ var ForcePush = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().SubCommits().IsFocused().
 			Lines(Contains("one"))
+		t.Shell().RunShellCommand("test \"$(git --git-dir=../origin rev-parse refs/heads/master)\" = \"" + sourceOID + "\" && test \"$(git rev-parse HEAD)\" = \"$(cat .git/force-push-head)\" && cmp .git/index .git/force-push-index && git diff --binary > .git/force-push-worktree-after && cmp .git/force-push-worktree .git/force-push-worktree-after")
 	},
 })

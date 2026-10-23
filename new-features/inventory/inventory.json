@@ -448,6 +448,485 @@
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
     },
     {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 127,
+      "owner": "branchSyncUpdateFlow.presentIntegrationChoices",
+      "fields": {
+        "CommandID": "\"branch.pull-current.\" + pullIntegrationLeaf(choice.method)",
+        "Label": "choice.label",
+        "OnPress": "func() error { return flow.prepareIntegration(review, targetOID, choice.method) }",
+        "Verb": "\"integrate\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 228,
+      "owner": "branchSyncUpdateFlow.reviewIgnoredIntegration",
+      "fields": {
+        "CommandID": "\"branch.pull-current.cancel-ignored-risk\"",
+        "Label": "flow.target.c.Tr.Cancel",
+        "OnPress": "flow.target.checkRepository",
+        "Verb": "\"cancel\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 228,
+      "owner": "branchSyncUpdateFlow.reviewIgnoredIntegration",
+      "fields": {
+        "CommandID": "\"branch.pull-current.approve-ignored-risk\"",
+        "Label": "flow.target.c.Tr.BranchSyncIntegrationApproveIgnored",
+        "OnPress": "func() error { return flow.executeIntegration(plan.WithIgnoredFilesApproved()) }",
+        "Verb": "\"integrate\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 231,
+      "owner": "branchSyncUpdateFlow.reviewIgnoredIntegration",
+      "fields": {
+        "CommandID": "\"branch.pull-current.inspect-ignored-path\"",
+        "Label": "quoted",
+        "OnPress": "func() error { return flow.reviewIgnoredIntegration(plan) }",
+        "OpensMenu": "true",
+        "Verb": "\"inspect\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_push_flow.go",
+      "line": 62,
+      "owner": "branchSyncPushFlow.menu",
+      "fields": {
+        "CommandID": "\"branch.push-selected.execute\"",
+        "Label": "executeLabel",
+        "OnPress": "func() error {\n\tif flow.opts.Remote == \"\" {\n\t\treturn flow.promptRemote(false)\n\t}\n\treturn flow.prepare(false)\n}",
+        "Verb": "\"push\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_push_flow.go",
+      "line": 68,
+      "owner": "branchSyncPushFlow.menu",
+      "fields": {
+        "CommandID": "\"branch.push-selected.remote\"",
+        "Label": "tr.BranchSyncChooseRemote",
+        "OnPress": "func() error { return flow.promptRemote(false) }",
+        "OpensMenu": "true",
+        "Verb": "\"configure-push\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_push_flow.go",
+      "line": 69,
+      "owner": "branchSyncPushFlow.menu",
+      "fields": {
+        "CommandID": "\"branch.push-selected.destination\"",
+        "Label": "tr.BranchSyncChooseDestination",
+        "OnPress": "flow.promptDestination",
+        "OpensMenu": "true",
+        "Verb": "\"configure-push\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_push_flow.go",
+      "line": 70,
+      "owner": "branchSyncPushFlow.menu",
+      "fields": {
+        "CommandID": "\"branch.push-selected.set-upstream\"",
+        "Label": "fmt.Sprintf(\"%s (%t)\", tr.BranchSyncSetUpstream, flow.opts.SetUpstream)",
+        "OnPress": "func() error { flow.opts.SetUpstream = !flow.opts.SetUpstream; return flow.menu() }",
+        "Verb": "\"configure-push\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_push_flow.go",
+      "line": 71,
+      "owner": "branchSyncPushFlow.menu",
+      "fields": {
+        "CommandID": "\"branch.push-selected.submodules\"",
+        "Label": "fmt.Sprintf(\"%s (%t)\", tr.BranchSyncCheckSubmodules, flow.opts.Submodules == git_commands.BranchPushCheckSubmodules)",
+        "OnPress": "func() error {\n\tif flow.opts.Submodules == git_commands.BranchPushCheckSubmodules {\n\t\tflow.opts.Submodules = git_commands.BranchPushNoSubmoduleRecursion\n\t} else {\n\t\tflow.opts.Submodules = git_commands.BranchPushCheckSubmodules\n\t}\n\treturn flow.menu()\n}",
+        "Verb": "\"configure-push\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_push_flow.go",
+      "line": 79,
+      "owner": "branchSyncPushFlow.menu",
+      "fields": {
+        "CommandID": "\"branch.push-selected.force-with-lease\"",
+        "Label": "tr.BranchSyncForceLease",
+        "OnPress": "flow.beginForce",
+        "OpensMenu": "true",
+        "Verb": "\"push\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_push_flow.go",
+      "line": 198,
+      "owner": "branchSyncPushFlow.reviewAmbiguousUpstream",
+      "fields": {
+        "CommandID": "\"branch.push-selected.upstream-cancel\"",
+        "Label": "flow.target.c.Tr.Cancel",
+        "OnPress": "flow.target.checkRepository",
+        "Verb": "\"cancel\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_push_flow.go",
+      "line": 199,
+      "owner": "branchSyncPushFlow.reviewAmbiguousUpstream",
+      "fields": {
+        "CommandID": "\"branch.push-selected.without-upstream\"",
+        "Label": "flow.target.c.Tr.BranchSyncPushWithoutTracking",
+        "OnPress": "func() error {\n\tif err := flow.target.checkRepository(); err != nil {\n\t\treturn err\n\t}\n\topts.SetUpstream = false\n\tflow.opts.SetUpstream = false\n\treturn flow.prepareOptions(opts, sourceOID)\n}",
+        "OpensMenu": "true",
+        "Verb": "\"configure-push\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_push_flow.go",
+      "line": 222,
+      "owner": "branchSyncPushFlow.review",
+      "fields": {
+        "CommandID": "\"branch.push-selected.force-cancel\"",
+        "Label": "flow.target.c.Tr.Cancel",
+        "OnPress": "func() error {\n\tif err := flow.target.checkRepository(); err != nil {\n\t\treturn err\n\t}\n\tflow.opts.LeaseRef = \"\"\n\treturn nil\n}",
+        "Verb": "\"cancel\""
+      },
+      "enclosingCondition": "(opts.ForceWithLease)",
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_push_flow.go",
+      "line": 229,
+      "owner": "branchSyncPushFlow.review",
+      "fields": {
+        "CommandID": "\"branch.push-selected.force-confirm\"",
+        "Label": "flow.target.c.Tr.BranchSyncForceConfirm",
+        "OnPress": "func() error {\n\tif err := flow.target.checkRepository(); err != nil {\n\t\treturn err\n\t}\n\treturn flow.execute(plan)\n}",
+        "Verb": "\"push\""
+      },
+      "enclosingCondition": "(opts.ForceWithLease)",
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_push_flow.go",
+      "line": 322,
+      "owner": "branchSyncPushFlow.execute",
+      "fields": {
+        "CommandID": "\"branch.push-selected.multiple-urls-cancel\"",
+        "Label": "flow.target.c.Tr.Cancel",
+        "OnPress": "flow.target.checkRepository",
+        "Verb": "\"cancel\""
+      },
+      "enclosingCondition": "(errors.Is(err, git_commands.ErrBranchPushMultipleURLs))",
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_push_flow.go",
+      "line": 324,
+      "owner": "branchSyncPushFlow.execute",
+      "fields": {
+        "CommandID": "fmt.Sprintf(\"branch.push-selected.destination-%d\", i)",
+        "Label": "display",
+        "OnPress": "func() error { return nil }",
+        "Verb": "\"push-destination\""
+      },
+      "enclosingCondition": "(errors.Is(err, git_commands.ErrBranchPushMultipleURLs))",
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_push_flow.go",
+      "line": 326,
+      "owner": "branchSyncPushFlow.execute",
+      "fields": {
+        "CommandID": "\"branch.push-selected.multiple-urls-approve\"",
+        "Label": "flow.target.c.Tr.BranchSyncApproveMultipleURLs",
+        "OnPress": "func() error {\n\tif err := flow.target.checkRepository(); err != nil {\n\t\treturn err\n\t}\n\treturn flow.execute(plan.WithMultipleURLsApproved())\n}",
+        "Verb": "\"push\""
+      },
+      "enclosingCondition": "(errors.Is(err, git_commands.ErrBranchPushMultipleURLs))",
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_stack_push_flow.go",
+      "line": 96,
+      "owner": "branchStackPushFlow.reviewBatch",
+      "fields": {
+        "CommandID": "\"branch.push-stack.cancel\"",
+        "Label": "batch.target.c.Tr.Cancel",
+        "OnPress": "batch.target.checkRepository",
+        "Verb": "\"cancel\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_stack_push_flow.go",
+      "line": 100,
+      "owner": "branchStackPushFlow.reviewBatch",
+      "fields": {
+        "CommandID": "\"branch.push-stack.inspect-plan\"",
+        "Label": "fmt.Sprintf(\"%q %s → %q %q\", plan.Name(), plan.SourceOID(), options.Remote, options.DestinationRef)",
+        "OnPress": "func() error {\n\tif err := batch.target.checkRepository(); err != nil {\n\t\treturn err\n\t}\n\treturn batch.target.c.Menu(types.CreateMenuOptions{\n\t\tTitle: batch.target.c.Tr.BranchSyncReviewTitle, Prompt: prompt,\n\t\tItems:    []*types.MenuItem{{CommandID: \"branch.push-stack.back\", Verb: \"back\", Label: batch.target.c.Tr.Close, OpensMenu: true, OnPress: batch.reviewBatch}},\n\t\tOnCancel: batch.reviewBatch,\n\t})\n}",
+        "OpensMenu": "true",
+        "Verb": "\"inspect\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_stack_push_flow.go",
+      "line": 109,
+      "owner": "branchStackPushFlow.reviewBatch",
+      "fields": {
+        "CommandID": "\"branch.push-stack.back\"",
+        "Label": "batch.target.c.Tr.Close",
+        "OnPress": "batch.reviewBatch",
+        "OpensMenu": "true",
+        "Verb": "\"back\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_stack_push_flow.go",
+      "line": 115,
+      "owner": "branchStackPushFlow.reviewBatch",
+      "fields": {
+        "CommandID": "\"branch.push-stack.execute\"",
+        "Label": "batch.target.c.Tr.BranchSyncStackPushExecute",
+        "OnPress": "batch.execute",
+        "Verb": "\"push-stack\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_stack_update_flow.go",
+      "line": 20,
+      "owner": "SyncController.reviewBranchStackUpdate",
+      "fields": {
+        "CommandID": "\"branch.update-stack.no-members\"",
+        "Label": "target.c.Tr.Cancel",
+        "OnPress": "target.checkRepository",
+        "Verb": "\"cancel\""
+      },
+      "enclosingCondition": "(len(members) == 1)",
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_stack_update_flow.go",
+      "line": 199,
+      "owner": "branchStackUpdateFlow.reviewBatch",
+      "fields": {
+        "CommandID": "\"branch.update-stack.cancel\"",
+        "Label": "batch.target.c.Tr.Cancel",
+        "OnPress": "batch.target.checkRepository",
+        "Verb": "\"cancel\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_stack_update_flow.go",
+      "line": 208,
+      "owner": "branchStackUpdateFlow.reviewBatch",
+      "fields": {
+        "CommandID": "\"branch.update-stack.inspect-plan\"",
+        "Label": "label",
+        "OnPress": "func() error {\n\tif err := batch.target.checkRepository(); err != nil {\n\t\treturn err\n\t}\n\treturn batch.target.c.Menu(types.CreateMenuOptions{\n\t\tTitle: batch.target.c.Tr.BranchSyncStackUpdateTitle, Prompt: prompt,\n\t\tItems:    []*types.MenuItem{{CommandID: \"branch.update-stack.back\", Verb: \"back\", Label: batch.target.c.Tr.Close, OpensMenu: true, OnPress: batch.reviewBatch}},\n\t\tOnCancel: batch.reviewBatch,\n\t})\n}",
+        "OpensMenu": "true",
+        "Verb": "\"inspect\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_stack_update_flow.go",
+      "line": 216,
+      "owner": "branchStackUpdateFlow.reviewBatch",
+      "fields": {
+        "CommandID": "\"branch.update-stack.back\"",
+        "Label": "batch.target.c.Tr.Close",
+        "OnPress": "batch.reviewBatch",
+        "OpensMenu": "true",
+        "Verb": "\"back\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_stack_update_flow.go",
+      "line": 222,
+      "owner": "branchStackUpdateFlow.reviewBatch",
+      "fields": {
+        "CommandID": "\"branch.update-stack.execute\"",
+        "Label": "batch.target.c.Tr.BranchSyncStackUpdateExecute",
+        "OnPress": "batch.execute",
+        "Verb": "\"update-stack\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_update_flow.go",
+      "line": 64,
+      "owner": "branchSyncUpdateFlow.menu",
+      "fields": {
+        "CommandID": "flow.menuID(\"fetch\")",
+        "Label": "fetchLabel",
+        "OnPress": "flow.beginFetch",
+        "Verb": "\"fetch\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_update_flow.go",
+      "line": 65,
+      "owner": "branchSyncUpdateFlow.menu",
+      "fields": {
+        "CommandID": "flow.menuID(\"remote\")",
+        "Label": "tr.BranchSyncChooseRemote",
+        "OnPress": "flow.promptRemote",
+        "OpensMenu": "true",
+        "Verb": "\"configure-fetch\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_update_flow.go",
+      "line": 66,
+      "owner": "branchSyncUpdateFlow.menu",
+      "fields": {
+        "CommandID": "flow.menuID(\"upstream\")",
+        "Label": "tr.BranchSyncChooseUpstreamBranch",
+        "OnPress": "flow.promptUpstream",
+        "OpensMenu": "true",
+        "Verb": "\"configure-fetch\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_update_flow.go",
+      "line": 67,
+      "owner": "branchSyncUpdateFlow.menu",
+      "fields": {
+        "CommandID": "flow.menuID(\"tracking\")",
+        "Label": "tr.BranchSyncChooseTrackingRef",
+        "OnPress": "flow.promptTrackingRef",
+        "OpensMenu": "true",
+        "Verb": "\"configure-fetch\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_update_flow.go",
+      "line": 70,
+      "owner": "branchSyncUpdateFlow.menu",
+      "fields": {
+        "CommandID": "flow.menuID(\"stack\")",
+        "Label": "tr.BranchSyncStackUpdateChoice",
+        "OnPress": "flow.stackChoice",
+        "OpensMenu": "true",
+        "Verb": "\"update-stack\""
+      },
+      "enclosingCondition": "(flow.stackChoice != nil)",
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_update_flow.go",
+      "line": 241,
+      "owner": "branchSyncUpdateFlow.showDiverged",
+      "fields": {
+        "CommandID": "flow.menuID(\"diverged-cancel\")",
+        "Label": "flow.target.c.Tr.Cancel",
+        "OnPress": "flow.target.checkRepository",
+        "Verb": "\"cancel\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_update_flow.go",
+      "line": 312,
+      "owner": "branchSyncUpdateFlow.reviewUpdate",
+      "fields": {
+        "CommandID": "\"branch.update-selected.noop-cancel\"",
+        "Label": "flow.target.c.Tr.Cancel",
+        "OnPress": "flow.target.checkRepository",
+        "Verb": "\"cancel\""
+      },
+      "enclosingCondition": "(!plan.NeedsUpdate()) \u0026\u0026 (flow.collector != nil)",
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_update_flow.go",
+      "line": 313,
+      "owner": "branchSyncUpdateFlow.reviewUpdate",
+      "fields": {
+        "CommandID": "\"branch.update-selected.noop-continue\"",
+        "Label": "flow.target.c.Tr.BranchSyncStackContinue",
+        "OnPress": "func() error { return flow.applyUpdate(plan) }",
+        "OpensMenu": "true",
+        "Verb": "\"review-update\""
+      },
+      "enclosingCondition": "(!plan.NeedsUpdate()) \u0026\u0026 (flow.collector != nil)",
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/branch_sync_update_flow.go",
+      "line": 318,
+      "owner": "branchSyncUpdateFlow.reviewUpdate",
+      "fields": {
+        "CommandID": "flow.menuID(\"noop-cancel\")",
+        "Label": "flow.target.c.Tr.Cancel",
+        "OnPress": "flow.target.checkRepository",
+        "Verb": "\"cancel\""
+      },
+      "enclosingCondition": "(!plan.NeedsUpdate())",
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
       "line": 43,
@@ -637,7 +1116,7 @@
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.rebase-current-onto-selected\"",
-        "Description": "self.c.Tr.RebaseBranch",
+        "Description": "self.c.Tr.BranchSyncRebaseCurrentOntoSelected",
         "DisplayOnScreen": "true",
         "GetDisabledReason": "self.require(self.singleItemSelected())",
         "Handler": "opts.Guards.OutsideFilterMode(self.withItem(self.rebase))",
@@ -650,11 +1129,11 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 161,
+      "line": 162,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.merge-selected-into-current\"",
-        "Description": "self.c.Tr.Merge",
+        "Description": "self.c.Tr.BranchSyncMergeSelectedIntoCurrent",
         "DisplayOnScreen": "true",
         "GetDisabledReason": "self.require(self.singleItemSelected(self.notMergingIntoYourself))",
         "Handler": "opts.Guards.OutsideFilterMode(self.merge)",
@@ -667,14 +1146,15 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 172,
+      "line": 173,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.fast-forward-selected\"",
-        "Description": "self.c.Tr.FastForward",
+        "Description": "self.c.Tr.BranchSyncFastForwardSelected",
         "GetDisabledReason": "self.require(self.itemRangeSelected(self.branchesAreReal))",
         "Handler": "self.withItems(self.fastForward)",
         "Keys": "opts.GetKeys(opts.Config.Branches.FastForward)",
+        "OpensMenu": "true",
         "Verb": "\"fast-forward\""
       },
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
@@ -682,7 +1162,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 181,
+      "line": 185,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"tag.create-at-selection\"",
@@ -697,7 +1177,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 189,
+      "line": 193,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.sort-menu\"",
@@ -712,11 +1192,11 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 197,
+      "line": 201,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.reset-menu\"",
-        "Description": "self.c.Tr.ViewResetOptions",
+        "Description": "self.c.Tr.BranchSyncResetCurrentToSelected",
         "DisplayOnScreen": "true",
         "GetDisabledReason": "self.require(self.singleItemSelected())",
         "Handler": "self.withItem(self.createResetMenu)",
@@ -729,7 +1209,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 207,
+      "line": 211,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.rename\"",
@@ -744,7 +1224,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 215,
+      "line": 219,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.upstream-menu\"",
@@ -761,7 +1241,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 227,
+      "line": 231,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.ref.external\"",
@@ -776,7 +1256,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 278,
+      "line": 285,
       "owner": "BranchesController.viewUpstreamOptions",
       "fields": {
         "CommandID": "\"branch.view-upstream-divergence\"",
@@ -789,7 +1269,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 312,
+      "line": 319,
       "owner": "BranchesController.viewUpstreamOptions",
       "fields": {
         "CommandID": "\"branch.view-base-divergence\"",
@@ -804,13 +1284,13 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 334,
+      "line": 341,
       "owner": "BranchesController.viewUpstreamOptions",
       "fields": {
         "CommandID": "\"branch.unset-upstream\"",
         "Keys": "menuKey('u')",
         "LabelColumns": "[]string{self.c.Tr.UnsetUpstream}",
-        "OnPress": "func() error {\n\tif err := self.c.Git().Branch.UnsetUpstream(selectedBranch.Name); err != nil {\n\t\treturn err\n\t}\n\tself.c.Refresh(types.RefreshOptions{\n\t\tScope: []types.RefreshableView{\n\t\t\ttypes.BRANCHES,\n\t\t\ttypes.COMMITS,\n\t\t},\n\t})\n\treturn nil\n}",
+        "OnPress": "upstreamFlow.unset",
         "Verb": "\"unset-upstream\""
       },
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
@@ -818,13 +1298,13 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 353,
+      "line": 349,
       "owner": "BranchesController.viewUpstreamOptions",
       "fields": {
         "CommandID": "\"branch.set-upstream\"",
         "Keys": "menuKey('s')",
         "LabelColumns": "[]string{self.c.Tr.SetUpstream}",
-        "OnPress": "func() error {\n\treturn self.c.Helpers().Upstream.PromptForUpstreamWithoutInitialContent(selectedBranch, func(upstream string) error {\n\t\tupstreamRemote, upstreamBranch, err := self.c.Helpers().Upstream.ParseUpstream(upstream)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\n\t\tif err := self.c.Git().Branch.SetUpstream(upstreamRemote, upstreamBranch, selectedBranch.Name); err != nil {\n\t\t\treturn err\n\t\t}\n\t\tself.c.Refresh(types.RefreshOptions{\n\t\t\tScope: []types.RefreshableView{\n\t\t\t\ttypes.BRANCHES,\n\t\t\t\ttypes.COMMITS,\n\t\t\t},\n\t\t})\n\t\treturn nil\n\t})\n}",
+        "OnPress": "upstreamFlow.set",
         "Verb": "\"set-upstream\""
       },
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
@@ -832,7 +1312,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 397,
+      "line": 375,
       "owner": "BranchesController.viewUpstreamOptions",
       "fields": {
         "CommandID": "\"branch.reset-selected-upstream-menu\"",
@@ -847,7 +1327,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 414,
+      "line": 392,
       "owner": "BranchesController.viewUpstreamOptions",
       "fields": {
         "CommandID": "\"branch.rebase-current-onto-selected-upstream\"",
@@ -862,7 +1342,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 647,
+      "line": 625,
       "owner": "BranchesController.delete",
       "fields": {
         "CommandID": "\"branch.delete-local\"",
@@ -876,7 +1356,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 660,
+      "line": 638,
       "owner": "BranchesController.delete",
       "fields": {
         "CommandID": "\"remote-branch.delete\"",
@@ -890,7 +1370,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 675,
+      "line": 653,
       "owner": "BranchesController.delete",
       "fields": {
         "CommandID": "\"branch.delete-local-and-remote\"",
@@ -904,7 +1384,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 821,
+      "line": 747,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request\"",
@@ -917,7 +1397,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 829,
+      "line": 755,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-to-chosen-target\"",
@@ -930,7 +1410,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 862,
+      "line": 788,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-current-to-selected\"",
@@ -6176,10 +6656,12 @@
       "owner": "SyncController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.push-current\"",
+        "CommandIDFunc": "func() string { return self.branchSyncCommandID(\"push\") }",
         "Description": "self.c.Tr.Push",
-        "GetDisabledReason": "self.getDisabledReasonForPushOrPull",
-        "Handler": "opts.Guards.NoPopupPanel(self.HandlePush)",
+        "GetDisabledReason": "self.getDisabledReasonForBranchSync",
+        "Handler": "opts.Guards.NoPopupPanel(self.handleFocusedBranchPush)",
         "Keys": "opts.GetKeys(opts.Config.Universal.Push)",
+        "OpensMenu": "true",
         "Verb": "\"push\""
       },
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
@@ -6187,14 +6669,16 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/sync_controller.go",
-      "line": 45,
+      "line": 51,
       "owner": "SyncController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.pull-current\"",
+        "CommandIDFunc": "func() string { return self.branchSyncCommandID(\"pull\") }",
         "Description": "self.c.Tr.Pull",
-        "GetDisabledReason": "self.getDisabledReasonForPushOrPull",
-        "Handler": "opts.Guards.NoPopupPanel(self.HandlePull)",
+        "GetDisabledReason": "self.getDisabledReasonForBranchSync",
+        "Handler": "opts.Guards.NoPopupPanel(self.handleFocusedBranchPull)",
         "Keys": "opts.GetKeys(opts.Config.Universal.Pull)",
+        "OpensMenu": "true",
         "Verb": "\"pull\""
       },
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
@@ -6202,7 +6686,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/sync_controller.go",
-      "line": 106,
+      "line": 123,
       "owner": "SyncController.push",
       "fields": {
         "CommandID": "\"branch.push-current-stack\"",
@@ -6215,7 +6699,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/sync_controller.go",
-      "line": 114,
+      "line": 131,
       "owner": "SyncController.push",
       "fields": {
         "CommandID": "\"branch.push-current\"",
@@ -6228,7 +6712,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/sync_controller.go",
-      "line": 261,
+      "line": 278,
       "owner": "SyncController.pull",
       "fields": {
         "CommandID": "\"branch.pull-current-stack\"",
@@ -6241,7 +6725,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/sync_controller.go",
-      "line": 269,
+      "line": 286,
       "owner": "SyncController.pull",
       "fields": {
         "CommandID": "\"branch.pull-current\"",
@@ -9191,6 +9675,215 @@
     },
     {
       "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_bindings.go",
+      "line": 17,
+      "owner": "SyncController.branchSyncSelectedContext",
+      "fields": {
+        "key": "context.LOCAL_BRANCHES_CONTEXT_KEY"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_bindings.go",
+      "line": 17,
+      "owner": "SyncController.branchSyncSelectedContext",
+      "fields": {
+        "key": "context.REMOTE_BRANCHES_CONTEXT_KEY"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_bindings.go",
+      "line": 17,
+      "owner": "SyncController.branchSyncSelectedContext",
+      "fields": {
+        "key": "context.SUB_COMMITS_CONTEXT_KEY"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_bindings.go",
+      "line": 38,
+      "owner": "SyncController.focusedBranchSyncSource",
+      "fields": {
+        "key": "context.LOCAL_BRANCHES_CONTEXT_KEY"
+      },
+      "enclosingCondition": "(side != nil)"
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_bindings.go",
+      "line": 40,
+      "owner": "SyncController.focusedBranchSyncSource",
+      "fields": {
+        "key": "context.SUB_COMMITS_CONTEXT_KEY"
+      },
+      "enclosingCondition": "(side != nil)"
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_bindings.go",
+      "line": 69,
+      "owner": "SyncController.branchSyncSourceDisabledReason",
+      "fields": {
+        "key": "branchSyncSelectOneLocalBranch"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_bindings.go",
+      "line": 71,
+      "owner": "SyncController.branchSyncSourceDisabledReason",
+      "fields": {
+        "key": "branchSyncNoCurrentLocalBranch"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 150,
+      "owner": "pullIntegrationLeaf",
+      "fields": {
+        "key": "git_commands.PullIntegrationDefault"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 152,
+      "owner": "pullIntegrationLeaf",
+      "fields": {
+        "key": "git_commands.PullIntegrationFastForwardOnly"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 154,
+      "owner": "pullIntegrationLeaf",
+      "fields": {
+        "key": "git_commands.PullIntegrationMerge"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 156,
+      "owner": "pullIntegrationLeaf",
+      "fields": {
+        "key": "git_commands.PullIntegrationMergeNoFF"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 158,
+      "owner": "pullIntegrationLeaf",
+      "fields": {
+        "key": "git_commands.PullIntegrationRebase"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 160,
+      "owner": "pullIntegrationLeaf",
+      "fields": {
+        "key": "git_commands.PullIntegrationRebaseMerges"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 162,
+      "owner": "pullIntegrationLeaf",
+      "fields": {
+        "key": "git_commands.PullIntegrationRebaseInteractive"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 241,
+      "owner": "branchSyncUpdateFlow.integrationMethodLabel",
+      "fields": {
+        "key": "git_commands.PullIntegrationFastForwardOnly"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 243,
+      "owner": "branchSyncUpdateFlow.integrationMethodLabel",
+      "fields": {
+        "key": "git_commands.PullIntegrationMergeNoFF"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 245,
+      "owner": "branchSyncUpdateFlow.integrationMethodLabel",
+      "fields": {
+        "key": "git_commands.PullIntegrationRebase"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 247,
+      "owner": "branchSyncUpdateFlow.integrationMethodLabel",
+      "fields": {
+        "key": "git_commands.PullIntegrationRebaseMerges"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 249,
+      "owner": "branchSyncUpdateFlow.integrationMethodLabel",
+      "fields": {
+        "key": "git_commands.PullIntegrationRebaseInteractive"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
+      "line": 251,
+      "owner": "branchSyncUpdateFlow.integrationMethodLabel",
+      "fields": {
+        "key": "git_commands.PullIntegrationConfiguredMerge"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_source.go",
+      "line": 33,
+      "owner": "resolveBranchSyncSource",
+      "fields": {
+        "key": "context.LOCAL_BRANCHES_CONTEXT_KEY"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_source.go",
+      "line": 38,
+      "owner": "resolveBranchSyncSource",
+      "fields": {
+        "key": "context.SUB_COMMITS_CONTEXT_KEY"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/branch_sync_source.go",
+      "line": 41,
+      "owner": "resolveBranchSyncSource",
+      "fields": {
+        "key": "context.REMOTE_BRANCHES_CONTEXT_KEY"
+      }
+    },
+    {
+      "kind": "case",
       "file": "pkg/gui/controllers/commit_diff_actions.go",
       "line": 417,
       "owner": "CommitDiffActions.togglePatchLines",
@@ -9357,7 +10050,7 @@
       "line": 994,
       "owner": "FilesController.openFileConflictMenu",
       "fields": {
-        "key": "\"DU\""
+        "key": "\"UD\""
       }
     },
     {
@@ -9366,16 +10059,7 @@
       "line": 994,
       "owner": "FilesController.openFileConflictMenu",
       "fields": {
-        "key": "\"UD\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/controllers/files_controller.go",
-      "line": 998,
-      "owner": "FilesController.openFileConflictMenu",
-      "fields": {
-        "key": "\"AU\""
+        "key": "\"DU\""
       }
     },
     {
@@ -9385,6 +10069,15 @@
       "owner": "FilesController.openFileConflictMenu",
       "fields": {
         "key": "\"UA\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/files_controller.go",
+      "line": 998,
+      "owner": "FilesController.openFileConflictMenu",
+      "fields": {
+        "key": "\"AU\""
       }
     },
     {
@@ -9510,7 +10203,7 @@
       "line": 326,
       "owner": "ConfirmationHelper.ResizeCurrentPopupPanels",
       "fields": {
-        "key": "self.c.Contexts().Suggestions"
+        "key": "self.c.Contexts().Prompt"
       }
     },
     {
@@ -9519,7 +10212,7 @@
       "line": 326,
       "owner": "ConfirmationHelper.ResizeCurrentPopupPanels",
       "fields": {
-        "key": "self.c.Contexts().Prompt"
+        "key": "self.c.Contexts().Suggestions"
       }
     },
     {
@@ -10144,7 +10837,7 @@
       "line": 1279,
       "owner": "githubDiffLineSuffix",
       "fields": {
-        "key": "types.DiffLineContext"
+        "key": "types.DiffLineAdded"
       }
     },
     {
@@ -10153,7 +10846,7 @@
       "line": 1279,
       "owner": "githubDiffLineSuffix",
       "fields": {
-        "key": "types.DiffLineAdded"
+        "key": "types.DiffLineContext"
       }
     },
     {

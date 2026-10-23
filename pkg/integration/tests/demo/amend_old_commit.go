@@ -50,11 +50,10 @@ var AmendOldCommit = NewIntegrationTest(NewIntegrationTestArgs{
 			}).
 			Press(keys.Universal.Push).
 			Tap(func() {
-				t.ExpectPopup().Confirmation().
-					Title(Equals("Force push")).
-					Content(AnyString()).
-					Wait(1000).
-					Confirm()
+				sourceOID := t.Git().GetCommitHash("refs/heads/feature/demo")
+				leaseOID := t.Git().GetCommitHash("refs/remotes/origin/feature/demo")
+				t.ReviewBranchForcePush("feature/demo", "feature/demo", sourceOID, "refs/remotes/origin/feature/demo", leaseOID).
+					Select(Contains("Push with reviewed lease")).Wait(1000).Confirm()
 			})
 	},
 })

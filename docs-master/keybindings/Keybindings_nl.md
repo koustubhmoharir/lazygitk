@@ -10,8 +10,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <pgup>, K, <ctrl+u> (fn+up/shift+k) `` | Scroll naar beneden vanaf hoofdpaneel |  |
 | `` <pgdown>, J, <ctrl+d> (fn+down/shift+j) `` | Scroll naar beneden vanaf hoofdpaneel |  |
 | `` @ `` | Commandolog opties weergeven | Bekijk commandolog opties, bijv. commandolog tonen/verbergen en focus. |
-| `` P `` | Push | Push the current branch to its upstream branch. If no upstream is configured, you will be prompted to configure an upstream branch. If other branches are stacked below the current one and have commits to push, you are offered to push those too. |
-| `` p `` | Pull | Pull changes from the remote for the current branch. If no upstream is configured, you will be prompted to configure an upstream branch. If other branches are stacked below the current one and have changed on the remote, you are offered to update those too. |
+| `` P `` | Push | Uses the branch selected when the action starts; changing selection cannot redirect an open prompt or running operation. |
+| `` p `` | Pull | Uses the branch selected when the action starts; changing selection cannot redirect an open prompt or running operation. |
 | `` ) `` | Increase rename similarity threshold | Increase the similarity threshold for a deletion and addition pair to be treated as a rename.<br><br>The default can be changed in the config file with the key 'git.renameSimilarityThreshold'. |
 | `` ( `` | Decrease rename similarity threshold | Decrease the similarity threshold for a deletion and addition pair to be treated as a rename.<br><br>The default can be changed in the config file with the key 'git.renameSimilarityThreshold'. |
 | `` } `` | Increase diff context size | Increase the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
@@ -108,12 +108,12 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` - `` | Vorige branch uitchecken |  |
 | `` F `` | Forceer checkout | Force checkout selected branch. This will discard all local changes in your working directory before checking out the selected branch. |
 | `` d `` | Verwijderen | View delete options for local/remote branch. |
-| `` r `` | Rebase branch | Rebase de uitgecheckte branch bovenop de geselecteerde branch. |
-| `` M `` | Merge in met huidige checked out branch | View options for merging the selected item into the current branch (regular merge, squash merge) |
-| `` f `` | Fast-forward deze branch vanaf zijn upstream | Fast-forward selected branch from its upstream. If the branch has diverged from its upstream because the upstream branch was rewritten, and it has no commits of its own, it is reset to its upstream instead. This needs reflogs to be enabled; a bare repository doesn't keep them by default (core.logAllRefUpdates). |
+| `` r `` | Rebase current onto selected branch… | Rebase de uitgecheckte branch bovenop de geselecteerde branch. |
+| `` M `` | Merge selected branch into current… | View options for merging the selected item into the current branch (regular merge, squash merge) |
+| `` f `` | Fast-forward selected branches… | Review an upstream fetch and a forward-only update of the captured selected branches. Divergent or rewritten history is never reset; tips occupied by another worktree are not moved. A selected checked-out branch uses native fast-forward integration with explicit review. Multiple selections require final batch approval. Saved upstream settings stay unchanged. |
 | `` T `` | Creëer tag |  |
 | `` s `` | Sort order |  |
-| `` g `` | Bekijk reset opties |  |
+| `` g `` | Reset checked-out branch to selected ref… |  |
 | `` R `` | Hernoem branch |  |
 | `` u `` | View upstream options | View options relating to the branch's upstream e.g. setting/unsetting the upstream and resetting to the upstream. |
 | `` <ctrl+t> `` | Open externe diff applicatie (git difftool) |  |

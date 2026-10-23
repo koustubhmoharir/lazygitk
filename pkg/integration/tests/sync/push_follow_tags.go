@@ -24,13 +24,19 @@ var PushFollowTags = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.SetConfig("push.followTags", "true")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		sourceOID := t.Git().GetCommitHash("refs/heads/master")
+		t.Shell().RunShellCommand("cp .git/config .git/follow-tags-config-before && git rev-parse HEAD > .git/follow-tags-head-before && git write-tree > .git/follow-tags-index-before && git diff --binary HEAD > .git/follow-tags-worktree-before && git status --porcelain --untracked-files=all > .git/follow-tags-status-before")
 		t.Views().Status().Content(Equals("↑1 repo → master"))
 
 		t.Views().Files().
 			IsFocused().
 			Press(keys.Universal.Push)
 
-		t.Views().Status().Content(Equals("✓ repo → master"))
+		t.ReviewBranchPush("master", "origin", "master", sourceOID, false).Confirm()
+		t.Views().Status().EventuallyContent(Equals("✓ repo → master"))
+		t.Shell().RunShellCommand("cp .git/config .git/follow-tags-config-after && git rev-parse HEAD > .git/follow-tags-head-after && git write-tree > .git/follow-tags-index-after && git diff --binary HEAD > .git/follow-tags-worktree-after && git status --porcelain --untracked-files=all > .git/follow-tags-status-after && cmp .git/follow-tags-config-before .git/follow-tags-config-after && cmp .git/follow-tags-head-before .git/follow-tags-head-after && cmp .git/follow-tags-index-before .git/follow-tags-index-after && cmp .git/follow-tags-worktree-before .git/follow-tags-worktree-after && cmp .git/follow-tags-status-before .git/follow-tags-status-after")
+		t.Git().RemoteTagNames("origin", []string{})
+		t.Git().TagNamesAt("HEAD", []string{"mytag"})
 
 		t.Views().Remotes().
 			Focus().

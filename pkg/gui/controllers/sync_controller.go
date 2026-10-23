@@ -34,26 +34,55 @@ func NewSyncController(
 func (self *SyncController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
 		{
+			// Fork: resolve the focused local branch (or an explicitly labeled
+			// current target), replacing upstream's implicit-current push route.
+			// HandlePush remains current-only for callers requesting that workflow.
 			CommandID:         "branch.push-current",
+			CommandIDFunc:     func() string { return self.branchSyncCommandID("push") },
 			Verb:              "push",
 			Keys:              opts.GetKeys(opts.Config.Universal.Push),
-			Handler:           opts.Guards.NoPopupPanel(self.HandlePush),
-			GetDisabledReason: self.getDisabledReasonForPushOrPull,
+			Handler:           opts.Guards.NoPopupPanel(self.handleFocusedBranchPush),
+			GetDisabledReason: self.getDisabledReasonForBranchSync,
 			Description:       self.c.Tr.Push,
-			Tooltip:           self.c.Tr.PushTooltip,
+			DescriptionFunc:   func() string { return self.branchSyncDescription(true) },
+			Tooltip:           self.c.Tr.BranchSyncCaptureTooltip,
+			OpensMenu:         true,
 		},
 		{
+			// Fork: review a captured focused branch, replacing the implicit
+			// current-branch network pull with fetch then exact-OID integration.
 			CommandID:         "branch.pull-current",
+			CommandIDFunc:     func() string { return self.branchSyncCommandID("pull") },
 			Verb:              "pull",
 			Keys:              opts.GetKeys(opts.Config.Universal.Pull),
-			Handler:           opts.Guards.NoPopupPanel(self.HandlePull),
-			GetDisabledReason: self.getDisabledReasonForPushOrPull,
+			Handler:           opts.Guards.NoPopupPanel(self.handleFocusedBranchPull),
+			GetDisabledReason: self.getDisabledReasonForBranchSync,
 			Description:       self.c.Tr.Pull,
-			Tooltip:           self.c.Tr.PullTooltip,
+			DescriptionFunc:   func() string { return self.branchSyncDescription(false) },
+			Tooltip:           self.c.Tr.BranchSyncCaptureTooltip,
+			OpensMenu:         true,
 		},
 	}
 
 	return bindings
+}
+
+// Fork: the focused-source entry point replaces the implicit-current push
+// route. Keep it with the binding hook while the wider sync integration lands.
+func (self *SyncController) handleFocusedBranchPush() error {
+	source, problem := self.focusedBranchSyncSource()
+	if disabled := self.branchSyncSourceDisabledReason(problem); disabled != nil {
+		return errors.New(disabled.Text)
+	}
+	return self.pushBranchSource(source)
+}
+
+func (self *SyncController) handleFocusedBranchPull() error {
+	source, problem := self.focusedBranchSyncSource()
+	if disabled := self.branchSyncSourceDisabledReason(problem); disabled != nil {
+		return errors.New(disabled.Text)
+	}
+	return self.pullBranchSource(source)
 }
 
 func (self *SyncController) Context() types.Context {
@@ -66,18 +95,6 @@ func (self *SyncController) HandlePush() error {
 
 func (self *SyncController) HandlePull() error {
 	return self.branchCheckedOut(self.pull)()
-}
-
-func (self *SyncController) getDisabledReasonForPushOrPull() *types.DisabledReason {
-	currentBranch := self.c.Helpers().Refs.GetCheckedOutRef()
-	if currentBranch != nil {
-		op := self.c.State().GetItemOperation(currentBranch)
-		if op != types.ItemOperationNone {
-			return &types.DisabledReason{Text: self.c.Tr.CantPullOrPushSameBranchTwice}
-		}
-	}
-
-	return nil
 }
 
 func (self *SyncController) branchCheckedOut(f func(*models.Branch) error) func() error {

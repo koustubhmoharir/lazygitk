@@ -21,6 +21,8 @@ var RenameBranchAndPull = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.HardReset("HEAD^")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		sourceOID := t.Git().GetCommitHash("HEAD")
+		targetOID := t.Git().GetCommitHash("refs/remotes/origin/master")
 		t.Views().Commits().
 			Lines(
 				Contains("one"),
@@ -43,8 +45,13 @@ var RenameBranchAndPull = NewIntegrationTest(NewIntegrationTestArgs{
 					InitialText(Equals("master")).
 					Type("-local").
 					Confirm()
+				t.ExpectPopup().Confirmation().Title(Equals("Rename branch")).
+					Content(Contains(`"master"`).Contains(`"master-local"`).Contains(sourceOID)).Confirm()
 			}).
+			Lines(Contains("master-local").IsSelected()).
 			Press(keys.Universal.Pull)
+		// A selected branch that is checked out uses native current integration.
+		t.ReviewCurrentBranchPull("master-local", "origin", "master", sourceOID, targetOID).Confirm()
 
 		t.Views().Commits().
 			Lines(

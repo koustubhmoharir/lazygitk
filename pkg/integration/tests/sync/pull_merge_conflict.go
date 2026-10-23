@@ -38,9 +38,7 @@ var PullMergeConflict = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().Status().Content(Equals("↓2↑1 repo → master"))
 
-		t.Views().Files().
-			IsFocused().
-			Press(keys.Universal.Pull)
+		targetOID := reviewCurrentPull(t, keys)
 
 		t.Common().AcknowledgeConflicts()
 
@@ -64,17 +62,18 @@ var PullMergeConflict = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Common().ContinueOnConflictsResolved("merge")
 
-		t.Views().Status().Content(Equals("↑2 repo → master"))
-
 		t.Views().Commits().
+			EventuallyContent(Contains("Merge commit '"+targetOID+"^{commit}'")).
 			Focus().
 			Lines(
-				Contains("Merge branch 'master' of ../origin").IsSelected(),
+				Contains("Merge commit '"+targetOID+"^{commit}'").IsSelected(),
 				Contains("three"),
 				Contains("two"),
 				Contains("four"),
 				Contains("one"),
 			)
+		t.Views().Status().EventuallyContent(Equals("↑2 repo → master"))
+		t.Shell().RunShellCommand("git merge-base --is-ancestor " + targetOID + " HEAD")
 
 		t.Views().Main().
 			Content(

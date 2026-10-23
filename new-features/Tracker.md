@@ -1,15 +1,9 @@
 # Current work
 
 Roadmap item: [7. Selected-branch operations without checkout](Roadmap.md#7-selected-branch-operations-without-checkout).
-Status: source/remote inspection, guarded ref-only advancement and explicit
-push/fetch backend plans (including current-branch fetch) are implemented.
-Additive push-dialog/target helpers are implemented and directly tested.
-The additive off-branch update dialog is implemented and directly tested.
-The current-branch fetch/integration dialog and terminal executor are implemented.
-Selected-branch push, explicit wider-update review and selected Fast-forward
-routing are implemented; finish default sync routing and end-to-end acceptance.
-Default binding integration and the remaining
-end-to-end selected-branch workflows remain.
+Status: default selected-branch push/pull and Fast-forward routing is integrated
+and verified. Remaining work is the non-sync branch-menu target audit and its
+acceptance checks; see [the inspected integration points](branch-menu-audit.md).
 
 Scope: operate on the explicitly selected local branch wherever no worktree is
 needed. Preserve current HEAD, index, worktree and unrelated refs. Keep general
@@ -19,61 +13,28 @@ deferred and must not be offered. Keep wider updates explicit choices.
 
 ## Remaining tasks for item 7
 
-1. Integrate the captured branch/repository target into source/destination
-   review and routing, using the backend's fresh approved-input validation and
-   transport/config change detection. Include custom tracking namespaces,
-   local upstreams and explicit/excluded automatic-lease choices.
-   Every prompt, command, upstream-setting action and refresh must retain that
-   target; neither a later selection nor current HEAD may substitute for it.
-2. Make push target the selected local branch with an explicit remote/refspec.
-   The branch-only backend now handles explicit destinations, immutable
-   multi-URL approval, reviewed leases and upstream-setting snapshots.
-   Finish modal routing and protection/no-upstream/triangular-workflow
-   verification. The one-branch dialog and upstream-refusal fallback are
-   implemented; finish default routing and remaining acceptance checks.
-   Update legacy wider-push acceptance scenarios to assert selected-only
-   behavior, with every other local and remote branch unchanged. Wider-stack
-   push and its member-selection proposal are deferred by user choice; do not
-   route to the prepared wider-push flow or expose it in the push menu.
-   Agreed upstream policy: refuse ambiguous changes before pushing; offer
-   Cancel or an explicitly reviewed push without changing tracking. Do not
-   repair or replace multi-valued/inherited upstream settings automatically.
-3. Make off-branch pull/update an explicit upstream fetch and verified
-   fast-forward without checkout. The scoped fetch and guarded ref-only update
-   builders are implemented; integrate their modal flow and explain divergence
-   without attempting integration. Reject tip changes to branches occupied by
-   another worktree; do not reuse paths that mutate that worktree. Integrate the
-   current-branch fetch-first flow: review the exact fetched commit and
-   integration choices (defaulting from Git configuration), check ignored-file
-   risks, and integrate only that captured target without another network pull.
-   Retain clean/no-autostash behavior. Integrate local `.` upstreams through
-   direct off-branch advancement or captured current integration, as appropriate.
-   The earlier one-step current-pull primitive is not the approved UI path.
-   Current-branch fetch and exact observed-tip inspection are implemented;
-   the reviewed native merge/rebase backend is implemented, including
-   pre-fetch fork points and ignored-file approval. Finish modal choices and
-   routing without dropping those reviewed backend guarantees. The additive
-   modal flow and terminal handoff are implemented and directly tested.
-   The explicit stack/multi-selection flow and selected Fast-forward route are
-   implemented with read-only preflight, pinned per-member targets, ref-only
-   updates before current-worktree integration, and partial-progress reporting.
-   Finish remaining default Pull acceptance without resetting divergence,
-   modifying another worktree, or losing terminal integration and failure
-   reporting across asynchronous handoffs.
-4. Integrate branch-bearing versus global/current-branch actions, retaining
+1. Finish captured targets in non-sync branch menus, retaining
    selected-ref metadata support and clearly named selected-source merge/
    rebase actions. Do not change shortcut policy ahead of item 8.
    Literal rename and exact tracking-ref set/unset now use captured modal
    flows with native backend plans and stale-callback verification. Audit the
-   remaining upstream-view/reset/rebase callbacks and delete paths; retain
-   their capabilities without live selection/repository substitution.
-5. Verify with local fake remotes: selected != current, absent/gone upstream,
+   remaining upstream-view/reset/rebase callbacks, selected-source merge/rebase,
+   delete paths and branch/tag creation. Retain their capabilities without
+   live selection/repository substitution. Use native exact tracking refs for
+   custom namespaces and local `.` upstreams. Reset remains a current-HEAD
+   operation, including explicit merge abortion; do not invent off-branch
+   soft/mixed/hard modes. Preserve squash, interactive/marked-base, tracking
+   choices and signing support while binding each prompt/command/refresh to
+   the original source and repository. Keep native errors and Git's normal
+   concurrency model; no implicit retry, rollback, checkout or stash.
+2. Verify remaining menus and preserve the sync acceptance baseline with local
+   fake remotes: selected != current, absent/gone upstream,
    distinct push/pull remotes, force-with-lease rejection, fast-forward,
    divergence/rewritten upstream, concurrent ref changes, occupied worktrees
    and branch stacks. Assert HEAD/index/worktree and unrelated refs unchanged.
    Maintain usage, inventory and merge guide; run generation, formatting,
    build, short tests, relevant headless scenarios and lint.
-6. When acceptance passes, complete item 7 accurately in the roadmap and
+3. When acceptance passes, complete item 7 accurately in the roadmap and
    replace this tracker with item 8's task-level plan in the same commit.
 
 ## How this tracker works

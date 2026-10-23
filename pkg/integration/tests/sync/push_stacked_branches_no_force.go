@@ -6,7 +6,7 @@ import (
 )
 
 var PushStackedBranchesNoForce = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Push a stack of branches that are only ahead of their remote branches, without being asked to force push",
+	Description:  "Push only the current branch from an ahead-only stack through the normal final review",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig: func(config *config.AppConfig) {
@@ -34,6 +34,12 @@ var PushStackedBranchesNoForce = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.EmptyCommit("three")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		sourceOID := t.Git().GetCommitHash("refs/heads/branch3")
+		branch1OID := t.Git().GetCommitHash("refs/heads/branch1")
+		branch2OID := t.Git().GetCommitHash("refs/heads/branch2")
+		remoteBranch1OID := t.Git().GetCommitHash("refs/remotes/origin/branch1")
+		remoteBranch2OID := t.Git().GetCommitHash("refs/remotes/origin/branch2")
+		t.Shell().RunShellCommand("git rev-parse HEAD > .git/push-stack-ahead-head-before && cp .git/index .git/push-stack-ahead-index-before && cp .git/config .git/push-stack-ahead-config-before && git diff --binary > .git/push-stack-ahead-worktree-before")
 		t.Views().Branches().
 			Lines(
 				Contains("branch3 ↑3"),
@@ -43,22 +49,18 @@ var PushStackedBranchesNoForce = NewIntegrationTest(NewIntegrationTestArgs{
 			)
 
 		t.Views().Files().IsFocused().Press(keys.Universal.Push)
+		t.ExpectPopup().Menu().Title(Equals("Push selected branch"))
+		t.Views().Menu().Content(DoesNotContain("Push all").DoesNotContain("stacked below"))
+		t.ReviewBranchPush("branch3", "origin", "branch3", sourceOID, false).Confirm()
 
-		t.ExpectPopup().Menu().
-			Title(Equals("Push")).
-			ContainsLines(
-				Contains("  branch2 ↑2"),
-				Contains("  branch1 ↑1"),
-			).
-			Select(Contains("Push all these branches in addition to the current one")).
-			Confirm()
-
-		t.Views().Branches().
-			Lines(
-				Contains("branch3 ✓"),
-				Contains("branch1 ✓"),
-				Contains("branch2 ✓"),
-				Contains("master ✓"),
-			)
+		t.Views().Status().EventuallyContent(Contains("✓ repo → branch3"))
+		t.Shell().RunShellCommand("test \"$(git --git-dir=../origin rev-parse refs/heads/branch3)\" = \"" + sourceOID + "\" && test \"$(git --git-dir=../origin rev-parse refs/heads/branch1)\" = \"" + remoteBranch1OID + "\" && test \"$(git --git-dir=../origin rev-parse refs/heads/branch2)\" = \"" + remoteBranch2OID + "\" && ! git --git-dir=../origin show-ref --verify --quiet refs/heads/local-only")
+		t.Shell().RunShellCommand("git rev-parse HEAD > .git/push-stack-ahead-head-after && cp .git/index .git/push-stack-ahead-index-after && cp .git/config .git/push-stack-ahead-config-after && git diff --binary > .git/push-stack-ahead-worktree-after && cmp .git/push-stack-ahead-head-before .git/push-stack-ahead-head-after && cmp .git/push-stack-ahead-index-before .git/push-stack-ahead-index-after && cmp .git/push-stack-ahead-config-before .git/push-stack-ahead-config-after && cmp .git/push-stack-ahead-worktree-before .git/push-stack-ahead-worktree-after")
+		if got := t.Git().GetCommitHash("refs/heads/branch1"); got != branch1OID {
+			t.Fail("Pushing branch3 changed branch1")
+		}
+		if got := t.Git().GetCommitHash("refs/heads/branch2"); got != branch2OID {
+			t.Fail("Pushing branch3 changed branch2")
+		}
 	},
 })

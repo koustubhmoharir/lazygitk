@@ -37,18 +37,17 @@ var PullRebase = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().Status().Content(Equals("↓2↑1 repo → master"))
 
-		t.Views().Files().
-			IsFocused().
-			Press(keys.Universal.Pull)
-
-		t.Views().Status().Content(Equals("↑1 repo → master"))
+		targetOID := reviewCurrentPull(t, keys)
 
 		t.Views().Commits().
+			EventuallyContent(Contains("three")).
 			Lines(
 				Contains("four"),
 				Contains("three"),
 				Contains("two"),
 				Contains("one"),
 			)
+		t.Views().Status().EventuallyContent(Equals("↑1 repo → master"))
+		t.Shell().RunShellCommand("git merge-base --is-ancestor " + targetOID + " HEAD")
 	},
 })

@@ -27,6 +27,16 @@ var Push = NewIntegrationTest(NewIntegrationTestArgs{
 			IsFocused().
 			Press(keys.Universal.Push)
 
+		t.ExpectPopup().Menu().
+			Title(Equals("Push selected branch")).
+			Select(Contains("Push this branch")).
+			Confirm()
+
+		t.ExpectPopup().Confirmation().
+			Title(Equals("Review branch push")).
+			Content(Contains(`source "master"`).Contains(`destination "refs/heads/master"`)).
+			Confirm()
+
 		assertSuccessfullyPushed(t)
 	},
 })

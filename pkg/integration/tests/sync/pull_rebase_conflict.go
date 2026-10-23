@@ -38,9 +38,7 @@ var PullRebaseConflict = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().Status().Content(Equals("↓2↑1 repo → master"))
 
-		t.Views().Files().
-			IsFocused().
-			Press(keys.Universal.Pull)
+		targetOID := reviewCurrentPull(t, keys)
 
 		t.Common().AcknowledgeConflicts()
 
@@ -65,9 +63,8 @@ var PullRebaseConflict = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Common().ContinueOnConflictsResolved("rebase")
 
-		t.Views().Status().Content(Equals("↑1 repo → master"))
-
 		t.Views().Commits().
+			EventuallyContent(Contains("three")).
 			Focus().
 			Lines(
 				Contains("four").IsSelected(),
@@ -75,6 +72,8 @@ var PullRebaseConflict = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("two"),
 				Contains("one"),
 			)
+		t.Views().Status().EventuallyContent(Equals("↑1 repo → master"))
+		t.Shell().RunShellCommand("git merge-base --is-ancestor " + targetOID + " HEAD")
 
 		t.Views().Main().
 			Content(

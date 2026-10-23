@@ -10,8 +10,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <pgup>, K, <ctrl+u> (fn+up/shift+k) `` | メインウィンドウを上にスクロール |  |
 | `` <pgdown>, J, <ctrl+d> (fn+down/shift+j) `` | メインウィンドウを下にスクロール |  |
 | `` @ `` | コマンドログオプションを表示 | コマンドログのオプションを表示します（例：コマンドログの表示/非表示、コマンドログへのフォーカスなど）。 |
-| `` P `` | プッシュ | Push the current branch to its upstream branch. If no upstream is configured, you will be prompted to configure an upstream branch. If other branches are stacked below the current one and have commits to push, you are offered to push those too. |
-| `` p `` | プル | Pull changes from the remote for the current branch. If no upstream is configured, you will be prompted to configure an upstream branch. If other branches are stacked below the current one and have changed on the remote, you are offered to update those too. |
+| `` P `` | プッシュ | Uses the branch selected when the action starts; changing selection cannot redirect an open prompt or running operation. |
+| `` p `` | プル | Uses the branch selected when the action starts; changing selection cannot redirect an open prompt or running operation. |
 | `` ) `` | リネーム検出の類似度しきい値を上げる | Increase the similarity threshold for a deletion and addition pair to be treated as a rename.<br><br>The default can be changed in the config file with the key 'git.renameSimilarityThreshold'. |
 | `` ( `` | リネーム検出の類似度しきい値を下げる | Decrease the similarity threshold for a deletion and addition pair to be treated as a rename.<br><br>The default can be changed in the config file with the key 'git.renameSimilarityThreshold'. |
 | `` } `` | 差分コンテキストサイズを増やす | Increase the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
@@ -375,12 +375,12 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` - `` | 直前のブランチにチェックアウト |  |
 | `` F `` | 強制チェックアウト | 選択したブランチを強制的にチェックアウトします。これにより、選択したブランチをチェックアウトする前にワーキングディレクトリ内のすべてのローカル変更が破棄されます。 |
 | `` d `` | 削除 | ローカル/リモートブランチの削除オプションを表示します。 |
-| `` r `` | リベース | チェックアウトしたブランチを選択したブランチ上にリベースします。 |
-| `` M `` | マージ | 選択した項目を現在のブランチにマージするためのオプションを表示します（通常のマージ、スカッシュマージ） |
-| `` f `` | ブランチを最新化（fast-forward） | Fast-forward selected branch from its upstream. If the branch has diverged from its upstream because the upstream branch was rewritten, and it has no commits of its own, it is reset to its upstream instead. This needs reflogs to be enabled; a bare repository doesn't keep them by default (core.logAllRefUpdates). |
+| `` r `` | Rebase current onto selected branch… | チェックアウトしたブランチを選択したブランチ上にリベースします。 |
+| `` M `` | Merge selected branch into current… | 選択した項目を現在のブランチにマージするためのオプションを表示します（通常のマージ、スカッシュマージ） |
+| `` f `` | Fast-forward selected branches… | Review an upstream fetch and a forward-only update of the captured selected branches. Divergent or rewritten history is never reset; tips occupied by another worktree are not moved. A selected checked-out branch uses native fast-forward integration with explicit review. Multiple selections require final batch approval. Saved upstream settings stay unchanged. |
 | `` T `` | 新しいタグを作成 |  |
 | `` s `` | 並び順 |  |
-| `` g `` | リセット |  |
+| `` g `` | Reset checked-out branch to selected ref… |  |
 | `` R `` | ブランチ名を変更 |  |
 | `` u `` | アップストリームオプションを表示 | ブランチのアップストリームに関連するオプションを表示します（例：アップストリームの設定/解除やアップストリームへのリセット）。 |
 | `` <ctrl+t> `` | 外部差分ツールを開く（git difftool） |  |

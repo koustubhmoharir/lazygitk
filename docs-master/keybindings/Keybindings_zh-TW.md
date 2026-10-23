@@ -10,8 +10,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <pgup>, K, <ctrl+u> (fn+up/shift+k) `` | 向上捲動主面板 |  |
 | `` <pgdown>, J, <ctrl+d> (fn+down/shift+j) `` | 向下捲動主面板 |  |
 | `` @ `` | 開啟命令記錄選單 | 檢視命令日誌的選項，例如顯示/隱藏命令日誌以及聚焦命令日誌。 |
-| `` P `` | 推送 | Push the current branch to its upstream branch. If no upstream is configured, you will be prompted to configure an upstream branch. If other branches are stacked below the current one and have commits to push, you are offered to push those too. |
-| `` p `` | 拉取 | Pull changes from the remote for the current branch. If no upstream is configured, you will be prompted to configure an upstream branch. If other branches are stacked below the current one and have changed on the remote, you are offered to update those too. |
+| `` P `` | 推送 | Uses the branch selected when the action starts; changing selection cannot redirect an open prompt or running operation. |
+| `` p `` | 拉取 | Uses the branch selected when the action starts; changing selection cannot redirect an open prompt or running operation. |
 | `` ) `` | 提高重新命名相似度閾值 | 提高將刪除和新增對視為重新命名所需的相似度閾值。<br><br>預設值可在設定檔中透過鍵 'git.renameSimilarityThreshold' 更改。 |
 | `` ( `` | 降低重新命名相似度閾值 | 降低將刪除和新增對視為重新命名所需的相似度閾值。<br><br>預設值可在設定檔中透過鍵 'git.renameSimilarityThreshold' 更改。 |
 | `` } `` | 增加差異檢視中顯示變更周圍上下文的大小 | 增加差異檢視中變更周圍顯示的上下文量。<br><br>預設值可在設定檔中透過鍵 'git.diffContextSize' 更改。 |
@@ -267,12 +267,12 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` - `` | 簽出上一個分支 |  |
 | `` F `` | 強制檢出 | 強制檢出所選分支。這將在檢出所選分支之前放棄工作目錄中的所有本地更改。 |
 | `` d `` | 刪除 | 檢視本地/遠端分支的刪除選項。 |
-| `` r `` | 將已檢出的分支變基至此分支 | 將檢出的分支變基到所選的分支上。 |
-| `` M `` | 合併到當前檢出的分支 | 檢視將選中項合併到目前分支的選項(正常合併，壓縮合並) |
-| `` f `` | 從上游快進此分支 | Fast-forward selected branch from its upstream. If the branch has diverged from its upstream because the upstream branch was rewritten, and it has no commits of its own, it is reset to its upstream instead. This needs reflogs to be enabled; a bare repository doesn't keep them by default (core.logAllRefUpdates). |
+| `` r `` | Rebase current onto selected branch… | 將檢出的分支變基到所選的分支上。 |
+| `` M `` | Merge selected branch into current… | 檢視將選中項合併到目前分支的選項(正常合併，壓縮合並) |
+| `` f `` | Fast-forward selected branches… | Review an upstream fetch and a forward-only update of the captured selected branches. Divergent or rewritten history is never reset; tips occupied by another worktree are not moved. A selected checked-out branch uses native fast-forward integration with explicit review. Multiple selections require final batch approval. Saved upstream settings stay unchanged. |
 | `` T `` | 建立標籤 |  |
 | `` s `` | 排序規則 |  |
-| `` g `` | 檢視重設選項 |  |
+| `` g `` | Reset checked-out branch to selected ref… |  |
 | `` R `` | 重新命名分支 |  |
 | `` u `` | 檢視遠端設定 | 檢視有關遠端分支的設定（例如重設至遠端） |
 | `` <ctrl+t> `` | 開啟外部差異工具 (git difftool) |  |

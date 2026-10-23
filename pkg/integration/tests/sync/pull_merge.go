@@ -35,19 +35,18 @@ var PullMerge = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().Status().Content(Equals("↓2↑1 repo → master"))
 
-		t.Views().Files().
-			IsFocused().
-			Press(keys.Universal.Pull)
-
-		t.Views().Status().Content(Equals("↑2 repo → master"))
+		targetOID := reviewCurrentPull(t, keys)
 
 		t.Views().Commits().
+			EventuallyContent(Contains("Merge commit '"+targetOID+"^{commit}'")).
 			Lines(
-				Contains("Merge branch 'master' of ../origin").IsSelected(),
+				Contains("Merge commit '"+targetOID+"^{commit}'"),
 				Contains("three"),
 				Contains("two"),
 				Contains("four"),
 				Contains("one"),
 			)
+		t.Views().Status().EventuallyContent(Equals("↑2 repo → master"))
+		t.Shell().RunShellCommand("git merge-base --is-ancestor " + targetOID + " HEAD")
 	},
 })

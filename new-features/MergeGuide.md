@@ -5,6 +5,18 @@ codepath, or merge requirement. Link to [Roadmap.md](Roadmap.md) for behavior an
 [Tracker.md](Tracker.md) for the current item's remaining work. Keep this guide
 about the code that exists, not speculative implementation tasks.
 
+Sync routing acceptance checkpoint: default focused push/pull hooks are now
+integrated, with push limited to one branch and separately chosen wider updates.
+The full short suite, generation, debug build, formatting, scoped lint and
+inventory checks pass. The complete `sync`, `tag` and `demo` terminal group
+passes after updating legacy implicit-flow fixtures; all affected push demos
+include explicit reviews. The occupied-update fixture must make the target
+fast-forwardable to test occupancy rather than stopping earlier on divergence.
+This checkpoint does not complete Roadmap 7: the remaining non-sync menu audit
+is recorded in [branch-menu-audit.md](branch-menu-audit.md). Preparatory/historical
+checkpoints below describe their verification at the time, not remaining
+requirements to restore a deferred multi-branch push.
+
 ## Baseline and current divergence
 
 - Upstream: `https://github.com/jesseduffield/lazygit.git`, currently remote
@@ -38,11 +50,13 @@ about the code that exists, not speculative implementation tasks.
   pointer. Other panes must not inherit an old local-branch selection.
 - Additive GUI modules `branch_sync_bindings.go`, `branch_sync_target.go` and
   `branch_sync_push_flow.go` implement focused-source resolution, captured
-  repository/generation guards and one-branch push review. They are not yet
-  the committed default binding route: remaining sync integration still needs
-  completion. Wider-stack push is deferred; do not restore its push-menu offer.
-  Keep direct unit-test invocation
-  separate from claims about the default binding's end-to-end behavior.
+  repository/generation guards and one-branch push review. The default
+  `SyncController.GetKeybindings` route now uses the focused local branch (or
+  explicitly labelled current branch outside branch-bearing contexts), with
+  context-specific command IDs/descriptions and disabled reasons. Preserve the
+  guard and `OpensMenu` metadata at this integration point. Wider-stack push is
+  deferred; do not restore its push-menu offer. The old internal current-only
+  helpers remain for upstream merge isolation, not as the default binding path.
   Preserve synchronous repository-scoped busy flags, worker cleanup/refresh,
   callback repository checks, immutable approved plans and Cancel-first lease,
   multi-URL and upstream-refusal menus. A tracking-disabled fallback must
@@ -52,8 +66,8 @@ about the code that exists, not speculative implementation tasks.
   This preparation adds English fallback strings; default shortcut policy is
   unchanged. Regenerate the command inventory/key docs with final binding
   integration, not as evidence that an unused menu is already accessible.
-- `branch_sync_update_flow.go` is the off-branch update dialog; default Pull
-  binding integration is still pending. The selected Fast-forward action now
+- `branch_sync_update_flow.go` is the off-branch update dialog, reached through
+  the captured default Pull route. The selected Fast-forward action also
   uses the captured route described below. Fetch and ref-only
   advancement have separate reviews. Local `.` upstreams read exact local
   branch refs without contacting a transport. Keep custom storage explicit,

@@ -26,6 +26,10 @@ var ForcePushTriangular = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.HardReset("HEAD^")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		sourceOID := t.Git().GetCommitHash("refs/heads/feature")
+		leaseOID := t.Git().GetCommitHash("refs/remotes/origin/feature")
+		trackingOID := t.Git().GetCommitHash("refs/remotes/origin/master")
+		t.Shell().RunShellCommand("git rev-parse HEAD > .git/force-push-triangular-head && cp .git/index .git/force-push-triangular-index && git diff --binary > .git/force-push-triangular-worktree")
 		t.Views().Commits().
 			Lines(
 				Contains("one"),
@@ -35,10 +39,9 @@ var ForcePushTriangular = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().Files().IsFocused().Press(keys.Universal.Push)
 
-		t.ExpectPopup().Confirmation().
-			Title(Equals("Force push")).
-			Content(Equals("Your branch has diverged from the remote branch. Press <esc> to cancel, or <enter> to force push.")).
-			Confirm()
+		menu := t.ReviewBranchForcePush("feature", "feature", sourceOID, "refs/remotes/origin/feature", leaseOID)
+		t.Shell().RunShellCommand("test \"$(git --git-dir=../origin rev-parse refs/heads/feature)\" = \"" + leaseOID + "\" && test \"$(git --git-dir=../origin rev-parse refs/heads/master)\" = \"" + trackingOID + "\"")
+		menu.Select(Contains("Push with reviewed lease")).Confirm()
 
 		t.Views().Commits().
 			Lines(
@@ -60,5 +63,6 @@ var ForcePushTriangular = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().SubCommits().IsFocused().
 			Lines(Contains("one"))
+		t.Shell().RunShellCommand("test \"$(git --git-dir=../origin rev-parse refs/heads/feature)\" = \"" + sourceOID + "\" && test \"$(git --git-dir=../origin rev-parse refs/heads/master)\" = \"" + trackingOID + "\" && test \"$(git rev-parse HEAD)\" = \"$(cat .git/force-push-triangular-head)\" && cmp .git/index .git/force-push-triangular-index && git diff --binary > .git/force-push-triangular-worktree-after && cmp .git/force-push-triangular-worktree .git/force-push-triangular-worktree-after")
 	},
 })

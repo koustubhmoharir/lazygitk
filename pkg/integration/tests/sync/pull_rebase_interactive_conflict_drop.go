@@ -31,6 +31,9 @@ var PullRebaseInteractiveConflictDrop = NewIntegrationTest(NewIntegrationTestArg
 		shell.Commit("five")
 
 		shell.SetConfig("pull.rebase", "interactive")
+		// Model accepting the initial native sequence-editor todo list; this
+		// fixture exercises editing/dropping todos in lazygit after a conflict.
+		shell.SetConfig("sequence.editor", "true")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
 		t.Views().Commits().
@@ -42,13 +45,12 @@ var PullRebaseInteractiveConflictDrop = NewIntegrationTest(NewIntegrationTestArg
 
 		t.Views().Status().Content(Equals("↓2↑2 repo → master"))
 
-		t.Views().Files().
-			IsFocused().
-			Press(keys.Universal.Pull)
+		targetOID := reviewCurrentPull(t, keys)
 
 		t.Common().AcknowledgeConflicts()
 
 		t.Views().Commits().
+			EventuallyContent(Contains("─── Pending rebase todos")).
 			Focus().
 			Lines(
 				Contains("─── Pending rebase todos"),
@@ -92,9 +94,8 @@ var PullRebaseInteractiveConflictDrop = NewIntegrationTest(NewIntegrationTestArg
 
 		t.Common().ContinueOnConflictsResolved("rebase")
 
-		t.Views().Status().Content(Equals("↑1 repo → master"))
-
 		t.Views().Commits().
+			EventuallyContent(Contains("four")).
 			Focus().
 			Lines(
 				Contains("four").IsSelected(),
@@ -102,6 +103,8 @@ var PullRebaseInteractiveConflictDrop = NewIntegrationTest(NewIntegrationTestArg
 				Contains("two"),
 				Contains("one"),
 			)
+		t.Views().Status().EventuallyContent(Equals("↑1 repo → master"))
+		t.Shell().RunShellCommand("git merge-base --is-ancestor " + targetOID + " HEAD")
 
 		t.Views().Main().
 			Content(

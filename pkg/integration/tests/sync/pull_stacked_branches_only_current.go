@@ -6,7 +6,7 @@ import (
 )
 
 var PullStackedBranchesOnlyCurrent = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Decline updating the branches below the current one in a stack that was rebased on the remote, pulling only the current branch",
+	Description:  "Pull only the checked-out branch using its configured rebase method",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig: func(config *config.AppConfig) {
@@ -18,19 +18,25 @@ var PullStackedBranchesOnlyCurrent = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.SetConfig("pull.rebase", "true")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		branch1OID := t.Git().GetCommitHash("refs/heads/branch1")
+		branch2OID := t.Git().GetCommitHash("refs/heads/branch2")
+		branch3OID := t.Git().GetCommitHash("refs/heads/branch3")
+		target3OID := t.Git().GetCommitHash("refs/remotes/origin/branch3")
+
 		t.Views().Files().IsFocused().Press(keys.Universal.Pull)
+		review := t.ReviewCurrentBranchPull("branch3", "origin", "branch3", branch3OID, target3OID)
+		review.Confirm()
+		t.Views().Commits().EventuallyContent(Contains("three-rewritten"))
 
-		t.ExpectPopup().Menu().
-			Title(Equals("Pull")).
-			Select(Contains("Pull only 'branch3'")).
-			Confirm()
-
-		t.Views().Branches().
-			Lines(
-				Contains("branch3 ✓"),
-				Contains("branch1 ↓1↑1"),
-				Contains("branch2 ↓2↑2"),
-				Contains("master"),
-			)
+		if got := t.Git().GetCommitHash("refs/heads/branch3"); got == branch3OID {
+			t.Fail("Pulling the checked-out branch did not update its tip")
+		}
+		if got := t.Git().GetCommitHash("refs/remotes/origin/branch3"); got != target3OID {
+			t.Fail("The approved fetch did not update branch3's reviewed tracking ref")
+		}
+		if t.Git().GetCommitHash("refs/heads/branch1") != branch1OID ||
+			t.Git().GetCommitHash("refs/heads/branch2") != branch2OID {
+			t.Fail("Pulling only the checked-out branch changed a lower branch")
+		}
 	},
 })

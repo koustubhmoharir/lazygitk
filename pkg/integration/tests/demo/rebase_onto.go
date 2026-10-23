@@ -67,15 +67,14 @@ var RebaseOnto = NewIntegrationTest(NewIntegrationTestArgs{
 					Title(Contains("Rebase 'feature/demo' from marked base")).
 					Select(Contains("Simple rebase")).
 					Confirm()
-			}).
-			Wait(1000).
-			Press(keys.Universal.Push).
-			Tap(func() {
-				t.ExpectPopup().Confirmation().
-					Title(Contains("Force push")).
-					Content(AnyString()).
-					Wait(500).
-					Confirm()
-			})
+			}).Wait(1000)
+
+		// Push the checked-out feature branch explicitly, not the master branch
+		// that remains selected as the source of the preceding rebase.
+		t.Views().Files().Focus().Press(keys.Universal.Push)
+		sourceOID := t.Git().GetCommitHash("refs/heads/feature/demo")
+		leaseOID := t.Git().GetCommitHash("refs/remotes/origin/feature/demo")
+		t.ReviewBranchForcePush("feature/demo", "feature/demo", sourceOID, "refs/remotes/origin/feature/demo", leaseOID).
+			Select(Contains("Push with reviewed lease")).Wait(500).Confirm()
 	},
 })

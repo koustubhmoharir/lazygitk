@@ -9,7 +9,11 @@ var FetchWhenSortedByDate = NewIntegrationTest(NewIntegrationTestArgs{
 	Description:  "Fetch a branch while sort order is by date; verify that branch stays selected",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
-	SetupConfig:  func(config *config.AppConfig) {},
+	SetupConfig: func(config *config.AppConfig) {
+		// This scenario verifies selection after forwarding changes sort order.
+		// Forwarding is opt-in in this fork, independently of an explicit fetch.
+		config.GetUserConfig().Git.AutoForwardBranches = "onlyMainBranches"
+	},
 	SetupRepo: func(shell *Shell) {
 		shell.
 			EmptyCommitWithDate("commit", "2023-04-07 10:00:00"). // first master commit, older than branch2
@@ -38,8 +42,14 @@ var FetchWhenSortedByDate = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("branch2"),
 				Contains("master ↓1"),
 			).
-			NavigateToLine(Contains("master")).
-			Press(keys.Branches.FetchRemote).
+			NavigateToLine(Contains("master"))
+
+		// The repository fetch action includes the explicitly configured
+		// post-fetch forwarding. It belongs to Files, not local branches; keep
+		// the remembered branch selection while fetching from that pane.
+		t.Views().Files().Focus().Press(keys.Files.Fetch)
+		t.Views().Branches().Focus().
+			EventuallyContent(Contains("master ✓")).
 			Lines(
 				Contains("* branch1"),
 				Contains("master").IsSelected(),
