@@ -20,6 +20,19 @@ func (self *Common) ContinueRebase() {
 	self.ContinueMerge()
 }
 
+// ReviewBranchRebase verifies and approves the explicit current-branch rebase
+// confirmation shown after choosing a branch rebase mode.
+func (self *Common) ReviewBranchRebase() {
+	self.t.ExpectPopup().Confirmation().
+		Title(MatchesRegexp(`^Rebase `)).
+		Content(Contains("Rebase current branch").
+			Contains("onto selected source").
+			Contains("Mode:").
+			Contains("Marked range base:").
+			Contains("Only the current branch is rebased.")).
+		Confirm()
+}
+
 func (self *Common) AbortRebase() {
 	self.t.GlobalPress(self.t.keys.Universal.CreateRebaseOptionsMenu)
 

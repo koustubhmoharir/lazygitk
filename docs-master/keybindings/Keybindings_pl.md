@@ -396,7 +396,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | Przełącz | Przełącz na nową lokalną gałąź na podstawie wybranej gałęzi zdalnej. Nowa gałąź będzie śledzić gałąź zdalną. |
 | `` n `` | Nowa gałąź |  |
 | `` M `` | Scal | Scal wybraną gałąź z aktualnie sprawdzoną gałęzią. |
-| `` r `` | Przebazuj | Przebazuj przełączoną gałąź na wybraną gałąź. |
+| `` r `` | Rebase current onto selected branch… | Przebazuj przełączoną gałąź na wybraną gałąź. |
 | `` d `` | Usuń | Usuń gałąź zdalną ze zdalnego. |
 | `` u `` | Ustaw jako upstream | Ustaw wybraną gałąź zdalną jako upstream sprawdzonej gałęzi. |
 | `` s `` | Kolejność sortowania |  |

@@ -1387,7 +1387,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 601,
+      "line": 602,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request\"",
@@ -1400,7 +1400,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 609,
+      "line": 610,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-to-chosen-target\"",
@@ -1413,7 +1413,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 642,
+      "line": 643,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-current-to-selected\"",
@@ -3385,8 +3385,92 @@
     },
     {
       "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_rebase.go",
+      "line": 146,
+      "owner": "capturedRebaseFlow.menu",
+      "fields": {
+        "CommandID": "choice.id",
+        "DisabledReason": "choice.disabled",
+        "Keys": "menuKey(choice.key)",
+        "Label": "choice.label",
+        "OnPress": "func() error { return flow.prepare(choice) }",
+        "OpensMenu": "true",
+        "Verb": "verb"
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_rebase.go",
+      "line": 212,
+      "owner": "capturedRebaseReview.reviewIgnored",
+      "fields": {
+        "CommandID": "review.choice.id + \".cancel-risk\"",
+        "Label": "c.Tr.Cancel",
+        "OnPress": "review.flow.repository.checkRepository",
+        "Verb": "\"cancel\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_rebase.go",
+      "line": 213,
+      "owner": "capturedRebaseReview.reviewIgnored",
+      "fields": {
+        "CommandID": "review.choice.id + \".approve-ignored-overwrite\"",
+        "Keys": "menuKey('p')",
+        "Label": "c.Tr.SelectedRebaseApproveIgnored",
+        "OnPress": "func() error { return review.execute(review.plan.WithIgnoredFilesApproved()) }",
+        "Verb": "\"rebase\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_rebase.go",
+      "line": 220,
+      "owner": "capturedRebaseReview.reviewIgnored",
+      "fields": {
+        "CommandID": "review.choice.id + \".inspect-ignored-path\"",
+        "Label": "quoted",
+        "OnPress": "review.reviewIgnored",
+        "OpensMenu": "true",
+        "Verb": "\"inspect\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_rebase_execution.go",
+      "line": 134,
+      "owner": "capturedRebaseReview.conflicts",
+      "fields": {
+        "CommandID": "\"conflict.view\"",
+        "Label": "c.Tr.ViewConflictsMenuItem",
+        "OnPress": "func() error {\n\tif err := repository.checkRepository(); err != nil {\n\t\treturn err\n\t}\n\tc.Context().Push(c.Contexts().Files, types.OnFocusOpts{})\n\treturn nil\n}",
+        "Verb": "\"view-conflicts\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_rebase_execution.go",
+      "line": 144,
+      "owner": "capturedRebaseReview.conflicts",
+      "fields": {
+        "CommandID": "\"operation.abort\"",
+        "Keys": "menuKey('a')",
+        "Label": "fmt.Sprintf(c.Tr.AbortMenuItem, \"rebase\")",
+        "OnPress": "func() error {\n\tif err := repository.checkRepository(); err != nil {\n\t\treturn err\n\t}\n\tif abortStarted {\n\t\treturn git_commands.ErrBranchActionChanged\n\t}\n\tabortStarted = true\n\treturn c.WithWaitingStatusBlockingInput(types.WaitingStatusOpts{Message: c.Tr.RebasingStatus}, func(gocui.Task) error {\n\t\tif err := repository.checkRepository(); err != nil {\n\t\t\treturn err\n\t\t}\n\t\tif err := repository.git.Rebase.CheckBranchActionRebaseInProgress(review.plan); err != nil {\n\t\t\treturn err\n\t\t}\n\t\tcmd := repository.git.Rebase.GenericMergeOrRebaseActionCmdObj(\"rebase\", \"abort\").SetWd(repository.git.RepoPaths.WorktreePath())\n\t\tif err := repository.checkRepository(); err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn review.finish(cmd.Run(), false)\n\t})\n}",
+        "Verb": "\"abort\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/captured_reset.go",
-      "line": 106,
+      "line": 92,
       "owner": "branchActionResetFlow.menu",
       "fields": {
         "CommandID": "\"branch.reset.\" + row.mode",
@@ -3498,52 +3582,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 425,
-      "owner": "MergeAndRebaseHelper.RebaseOntoRef",
-      "fields": {
-        "CommandID": "\"branch.rebase-current-onto-selected.simple\"",
-        "DisabledReason": "disabledReason",
-        "Keys": "menuKey('s')",
-        "Label": "utils.ResolvePlaceholderString(self.c.Tr.SimpleRebase,\n\tmap[string]string{\"ref\": ref},\n)",
-        "OnPress": "func() error {\n\tself.c.LogAction(self.c.Tr.Actions.RebaseBranch)\n\tbaseCommit := self.c.Modes().MarkedBaseCommit.GetHash()\n\treturn self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(task gocui.Task) error {\n\t\tvar err error\n\t\tif baseCommit != \"\" {\n\t\t\terr = self.c.Git().Rebase.RebaseBranchFromBaseCommit(ref, baseCommit)\n\t\t} else {\n\t\t\terr = self.c.Git().Rebase.RebaseBranch(ref)\n\t\t}\n\t\terr = self.CheckMergeOrRebase(err)\n\t\tif err == nil {\n\t\t\tself.c.OnUIThread(func() error {\n\t\t\t\treturn self.ResetMarkedBaseCommit()\n\t\t\t})\n\t\t}\n\t\treturn err\n\t})\n}",
-        "Verb": "\"rebase\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 453,
-      "owner": "MergeAndRebaseHelper.RebaseOntoRef",
-      "fields": {
-        "CommandID": "\"branch.rebase-current-onto-selected.interactive\"",
-        "DisabledReason": "disabledReason",
-        "Keys": "menuKey('i')",
-        "Label": "utils.ResolvePlaceholderString(self.c.Tr.InteractiveRebase,\n\tmap[string]string{\"ref\": ref},\n)",
-        "OnPress": "func() error {\n\tself.c.LogAction(self.c.Tr.Actions.RebaseBranch)\n\tbaseCommit := self.c.Modes().MarkedBaseCommit.GetHash()\n\treturn self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(task gocui.Task) error {\n\t\tvar err error\n\t\tif baseCommit != \"\" {\n\t\t\terr = self.c.Git().Rebase.EditRebaseFromBaseCommit(ref, baseCommit)\n\t\t} else {\n\t\t\terr = self.c.Git().Rebase.EditRebase(ref)\n\t\t}\n\t\tif err = self.CheckMergeOrRebase(err); err != nil {\n\t\t\treturn err\n\t\t}\n\t\tself.c.OnUIThread(func() error {\n\t\t\tif err := self.ResetMarkedBaseCommit(); err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\t\tself.c.Context().Push(self.c.Contexts().LocalCommits, types.OnFocusOpts{})\n\t\t\treturn nil\n\t\t})\n\t\treturn nil\n\t})\n}",
-        "Verb": "\"interactive-rebase\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 486,
-      "owner": "MergeAndRebaseHelper.RebaseOntoRef",
-      "fields": {
-        "CommandID": "\"branch.rebase-current-onto-base\"",
-        "DisabledReason": "baseBranchDisabledReason",
-        "Keys": "menuKey('b')",
-        "Label": "utils.ResolvePlaceholderString(self.c.Tr.RebaseOntoBaseBranch,\n\tmap[string]string{\"baseBranch\": ShortBranchName(baseBranch)},\n)",
-        "OnPress": "func() error {\n\tself.c.LogAction(self.c.Tr.Actions.RebaseBranch)\n\tbaseCommit := self.c.Modes().MarkedBaseCommit.GetHash()\n\treturn self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(task gocui.Task) error {\n\t\tvar err error\n\t\tif baseCommit != \"\" {\n\t\t\terr = self.c.Git().Rebase.RebaseBranchFromBaseCommit(baseBranch, baseCommit)\n\t\t} else {\n\t\t\terr = self.c.Git().Rebase.RebaseBranch(baseBranch)\n\t\t}\n\t\terr = self.CheckMergeOrRebase(err)\n\t\tif err == nil {\n\t\t\tself.c.OnUIThread(func() error {\n\t\t\t\treturn self.ResetMarkedBaseCommit()\n\t\t\t})\n\t\t}\n\t\treturn err\n\t})\n}",
-        "Verb": "\"rebase\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 549,
+      "line": 430,
       "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
       "fields": {
         "CommandID": "\"branch.merge.regular\"",
@@ -3558,7 +3597,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 565,
+      "line": 446,
       "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
       "fields": {
         "CommandID": "\"branch.merge.no-ff\"",
@@ -3573,7 +3612,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 580,
+      "line": 461,
       "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
       "fields": {
         "CommandID": "\"branch.merge.regular\"",
@@ -3588,7 +3627,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 595,
+      "line": 476,
       "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
       "fields": {
         "CommandID": "\"branch.merge.ff\"",
@@ -3603,7 +3642,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 629,
+      "line": 510,
       "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
       "fields": {
         "CommandID": "\"branch.merge.squash-uncommitted\"",
@@ -3617,7 +3656,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/merge_and_rebase_helper.go",
-      "line": 642,
+      "line": 523,
       "owner": "MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch",
       "fields": {
         "CommandID": "\"branch.merge.squash-committed\"",
@@ -5731,11 +5770,12 @@
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.rebase-current-onto-selected\"",
-        "Description": "self.c.Tr.RebaseBranch",
+        "Description": "self.c.Tr.BranchSyncRebaseCurrentOntoSelected",
         "DisplayOnScreen": "true",
         "GetDisabledReason": "self.require(self.singleItemSelected())",
         "Handler": "opts.Guards.OutsideFilterMode(self.withItem(self.rebase))",
         "Keys": "opts.GetKeys(opts.Config.Branches.RebaseBranch)",
+        "OpensMenu": "true",
         "Verb": "\"rebase\""
       },
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
@@ -5743,7 +5783,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 83,
+      "line": 85,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"remote-branch.delete\"",
@@ -5759,7 +5799,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 93,
+      "line": 95,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.set-upstream-to-selection\"",
@@ -5775,7 +5815,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 103,
+      "line": 105,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"remote-branch.sort-menu\"",
@@ -5790,7 +5830,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 111,
+      "line": 113,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.reset-menu\"",
@@ -5806,7 +5846,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 121,
+      "line": 123,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.ref.external\"",

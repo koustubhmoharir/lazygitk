@@ -160,6 +160,29 @@ refreshed without automatic retry or assumed rollback. Resolve conflicts and
 stage explicitly, then use normal continue/skip/abort options. Interactive
 signing uses the terminal subprocess lifecycle.
 
+## Rebase current onto a selected branch
+
+Select a local or remote branch and open **Rebase current onto selected branch…**
+in `?`. Choose simple rebase, interactive rebase, or rebase onto the detected
+base branch. Interactive rebase stops at the beginning so you can edit the todo
+list in the commits pane. An existing marked base defines the exclusive replay
+range. Review the exact current branch, source commit and range before starting.
+
+The selected branch is a source; the checked-out branch is the destination.
+Changing its source tip, current HEAD or the marked base while reviewing
+requires a new review. Native rebase runs through the terminal, including signing, then
+returns to the UI. Only the current branch moves; automatic updates to other
+branches are disabled. Tracked edits must be committed first. Harmless untracked
+files remain allowed, and ignored-file overwrite risk requires separate approval
+with Cancel first. The flow does not offer or invoke a stash.
+
+The original marked base is consumed once Git starts. Conflicts offer inspection
+or explicit abortion of that rebase. Signing failures and commits that become
+empty stay paused: inspect the pending state, then use **Rebase options** to
+continue, skip or abort. LazyGit does not automatically skip an empty replay in
+this flow. Native failures retain their actual partial state without automatic
+retry or rollback.
+
 ## Reset current HEAD to a selected source
 
 The reset menu accepts commits, tags and local or remote branches. Soft, mixed

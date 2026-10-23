@@ -277,7 +277,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | Checkout | Checkout a new local branch based on the selected remote branch, or the remote branch as a detached head. |
 | `` n `` | New branch |  |
 | `` M `` | Merge | View options for merging the selected item into the current branch (regular merge, squash merge) |
-| `` r `` | Rebase | Rebase the checked-out branch onto the selected branch. |
+| `` r `` | Rebase current onto selected branch… | Rebase the checked-out branch onto the selected branch. |
 | `` d `` | Delete | Delete the remote branch from the remote. |
 | `` u `` | Set as upstream | Set the selected remote branch as the upstream of the checked-out branch. |
 | `` s `` | Sort order |  |

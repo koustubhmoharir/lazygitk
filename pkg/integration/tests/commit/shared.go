@@ -38,6 +38,7 @@ func doTheRebaseForAmendTests(t *TestDriver, keys config.KeybindingConfig) {
 				Title(Equals("Rebase 'branch'")).
 				Select(Contains("Simple rebase")).
 				Confirm()
+			t.Common().ReviewBranchRebase()
 			t.Common().AcknowledgeConflicts()
 		})
 

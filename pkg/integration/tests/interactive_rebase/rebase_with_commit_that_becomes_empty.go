@@ -6,7 +6,7 @@ import (
 )
 
 var RebaseWithCommitThatBecomesEmpty = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Performs a rebase involving a commit that becomes empty during the rebase, and gets dropped.",
+	Description:  "Pause when a rebased commit becomes empty, then explicitly choose to skip it.",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig:  func(config *config.AppConfig) {},
@@ -25,6 +25,7 @@ var RebaseWithCommitThatBecomesEmpty = NewIntegrationTest(NewIntegrationTestArgs
 		shell.Commit("branch change")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		originalTip := t.Git().GetCommitHash("refs/heads/branch")
 		t.Views().Branches().
 			Focus().
 			NavigateToLine(Contains("master")).
@@ -34,8 +35,18 @@ var RebaseWithCommitThatBecomesEmpty = NewIntegrationTest(NewIntegrationTestArgs
 			Title(Equals("Rebase 'branch'")).
 			Select(Contains("Simple rebase")).
 			Confirm()
+		t.Common().ReviewBranchRebase()
+		t.ExpectPopup().Alert().Title(Equals("Error")).
+			Content(Contains("rebase is paused").Contains("continue, skip or abort")).Confirm()
+		if t.Git().GetCommitHash("refs/heads/branch") != originalTip {
+			t.Fail("An empty replay was skipped before an explicit choice")
+		}
+		t.Views().Commits().EventuallyContent(Contains("Pending rebase todos").Contains("branch change"))
+		t.GlobalPress(keys.Universal.CreateRebaseOptionsMenu)
+		t.ExpectPopup().Menu().Title(Equals("Rebase options")).Select(Contains("skip")).Confirm()
 
 		t.Views().Commits().
+			EventuallyContent(Contains("master change 2").DoesNotContain("Pending rebase todos")).
 			Lines(
 				Contains("master change 2"),
 				Contains("master change 1"),

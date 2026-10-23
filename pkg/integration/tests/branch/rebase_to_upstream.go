@@ -71,6 +71,7 @@ var RebaseToUpstream = NewIntegrationTest(NewIntegrationTestArgs{
 					Title(Equals("Rebase 'target'")).
 					Select(Contains("Simple rebase")).
 					Confirm()
+				t.Common().ReviewBranchRebase()
 			})
 
 		t.Views().Commits().Lines(

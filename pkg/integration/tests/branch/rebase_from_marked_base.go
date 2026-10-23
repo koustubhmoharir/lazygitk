@@ -66,6 +66,7 @@ var RebaseFromMarkedBase = NewIntegrationTest(NewIntegrationTestArgs{
 			Title(Equals("Rebase 'active-branch' from marked base")).
 			Select(Contains("Simple rebase")).
 			Confirm()
+		t.Common().ReviewBranchRebase()
 
 		t.Views().Commits().Lines(
 			Contains("active three").DoesNotContain("✓"),

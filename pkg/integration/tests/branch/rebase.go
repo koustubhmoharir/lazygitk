@@ -37,6 +37,7 @@ var Rebase = NewIntegrationTest(NewIntegrationTestArgs{
 			Title(Equals("Rebase 'first-change-branch'")).
 			Select(Contains("Simple rebase")).
 			Confirm()
+		t.Common().ReviewBranchRebase()
 
 		t.Common().AcknowledgeConflicts()
 

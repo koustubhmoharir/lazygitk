@@ -36,6 +36,7 @@ var RebaseCancelOnConflict = NewIntegrationTest(NewIntegrationTestArgs{
 			Title(Equals("Rebase 'first-change-branch'")).
 			Select(Contains("Simple rebase")).
 			Confirm()
+		t.Common().ReviewBranchRebase()
 
 		t.ExpectPopup().Menu().
 			Title(Equals("Conflicts!")).

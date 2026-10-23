@@ -71,7 +71,37 @@ requirements to restore a deferred multi-branch push.
   it must not use the pre-launch HEAD check or accept another repository's plan.
   New native and existing selected-commit/start-policy tests passed (23.906s),
   including a real replaced conflicting rebase and native index.lock failure.
-  Backend lint passed with zero issues. GUI integration/acceptance is separate.
+  Backend lint passed with zero issues. GUI integration is described below.
+- `MergeAndRebaseHelper.RebaseOntoRef` now routes to the additive
+  `helpers/captured_rebase.go` flow; local and remote branch controllers pass
+  full literal refs, and the remote binding names the current destination too.
+  Preserve ordinary, interactive-with-initial-break, marked-base and closest-base
+  choices. Capture marked-base mode, exact source/current HEAD and base ref on
+  entry; never read a later selection or replace the reviewed range silently.
+  The shared `captured_action_repository.go` guard was extracted from the fork's
+  reset flow; retain its backend identity and UI repository generation checks.
+  `captured_rebase_execution.go` revalidates native plans on the worker and again
+  immediately before terminal launch, which retains signing interaction. A
+  consumed approval cannot run again. Guard native result inspection, operation
+  flags, refresh and its completion callback against repository replacement.
+  Clear only the original marked base once Git starts; preserve a newer mark.
+  Conflict choices retain the reviewed repository; before abort, verify the
+  original in-progress rebase rather than a later operation's detached HEAD.
+  Paused signing/hook/empty-replay errors stay errors, with actionable context;
+  do not reintroduce the upstream helper's automatic empty-commit skip. Explicit
+  continue/skip/abort remain available through Rebase options. The integration
+  component's `ReviewBranchRebase` records the additional review step in the
+  existing branch/interactive/amend/demo scenarios; it must not replace their
+  native post-state assertions.
+  Validation: combined reset/upstream/rebase controller checks passed (64.679s),
+  including real signing failure and replaced-operation rejection. Corrected
+  pointer-replacement tests use a second repository and passed separately
+  (7.695s). The full short suite passed, including native commands (145.127s)
+  and controllers (126.736s). Seventeen relevant terminal scenarios passed in
+  the broader rebase run; its old empty-replay auto-skip expectation was updated
+  to explicit user skip and passed separately (7.617s). Generation, inventory,
+  formatting, build and scoped lint passed after removing a constant test-helper
+  parameter flagged by lint.
 - `helpers/captured_reset.go` replaces the shared reset menu through
   `RefsHelper.CreateGitResetMenu`; the local-branch controller calls the same
   flow directly. Preserve this routing for commit, tag, remote-branch and
@@ -326,8 +356,9 @@ requirements to restore a deferred multi-branch push.
   Before opening reset/rebase submenus, freshly check the selected tip, HEAD
   identity/tip, exact upstream mapping and target commit. Reset uses the shared
   captured flow. Rebase receives a full ref; preserve the full-ref self-rebase
-  check in `MergeAndRebaseHelper.RebaseOntoRef`. That helper's nested execution
-  remains under audit; parent-menu checks alone do not protect its later workers.
+  check in the captured rebase mode menu. That helper's nested execution
+  now uses the captured rebase flow described above; retain the nested execution
+  checks as well as the parent-menu checks when merging upstream changes.
   Independent reset/upstream controller checks passed (33.501s). All nine
   selected-upstream terminal scenarios passed (39.263s), including custom/local
   divergence with dirty files, standard/base divergence, tracking edits and

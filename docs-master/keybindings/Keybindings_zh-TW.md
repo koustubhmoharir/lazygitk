@@ -396,7 +396,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | 檢出 | 基於目前選中的遠端分支檢出一個新的本地分支，或者將遠端分支作分離的HEAD。 |
 | `` n `` | 新分支 |  |
 | `` M `` | 合併到當前檢出的分支 | 檢視將選中項合併到目前分支的選項(正常合併，壓縮合並) |
-| `` r `` | 將已檢出的分支變基至此分支 | 將檢出的分支變基到所選的分支上。 |
+| `` r `` | Rebase current onto selected branch… | 將檢出的分支變基到所選的分支上。 |
 | `` d `` | 刪除 | 從遠端刪除遠端分支。 |
 | `` u `` | 設置為遠端 | 將此分支設為當前分支之遠端 |
 | `` s `` | 排序規則 |  |

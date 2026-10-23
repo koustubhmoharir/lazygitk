@@ -76,9 +76,11 @@ func (self *RemoteBranchesController) GetKeybindings(opts types.KeybindingsOpts)
 			Keys:              opts.GetKeys(opts.Config.Branches.RebaseBranch),
 			Handler:           opts.Guards.OutsideFilterMode(self.withItem(self.rebase)),
 			GetDisabledReason: self.require(self.singleItemSelected()),
-			Description:       self.c.Tr.RebaseBranch,
-			Tooltip:           self.c.Tr.RebaseBranchTooltip,
-			DisplayOnScreen:   true,
+			// Fork: name the current destination and selected source explicitly.
+			Description:     self.c.Tr.BranchSyncRebaseCurrentOntoSelected,
+			Tooltip:         self.c.Tr.RebaseBranchTooltip,
+			OpensMenu:       true,
+			DisplayOnScreen: true,
 		},
 		{
 			CommandID:         "remote-branch.delete",
@@ -167,7 +169,8 @@ func (self *RemoteBranchesController) merge(selectedBranch *models.RemoteBranch)
 }
 
 func (self *RemoteBranchesController) rebase(selectedBranch *models.RemoteBranch) error {
-	return self.c.Helpers().MergeAndRebase.RebaseOntoRef(selectedBranch.FullName())
+	// Fork: retain the exact selected remote ref through captured rebase review.
+	return self.c.Helpers().MergeAndRebase.RebaseOntoRef(selectedBranch.FullRefName())
 }
 
 func (self *RemoteBranchesController) createSortMenu() error {

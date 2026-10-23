@@ -396,7 +396,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | 检出 | 基于当前选中的远程分支检出一个新的本地分支，或者将远程分支作分离的HEAD。 |
 | `` n `` | 新分支 |  |
 | `` M `` | 合并到当前检出的分支 | 查看将选中项合并到当前分支的选项(正常合并，压缩合并) |
-| `` r `` | 变基 | 将检出的分支变基到所选的分支上。 |
+| `` r `` | Rebase current onto selected branch… | 将检出的分支变基到所选的分支上。 |
 | `` d `` | 删除 | 从远程删除远程分支。 |
 | `` u `` | 设置为上游 | 设置为检出分支的上游 |
 | `` s `` | 排序 |  |

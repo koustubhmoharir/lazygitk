@@ -543,7 +543,8 @@ func (self *BranchesController) merge() error {
 }
 
 func (self *BranchesController) rebase(branch *models.Branch) error {
-	return self.c.Helpers().MergeAndRebase.RebaseOntoRef(branch.Name)
+	// Fork: use a literal full ref for captured source/current-HEAD review.
+	return self.c.Helpers().MergeAndRebase.RebaseOntoRef(branch.FullRefName())
 }
 
 func (self *BranchesController) fastForward(branches []*models.Branch) error {

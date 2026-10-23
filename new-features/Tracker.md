@@ -1,9 +1,10 @@
 # Current work
 
 Roadmap item: [7. Selected-branch operations without checkout](Roadmap.md#7-selected-branch-operations-without-checkout).
-Status: default selected-branch push/pull and Fast-forward routing is integrated
-and verified. Remaining work is the non-sync branch-menu target audit and its
-acceptance checks; see [the inspected integration points](branch-menu-audit.md).
+Status: selected-branch sync, tracking metadata, reset and rebase flows are
+integrated. Remaining work is the selected-source merge, deletion and branch/tag
+creation audit and its acceptance checks; see
+[the inspected integration points](branch-menu-audit.md).
 
 Scope: operate on the explicitly selected local branch wherever no worktree is
 needed. Preserve current HEAD, index, worktree and unrelated refs. Keep general
@@ -13,32 +14,25 @@ deferred and must not be offered. Keep wider updates explicit choices.
 
 ## Remaining tasks for item 7
 
-1. Finish captured targets in non-sync branch menus, retaining
-   selected-ref metadata support and clearly named selected-source merge/
-   rebase actions. Do not change shortcut policy ahead of item 8.
-   Literal rename and exact tracking-ref set/unset now use captured modal
-   flows with native backend plans and stale-callback verification. Audit the
-   remaining selected-source merge/rebase, delete paths and branch/tag creation.
-   The captured upstream menu now uses native exact tracking refs; its rebase
-   submenu still needs the shared merge/rebase execution audit below.
-   Retain their capabilities without live selection/repository substitution.
-   Use native exact tracking refs for
-   custom namespaces and local `.` upstreams. Reset remains a current-HEAD
-   operation, including explicit merge abortion; do not invent off-branch
-   soft/mixed/hard modes. Preserve squash, interactive/marked-base, tracking
-   choices and signing support while binding each prompt/command/refresh to
-   the original source and repository. Keep native errors and Git's normal
-   concurrency model; no implicit retry, rollback, checkout or stash.
-   Use the prepared native source/current-HEAD snapshot guard for the remaining
-   current-destination actions; keep operation-specific reservation and data-loss
-   checks in their own command/review flows, not in the read-only guard.
-   The prepared native branch-rebase plan now preserves marked-range and
-   initial-break capabilities, covers ignored paths in the actual replay range,
-   and identifies the original paused rebase for queued conflict abortion.
-   Complete its GUI integration and acceptance before closing the rebase audit.
-   Shared reset menus now capture source/current-HEAD/repository identity;
-   preserve their native tag peeling, exact upstream mapping, explicit hard-reset
-   review and current-worktree merge-abortion support in the remaining audit.
+1. Finish captured targets in the remaining branch actions. Do not change
+   shortcut policy ahead of item 8. Bind prompts, commands, result inspection and
+   refresh completion to the original source, current destination and repository.
+   Use the native source/current-HEAD snapshot and captured repository-generation
+   guard; keep mutation-specific reservation and data-loss checks in each flow.
+
+   - Merge the selected source into current HEAD. Retain regular/allow-FF/no-FF
+     choices, both squash modes, merge-message options and signing support.
+     Do not infer capture safety from the now-integrated rebase flow.
+   - Audit local/remote/both deletion, retaining force warnings and native partial
+     errors. Refuse occupied/reserved branches; never detach or remove another
+     worktree implicitly. Use exact native tracking refs and literal names.
+   - Audit branch/tag creation, retaining existing checkout/tracking choices,
+     annotation/signing and overwrite warnings without later model or repository
+     substitution. Keep pointer-only placement separate from named checkout.
+
+   Preserve Git's normal concurrency model, errors and actual partial state;
+   no implicit retry, rollback, checkout or stash. Reset/rebase remain explicitly
+   current-destination actions; do not invent off-branch worktree operations.
 2. Verify remaining menus and preserve the sync acceptance baseline with local
    fake remotes: selected != current, absent/gone upstream,
    distinct push/pull remotes, force-with-lease rejection, fast-forward,

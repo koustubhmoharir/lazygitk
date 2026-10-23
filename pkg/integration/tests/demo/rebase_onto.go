@@ -67,6 +67,7 @@ var RebaseOnto = NewIntegrationTest(NewIntegrationTestArgs{
 					Title(Contains("Rebase 'feature/demo' from marked base")).
 					Select(Contains("Simple rebase")).
 					Confirm()
+				t.Common().ReviewBranchRebase()
 			}).Wait(1000)
 
 		// Push the checked-out feature branch explicitly, not the master branch

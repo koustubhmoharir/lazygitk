@@ -4,36 +4,22 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jesseduffield/lazygit/pkg/commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 )
 
 type branchActionResetFlow struct {
-	target   *capturedResetRepository
+	target   *capturedActionRepository
 	snapshot git_commands.BranchActionTarget
 	label    string
 	started  bool
 }
 
-type capturedResetRepository struct {
-	c          *HelperCommon
-	git        *commands.GitCommand
-	generation int
-}
-
-func (target *capturedResetRepository) checkRepository() error {
-	if target.c.Git() != target.git || target.c.State().GetRepoGeneration() != target.generation {
-		return errors.New(target.c.Tr.BranchSyncRepositoryChanged)
-	}
-	return nil
-}
-
 // Capture source identity before any menu, not a pointer into a mutable model.
 // The source may be a full local/upstream ref or a full detached commit OID.
 func ResetCurrentToCapturedSource(c *HelperCommon, label, ref string) error {
-	target := &capturedResetRepository{c: c, git: c.Git(), generation: c.State().GetRepoGeneration()}
+	target := captureActionRepository(c)
 	var upstreamBranch string
 	if ref == "@{upstream}" {
 		upstreamBranch = c.Model().CheckedOutBranch

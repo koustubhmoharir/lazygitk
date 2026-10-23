@@ -277,7 +277,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | Uitchecken | Geselecteerde remote branch uitchecken als nieuwe locale branch of als detached head. |
 | `` n `` | Nieuwe branch |  |
 | `` M `` | Merge in met huidige checked out branch | View options for merging the selected item into the current branch (regular merge, squash merge) |
-| `` r `` | Rebase branch | Rebase de uitgecheckte branch bovenop de geselecteerde branch. |
+| `` r `` | Rebase current onto selected branch… | Rebase de uitgecheckte branch bovenop de geselecteerde branch. |
 | `` d `` | Verwijderen | Verwijder de remote branch van de remote. |
 | `` u `` | Instellen als upstream | Stel in als upstream van uitgecheckte branch |
 | `` s `` | Sort order |  |

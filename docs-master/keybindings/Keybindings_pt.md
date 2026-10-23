@@ -121,7 +121,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | Verificar | Checar a nova branch baseada na brach remota selecionada, ou a branch remota como HEAD, desanexado |
 | `` n `` | Nova branch |  |
 | `` M `` | Mesclar | Ver opções para mesclar o item selecionado no branch atual (mesclar regularmente, mesclar squash) |
-| `` r `` | Refazer | Refazer a branch checada na branch selecionada |
+| `` r `` | Rebase current onto selected branch… | Refazer a branch checada na branch selecionada |
 | `` d `` | Apagar | Excluir o branch remoto do controle remoto. |
 | `` u `` | Definir como upstream | Definir o ramo remoto selecionado como fluxo do branch check-out. |
 | `` s `` | Sort order |  |

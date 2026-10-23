@@ -11,10 +11,13 @@ Todo list when making a new translation
 package i18n
 
 type TranslationSet struct {
-	BranchActionResetReviewPrompt string
-	BranchActionResetHardWarning  string
-	BranchActionDetachedHead      string
-	BranchActionUnbornHead        string
+	BranchActionResetReviewPrompt  string
+	BranchActionResetHardWarning   string
+	BranchActionDetachedHead       string
+	BranchActionUnbornHead         string
+	BranchActionRebaseDefaultRange string
+	BranchActionRebaseReviewPrompt string
+	BranchActionRebasePausedError  string
 	// Fork-owned integration strings are separate to avoid reformatting the
 	// upstream table when longer field names are added.
 	BranchSyncCurrentPullSummary          string
@@ -1403,6 +1406,9 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchActionResetHardWarning:          "Are you sure you want to do a hard reset? This discards staged and unstaged tracked changes and may overwrite untracked or ignored paths that obstruct the selected commit. No automatic retry or rollback will run.",
 		BranchActionDetachedHead:              "HEAD (detached)",
 		BranchActionUnbornHead:                "(unborn)",
+		BranchActionRebaseDefaultRange:        "No marked base (use the selected upstream)",
+		BranchActionRebaseReviewPrompt:        "Rebase current branch %q at %s onto selected source %q (%s) at %s?\n\nMode: %s\nMarked range base: %s\n\nOnly the current branch is rebased. Commit tracked changes before proceeding.",
+		BranchActionRebasePausedError:         "The reviewed rebase is paused without unresolved conflicts. Inspect the pending commits, then open Rebase options to choose continue, skip or abort.",
 		BranchSyncCurrentPullSummary:          "Checked-out branch %q at %s\nUpstream remote: %q\nUpstream branch: %q\nLocal tracking storage: %q\n\nFetch first, then review the exact incoming commit and integration method before changing files. Saved upstream settings will not change.",
 		BranchSyncIntegrationMenu:             "Integrate reviewed incoming commit",
 		BranchSyncIntegrationSummary:          "Checked-out branch %q at %s\nReviewed incoming commit: %s\n\nChoose an integration method. The default uses Git configuration; explicit choices replace the corresponding defaults. No second network pull or autostash will run.",
