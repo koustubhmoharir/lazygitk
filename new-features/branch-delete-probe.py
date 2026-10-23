@@ -278,7 +278,8 @@ def main():
                 "rebase -i" in " ".join(argv)):
             result = " ; ".join(x.strip().replace("`", "'") for x in (stdout, stderr) if x.strip())
             out += [f"- `{cwd}` `$ {subprocess.list2cmdline(argv)}` → exit {code}" + (f": `{result}`" if result else "")]
-    (Path(__file__).with_name("branch-delete-probes.md")).write_text("\n".join(out))
+    document = "\n".join(line.rstrip() for line in "\n".join(out).splitlines()) + "\n"
+    (Path(__file__).with_name("branch-delete-probes.md")).write_text(document)
     print(f"wrote {Path(__file__).with_name('branch-delete-probes.md')} ; fixtures {ROOT}")
 
 
