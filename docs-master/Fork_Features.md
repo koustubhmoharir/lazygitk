@@ -160,6 +160,21 @@ refreshed without automatic retry or assumed rollback. Resolve conflicts and
 stage explicitly, then use normal continue/skip/abort options. Interactive
 signing uses the terminal subprocess lifecycle.
 
+## Reset current HEAD to a selected source
+
+The reset menu accepts commits, tags and local or remote branches. Soft, mixed
+and hard reset affect **current HEAD**; selecting another branch does not reset
+that branch. The review shows the current checkout and exact source commit.
+Changing either before execution requires a new review. Annotated tags resolve
+to their commit; upstream sources use Git's configured tracking namespace.
+
+Hard reset always asks for explicit approval. It discards tracked changes and
+can overwrite obstructing untracked or ignored paths, even when tracked files
+are clean. Cancel preserves the repository. Mixed/hard reset can explicitly
+abort a merge in this worktree. A tip-changing reset refuses a branch reserved
+by another worktree. Native failures are reported and actual state refreshed
+without automatic retries, stashing or rollback.
+
 ## Command palette identity
 
 Equivalent invocation paths share an entry with combined shortcut hints.

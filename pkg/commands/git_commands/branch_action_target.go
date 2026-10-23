@@ -27,6 +27,7 @@ var ErrBranchActionChanged = errors.New("the selected source or current HEAD cha
 // ResolveBranchActionCommit accepts only a full direct ref or a full commit
 // OID, never an ambiguous short name or revision expression. In particular,
 // callers must use Git's native upstream ref, not reconstruct its namespace.
+// Tag refs are peeled to their commit; raw object IDs must name commits.
 func (self *BranchCommands) ResolveBranchActionCommit(ref string) (string, error) {
 	if IsFullObjectID(ref) {
 		if err := self.validateLiteralCommitOID(ref); err != nil {
@@ -51,10 +52,21 @@ func (self *BranchCommands) ResolveBranchActionCommit(ref string) (string, error
 	if state.symbolic != "" {
 		return "", fmt.Errorf("source ref %q is symbolic; choose its direct target", ref)
 	}
-	if err := self.validateLiteralCommitOID(state.oid); err != nil {
+	oid := state.oid
+	if strings.HasPrefix(ref, "refs/tags/") {
+		// Peel the immutable object we just read, not a second lookup of the
+		// mutable tag name. A reset source may be an annotated/nested tag.
+		output, err := self.cmd.New(NewGitCmd("rev-parse").Arg("--verify", oid+"^{commit}").ToArgv()).
+			SetWd(self.repoPaths.WorktreePath()).DontLog().RunWithOutput()
+		if err != nil {
+			return "", err
+		}
+		oid = strings.ToLower(trimTerminalLineEnding(output))
+	}
+	if err := self.validateLiteralCommitOID(oid); err != nil {
 		return "", err
 	}
-	return state.oid, nil
+	return oid, nil
 }
 
 // PrepareBranchActionTarget retains detached and unborn HEAD identities: reset

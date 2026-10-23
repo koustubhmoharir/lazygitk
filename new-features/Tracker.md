@@ -18,7 +18,7 @@ deferred and must not be offered. Keep wider updates explicit choices.
    rebase actions. Do not change shortcut policy ahead of item 8.
    Literal rename and exact tracking-ref set/unset now use captured modal
    flows with native backend plans and stale-callback verification. Audit the
-   remaining upstream-view/reset/rebase callbacks, selected-source merge/rebase,
+   remaining upstream-view/rebase callbacks, selected-source merge/rebase,
    delete paths and branch/tag creation. Retain their capabilities without
    live selection/repository substitution. Use native exact tracking refs for
    custom namespaces and local `.` upstreams. Reset remains a current-HEAD
@@ -30,6 +30,9 @@ deferred and must not be offered. Keep wider updates explicit choices.
    Use the prepared native source/current-HEAD snapshot guard for the remaining
    current-destination actions; keep operation-specific reservation and data-loss
    checks in their own command/review flows, not in the read-only guard.
+   Shared reset menus now capture source/current-HEAD/repository identity;
+   preserve their native tag peeling, exact upstream mapping, explicit hard-reset
+   review and current-worktree merge-abortion support in the remaining audit.
 2. Verify remaining menus and preserve the sync acceptance baseline with local
    fake remotes: selected != current, absent/gone upstream,
    distinct push/pull remotes, force-with-lease rejection, fast-forward,

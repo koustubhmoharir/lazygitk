@@ -42,6 +42,47 @@ func TestBranchActionTargetResolvesLiteralRefsAndCommitOIDs(t *testing.T) {
 	assert.Error(t, err, "abbreviated OIDs are not accepted")
 }
 
+func TestBranchActionTargetPeelsTagRefsToCommits(t *testing.T) {
+	root, first, _ := transactionHistory(t)
+	gitTest(t, root, "tag", "lightweight-commit", first)
+	gitTest(t, root, "tag", "-a", "annotated-commit", "-m", "annotated", first)
+	gitTest(t, root, "tag", "-a", "nested-inner", "-m", "inner", first)
+	gitTest(t, root, "tag", "-a", "nested-outer", "-m", "outer", "nested-inner")
+	blob := gitTest(t, root, "hash-object", "-w", "--stdin")
+	gitTest(t, root, "tag", "-a", "blob-target", "-m", "blob", blob)
+
+	commands := transactionCommands(t, root)
+	for _, name := range []string{"lightweight-commit", "annotated-commit", "nested-outer"} {
+		t.Run(name, func(t *testing.T) {
+			got, err := commands.ResolveBranchActionCommit("refs/tags/" + name)
+			assert.NoError(t, err)
+			assert.Equal(t, first, got)
+		})
+	}
+	_, err := commands.ResolveBranchActionCommit("refs/tags/blob-target")
+	assert.Error(t, err, "a tag pointing to a blob is not a commit")
+}
+
+func TestBranchActionTargetRejectsMovedTagWithoutChangingRepositoryState(t *testing.T) {
+	root, first, second := transactionHistory(t)
+	gitTest(t, root, "tag", "-a", "selected", "-m", "selected", first)
+	commands := transactionCommands(t, root)
+	target, err := commands.PrepareBranchActionTarget("refs/tags/selected", first)
+	assert.NoError(t, err)
+	assert.Equal(t, first, target.SourceOID())
+
+	gitTest(t, root, "tag", "-f", "-a", "selected", "-m", "moved", second)
+	indexBefore := mustRead(t, filepath.Join(root, ".git", "index"))
+	headBefore := mustRead(t, filepath.Join(root, ".git", "HEAD"))
+	statusBefore := gitTest(t, root, "status", "--porcelain=v2", "--untracked-files=all")
+	_, err = commands.ResolveBranchActionCommit("refs/tags/selected")
+	assert.NoError(t, err)
+	assert.ErrorIs(t, commands.CheckBranchActionTarget(target), ErrBranchActionChanged)
+	assert.Equal(t, indexBefore, mustRead(t, filepath.Join(root, ".git", "index")))
+	assert.Equal(t, headBefore, mustRead(t, filepath.Join(root, ".git", "HEAD")))
+	assert.Equal(t, statusBefore, gitTest(t, root, "status", "--porcelain=v2", "--untracked-files=all"))
+}
+
 func TestBranchActionTargetCapturesHeadAndChecksStalenessReadOnly(t *testing.T) {
 	root, first, second := transactionHistory(t)
 	gitTest(t, root, "branch", "selected", first)

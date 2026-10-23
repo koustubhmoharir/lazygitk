@@ -23,6 +23,8 @@ var ResetToDuplicateNamedBranch = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.EmptyCommit("current-branch commit")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		headOID := t.Git().GetCommitHash("HEAD")
+		targetOID := t.Git().GetCommitHash("refs/tags/other-branch")
 		t.Views().Commits().Lines(
 			Contains("current-branch commit"),
 			Contains("other-branch commit"),
@@ -40,6 +42,14 @@ var ResetToDuplicateNamedBranch = NewIntegrationTest(NewIntegrationTestArgs{
 			Title(Contains("Reset to other-branch")).
 			Select(Contains("Hard reset")).
 			Confirm()
+
+		review := t.ExpectPopup().Confirmation().Title(Equals("Hard reset")).
+			Content(Contains(headOID).Contains(targetOID).Contains("untracked or ignored"))
+		if t.Git().GetCommitHash("HEAD") != headOID {
+			t.Fail("Reviewing a hard reset moved HEAD before approval")
+		}
+		review.Confirm()
+		t.Views().Commits().EventuallyContent(Contains("other-branch-tag commit").DoesNotContain("other-branch commit"))
 
 		t.Views().Commits().Lines(
 			Contains("other-branch-tag commit"),

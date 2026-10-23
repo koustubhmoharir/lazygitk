@@ -263,49 +263,9 @@ func (self *RefsHelper) CreateSortOrderMenu(sortOptionsOrder []string, menuPromp
 }
 
 func (self *RefsHelper) CreateGitResetMenu(name string, ref string) error {
-	type strengthWithKey struct {
-		strength string
-		label    string
-		keys     []gocui.Key
-		tooltip  string
-	}
-	strengths := []strengthWithKey{
-		// not i18'ing because it's git terminology
-		{strength: "mixed", label: "Mixed reset", keys: menuKey('m'), tooltip: self.c.Tr.ResetMixedTooltip},
-		{strength: "soft", label: "Soft reset", keys: menuKey('s'), tooltip: self.c.Tr.ResetSoftTooltip},
-		{strength: "hard", label: "Hard reset", keys: menuKey('h'), tooltip: self.c.Tr.ResetHardTooltip},
-	}
-
-	menuItems := lo.Map(strengths, func(row strengthWithKey, _ int) *types.MenuItem {
-		return &types.MenuItem{
-			LabelColumns: []string{
-				row.label,
-				style.FgRed.Sprintf("reset --%s %s", row.strength, name),
-			},
-			OnPress: func() error {
-				return self.c.ConfirmIf(row.strength == "hard" && IsWorkingTreeDirtyExceptSubmodules(self.c.Model().Files, self.c.Model().Submodules),
-					types.ConfirmOpts{
-						Title:  self.c.Tr.Actions.HardReset,
-						Prompt: self.c.Tr.ResetHardConfirmation,
-						HandleConfirm: func() error {
-							self.c.LogAction("Reset")
-							return self.c.WithWaitingStatus(self.c.Tr.ResettingStatus, func(gocui.Task) error {
-								return self.ResetToRef(ref, row.strength, []string{})
-							})
-						},
-					})
-			},
-			Keys:      row.keys,
-			CommandID: "branch.reset." + row.strength,
-			Verb:      "reset-" + row.strength,
-			Tooltip:   row.tooltip,
-		}
-	})
-
-	return self.c.Menu(types.CreateMenuOptions{
-		Title: fmt.Sprintf("%s %s", self.c.Tr.ResetTo, name),
-		Items: menuItems,
-	})
+	// Fork: all reset entry points retain source/current-HEAD/repository identity
+	// across menus and workers; hard reset always receives an explicit warning.
+	return ResetCurrentToCapturedSource(self.c, name, ref)
 }
 
 func (self *RefsHelper) CreateCheckoutMenu(commit *models.Commit) error {

@@ -20,6 +20,9 @@ var ResetToDuplicateNamedUpstream = NewIntegrationTest(NewIntegrationTestArgs{
 			CreateLightweightTag("origin/foo", "HEAD")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		headOID := t.Git().GetCommitHash("HEAD")
+		targetOID := t.Git().GetCommitHash("refs/remotes/origin/foo")
+		tagOID := t.Git().GetCommitHash("refs/tags/origin/foo")
 		t.Views().Commits().Lines(
 			Contains("commit 2"),
 			Contains("commit 1"),
@@ -36,20 +39,33 @@ var ResetToDuplicateNamedUpstream = NewIntegrationTest(NewIntegrationTestArgs{
 			Title(Contains("Reset to origin/foo")).
 			Select(Contains("Hard reset")).
 			Confirm()
+		review := t.ExpectPopup().Confirmation().Title(Equals("Hard reset")).
+			Content(Contains(headOID).Contains(targetOID).Contains("untracked or ignored"))
+		if t.Git().GetCommitHash("HEAD") != headOID {
+			t.Fail("Reviewing a hard reset moved HEAD before approval")
+		}
+		review.Confirm()
 
-		t.Views().Commits().Lines(
+		t.Views().Commits().EventuallyContent(Contains("commit 1").DoesNotContain("commit 2")).Lines(
 			Contains("commit 1"),
 		)
 
 		t.Views().Tags().Focus().
 			Lines(Contains("origin/foo")).
 			Press(keys.Commits.ViewResetOptions)
+		currentHeadOID := t.Git().GetCommitHash("HEAD")
 		t.ExpectPopup().Menu().
 			Title(Contains("Reset to origin/foo")).
 			Select(Contains("Hard reset")).
 			Confirm()
+		review = t.ExpectPopup().Confirmation().Title(Equals("Hard reset")).
+			Content(Contains(currentHeadOID).Contains(tagOID).Contains("untracked or ignored"))
+		if t.Git().GetCommitHash("HEAD") != currentHeadOID {
+			t.Fail("Reviewing a hard reset moved HEAD before approval")
+		}
+		review.Confirm()
 
-		t.Views().Commits().Lines(
+		t.Views().Commits().EventuallyContent(Contains("commit 2")).Lines(
 			Contains("commit 2"),
 			Contains("commit 1"),
 		)

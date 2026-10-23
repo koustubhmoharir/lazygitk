@@ -1384,7 +1384,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 747,
+      "line": 749,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request\"",
@@ -1397,7 +1397,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 755,
+      "line": 757,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-to-chosen-target\"",
@@ -1410,7 +1410,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 788,
+      "line": 790,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-current-to-selected\"",
@@ -3382,6 +3382,21 @@
     },
     {
       "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_reset.go",
+      "line": 106,
+      "owner": "branchActionResetFlow.menu",
+      "fields": {
+        "CommandID": "\"branch.reset.\" + row.mode",
+        "Keys": "menuKey(rune(row.mode[0]))",
+        "Label": "row.label",
+        "OnPress": "func() error {\n\tif err := flow.target.checkRepository(); err != nil {\n\t\treturn err\n\t}\n\tif row.mode != \"hard\" {\n\t\treturn flow.execute(row.mode)\n\t}\n\n\tflow.target.c.Confirm(types.ConfirmOpts{\n\t\tTitle:         flow.target.c.Tr.Actions.HardReset,\n\t\tPrompt:        flow.target.c.Tr.BranchActionResetHardWarning + \"\\n\\n\" + flow.prompt(),\n\t\tHandleConfirm: func() error { return flow.execute(\"hard\") },\n\t\tHandleClose:   flow.target.checkRepository,\n\t})\n\treturn nil\n}",
+        "OpensMenu": "row.mode == \"hard\"",
+        "Verb": "\"reset-\" + row.mode"
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/commits_helper.go",
       "line": 226,
       "owner": "CommitsHelper.OpenCommitMenu",
@@ -3682,21 +3697,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/refs_helper.go",
-      "line": 280,
-      "owner": "RefsHelper.CreateGitResetMenu",
-      "fields": {
-        "CommandID": "\"branch.reset.\" + row.strength",
-        "Keys": "row.keys",
-        "LabelColumns": "[]string{\n\trow.label,\n\tstyle.FgRed.Sprintf(\"reset --%s %s\", row.strength, name),\n}",
-        "OnPress": "func() error {\n\treturn self.c.ConfirmIf(row.strength == \"hard\" \u0026\u0026 IsWorkingTreeDirtyExceptSubmodules(self.c.Model().Files, self.c.Model().Submodules),\n\t\ttypes.ConfirmOpts{\n\t\t\tTitle:  self.c.Tr.Actions.HardReset,\n\t\t\tPrompt: self.c.Tr.ResetHardConfirmation,\n\t\t\tHandleConfirm: func() error {\n\t\t\t\tself.c.LogAction(\"Reset\")\n\t\t\t\treturn self.c.WithWaitingStatus(self.c.Tr.ResettingStatus, func(gocui.Task) error {\n\t\t\t\t\treturn self.ResetToRef(ref, row.strength, []string{})\n\t\t\t\t})\n\t\t\t},\n\t\t})\n}",
-        "Verb": "\"reset-\" + row.strength"
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/helpers/refs_helper.go",
-      "line": 319,
+      "line": 279,
       "owner": "RefsHelper.CreateCheckoutMenu",
       "fields": {
         "CommandID": "\"commit.checkout-detached\"",
@@ -3710,7 +3711,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/refs_helper.go",
-      "line": 339,
+      "line": 299,
       "owner": "RefsHelper.CreateCheckoutMenu",
       "fields": {
         "CommandID": "\"branch.checkout\"",
@@ -3725,7 +3726,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/refs_helper.go",
-      "line": 351,
+      "line": 311,
       "owner": "RefsHelper.CreateCheckoutMenu",
       "fields": {
         "CommandID": "\"branch.checkout\"",
@@ -3741,7 +3742,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/refs_helper.go",
-      "line": 523,
+      "line": 483,
       "owner": "RefsHelper.MoveCommitsToNewBranch",
       "fields": {
         "CommandID": "\"branch.move-commits-to-new-from-base\"",
@@ -3754,7 +3755,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/refs_helper.go",
-      "line": 536,
+      "line": 496,
       "owner": "RefsHelper.MoveCommitsToNewBranch",
       "fields": {
         "CommandID": "\"branch.move-commits-to-new-stacked\"",

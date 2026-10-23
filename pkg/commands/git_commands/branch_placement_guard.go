@@ -26,6 +26,16 @@ func (self *BranchCommands) branchPlacementOccupancy(fullRef string) (*branchPla
 // to the branch to ignore only its existing HEAD reservation; other worktrees
 // and operation reservations remain authoritative.
 func (self *BranchCommands) branchOccupancy(fullRef string, allowCurrentCheckout bool) (*branchPlacementOccupation, error) {
+	return self.branchOccupancyWithCurrentPolicy(fullRef, allowCurrentCheckout, false)
+}
+
+// Current-HEAD actions such as reset can intentionally abort an operation in
+// this worktree, but still must not move a ref reserved by another worktree.
+func (self *BranchCommands) branchOtherWorktreeOccupancy(fullRef string) (*branchPlacementOccupation, error) {
+	return self.branchOccupancyWithCurrentPolicy(fullRef, false, true)
+}
+
+func (self *BranchCommands) branchOccupancyWithCurrentPolicy(fullRef string, allowCurrentCheckout, ignoreCurrent bool) (*branchPlacementOccupation, error) {
 	commonDir, err := canonicalMetadataPath(self.repoPaths.RepoGitDirPath())
 	if err != nil {
 		return nil, fmt.Errorf("resolve common Git directory: %w", err)
@@ -81,6 +91,9 @@ func (self *BranchCommands) branchOccupancy(fullRef string, allowCurrentCheckout
 		return nil, err
 	}
 	for _, metadataDir := range canonicalDirs {
+		if ignoreCurrent && metadataDir == currentDir {
+			continue
+		}
 		if metadataDir == commonDir && bare {
 			continue // A bare repository's own HEAD is not a checkout reservation.
 		}

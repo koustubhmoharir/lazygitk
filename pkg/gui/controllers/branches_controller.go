@@ -722,7 +722,9 @@ func (self *BranchesController) createSortMenu() error {
 }
 
 func (self *BranchesController) createResetMenu(selectedBranch *models.Branch) error {
-	return self.c.Helpers().Refs.CreateGitResetMenu(selectedBranch.Name, selectedBranch.FullRefName())
+	// Fork: retain current-HEAD reset modes but bind the source, HEAD and repo
+	// across menu/worker callbacks instead of resolving a live ref at execution.
+	return helpers.ResetCurrentToCapturedSource(self.c.HelperCommon, selectedBranch.Name, selectedBranch.FullRefName())
 }
 
 func (self *BranchesController) rename(branch *models.Branch) error {

@@ -17,6 +17,8 @@ var Reset = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.HardReset("HEAD^^")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		headOID := t.Git().GetCommitHash("HEAD")
+		targetOID := t.Git().GetCommitHash("HEAD@{1}")
 		t.Views().ReflogCommits().
 			Focus().
 			Lines(
@@ -32,7 +34,15 @@ var Reset = NewIntegrationTest(NewIntegrationTestArgs{
 					Title(Contains("Reset to")).
 					Select(Contains("Hard reset")).
 					Confirm()
+
+				review := t.ExpectPopup().Confirmation().Title(Equals("Hard reset")).
+					Content(Contains(headOID).Contains(targetOID).Contains("untracked or ignored"))
+				if t.Git().GetCommitHash("HEAD") != headOID {
+					t.Fail("Reviewing a hard reset moved HEAD before approval")
+				}
+				review.Confirm()
 			}).
+			EventuallyContent(Contains("reset: moving to "+targetOID)).
 			TopLines(
 				Contains("reset: moving to").IsSelected(),
 				Contains("reset: moving to HEAD^^"),
@@ -40,6 +50,7 @@ var Reset = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().Commits().
 			Focus().
+			EventuallyContent(Contains("three")).
 			Lines(
 				Contains("three").IsSelected(),
 				Contains("two"),

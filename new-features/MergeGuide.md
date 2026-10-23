@@ -55,6 +55,28 @@ requirements to restore a deferred multi-branch push.
   checks, and it must not blanket-reject a merge that reset may explicitly abort.
   Callers still bind their repository generation, commands and refreshes, use
   the captured source OID, and preserve Git's normal concurrency after launch.
+- `helpers/captured_reset.go` replaces the shared reset menu through
+  `RefsHelper.CreateGitResetMenu`; the local-branch controller calls the same
+  flow directly. Preserve this routing for commit, tag, remote-branch and
+  Files/upstream entry points. The flow captures repository generation, source
+  ref/commit and current HEAD, then rechecks them before launching one native
+  soft/mixed/hard reset. All modes affect current HEAD, never a selected
+  off-branch ref. Hard reset always requires an explicit data-loss warning,
+  including clean tracked state with obstructing untracked/ignored paths.
+  Preserve native errors and partial effects; do not retry or repair failures.
+  Annotated/nested tag sources peel the immutable object read from the exact
+  tag ref. Files' `@{upstream}` entry captures the current branch name before
+  inspection and resolves its native tracking ref, including custom namespaces
+  and local `.` upstreams. Reset may abort this worktree's own merge; the
+  `branchOtherWorktreeOccupancy` wrapper shares the existing metadata reader
+  while excluding only this worktree's reservations. A tip-changing reset must
+  still refuse reservations in other worktrees; a same-tip reset may repair
+  the current index/worktree without moving that shared branch.
+  Validation: native source/reset and controller reset tests passed, including
+  custom/local upstreams, stale callbacks, raw dirty bytes, native index locks,
+  detached/unborn HEAD and active merges. All seven branch/tag/reflog reset
+  terminal scenarios passed (68.997s); generation, inventory checks, formatting,
+  build and scoped lint passed. The broader short suite is running separately.
 - `controllers/branch_sync_source.go` defines context-to-source resolution,
   including stored local-branch history and rejection of non-local history,
   range selections and detached pseudo-branches. Capture the name, not a model
