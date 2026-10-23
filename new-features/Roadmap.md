@@ -58,8 +58,8 @@ tasks with the next item's plan in the same completion commit.
 | 4 | Create/move a branch without checkout | Complete | Git probe review | Medium |
 | 5 | Checkout selected commit under a branch name | Complete | 4's shared prompts/validation | Medium |
 | 6 | Rebase current branch onto a selected commit | Complete | 2 | Small–medium |
-| 7 | Operate on selected branches without checkout | Current | 4; explicit target design | Large |
-| 8 | Consistent default shortcuts and inactive-key behavior | Pending | 2–7's action inventory | Large |
+| 7 | Operate on selected branches without checkout | Complete | 4; explicit target design | Large |
+| 8 | Consistent default shortcuts and inactive-key behavior | Current | 2–7's action inventory | Large |
 | 9 | Frequency-ordered command palette | Pending | 2; works before or after 8 | Medium |
 
 ## Fork implementation principles
@@ -450,6 +450,39 @@ branch or in reflog, root commit, no-op, dirty state, conflicts with continue
 and abort, detached HEAD, marked-base isolation, and `rebase.updateRefs=true`.
 
 ## 7. Selected-branch operations without checkout
+
+Complete (2026-10-24). Captured native plans and small controller/helper hooks
+now retain the selected ref, current destination and repository across review,
+execution and refresh. Focused push affects one selected branch only; wider
+updates remain explicit. Upstream metadata, rename, fast-forward and fetch-first
+current Pull use exact native tracking refs. Rewritten upstreams are not reset
+automatically, and off-branch integration needing a worktree remains deferred.
+
+Reset, rebase and merge clearly identify current HEAD as the destination and
+retain their modes, messages, signing, conflicts and explicit risk approvals.
+Deletion keeps local/remote/both choices, refuses occupied local branches,
+requires exact remote destinations and preserves actual partial failures. Refs
+being deleted cannot prove retained history. Explicit Worktrees-pane removal
+remains a separate requested operation.
+
+Branch creation exposes configured/no-setup/direct tracking policy before
+create-and-checkout, preserves literal names and refuses overwrite collisions
+without stash. Native tracking policy resolves the original branch ref after
+the final exact-state check under Git's normal concurrency model. Pointer-only
+placement and reviewed existing-name checkout remain separate actions. Tag
+creation captures annotation/signing and the exact old tag object for overwrite
+approval. Historical/stash sources retain immutable commits.
+
+Verification: full short suite, generation, debug build, formatting, scoped lint
+and inventory/parser checks pass. The full branch/sync terminal group passed
+with `-parallel 1` (405.161s); the existing intentionally skipped sync fixture
+remains skipped. All nine affected branch/commit/stash creation cases, the tag
+group, occupied-worktree refusal and explicit worktree removal/filter baselines
+also pass. Two long deletion scenarios reached the harness's fixed 40-second
+limit during the initial concurrent broad run; focused and serialized reruns
+passed without changing timeouts or code. Validation is Linux/Git 2.51.1;
+[MergeGuide.md](MergeGuide.md) records integration and verification details.
+Default key policy is item 8, so its migration is not included here.
 
 Replace implicit-current-branch assumptions with explicit targets in the
 operations that support it. Never infer the selected branch from whichever

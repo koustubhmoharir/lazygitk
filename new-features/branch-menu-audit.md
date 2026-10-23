@@ -1,6 +1,6 @@
 # Selected-branch menu integration audit
 
-Current item: Roadmap 7. This records inspected integration points, not new
+Implemented in Roadmap 7. This records inspected integration points, not new
 scope or a plan for later roadmap items.
 
 | Entry point | Finding | Behavior to retain |

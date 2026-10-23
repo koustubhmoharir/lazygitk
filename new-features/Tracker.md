@@ -1,31 +1,51 @@
 # Current work
 
-Roadmap item: [7. Selected-branch operations without checkout](Roadmap.md#7-selected-branch-operations-without-checkout).
-Status: selected-branch sync, tracking metadata, reset, rebase, merge, deletion
-and branch/tag creation flows are integrated. Remaining work is final item 7
-acceptance and its documentation; see
-[the inspected integration points](branch-menu-audit.md).
+Roadmap item: [8. Consistent default keys and no-op behavior](Roadmap.md#8-consistent-default-keys-and-no-op-behavior).
+Status: item 7 acceptance passed. Start with the complete factory inventory and
+runtime dispatch audit, then review the verb/key table before changing defaults.
 
-Scope: operate on the explicitly selected local branch wherever no worktree is
-needed. Ref-only actions preserve current HEAD, index and worktree; explicitly
-current-destination reset, rebase and merge retain their reviewed effects.
-Explicit create-and-checkout retains its reviewed checkout effects; pointer-only
-placement remains separate.
-Preserve unrelated refs. Keep general off-branch merge/rebase/cherry-pick
-deferred; never create another worktree or
-switch branches silently. Push only the selected branch; wider-stack push is
-deferred and must not be offered. Keep wider updates explicit choices.
+Scope: one command meaning per default key/path across panes. ASCII command
+letters are case-insensitive; inapplicable actions consume their key without
+side effects or global fallback. Reserve Ctrl defaults for custom commands,
+while preserving normal text entry and terminal Enter/Tab byte aliases. Use
+visible accelerator menus for two-/three-letter paths. Keep working-tree and
+previous-version diff separate and directly accessible; Pull has no single-letter
+shortcut. Preserve explicit overrides and custom commands. Frequency persistence
+and sorting remain item 9.
 
-## Remaining tasks for item 7
+## Remaining tasks for item 8
 
-1. Finish the serialized full branch/sync terminal acceptance run. The full
-   short suite, generation, formatting, build, scoped lint, inventory checks and
-   focused creation/deletion/tag/worktree scenarios pass. The first concurrent
-   broad run hit the harness's 40-second deadline in two long deletion scenarios;
-   both passed on focused rerun. Keep the timeout unchanged and finish the
-   one-scenario-at-a-time run before marking item 7 complete.
-2. When acceptance passes, complete item 7 accurately in the roadmap and
-   replace this tracker with item 8's task-level plan in the same commit.
+1. Refresh the inventory into an effective key/action matrix. Audit local,
+   parent/global and mode-specific dispatch, menus, hardcoded keys, platform
+   variants, editors, custom commands and terminal control-byte aliases. Record
+   which bindings mean navigation/selection versus operation verbs and where
+   fallback can invoke unrelated actions.
+2. Consult TortoiseGit for operation/navigation behavior and produce a concrete
+   verb-to-key and prefix table. Review it against every context and the user's
+   preferences before allocating defaults. Resolve any meaningful design
+   questions with the user; preserve the provisional direct `w`/`v` comparisons
+   and make Pull a deliberate menu path.
+3. Implement ASCII command matching/collision normalization and inactive-key
+   consumption at small central integration points. Preserve literal input,
+   search/filter text, subprocess typing, explicit override behavior and custom
+   Ctrl commands; retain genuine errors after an action is invoked.
+4. Add visible two-/three-key command menus with captured origin/repository and
+   selection checks. Keep prefixes free of mutations and hidden timing state;
+   define nested Esc/back behavior and safely handle invalid continuations,
+   focus/repository changes and popup replacement. Expose leaves independently
+   through `?` and show their complete paths.
+5. Apply the reviewed defaults across Linux/macOS/Windows. Remove core Ctrl
+   defaults and case-only distinctions, resolve navigation/action collisions,
+   retain direct history/file comparisons, and leave user overrides explicit.
+   Update command hints, generated cheatsheets/schema, usage and a migration
+   table; maintain the merge guide at integration changes.
+6. Verify the default key × pane/mode matrix: case parity, no core Ctrl defaults,
+   unique paths, disabled no-ops, no parent/global fallback, prefix cancellation
+   and captured targets, editors/filtering, custom commands/overrides and actual
+   side effects. Run generation, formatting, builds, focused/full short tests,
+   affected terminal scenarios and lint. When item 8 acceptance passes, complete
+   its roadmap description and replace this tracker with item 9's task plan in
+   that same commit.
 
 ## How this tracker works
 

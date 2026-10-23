@@ -44,4 +44,4 @@ errors and actual partial state. See [the native probe](branch-create-probes.md)
 for the verified start-point/tracking distinction. Native creation plans and
 focused checks are implemented and the captured GUI hooks are integrated.
 Nine branch/commit/stash terminal scenarios and the tag terminal group pass;
-final item 7 acceptance remains in the tracker.
+full item 7 acceptance passed; see the merge guide for verification details.

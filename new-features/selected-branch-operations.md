@@ -1,8 +1,8 @@
 # Selected-branch operations: audit and design
 
 Roadmap item 7, initially audited after item 6. Captured sync, metadata,
-reset/rebase/merge, deletion and branch/tag creation are now integrated. Final
-acceptance is tracked in [Tracker.md](Tracker.md); current integration seams
+reset/rebase/merge, deletion and branch/tag creation are now integrated. Item 7
+acceptance passed; [Tracker.md](Tracker.md) now owns item 8. Integration seams
 are recorded in [branch-menu-audit.md](branch-menu-audit.md) and
 [MergeGuide.md](MergeGuide.md). Native experiments are recorded separately in
 [selected-branch-sync-probes.md](selected-branch-sync-probes.md).

@@ -17,14 +17,16 @@ is recorded in [branch-menu-audit.md](branch-menu-audit.md). Preparatory/histori
 checkpoints below describe their verification at the time, not remaining
 requirements to restore a deferred multi-branch push.
 
-Final item 7 acceptance is in progress. The complete short suite passed,
-including backend tests (457.330s), controllers (356.556s) and helpers (13.146s).
-Generation, formatting, debug build, scoped lint and inventory checks pass.
-The first broad branch/sync terminal run reached the fixed 40-second per-case
-limit in `branch/delete` and `branch/delete_multiple` while the short suite was
-also running. Both passed together on focused rerun (19.208s). The broad group
-is being rerun with `-parallel 1`; no test timeout or application behavior was
-changed to bypass that deadline. Keep the tracker on item 7 until it finishes.
+Item 7 acceptance is complete. The full short suite passed, including backend
+checks (457.330s), controllers (356.556s) and helpers (13.146s). Generation,
+formatting, debug build, scoped lint and the 549-factory inventory/parser checks
+pass. The full branch/sync terminal group passed with `-parallel 1` (405.161s),
+retaining its existing intentional skip. The initial concurrent broad run hit
+the fixed 40-second limit in `branch/delete` and `branch/delete_multiple` while
+the short suite was running; both passed on focused rerun (19.208s) and in the
+serialized group. No timeout or application behavior was changed to bypass the
+deadline. The tracker now owns item 8; key defaults are still the pre-migration
+ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matrix.
 
 ## Baseline and current divergence
 
@@ -40,7 +42,7 @@ changed to bypass that deadline. Keep the tracker on item 7 until it finishes.
 
 ## Live integration record
 
-### Selected-branch operations (item 7 in progress)
+### Selected-branch operations (item 7 complete)
 
 - `helpers/captured_branch_delete*.go` now replaces the local/remote branch
   controllers' deletion paths. Copy full source refs and named remotes before
@@ -85,7 +87,7 @@ changed to bypass that deadline. Keep the tracker on item 7 until it finishes.
   (32.157s), and the full tag terminal group passed (13.937s). Generation,
   formatting, debug build, scoped lint and the 549-factory inventory/parser
   checks pass.
-  This completes the creation audit; final item 7 short-suite acceptance remains.
+  This completes the creation audit; final item 7 acceptance is recorded above.
 - The branch-creation terminal fixtures now review source/HEAD and select
   tracking policy explicitly through `Common.ReviewBranchCreateMenu`. Check
   policy rows independently because their default order depends on name entry;
@@ -118,7 +120,7 @@ changed to bypass that deadline. Keep the tracker on item 7 until it finishes.
   native creation checks passed (26.521s), including raw dirty-state retention,
   stale/foreign plans, tracking policies and real checkout obstructions.
   [Design](branch-create-design.md) and [native probes](branch-create-probes.md)
-  record these constraints. Live creation now uses the captured GUI hooks; final item 7 acceptance remains pending.
+  record these constraints. Live creation uses the captured GUI hooks; final acceptance is recorded above.
 - `git_literal_config.go` extends the command builder in a fork-owned file for
   literal subsection names containing `=`. Git's `-c key=value` splits at the
   first equals sign; use native `--config-env=key=VARIABLE` for those names and
