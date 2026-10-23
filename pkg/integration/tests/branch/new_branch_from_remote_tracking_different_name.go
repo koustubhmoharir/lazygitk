@@ -40,6 +40,9 @@ var NewBranchFromRemoteTrackingDifferentName = NewIntegrationTest(NewIntegration
 			Type("different_name").
 			Confirm()
 
+		t.Common().ReviewBranchCreateMenu("refs/remotes/origin/other_branch", t.Git().GetCommitHash("refs/remotes/origin/other_branch"), "master", t.Git().GetCommitHash("HEAD")).
+			Select(MatchesRegexp(`^[[:space:]]*Do not set up upstream tracking`)).Confirm()
+
 		t.Views().Branches().
 			Focus().
 			Lines(

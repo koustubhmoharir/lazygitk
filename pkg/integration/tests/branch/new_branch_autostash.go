@@ -6,7 +6,7 @@ import (
 )
 
 var NewBranchAutostash = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Create a new branch that requires performing autostash",
+	Description:  "Refuse a branch checkout that would overwrite dirty worktree changes without stashing",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig:  func(config *config.AppConfig) {},
@@ -20,6 +20,8 @@ var NewBranchAutostash = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.UpdateFile("file", "b\n\nb")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		headOID := t.Git().GetCommitHash("HEAD")
+
 		t.Views().Files().
 			Lines(
 				Contains("file"),
@@ -39,10 +41,14 @@ var NewBranchAutostash = NewIntegrationTest(NewIntegrationTestArgs{
 			Type("new-branch").
 			Confirm()
 
-		t.ExpectPopup().Confirmation().
-			Title(Contains("Autostash?")).
-			Content(Contains("You must stash and pop your changes to bring them across. Do this automatically? (enter/esc)")).
-			Confirm()
+		t.Common().ReviewBranchCreateMenu("refs/heads/master", t.Git().GetCommitHash("refs/heads/master"), "HEAD", t.Git().GetCommitHash("HEAD")).
+			Select(MatchesRegexp(`^[[:space:]]*Do not set up upstream tracking`)).Confirm()
+
+		t.ExpectPopup().Alert().Cancel()
+
+		t.Common().AssertBranchRefAbsent("new-branch").AssertNoStashes().AssertRefOID("HEAD", headOID)
+		t.Git().CurrentBranchName("HEAD")
+		t.FileSystem().FileContent("file", Equals("b\n\nb"))
 
 		t.Views().Branches().
 			Lines(

@@ -27,6 +27,8 @@ var NewBranchWithPrefix = NewIntegrationTest(NewIntegrationTestArgs{
 			Tap(func() {
 				branchName := "my-branch-name"
 				t.ExpectPopup().Prompt().Title(Contains("New branch name")).Type(branchName).Confirm()
+				t.Common().ReviewBranchCreateMenu("HEAD^", t.Git().GetCommitHash("HEAD^"), "master", t.Git().GetCommitHash("HEAD")).
+					Select(MatchesRegexp(`^[[:space:]]*Do not set up upstream tracking`)).Confirm()
 				t.Git().CurrentBranchName("myprefix/" + branchName)
 			})
 	},
