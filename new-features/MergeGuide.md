@@ -33,6 +33,21 @@ requirements to restore a deferred multi-branch push.
 
 ### Selected-branch operations (item 7 in progress)
 
+- `branch_action_merge_preview.go` is preparatory native merge inspection, not
+  live routing. It runs ort's `merge-tree` with private temporary object storage
+  and C-quoted original/inherited alternates. Preserve complete NUL-protocol
+  validation: configured driver stdout must not masquerade as a result tree.
+  Exit 1 supplies valid conflict checkout paths, including directory-renames
+  absent from either input tree. Source/current-HEAD snapshots are checked on
+  both sides; generated objects are removed on all paths. Invoke only during
+  explicit merge review because Git may run configured low-level drivers.
+  `branch_action_merge_arguments.go` tokenizes configured options without shell
+  expansion and validates exact supported options; positional sources and
+  abort/continue dispatch are forbidden. Its normalized records distinguish
+  option values from flags. Neither helper authorizes mutation or completes
+  the merge audit. See [the current design](branch-merge-design.md) and
+  [native evidence](branch-merge-probes.md). Focused real-Git/parser tests,
+  formatting and backend lint passed; the existing merge menu is unchanged.
 - Audit and captured-source contracts are in
   [selected-branch-operations.md](selected-branch-operations.md); native
   routing/scope evidence is in
