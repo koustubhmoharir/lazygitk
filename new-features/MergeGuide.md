@@ -33,6 +33,19 @@ requirements to restore a deferred multi-branch push.
 
 ### Selected-branch operations (item 7 in progress)
 
+- `branch_sync_reverse_refspec.go` adds preparatory inverse fetch mapping for
+  remote-pane deletion. Return every deduplicated full source in configuration
+  order; multiple candidates require explicit choice. Retain positive mapping
+  knowledge when a negative exclusion exists: this is not proof of server state
+  or what was last fetched. Reject relevant abbreviated sources instead of DWIM
+  guessing, validate all specs and preserve native query errors. Malformed
+  configuration errors must not echo credential-bearing spec values. Focused
+  real-Git/parser checks and backend lint passed. This does not route deletion.
+  [Deletion design](branch-delete-design.md) and
+  [the reproducible native evidence](branch-delete-probes.md) record reservations,
+  literal names, remapped storage and partial multi-URL deletion. The standalone
+  probe mutates only fresh owned temp repos, uses read-only observations and
+  compares real index/HEAD/worktree bytes; its full log stays in that temp dir.
 - `helpers/captured_merge*.go` now routes local/remote branch merge entry points
   through captured reviews. `MergeAndRebaseHelper.MergeRefIntoCheckedOutBranch`
   is a thin replacement hook; its old public merge methods remain dormant for
