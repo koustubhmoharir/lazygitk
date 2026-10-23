@@ -33,6 +33,27 @@ requirements to restore a deferred multi-branch push.
 
 ### Selected-branch operations (item 7 in progress)
 
+- `helpers/captured_branch_delete*.go` now replaces the local/remote branch
+  controllers' deletion paths. Copy full source refs and named remotes before
+  inspection; keep native targets/configuration/proofs and repository generation
+  across menus, manual destination prompts, approval, workers and refresh-Then.
+  Ambiguous destinations are Cancel-first; compound approval includes unmerged
+  history after excluding caches scheduled for deletion. Consume execution once.
+  Use responsive waiting workers: blocking keyboard events deadlocks credential
+  entry. Collapse only the original unchanged selection before refresh; retain
+  local range selection for remote-only deletion. Refresh actual partial state
+  on errors, and do not revalidate refs intentionally deleted by the operation.
+  Old private controller deletion wrappers are removed. Legacy BranchesHelper
+  worktree helpers still serve explicit Worktrees-pane removal; preserve those
+  distinct operations when merging upstream. The shared headless deletion
+  helper checks full refs/OIDs and reservation warnings. Captured flow tests
+  passed (39.887s); all six branch deletion terminal scenarios passed across an
+  initial four-case success and two-case rerun (25.990s). Three occupied-worktree
+  refusal cases passed (14.745s), with the filter and two explicit worktree
+  removal baselines passing in the preceding run. Native deletion checks,
+  generation, debug build and inventory checks also passed; scoped backend,
+  controller and i18n lint reports zero issues. This completes the
+  deletion subtask; creation audit and final item 7 acceptance remain pending.
 - `branch_action_create.go`, `branch_action_tag_create.go` and
   `branch_action_head_target.go` add native creation plans for the remaining
   creation audit. Bind backend/source/current HEAD/configuration and destination
@@ -86,8 +107,7 @@ requirements to restore a deferred multi-branch push.
   remote groups validate HEAD/configuration/cache safety without requiring a
   cached source intentionally deleted by an earlier push to reappear. Compound
   callers must retain local branches on any remote error. Getter results are
-  copied; config digests stay private. These APIs do not yet replace live GUI
-  deletion. Native tests cover literal names, dirty/index byte preservation,
+  copied; config digests stay private. Live deletion now uses these APIs through the captured GUI helpers. Native tests cover literal names, dirty/index byte preservation,
   reservations, stale/foreign plans, cache mappings and actual partial failures.
 - `branch_sync_reverse_refspec.go` adds preparatory inverse fetch mapping for
   remote-pane deletion. Return every deduplicated full source in configuration

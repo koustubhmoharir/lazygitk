@@ -6,13 +6,14 @@ import (
 )
 
 var RemoveWorktreeAndDeleteLocalAndRemoteBranch = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Delete the local branch, the remote branch, and the worktree of a single branch checked out in another worktree, all at once",
+	Description:  "Refuse to delete local and remote refs for a branch checked out in another worktree",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig:  func(config *config.AppConfig) {},
 	SetupRepo: func(shell *Shell) {
 		shell.CloneIntoRemote("origin")
-		shell.EmptyCommit("initial commit")
+		shell.CreateFileAndAdd("README.md", "initial bytes")
+		shell.Commit("initial commit")
 		shell.NewBranch("mybranch")
 		shell.EmptyCommit("commit on mybranch")
 		shell.PushBranchAndSetUpstream("origin", "mybranch")
@@ -21,6 +22,9 @@ var RemoveWorktreeAndDeleteLocalAndRemoteBranch = NewIntegrationTest(NewIntegrat
 		shell.AddWorktreeCheckout("mybranch", "../linked-worktree")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		branchOID := t.Git().GetCommitHash("refs/heads/mybranch")
+		headOID := t.Git().GetCommitHash("HEAD")
+		remoteOID := t.Git().GetCommitHash("refs/remotes/origin/mybranch")
 		t.Views().Branches().
 			Focus().
 			Lines(
@@ -30,42 +34,24 @@ var RemoveWorktreeAndDeleteLocalAndRemoteBranch = NewIntegrationTest(NewIntegrat
 			NavigateToLine(Contains("mybranch")).
 			Press(keys.Universal.Remove).
 			Tap(func() {
-				t.ExpectPopup().Menu().
-					Title(Equals("Delete branch 'mybranch'?")).
-					Select(Contains("Delete local and remote branch")).
-					Confirm()
+				t.Common().ReviewBranchDeleteMenu("Delete branch 'mybranch'?", "refs/heads/mybranch", branchOID, "refs/heads/master", t.Git().GetCommitHash("refs/heads/master"), true).Cancel()
 			}).
-			Tap(func() {
-				t.ExpectPopup().Menu().
-					Title(Equals("Branch mybranch is checked out by worktree linked-worktree")).
-					Select(Contains("Remove worktree and delete local and remote branch")).
-					Confirm()
-
-				// mybranch is not contained in master, so we get the force-delete warning
-				t.ExpectPopup().Confirmation().
-					Title(Equals("Force delete branch")).
-					Content(Equals("'mybranch' is not fully merged. Are you sure you want to delete it?")).
-					Confirm()
-			}).
-			// The local branch is gone
 			Lines(
-				Contains("master").IsSelected(),
+				Contains("master"),
+				Contains("mybranch (worktree linked-worktree)").IsSelected(),
 			)
 
-		// The remote branch is gone too
-		t.Views().Remotes().
-			Focus().
-			Lines(Contains("origin")).
-			PressEnter()
+		t.Common().AssertRefOID("HEAD", headOID).AssertRefOID("refs/heads/mybranch", branchOID)
+		t.FileSystem().FileContent("../linked-worktree/README.md", Equals("initial bytes"))
 
-		t.Views().RemoteBranches().
-			IsEmpty()
-
-		// And so is the worktree
-		t.Views().Worktrees().
-			Focus().
-			Lines(
-				Contains("(main worktree)").IsSelected(),
-			)
+		// The remote branch and linked worktree remain present.
+		t.Views().Remotes().Focus().Lines(Contains("origin")).PressEnter()
+		t.Views().RemoteBranches().Lines(Contains("mybranch"))
+		t.Common().AssertRefOID("refs/remotes/origin/mybranch", remoteOID)
+		t.Views().Worktrees().Focus().NavigateToLine(Contains("linked-worktree")).Lines(
+			Contains("(main worktree)"),
+			Contains("linked-worktree").IsSelected(),
+		)
+		t.FileSystem().PathPresent("../linked-worktree")
 	},
 })

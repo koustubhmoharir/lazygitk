@@ -2,8 +2,8 @@
 
 Roadmap item: [7. Selected-branch operations without checkout](Roadmap.md#7-selected-branch-operations-without-checkout).
 Status: selected-branch sync, tracking metadata, reset, rebase and merge flows are
-integrated. Remaining work is the deletion and branch/tag creation audit and
-its acceptance checks; see
+integrated, including captured local/remote deletion. Remaining work is the
+branch/tag creation audit and its acceptance checks; see
 [the inspected integration points](branch-menu-audit.md).
 
 Scope: operate on the explicitly selected local branch wherever no worktree is
@@ -22,13 +22,6 @@ deferred and must not be offered. Keep wider updates explicit choices.
    Use the native source/current-HEAD snapshot and captured repository-generation
    guard; keep mutation-specific reservation and data-loss checks in each flow.
 
-   - Audit local/remote/both deletion, retaining force warnings and native partial
-     errors. Refuse occupied/reserved branches; never detach or remove another
-     worktree implicitly. Use exact native tracking refs and literal names.
-     Follow [the current deletion design](branch-delete-design.md), including
-     warning-proof exclusions for refs scheduled to be removed together. Native
-     review/command APIs are implemented; finish live GUI routing and acceptance
-     before removing this subtask.
    - Audit branch/tag creation, retaining existing checkout/tracking choices,
      annotation/signing and overwrite warnings without later model or repository
      substitution. Native creation plans are implemented; finish the captured GUI

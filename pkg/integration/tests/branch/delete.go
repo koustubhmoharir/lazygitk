@@ -44,6 +44,10 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 			Checkout("current-head")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		currentHeadOID := t.Git().GetCommitHash("refs/heads/current-head")
+		branchFourOID := t.Git().GetCommitHash("refs/heads/branch-four")
+		branchFiveOID := t.Git().GetCommitHash("refs/heads/branch-five")
+		branchSixOID := t.Git().GetCommitHash("refs/heads/branch-six")
 		t.Views().Branches().
 			Focus().
 			Lines(
@@ -57,19 +61,10 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("branch-one ↑1"),
 			).
 
-			// Deleting the current branch is not possible
+			// The checked-out branch is reserved by the main worktree.
 			Press(keys.Universal.Remove).
 			Tap(func() {
-				t.ExpectPopup().
-					Menu().
-					Tooltip(Contains("You cannot delete the checked out branch!")).
-					Title(Equals("Delete branch 'current-head'?")).
-					Select(Contains("Delete local branch")).
-					Confirm().
-					Tap(func() {
-						t.ExpectToast(Contains("You cannot delete the checked out branch!"))
-					}).
-					Cancel()
+				t.Common().ReviewBranchDeleteMenu("Delete branch 'current-head'?", "refs/heads/current-head", currentHeadOID, "refs/heads/current-head", currentHeadOID, true).Cancel()
 			}).
 
 			// Delete branch-four. This is the only branch that is not fully merged, so we get
@@ -80,23 +75,23 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-four'?")).
-					Select(Contains("Delete local branch")).
+					Select(MatchesRegexp(`^[[:space:]]*c Delete local branch`)).
 					Confirm()
 				t.ExpectPopup().
 					Confirmation().
 					Title(Equals("Force delete branch")).
-					Content(Equals("'branch-four' is not fully merged. Are you sure you want to delete it?")).
+					Content(Contains("refs/heads/branch-four").Contains(branchFourOID).Contains("not preserved by the remaining reviewed HEAD, upstream or main refs")).
 					Confirm()
 			}).
-			Lines(
-				Contains("current-head"),
-				Contains("branch-six ↑1"),
-				Contains("branch-five ✓"),
-				Contains("branch-three").IsSelected(),
-				Contains("branch-two ✓"),
-				Contains("master"),
-				Contains("branch-one ↑1"),
-			).
+			EventuallyContent(Contains("branch-three").DoesNotContain("branch-four")).Lines(
+			Contains("current-head"),
+			Contains("branch-six ↑1"),
+			Contains("branch-five ✓"),
+			Contains("branch-three").IsSelected(),
+			Contains("branch-two ✓"),
+			Contains("master"),
+			Contains("branch-one ↑1"),
+		).
 
 			// Delete branch-three. This branch is contained in the current head, so this just works
 			// without any confirmation.
@@ -105,17 +100,17 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-three'?")).
-					Select(Contains("Delete local branch")).
+					Select(MatchesRegexp(`^[[:space:]]*c Delete local branch`)).
 					Confirm()
 			}).
-			Lines(
-				Contains("current-head"),
-				Contains("branch-six ↑1"),
-				Contains("branch-five ✓"),
-				Contains("branch-two ✓").IsSelected(),
-				Contains("master"),
-				Contains("branch-one ↑1"),
-			).
+			EventuallyContent(Contains("branch-two ✓").DoesNotContain("branch-three")).Lines(
+			Contains("current-head"),
+			Contains("branch-six ↑1"),
+			Contains("branch-five ✓"),
+			Contains("branch-two ✓").IsSelected(),
+			Contains("master"),
+			Contains("branch-one ↑1"),
+		).
 
 			// Delete branch-two. This branch is contained in its own upstream, so this just works
 			// without any confirmation.
@@ -124,16 +119,16 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-two'?")).
-					Select(Contains("Delete local branch")).
+					Select(MatchesRegexp(`^[[:space:]]*c Delete local branch`)).
 					Confirm()
 			}).
-			Lines(
-				Contains("current-head"),
-				Contains("branch-six ↑1"),
-				Contains("branch-five ✓"),
-				Contains("master").IsSelected(),
-				Contains("branch-one ↑1"),
-			).
+			EventuallyContent(Contains("master").DoesNotContain("branch-two")).Lines(
+			Contains("current-head"),
+			Contains("branch-six ↑1"),
+			Contains("branch-five ✓"),
+			Contains("master").IsSelected(),
+			Contains("branch-one ↑1"),
+		).
 
 			// Delete remote branch of branch-one. We only get the normal remote branch confirmation for this one.
 			SelectNextItem().
@@ -142,14 +137,14 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-one'?")).
-					Select(Contains("Delete remote branch")).
+					Select(MatchesRegexp(`^[[:space:]]*r Delete remote branch`)).
 					Confirm()
 			}).
 			Tap(func() {
 				t.ExpectPopup().
 					Confirmation().
-					Title(Equals("Delete branch 'branch-one'?")).
-					Content(Equals("Are you sure you want to delete the remote branch 'branch-one' from 'origin'?")).
+					Title(Equals("Delete remote branch")).
+					Content(Contains("refs/heads/branch-one").Contains(t.Git().GetCommitHash("refs/heads/branch-one")).Contains("Current HEAD:").Contains("Cached commit IDs may differ from the server's current tips")).
 					Confirm()
 			}).
 			Tap(func() {
@@ -160,13 +155,13 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 					"branch-two",
 				})
 			}).
-			Lines(
-				Contains("current-head"),
-				Contains("branch-six ↑1"),
-				Contains("branch-five ✓"),
-				Contains("master"),
-				Contains("branch-one (upstream gone)").IsSelected(),
-			).
+			EventuallyContent(Contains("branch-one (upstream gone)")).Lines(
+			Contains("current-head"),
+			Contains("branch-six ↑1"),
+			Contains("branch-five ✓"),
+			Contains("master"),
+			Contains("branch-one (upstream gone)").IsSelected(),
+		).
 
 			// Delete local branch of branch-one. Even though its upstream is gone, we don't get a confirmation
 			// because it is contained in master.
@@ -175,15 +170,15 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-one'?")).
-					Select(Contains("Delete local branch")).
+					Select(MatchesRegexp(`^[[:space:]]*c Delete local branch`)).
 					Confirm()
 			}).
-			Lines(
-				Contains("current-head"),
-				Contains("branch-six ↑1"),
-				Contains("branch-five ✓"),
-				Contains("master").IsSelected(),
-			).
+			EventuallyContent(Contains("master").DoesNotContain("branch-one")).Lines(
+			Contains("current-head"),
+			Contains("branch-six ↑1"),
+			Contains("branch-five ✓"),
+			Contains("master").IsSelected(),
+		).
 
 			// Delete both local and remote branch of branch-six. We get the force-delete warning because it is not fully merged.
 			NavigateToLine(Contains("branch-six")).
@@ -192,40 +187,38 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-six'?")).
-					Select(Contains("Delete local and remote branch")).
+					Select(MatchesRegexp(`^[[:space:]]*b Delete local and remote branch`)).
 					Confirm()
 				t.ExpectPopup().
 					Confirmation().
 					Title(Equals("Delete local and remote branch")).
-					Content(Contains("Are you sure you want to delete both 'branch-six' from your machine, and 'branch-six' from 'origin'?").
-						Contains("'branch-six' is not fully merged. Are you sure you want to delete it?")).
+					Content(Contains("refs/heads/branch-six").Contains(branchSixOID).Contains("origin -> refs/heads/branch-six").Contains("not preserved by the remaining reviewed HEAD, upstream or main refs").Contains("Cached commit IDs may differ from the server's current tips")).
 					Confirm()
 			}).
-			Lines(
-				Contains("current-head"),
-				Contains("branch-five ✓").IsSelected(),
-				Contains("master"),
-			).
+			EventuallyContent(Contains("branch-five ✓").DoesNotContain("branch-six")).Lines(
+			Contains("current-head"),
+			Contains("branch-five ✓").IsSelected(),
+			Contains("master"),
+		).
 
-			// Delete both local and remote branch of branch-five. We get the same popups, but the confirmation
-			// doesn't contain the force-delete warning.
+			// Delete both local and remote branch of branch-five. The upstream cache is removed too, so
+			// its history is not preserved by any remaining reviewed ref.
 			Press(keys.Universal.Remove).
 			Tap(func() {
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-five'?")).
-					Select(Contains("Delete local and remote branch")).
+					Select(MatchesRegexp(`^[[:space:]]*b Delete local and remote branch`)).
 					Confirm()
 				t.ExpectPopup().
 					Confirmation().
 					Title(Equals("Delete local and remote branch")).
-					Content(Equals("Are you sure you want to delete both 'branch-five' from your machine, and 'branch-five' from 'origin'?").
-						DoesNotContain("not fully merged")).
+					Content(Contains("refs/heads/branch-five").Contains(branchFiveOID).Contains("origin -> refs/heads/branch-five").Contains("not preserved by the remaining reviewed HEAD, upstream or main refs").Contains("Cached commit IDs may differ from the server's current tips")).
 					Confirm()
 			}).
-			Lines(
-				Contains("current-head"),
-				Contains("master").IsSelected(),
-			)
+			EventuallyContent(Contains("master").DoesNotContain("branch-five")).Lines(
+			Contains("current-head"),
+			Contains("master").IsSelected(),
+		)
 	},
 })

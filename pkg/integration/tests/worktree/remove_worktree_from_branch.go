@@ -6,7 +6,7 @@ import (
 )
 
 var RemoveWorktreeFromBranch = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Delete a branch that's checked out in another worktree by removing that worktree",
+	Description:  "Refuse to delete a branch that's checked out in another worktree",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig:  func(config *config.AppConfig) {},
@@ -20,6 +20,8 @@ var RemoveWorktreeFromBranch = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.AddFileInWorktreeOrSubmodule("../linked-worktree", "file", "content")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		branchOID := t.Git().GetCommitHash("refs/heads/newbranch")
+		headOID := t.Git().GetCommitHash("HEAD")
 		t.Views().Branches().
 			Focus().
 			Lines(
@@ -29,33 +31,23 @@ var RemoveWorktreeFromBranch = NewIntegrationTest(NewIntegrationTestArgs{
 			NavigateToLine(Contains("newbranch")).
 			Press(keys.Universal.Remove).
 			Tap(func() {
-				t.ExpectPopup().
-					Menu().
-					Title(Equals("Delete branch 'newbranch'?")).
-					Select(Contains("Delete local branch")).
-					Confirm()
+				t.Common().ReviewBranchDeleteMenu("Delete branch 'newbranch'?", "refs/heads/newbranch", branchOID, "refs/heads/mybranch", t.Git().GetCommitHash("refs/heads/mybranch"), true).Cancel()
 			}).
-			Tap(func() {
-				t.ExpectPopup().Menu().
-					Title(Equals("Branch newbranch is checked out by worktree linked-worktree")).
-					Select(Contains("Remove worktree and delete branch")).
-					Confirm()
-
-				// The worktree is dirty, so we get asked to force-remove it
-				t.ExpectPopup().Confirmation().
-					Title(Equals("Remove worktree")).
-					Content(Equals("'linked-worktree' contains modified or untracked files, or submodules (or all of these). Are you sure you want to remove it?")).
-					Confirm()
-			}).
-			// The branch is gone, not just unlinked from its worktree
 			Lines(
-				Contains("mybranch").IsSelected(),
+				Contains("mybranch"),
+				Contains("newbranch (worktree linked-worktree)").IsSelected(),
 			)
+		t.FileSystem().FileContent("../linked-worktree/README.md", Equals("hello world"))
+		t.FileSystem().FileContent("../linked-worktree/file", Equals("content"))
+
+		t.Common().AssertRefOID("HEAD", headOID).AssertRefOID("refs/heads/newbranch", branchOID)
 
 		t.Views().Worktrees().
 			Focus().
+			NavigateToLine(Contains("linked-worktree")).
 			Lines(
-				Contains("(main worktree)").IsSelected(),
+				Contains("(main worktree)"),
+				Contains("linked-worktree").IsSelected(),
 			)
 	},
 })

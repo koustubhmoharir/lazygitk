@@ -34,6 +34,19 @@ type TranslationSet struct {
 	BranchActionMergeAllIgnoredPrompt string
 	BranchActionMergeApproveIgnored   string
 	BranchActionMergeSquashConflicts  string
+	BranchActionDeleteSources         string
+	BranchActionDeleteHead            string
+	BranchActionDeleteReserved        string
+	BranchActionDeleteNoRemote        string
+	BranchActionDeleteChooseRemoteRef string
+	BranchActionDeleteNotBranch       string
+	BranchActionDeleteManualTitle     string
+	BranchActionDeleteManualAction    string
+	BranchActionDeleteRemoteNameTitle string
+	BranchActionDeleteRemoteRefTitle  string
+	BranchActionDeleteRemotePrompt    string
+	BranchActionDeleteLocalUpstream   string
+	BranchActionDeleteForcePrompt     string
 	// Fork-owned integration strings are separate to avoid reformatting the
 	// upstream table when longer field names are added.
 	BranchSyncCurrentPullSummary          string
@@ -1441,6 +1454,19 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchActionMergeAllIgnoredPrompt:     "The configured merge strategy has no exact path preview here. All ignored files are listed as potential overwrite risks. Cancel to inspect or back up files first, or explicitly approve this conservative risk list. The configured strategy will be retained.",
 		BranchActionMergeApproveIgnored:       "Proceed and accept the reviewed ignored-file risks",
 		BranchActionMergeSquashConflicts:      "The squash left unresolved conflicts. Resolve them and explicitly commit the staged result. Git did not start a normal merge, so merge --abort is unavailable. No automatic commit ran.",
+		BranchActionDeleteSources:             "Selected refs:\n%s",
+		BranchActionDeleteHead:                "\n\nCurrent HEAD: %q at %s",
+		BranchActionDeleteReserved:            "%s is reserved by %s in Git directory %q. Finish the operation or manage that worktree explicitly before deleting its branch.",
+		BranchActionDeleteNoRemote:            "No configured remote is available. Configure a remote before deleting a server branch.",
+		BranchActionDeleteChooseRemoteRef:     "Choose remote branch to delete",
+		BranchActionDeleteNotBranch:           "This ref is not a remote branch under refs/heads/.",
+		BranchActionDeleteManualTitle:         "Choose an exact remote destination",
+		BranchActionDeleteManualAction:        "Choose remote and branch explicitly",
+		BranchActionDeleteRemoteNameTitle:     "Configured remote name",
+		BranchActionDeleteRemoteRefTitle:      "Full remote branch ref (refs/heads/...)",
+		BranchActionDeleteRemotePrompt:        "\n\nDelete these server branches?\n%s\n\nCached commit IDs may differ from the server's current tips. This deletes the named server branches, including any newer commits they contain.",
+		BranchActionDeleteLocalUpstream:       "This upstream is a local ref. Select it in the branches pane to delete it, or choose a server branch explicitly.",
+		BranchActionDeleteForcePrompt:         "\n\nThese branches have history not preserved by the remaining reviewed HEAD, upstream or main refs:\n%s\n\nDelete these local branches anyway?",
 		BranchSyncCurrentPullSummary:          "Checked-out branch %q at %s\nUpstream remote: %q\nUpstream branch: %q\nLocal tracking storage: %q\n\nFetch first, then review the exact incoming commit and integration method before changing files. Saved upstream settings will not change.",
 		BranchSyncIntegrationMenu:             "Integrate reviewed incoming commit",
 		BranchSyncIntegrationSummary:          "Checked-out branch %q at %s\nReviewed incoming commit: %s\n\nChoose an integration method. The default uses Git configuration; explicit choices replace the corresponding defaults. No second network pull or autostash will run.",

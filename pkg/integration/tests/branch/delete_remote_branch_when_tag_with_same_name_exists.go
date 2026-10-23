@@ -18,6 +18,7 @@ var DeleteRemoteBranchWhenTagWithSameNameExists = NewIntegrationTest(NewIntegrat
 		shell.PushBranch("origin", "HEAD:refs/heads/xyz")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		sourceOID := t.Git().GetCommitHash("refs/remotes/origin/xyz")
 		t.Views().Remotes().
 			Focus().
 			Lines(
@@ -36,13 +37,13 @@ var DeleteRemoteBranchWhenTagWithSameNameExists = NewIntegrationTest(NewIntegrat
 
 		t.ExpectPopup().
 			Confirmation().
-			Title(Equals("Delete branch 'xyz'?")).
-			Content(Equals("Are you sure you want to delete the remote branch 'xyz' from 'origin'?")).
+			Title(Equals("Delete remote branch")).
+			Content(Contains("refs/remotes/origin/xyz").Contains(sourceOID).Contains("refs/heads/xyz").Contains("Current HEAD:").Contains("Cached commit IDs may differ from the server's current tips")).
 			Confirm()
 
 		t.Views().RemoteBranches().
-			Lines(
-				Contains("master").IsSelected(),
-			)
+			EventuallyContent(Contains("master").DoesNotContain("xyz")).Lines(
+			Contains("master").IsSelected(),
+		)
 	},
 })

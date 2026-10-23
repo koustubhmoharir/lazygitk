@@ -44,6 +44,10 @@ var DeleteMultiple = NewIntegrationTest(NewIntegrationTestArgs{
 			Checkout("current-head")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		branch04OID := t.Git().GetCommitHash("refs/heads/branch-04")
+		branch05OID := t.Git().GetCommitHash("refs/heads/branch-05")
+		branch06OID := t.Git().GetCommitHash("refs/heads/branch-06")
+		currentHeadOID := t.Git().GetCommitHash("refs/heads/current-head")
 		t.Views().Branches().
 			Focus().
 			Lines(
@@ -58,19 +62,10 @@ var DeleteMultiple = NewIntegrationTest(NewIntegrationTestArgs{
 			).
 			Press(keys.Universal.RangeSelectDown).
 
-			// Deleting a range that includes the current branch is not possible
+			// A selected range containing the checked-out branch cannot delete local refs.
 			Press(keys.Universal.Remove).
 			Tap(func() {
-				t.ExpectPopup().
-					Menu().
-					Tooltip(Contains("You cannot delete the checked out branch!")).
-					Title(Equals("Delete selected branches?")).
-					Select(Contains("Delete local branches")).
-					Confirm().
-					Tap(func() {
-						t.ExpectToast(Contains("You cannot delete the checked out branch!"))
-					}).
-					Cancel()
+				t.Common().ReviewBranchDeleteMenu("Delete selected branches?", "refs/heads/current-head", currentHeadOID, "refs/heads/current-head", currentHeadOID, true).Cancel()
 			}).
 
 			// Delete branch-03 and branch-04. 04 is not fully merged, so we get
@@ -82,22 +77,22 @@ var DeleteMultiple = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete selected branches?")).
-					Select(Contains("Delete local branches")).
+					Select(MatchesRegexp(`^[[:space:]]*c Delete local branches`)).
 					Confirm()
 				t.ExpectPopup().
 					Confirmation().
 					Title(Equals("Force delete branch")).
-					Content(Equals("Some of the selected branches are not fully merged. Are you sure you want to delete them?")).
+					Content(Contains("not preserved by the remaining reviewed HEAD, upstream or main refs").Contains("refs/heads/branch-04").Contains(branch04OID)).
 					Confirm()
 			}).
-			Lines(
-				Contains("current-head"),
-				Contains("branch-01 ↑1"),
-				Contains("branch-02 ✓"),
-				Contains("branch-05 ✓").IsSelected(),
-				Contains("branch-06 ↑1"),
-				Contains("master"),
-			).
+			EventuallyContent(Contains("branch-05 ✓").DoesNotContain("branch-03").DoesNotContain("branch-04")).Lines(
+			Contains("current-head"),
+			Contains("branch-01 ↑1"),
+			Contains("branch-02 ✓"),
+			Contains("branch-05 ✓").IsSelected(),
+			Contains("branch-06 ↑1"),
+			Contains("master"),
+		).
 
 			// Delete remote branches of branch-05 and branch-06. They are on different remotes.
 			NavigateToLine(Contains("branch-05")).
@@ -107,14 +102,14 @@ var DeleteMultiple = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete selected branches?")).
-					Select(Contains("Delete remote branches")).
+					Select(MatchesRegexp(`^[[:space:]]*r Delete remote branches`)).
 					Confirm()
 			}).
 			Tap(func() {
 				t.ExpectPopup().
 					Confirmation().
 					Title(Equals("Delete selected branches?")).
-					Content(Equals("Are you sure you want to delete the remote branches of the selected branches from their respective remotes?")).
+					Content(Contains("refs/heads/branch-05").Contains("origin -> refs/heads/branch-05").Contains("refs/heads/branch-06").Contains("other-remote -> refs/heads/branch-06").Contains("Cached commit IDs may differ from the server's current tips")).
 					Confirm()
 			}).
 			Tap(func() {
@@ -127,28 +122,32 @@ var DeleteMultiple = NewIntegrationTest(NewIntegrationTestArgs{
 					"branch-04",
 				})
 			}).
-			Lines(
-				Contains("current-head"),
-				Contains("branch-01 ↑1"),
-				Contains("branch-02 ✓"),
-				Contains("branch-05 (upstream gone)").IsSelected(),
-				Contains("branch-06 (upstream gone)").IsSelected(),
-				Contains("master"),
-			).
+			EventuallyContent(Contains("branch-05 (upstream gone)")).Lines(
+			Contains("current-head"),
+			Contains("branch-01 ↑1"),
+			Contains("branch-02 ✓"),
+			Contains("branch-05 (upstream gone)").IsSelected(),
+			Contains("branch-06 (upstream gone)").IsSelected(),
+			Contains("master"),
+		).
 
-			// Try to delete both local and remote branches of branch-02 and
-			// branch-05; not possible because branch-05's upstream is gone
+			// The upstream refs can still be reviewed after the cached branch-05 ref was removed.
 			Press(keys.Universal.Remove).
 			Tap(func() {
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete selected branches?")).
-					Select(Contains("Delete local and remote branches")).
-					Confirm().
-					Tap(func() {
-						t.ExpectToast(Contains("Some of the selected branches have no upstream (or the upstream is not stored locally)"))
-					}).
-					Cancel()
+					Select(MatchesRegexp(`^[[:space:]]*b Delete local and remote branches`)).
+					Confirm()
+				confirmation := t.ExpectPopup().Confirmation()
+				confirmation.Title(Equals("Delete selected branches?"))
+				confirmation.Content(Contains("refs/heads/branch-05").Contains(branch05OID).
+					Contains("origin -> refs/heads/branch-05").
+					Contains("refs/heads/branch-06").Contains(branch06OID).
+					Contains("other-remote -> refs/heads/branch-06").
+					Contains("Cached commit IDs may differ from the server's current tips").
+					Contains("not preserved by the remaining reviewed HEAD, upstream or main refs"))
+				confirmation.Cancel()
 			}).
 
 			// Delete both local and remote branches of branch-01 and branch-02. We get
@@ -160,21 +159,20 @@ var DeleteMultiple = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete selected branches?")).
-					Select(Contains("Delete local and remote branches")).
+					Select(MatchesRegexp(`^[[:space:]]*b Delete local and remote branches`)).
 					Confirm()
 				t.ExpectPopup().
 					Confirmation().
-					Title(Equals("Delete local and remote branch")).
-					Content(Contains("Are you sure you want to delete both the selected branches from your machine, and their remote branches from their respective remotes?").
-						Contains("Some of the selected branches are not fully merged. Are you sure you want to delete them?")).
+					Title(Equals("Delete selected branches?")).
+					Content(Contains("refs/heads/branch-01").Contains("origin -> refs/heads/branch-01").Contains("refs/heads/branch-02").Contains("origin -> refs/heads/branch-02").Contains("Cached commit IDs may differ from the server's current tips").Contains("not preserved by the remaining reviewed HEAD, upstream or main refs")).
 					Confirm()
 			}).
-			Lines(
-				Contains("current-head"),
-				Contains("branch-05 (upstream gone)").IsSelected(),
-				Contains("branch-06 (upstream gone)"),
-				Contains("master"),
-			).
+			EventuallyContent(Contains("branch-05 (upstream gone)")).Lines(
+			Contains("current-head"),
+			Contains("branch-05 (upstream gone)").IsSelected(),
+			Contains("branch-06 (upstream gone)"),
+			Contains("master"),
+		).
 			Tap(func() {
 				checkRemoteBranches(t, keys, "origin", []string{
 					"branch-06",

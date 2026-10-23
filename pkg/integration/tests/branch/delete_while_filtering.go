@@ -29,21 +29,21 @@ var DeleteWhileFiltering = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("branch2"),
 			).
 			FilterOrSearch("branch").
-			Lines(
-				Contains("branch1").IsSelected(),
-				Contains("branch2"),
-			).
+			EventuallyContent(Contains("branch1")).Lines(
+			Contains("branch1").IsSelected(),
+			Contains("branch2"),
+		).
 			SelectNextItem().
 			Press(keys.Universal.Remove).
 			Tap(func() {
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch2'?")).
-					Select(Contains("Delete local branch")).
+					Select(MatchesRegexp(`^[[:space:]]*c Delete local branch`)).
 					Confirm()
 			}).
-			Lines(
-				Contains("branch1").IsSelected(),
-			)
+			EventuallyContent(Contains("branch1")).Lines(
+			Contains("branch1").IsSelected(),
+		)
 	},
 })

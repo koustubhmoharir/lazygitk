@@ -36,7 +36,7 @@ var FilterUpdatesWhenModelChanges = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-to-delete'?")).
-					Select(Contains("Delete local branch")).
+					Select(MatchesRegexp(`^[[:space:]]*c Delete local branch`)).
 					Confirm()
 			}).
 			Lines(

@@ -40,6 +40,9 @@ is maintained in [branch-delete-probes.md](branch-delete-probes.md).
   invent an atomic transaction. A later local failure also leaves actual state.
 
 The native review/command APIs now implement these checks in
-`branch_action_delete_{local,remote,choices,context}.go`. Live GUI routing and
-its acceptance checks remain in progress; the tracker retains the deletion
-subtask until those pass.
+`branch_action_delete_{local,remote,choices,context}.go`. Captured GUI helpers now route local and remote branch deletion through those
+APIs. Credential prompts run on responsive workers. A successful deletion only
+collapses its original, unchanged selection; remote-only deletion from local
+branches preserves their range. Native tests, captured-flow tests and the
+affected terminal deletion/worktree/filter scenarios pass. Explicit removal
+from the Worktrees pane retains its separate requested behavior.

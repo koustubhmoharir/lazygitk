@@ -5,6 +5,7 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
+	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
 )
@@ -161,7 +162,13 @@ func (self *RemoteBranchesController) context() *context.RemoteBranchesContext {
 }
 
 func (self *RemoteBranchesController) delete(selectedBranches []*models.RemoteBranch) error {
-	return self.c.Helpers().BranchesHelper.ConfirmDeleteRemote(selectedBranches, true)
+	// Fork: preserve selected cache refs and named remotes across native
+	// destination discovery, explicit deletion review and completion.
+	sources := make([]helpers.RemoteBranchDeleteSource, len(selectedBranches))
+	for i, branch := range selectedBranches {
+		sources[i] = helpers.RemoteBranchDeleteSource{Ref: branch.FullRefName(), Remote: branch.RemoteName}
+	}
+	return helpers.DeleteSelectedRemoteBranches(self.c.HelperCommon, sources)
 }
 
 func (self *RemoteBranchesController) merge(selectedBranch *models.RemoteBranch) error {

@@ -205,6 +205,25 @@ set/unset remain available to repair tracking metadata. Reset and rebase are
 explicitly actions on the checked-out branch; they check the reviewed source,
 checkout and upstream again before opening their submenus.
 
+## Delete selected branches
+
+The branches pane offers local, remote and both deletion. Reviews show exact
+source refs/commits and current HEAD. Local deletion refuses branches checked
+out or reserved by any worktree; it never offers to detach or remove that
+worktree. Explicit removal from the Worktrees pane remains a separate action.
+
+Unmerged history needs approval. A ref being deleted, including a remote cache
+removed by **both**, cannot count as proof that its history will remain
+reachable. Remote deletion shows the named remote and full server branch refs;
+ambiguous tracking mappings require a choice. Missing tracking metadata can be
+replaced by an explicit configured remote and full branch ref.
+
+A remote cache is not proof of the server's current tip: confirmation permits
+deleting the named server branch even if it has newer commits. For **both**,
+remote deletion runs first; any remote error keeps the local branch. Multiple
+push URLs can partially succeed. Errors retain Git's actual state without
+retrying or rolling back earlier deletions. Credential prompts remain usable.
+
 ## Command palette identity
 
 Equivalent invocation paths share an entry with combined shortcut hints.

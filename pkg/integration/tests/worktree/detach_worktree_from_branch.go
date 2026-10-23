@@ -6,7 +6,7 @@ import (
 )
 
 var DetachWorktreeFromBranch = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Delete a branch that's checked out in another worktree by detaching that worktree",
+	Description:  "Refuse to delete a branch that's checked out in another worktree",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig:  func(config *config.AppConfig) {},
@@ -19,6 +19,8 @@ var DetachWorktreeFromBranch = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.AddWorktree("mybranch", "../linked-worktree", "newbranch")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		branchOID := t.Git().GetCommitHash("refs/heads/newbranch")
+		headOID := t.Git().GetCommitHash("HEAD")
 		t.Views().Branches().
 			Focus().
 			Lines(
@@ -28,28 +30,21 @@ var DetachWorktreeFromBranch = NewIntegrationTest(NewIntegrationTestArgs{
 			NavigateToLine(Contains("newbranch")).
 			Press(keys.Universal.Remove).
 			Tap(func() {
-				t.ExpectPopup().
-					Menu().
-					Title(Equals("Delete branch 'newbranch'?")).
-					Select(Contains("Delete local branch")).
-					Confirm()
+				t.Common().ReviewBranchDeleteMenu("Delete branch 'newbranch'?", "refs/heads/newbranch", branchOID, "refs/heads/mybranch", t.Git().GetCommitHash("refs/heads/mybranch"), true).Cancel()
 			}).
-			Tap(func() {
-				t.ExpectPopup().Menu().
-					Title(Equals("Branch newbranch is checked out by worktree linked-worktree")).
-					Select(Contains("Detach worktree and delete branch")).
-					Confirm()
-			}).
-			// The branch is gone; the worktree stays around (now detached)
 			Lines(
-				Contains("mybranch").IsSelected(),
+				Contains("mybranch"),
+				Contains("newbranch (worktree linked-worktree)").IsSelected(),
 			)
+		t.FileSystem().FileContent("../linked-worktree/README.md", Equals("hello world"))
+		t.Common().AssertRefOID("HEAD", headOID).AssertRefOID("refs/heads/newbranch", branchOID)
 
 		t.Views().Worktrees().
 			Focus().
+			NavigateToLine(Contains("linked-worktree")).
 			Lines(
-				Contains("(main worktree)").IsSelected(),
-				Contains("linked-worktree"),
+				Contains("(main worktree)"),
+				Contains("linked-worktree").IsSelected(),
 			)
 	},
 })

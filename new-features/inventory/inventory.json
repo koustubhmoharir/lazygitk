@@ -1345,49 +1345,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 477,
-      "owner": "BranchesController.delete",
-      "fields": {
-        "CommandID": "\"branch.delete-local\"",
-        "Keys": "menuKey('c')",
-        "Label": "lo.Ternary(len(branches) \u003e 1, self.c.Tr.DeleteLocalBranches, self.c.Tr.DeleteLocalBranch)",
-        "OnPress": "func() error {\n\treturn self.localDelete(branches)\n}",
-        "Verb": "\"delete\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 490,
-      "owner": "BranchesController.delete",
-      "fields": {
-        "CommandID": "\"remote-branch.delete\"",
-        "Keys": "menuKey('r')",
-        "Label": "lo.Ternary(len(branches) \u003e 1, self.c.Tr.DeleteRemoteBranches, self.c.Tr.DeleteRemoteBranch)",
-        "OnPress": "func() error {\n\treturn self.remoteDelete(branches)\n}",
-        "Verb": "\"delete\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 505,
-      "owner": "BranchesController.delete",
-      "fields": {
-        "CommandID": "\"branch.delete-local-and-remote\"",
-        "Keys": "menuKey('b')",
-        "Label": "lo.Ternary(len(branches) \u003e 1, self.c.Tr.DeleteLocalAndRemoteBranches, self.c.Tr.DeleteLocalAndRemoteBranch)",
-        "OnPress": "func() error {\n\treturn self.localAndRemoteDelete(branches)\n}",
-        "Verb": "\"delete\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 603,
+      "line": 526,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request\"",
@@ -1400,7 +1358,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 611,
+      "line": 534,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-to-chosen-target\"",
@@ -1413,7 +1371,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 644,
+      "line": 567,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-current-to-selected\"",
@@ -3380,6 +3338,106 @@
         "Label": "self.c.Tr.RemoveWorktreeAndDeleteBothBranches",
         "OnPress": "func() error {\n\treturn self.RemoveWorktreeAndDeleteBothBranches(worktree, branch)\n}",
         "Verb": "\"delete-worktree-and-branches\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_branch_delete.go",
+      "line": 173,
+      "owner": "capturedBranchDeleteFlow.menu",
+      "fields": {
+        "CommandID": "\"branch.delete-local\"",
+        "DisabledReason": "localDisabled",
+        "Keys": "menuKey('c')",
+        "Label": "lo.Ternary(len(flow.context.Targets()) == 1, c.Tr.DeleteLocalBranch, c.Tr.DeleteLocalBranches)",
+        "OnPress": "func() error { return flow.choose(capturedDeleteLocal) }",
+        "Verb": "\"delete\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_branch_delete.go",
+      "line": 174,
+      "owner": "capturedBranchDeleteFlow.menu",
+      "fields": {
+        "CommandID": "\"remote-branch.delete\"",
+        "DisabledReason": "remoteDisabled",
+        "Keys": "menuKey('r')",
+        "Label": "lo.Ternary(len(flow.context.Targets()) == 1, c.Tr.DeleteRemoteBranch, c.Tr.DeleteRemoteBranches)",
+        "OnPress": "func() error { return flow.choose(capturedDeleteRemote) }",
+        "Verb": "\"delete\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_branch_delete.go",
+      "line": 175,
+      "owner": "capturedBranchDeleteFlow.menu",
+      "fields": {
+        "CommandID": "\"branch.delete-local-and-remote\"",
+        "DisabledReason": "combineDisabled(localDisabled, remoteDisabled)",
+        "Keys": "menuKey('b')",
+        "Label": "lo.Ternary(len(flow.context.Targets()) == 1, c.Tr.DeleteLocalAndRemoteBranch, c.Tr.DeleteLocalAndRemoteBranches)",
+        "OnPress": "func() error { return flow.choose(capturedDeleteBoth) }",
+        "Verb": "\"delete\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_branch_delete.go",
+      "line": 306,
+      "owner": "capturedBranchDeleteFlow.chooseRemote",
+      "fields": {
+        "CommandID": "\"branch.delete.cancel-remote-ref\"",
+        "Label": "flow.repository.c.Tr.Cancel",
+        "OnPress": "flow.check",
+        "Verb": "\"cancel\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_branch_delete.go",
+      "line": 313,
+      "owner": "capturedBranchDeleteFlow.chooseRemote",
+      "fields": {
+        "CommandID": "\"branch.delete.choose-remote-ref\"",
+        "DisabledReason": "disabled",
+        "Label": "ref",
+        "OnPress": "func() error {\n\tif err := flow.check(); err != nil {\n\t\treturn err\n\t}\n\tflow.remoteTargets[index] = git_commands.BranchActionRemoteDeleteSelection{Target: flow.context.Targets()[index], Remote: choices.Remote(), RemoteRef: ref}\n\treturn flow.chooseRemote(mode, index+1)\n}",
+        "OpensMenu": "true",
+        "Verb": "\"choose\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_branch_delete.go",
+      "line": 334,
+      "owner": "capturedBranchDeleteFlow.manualRemote",
+      "fields": {
+        "CommandID": "\"branch.delete.cancel-remote-manual\"",
+        "Label": "c.Tr.Cancel",
+        "OnPress": "flow.check",
+        "Verb": "\"cancel\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "MenuItem",
+      "file": "pkg/gui/controllers/helpers/captured_branch_delete.go",
+      "line": 335,
+      "owner": "capturedBranchDeleteFlow.manualRemote",
+      "fields": {
+        "CommandID": "\"branch.delete.choose-remote-ref\"",
+        "Label": "c.Tr.BranchActionDeleteManualAction",
+        "OnPress": "func() error { return flow.promptRemoteName(mode, index) }",
+        "OpensMenu": "true",
+        "Verb": "\"choose\""
       },
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
     },
@@ -5740,7 +5798,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 37,
+      "line": 38,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"remote-branch.checkout\"",
@@ -5756,7 +5814,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 47,
+      "line": 48,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.create-and-checkout\"",
@@ -5771,7 +5829,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 55,
+      "line": 56,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"worktree.create-menu\"",
@@ -5786,7 +5844,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 63,
+      "line": 64,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.merge-selected-into-current\"",
@@ -5802,7 +5860,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 73,
+      "line": 74,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.rebase-current-onto-selected\"",
@@ -5819,7 +5877,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 85,
+      "line": 86,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"remote-branch.delete\"",
@@ -5835,7 +5893,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 95,
+      "line": 96,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.set-upstream-to-selection\"",
@@ -5851,7 +5909,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 105,
+      "line": 106,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"remote-branch.sort-menu\"",
@@ -5866,7 +5924,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 113,
+      "line": 114,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.reset-menu\"",
@@ -5882,7 +5940,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/remote_branches_controller.go",
-      "line": 123,
+      "line": 124,
       "owner": "RemoteBranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.ref.external\"",

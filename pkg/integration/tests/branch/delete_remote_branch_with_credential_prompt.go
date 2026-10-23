@@ -26,6 +26,7 @@ var DeleteRemoteBranchWithCredentialPrompt = NewIntegrationTest(NewIntegrationTe
 		shell.CopyHelpFile("pre-push", ".git/hooks/pre-push")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		sourceOID := t.Git().GetCommitHash("refs/heads/mybranch")
 		deleteBranch := func() {
 			t.Views().Branches().
 				Focus().
@@ -34,13 +35,13 @@ var DeleteRemoteBranchWithCredentialPrompt = NewIntegrationTest(NewIntegrationTe
 			t.ExpectPopup().
 				Menu().
 				Title(Equals("Delete branch 'mybranch'?")).
-				Select(Contains("Delete remote branch")).
+				Select(MatchesRegexp(`^[[:space:]]*r Delete remote branch`)).
 				Confirm()
 
 			t.ExpectPopup().
 				Confirmation().
-				Title(Equals("Delete branch 'mybranch'?")).
-				Content(Equals("Are you sure you want to delete the remote branch 'mybranch' from 'origin'?")).
+				Title(Equals("Delete remote branch")).
+				Content(Contains("refs/heads/mybranch").Contains(sourceOID).Contains("Current HEAD:").Contains("Cached commit IDs may differ from the server's current tips")).
 				Confirm()
 		}
 
@@ -82,6 +83,6 @@ var DeleteRemoteBranchWithCredentialPrompt = NewIntegrationTest(NewIntegrationTe
 			Confirm()
 
 		t.Views().Status().Content(Equals("(upstream gone) repo → mybranch"))
-		t.Views().Branches().TopLines(Contains("mybranch (upstream gone)"))
+		t.Views().Branches().EventuallyContent(Contains("mybranch (upstream gone)")).TopLines(Contains("mybranch (upstream gone)"))
 	},
 })

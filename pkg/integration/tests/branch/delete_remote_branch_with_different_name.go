@@ -19,6 +19,7 @@ var DeleteRemoteBranchWithDifferentName = NewIntegrationTest(NewIntegrationTestA
 		shell.Checkout("master")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		sourceOID := t.Git().GetCommitHash("refs/heads/mybranch-local")
 		t.Views().Branches().
 			Focus().
 			Lines(
@@ -31,19 +32,19 @@ var DeleteRemoteBranchWithDifferentName = NewIntegrationTest(NewIntegrationTestA
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'mybranch-local'?")).
-					Select(Contains("Delete remote branch")).
+					Select(MatchesRegexp(`^[[:space:]]*r Delete remote branch`)).
 					Confirm()
 			}).
 			Tap(func() {
 				t.ExpectPopup().
 					Confirmation().
-					Title(Equals("Delete branch 'mybranch-remote'?")).
-					Content(Equals("Are you sure you want to delete the remote branch 'mybranch-remote' from 'origin'?")).
+					Title(Equals("Delete remote branch")).
+					Content(Contains("refs/heads/mybranch-local").Contains(sourceOID).Contains("refs/heads/mybranch-remote").Contains("Current HEAD:").Contains("Cached commit IDs may differ from the server's current tips")).
 					Confirm()
 			}).
-			Lines(
-				Contains("master"),
-				Contains("mybranch-local (upstream gone)").IsSelected(),
-			)
+			EventuallyContent(Contains("mybranch-local (upstream gone)")).Lines(
+			Contains("master"),
+			Contains("mybranch-local (upstream gone)").IsSelected(),
+		)
 	},
 })
