@@ -23,9 +23,9 @@ deferred and must not be offered. Keep wider updates explicit choices.
    - Merge the selected source into current HEAD. Retain regular/allow-FF/no-FF
      choices, both squash modes, merge-message options and signing support.
      Do not infer capture safety from the now-integrated rebase flow.
-     Integrate the verified native preview and argument parser through a
-     captured policy/plan and repository-bound GUI flow; see the current
-     [merge design](branch-merge-design.md). The live menu still needs routing.
+     Finish routing and acceptance of the captured native merge reviews/plans
+     through the repository-bound GUI flow; see the current
+     [merge design](branch-merge-design.md).
    - Audit local/remote/both deletion, retaining force warnings and native partial
      errors. Refuse occupied/reserved branches; never detach or remove another
      worktree implicitly. Use exact native tracking refs and literal names.

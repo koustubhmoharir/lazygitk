@@ -33,6 +33,18 @@ requirements to restore a deferred multi-branch push.
 
 ### Selected-branch operations (item 7 in progress)
 
+- `branch_action_merge_review.go` adds backend-owned, read-only merge reviews
+  binding source/current HEAD, effective configuration, semantic staged entries
+  and staged path names. Native last-value branch merge options precede captured
+  application options. Keep the configuration digest private; it can cover
+  credentials. Native ancestry exit 1 means false, while query errors propagate.
+  Detached/bare, active-operation and unmerged-index checks remain explicit;
+  unborn HEAD is retained for native fast-forward support. Reviews neither run
+  drivers nor authorize mutation. `branch_action_merge_policy.go` folds only
+  normalized option records, respecting Git's sticky message presence,
+  no-op `--no-strategy`, ordered FF flags and squash/explicit-commit conflicts.
+  Real-Git review/policy checks and backend lint passed. Live GUI routing is
+  recorded separately when integrated.
 - `branch_action_merge_preview.go` is preparatory native merge inspection, not
   live routing. It runs ort's `merge-tree` with private temporary object storage
   and C-quoted original/inherited alternates. Preserve complete NUL-protocol
