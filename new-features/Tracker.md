@@ -31,7 +31,9 @@ deferred and must not be offered. Keep wider updates explicit choices.
      before removing this subtask.
    - Audit branch/tag creation, retaining existing checkout/tracking choices,
      annotation/signing and overwrite warnings without later model or repository
-     substitution. Keep pointer-only placement separate from named checkout.
+     substitution. Native creation plans are implemented; finish the captured GUI
+     flows and acceptance checks in [the creation design](branch-create-design.md).
+     Keep pointer-only placement separate from named checkout.
 
    Preserve Git's normal concurrency model, errors and actual partial state;
    no implicit retry, rollback, checkout or stash. Reset/rebase/merge remain explicitly

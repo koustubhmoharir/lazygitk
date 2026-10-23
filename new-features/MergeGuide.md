@@ -33,6 +33,29 @@ requirements to restore a deferred multi-branch push.
 
 ### Selected-branch operations (item 7 in progress)
 
+- `branch_action_create.go`, `branch_action_tag_create.go` and
+  `branch_action_head_target.go` add native creation plans for the remaining
+  creation audit. Bind backend/source/current HEAD/configuration and destination
+  state before command construction. Normal branch creation refuses existing
+  names; it does not replace the separate reviewed placement/checkout actions.
+  No-track creation uses the captured commit OID. Configured/direct tracking
+  passes the original full start ref so Git owns `autoSetupMerge`, inheritance
+  and `autoSetupRebase`; the final exact-tip/config check is an observation,
+  followed by Git's normal source-ref race, not expected-old atomicity. Do not
+  substitute a partial application implementation of native tracking policy.
+  `--no-track` suppresses automatic setup but can preserve orphan metadata;
+  use accurate UI wording. Native tracking can reject non-branch namespaces.
+  Checkout protects ignored files and preserves harmless dirt, without stash,
+  retries, custom locks or rollback. Pointer-only creation refuses reservations,
+  including the unborn current branch; a bare common HEAD alone is permitted.
+  Tag plans capture native signing, description and the exact old tag object;
+  overwrite approval is required even when the old tag peels to the same commit.
+  Commands target the captured commit and retain native errors. The HEAD source
+  helper supports named/detached HEAD and rejects an unborn source. Focused
+  native creation checks passed (26.521s), including raw dirty-state retention,
+  stale/foreign plans, tracking policies and real checkout obstructions.
+  [Design](branch-create-design.md) and [native probes](branch-create-probes.md)
+  record these constraints. Live creation routing and acceptance remain pending.
 - `git_literal_config.go` extends the command builder in a fork-owned file for
   literal subsection names containing `=`. Git's `-c key=value` splits at the
   first equals sign; use native `--config-env=key=VARIABLE` for those names and
