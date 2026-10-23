@@ -296,7 +296,8 @@ func (self *SyncCommands) CurrentPullIntegrationCommand(plan CurrentPullIntegrat
 		if plan.requested != PullIntegrationDefault {
 			// An explicit choice replaces the branch-specific merge option bundle;
 			// defaults retain that bundle for the UI to display and approve.
-			args.Config("branch." + plan.Name() + ".mergeOptions=")
+			// Fork: retain literal branch subsections containing '='.
+			args.configWithLiteralKey("branch."+plan.Name()+".mergeOptions", "", literalMergeOptionsEnv)
 		}
 		switch plan.method {
 		case PullIntegrationConfiguredMerge:
@@ -310,7 +311,8 @@ func (self *SyncCommands) CurrentPullIntegrationCommand(plan CurrentPullIntegrat
 		}
 		args.ArgIf(plan.ignoredApproved, "--overwrite-ignore").ArgIf(!plan.ignoredApproved, "--no-overwrite-ignore").Arg(plan.targetOID + "^{commit}")
 	}
-	return self.cmd.New(args.Config("core.warnAmbiguousRefs=false").Config("submodule.recurse=false").ToArgv()).SetWd(self.repoPaths.WorktreePath()).DisableLockRetries(), nil
+	return self.cmd.New(args.Config("core.warnAmbiguousRefs=false").Config("submodule.recurse=false").ToArgv()).SetWd(self.repoPaths.WorktreePath()).
+		AddEnvVars(literalMergeOptionsEnv + "=").DisableLockRetries(), nil
 }
 
 func isPullReviewRebase(method PullIntegrationMethod) bool {

@@ -33,6 +33,20 @@ requirements to restore a deferred multi-branch push.
 
 ### Selected-branch operations (item 7 in progress)
 
+- `git_literal_config.go` extends the command builder in a fork-owned file for
+  literal subsection names containing `=`. Git's `-c key=value` splits at the
+  first equals sign; use native `--config-env=key=VARIABLE` for those names and
+  supply its fixed per-command environment value. Normal keys retain existing
+  argv. Preserve inherited `GIT_CONFIG_COUNT` settings and never edit config on
+  disk to emulate the override. Captured merge, current-Pull integration and the
+  older internal pull primitive use this for branch merge options and remote
+  tag-pruning policy; branch-only remote deletion uses it for mirror policy.
+  Callers must keep their AddEnvVars values paired with the builder arguments.
+  Native regression checks cover duplicate branch messages, explicit merge
+  overriding configured squash, inherited config and a remote named `peer=one`.
+  The helper requires Git's `--config-env` support (2.31+, already below the
+  merge-preview requirement). Focused merge/current-Pull/helper checks and
+  backend lint passed; see [Git's option documentation](https://git-scm.com/docs/git).
 - `branch_sync_reverse_refspec.go` adds preparatory inverse fetch mapping for
   remote-pane deletion. Return every deduplicated full source in configuration
   order; multiple candidates require explicit choice. Retain positive mapping

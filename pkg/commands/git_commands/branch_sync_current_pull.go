@@ -124,10 +124,10 @@ func (self *SyncCommands) CurrentBranchPullCommand(plan CurrentBranchPullPlan, t
 	// `pull` does not accept fetch's --no-prune-tags option. Override both
 	// generic and selected-remote settings for this invocation instead.
 	args := NewGitCmd("pull").Config("rebase.updateRefs=false").Config("merge.autostash=false").
-		Config("fetch.pruneTags=false").Config("remote."+plan.options.Remote+".pruneTags=false").
+		Config("fetch.pruneTags=false").configWithLiteralKey("remote."+plan.options.Remote+".pruneTags", "false", literalPruneTagsEnv).
 		Arg("--no-edit", "--no-autostash", "--refmap=", "--no-tags", "--no-prune", "--no-recurse-submodules").
 		ArgIf(plan.fastForwardOnly, "--ff-only").Arg("--", plan.options.Remote,
 		"+"+plan.options.RemoteRef+":"+plan.options.TrackingRef).ToArgv()
 	return self.cmd.New(args).SetWd(self.repoPaths.WorktreePath()).
-		AddEnvVars("GIT_SEQUENCE_EDITOR=:").DisableLockRetries().PromptOnCredentialRequest(task), nil
+		AddEnvVars("GIT_SEQUENCE_EDITOR=:", literalPruneTagsEnv+"=false").DisableLockRetries().PromptOnCredentialRequest(task), nil
 }

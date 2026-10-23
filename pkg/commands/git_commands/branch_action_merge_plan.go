@@ -229,14 +229,15 @@ func (self *BranchCommands) BranchActionMergeCommand(plan BranchActionMergePlan)
 			return nil, ErrMergeStagedApprovalRequired
 		}
 	}
-	args := NewGitCmd("merge").Config("branch." + strings.TrimPrefix(plan.review.target.HeadRef(), "refs/heads/") + ".mergeOptions=").
+	// Keep '=' in a literal branch subsection out of -c's key/value split.
+	args := NewGitCmd("merge").configWithLiteralKey("branch."+strings.TrimPrefix(plan.review.target.HeadRef(), "refs/heads/")+".mergeOptions", "", literalMergeOptionsEnv).
 		Config("merge.autoStash=false").Arg("--no-edit").Arg(plan.review.arguments...).Arg(plan.modeArguments...)
 	if !plan.policy.customMessage && plan.defaultMessage != "" {
 		args.Arg("--message=" + plan.defaultMessage)
 	}
 	args.Arg("--no-autostash").ArgIf(plan.ignoredApproved, "--overwrite-ignore").
 		ArgIf(!plan.ignoredApproved, "--no-overwrite-ignore").Arg("--", plan.review.target.SourceOID()+"^{commit}")
-	return self.cmd.New(args.ToArgv()).SetWd(self.repoPaths.WorktreePath()).DisableLockRetries(), nil
+	return self.cmd.New(args.ToArgv()).SetWd(self.repoPaths.WorktreePath()).AddEnvVars(literalMergeOptionsEnv + "=").DisableLockRetries(), nil
 }
 
 // CheckBranchActionMergeInProgress binds a queued abort to this operation's
