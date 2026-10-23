@@ -32,6 +32,10 @@ deferred and must not be offered. Keep wider updates explicit choices.
    Use the prepared native source/current-HEAD snapshot guard for the remaining
    current-destination actions; keep operation-specific reservation and data-loss
    checks in their own command/review flows, not in the read-only guard.
+   The prepared native branch-rebase plan now preserves marked-range and
+   initial-break capabilities, covers ignored paths in the actual replay range,
+   and identifies the original paused rebase for queued conflict abortion.
+   Complete its GUI integration and acceptance before closing the rebase audit.
    Shared reset menus now capture source/current-HEAD/repository identity;
    preserve their native tag peeling, exact upstream mapping, explicit hard-reset
    review and current-worktree merge-abortion support in the remaining audit.

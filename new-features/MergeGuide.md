@@ -55,6 +55,23 @@ requirements to restore a deferred multi-branch push.
   checks, and it must not blanket-reject a merge that reset may explicitly abort.
   Callers still bind their repository generation, commands and refreshes, use
   the captured source OID, and preserve Git's normal concurrency after launch.
+- `git_commands/branch_action_rebase.go` adds prepared, backend-owned branch
+  rebase plans. Reuse the selected-commit clean-tree, operation, named-HEAD and
+  reservation checks, then retain the exact source/current HEAD and optional
+  marked base. Ignored-file approval covers path/content/mode fingerprints.
+  `rebase_ignored_files.go` now shares a scanner whose destination tree and
+  replay range may differ: marked `--onto` rebases must scan base..HEAD, not
+  only target..HEAD. Preserve ordinary selected-commit behavior through its
+  existing wrapper. `PrepareInteractiveRebaseCommandOpts.disableUpdateRefs`
+  enables `rebase.updateRefs=false` only for this captured path; retain the
+  existing todo daemon and optional initial-break instruction. Commands use
+  immutable commit OIDs, captured working directory and no lock-error retries.
+  `CheckBranchActionRebaseInProgress` checks merge-backend head-name/orig-head/
+  onto metadata for queued conflict-abort actions after HEAD intentionally moves;
+  it must not use the pre-launch HEAD check or accept another repository's plan.
+  New native and existing selected-commit/start-policy tests passed (23.906s),
+  including a real replaced conflicting rebase and native index.lock failure.
+  Backend lint passed with zero issues. GUI integration/acceptance is separate.
 - `helpers/captured_reset.go` replaces the shared reset menu through
   `RefsHelper.CreateGitResetMenu`; the local-branch controller calls the same
   flow directly. Preserve this routing for commit, tag, remote-branch and

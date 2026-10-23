@@ -15,11 +15,17 @@ import (
 )
 
 func (self *RebaseCommands) selectedCommitRebaseIgnoredPaths(target, head string) ([]string, string, error) {
+	return self.rebaseIgnoredPaths(target, target, head)
+}
+
+// The destination tree and replay range can differ for a marked-base --onto
+// rebase. Keep the existing collision/fingerprint policy shared by both flows.
+func (self *RebaseCommands) rebaseIgnoredPaths(target, replayBase, head string) ([]string, string, error) {
 	targetTree, err := self.selectedRebaseGitOutput(NewGitCmd("ls-tree").Arg("-r", "-z", "--name-only", target+"^{commit}").ToArgv())
 	if err != nil {
 		return nil, "", fmt.Errorf("list rebase target paths: %w", err)
 	}
-	replayed, err := self.selectedRebaseGitOutput(NewGitCmd("log").Arg("--format=", "--name-only", "--no-renames", "--root", "-m", "-z", target+"^{commit}"+".."+head+"^{commit}", "--").ToArgv())
+	replayed, err := self.selectedRebaseGitOutput(NewGitCmd("log").Arg("--format=", "--name-only", "--no-renames", "--root", "-m", "-z", replayBase+"^{commit}"+".."+head+"^{commit}", "--").ToArgv())
 	if err != nil {
 		return nil, "", fmt.Errorf("list replayed rebase paths: %w", err)
 	}

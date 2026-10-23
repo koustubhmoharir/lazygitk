@@ -208,6 +208,7 @@ type PrepareInteractiveRebaseCommandOpts struct {
 	instruction                daemon.Instruction
 	overrideEditor             bool
 	keepCommitsThatBecomeEmpty bool
+	disableUpdateRefs          bool
 }
 
 // PrepareInteractiveRebaseCommand returns the cmd for an interactive rebase
@@ -221,6 +222,8 @@ func (self *RebaseCommands) PrepareInteractiveRebaseCommand(opts PrepareInteract
 	ex := oscommands.GetLazygitPath()
 
 	cmdArgs := NewGitCmd("rebase").
+		// Fork: captured branch actions must not move unrelated branch refs.
+		ConfigIf(opts.disableUpdateRefs, "rebase.updateRefs=false").
 		Arg("--interactive").
 		// Replace the upstream autostash default: callers must commit changes first.
 		Arg("--no-autostash").
