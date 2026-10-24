@@ -45,7 +45,8 @@ func NewFilesController(
 }
 
 func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
-	return []*types.Binding{
+	//nolint:prealloc // Keep the upstream binding literal reviewable; fork tree actions are appended below.
+	bindings := []*types.Binding{
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.Select),
 			CommandID:         "file.toggle-stage",
@@ -265,6 +266,14 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 			GetDisabledReason: self.require(self.isInTreeMode),
 		},
 	}
+	return append(bindings, treeNavigationBindings(
+		self.c.Tr.CollapseTreeNode,
+		self.c.Tr.ExpandTreeNode,
+		self.context().FileTreeViewModel,
+		func() *filetree.Node[models.File] { return self.context().GetSelected().Raw() },
+		self.context().SetSelection,
+		func() { self.c.PostRefreshUpdate(self.context()) },
+	)...)
 }
 
 func (self *FilesController) GetMouseKeybindings(opts types.KeybindingsOpts) []*gocui.ViewMouseBinding {

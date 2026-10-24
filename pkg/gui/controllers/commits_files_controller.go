@@ -57,6 +57,7 @@ func (self *CommitFilesController) diffTarget() *commitDiffTarget {
 }
 
 func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
+	//nolint:prealloc // Keep the upstream binding literal reviewable; fork tree actions are appended below.
 	bindings := []*types.Binding{
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.CopyFileInfoToClipboard),
@@ -172,6 +173,15 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 		},
 	}
 
+	// Fork: directional tree actions are additive and never switch panes.
+	bindings = append(bindings, treeNavigationBindings(
+		self.c.Tr.CollapseTreeNode,
+		self.c.Tr.ExpandTreeNode,
+		self.context().CommitFileTreeViewModel,
+		func() *filetree.Node[models.CommitFile] { return self.context().GetSelected().Raw() },
+		self.context().SetSelection,
+		func() { self.c.PostRefreshUpdate(self.context()) },
+	)...)
 	// Fork direct-diff actions are additive; the existing sticky comparison remains available.
 	return append(self.historicalDiffBindings(opts), bindings...)
 }

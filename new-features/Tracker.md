@@ -42,7 +42,7 @@ custom commands. Frequency persistence and sorting remain item 9.
    The fork-owned path catalogue is present, including distinct previous/next
    hunk, file and conflict paths. Implementation is authorized. Incorporate
    the latest user table, including Files-only commit Enter, Escape cancellation, combine `g c`, scoped Space, tree
-   arrows, `d w`/`d p`/`d c`, `s h`/`s m`/`s s`/`s c`, `n b` and
+   arrow registration (directional tree handlers are implemented), `d w`/`d p`/`d c`, `s h`/`s m`/`s s`/`s c`, `n b` and
    `c y`/`c x`/`c p`. Keep Pull in a deliberate menu path. Verify the implemented source-field projection against the remaining handlers
    and aliases before enabling it. Stable-ID paths override explicitly configured
    legacy fields, followed by catalogue defaults; numbered jumps keep their targets.

@@ -11,6 +11,8 @@ Todo list when making a new translation
 package i18n
 
 type TranslationSet struct {
+	CollapseTreeNode                     string
+	ExpandTreeNode                       string
 	BranchActionResetReviewPrompt        string
 	BranchActionResetHardWarning         string
 	BranchActionDetachedHead             string
@@ -1440,6 +1442,8 @@ const englishNonReloadableConfigWarning = `The following config settings were ch
 // exporting this so we can use it in tests
 func EnglishTranslationSet() *TranslationSet {
 	return &TranslationSet{
+		CollapseTreeNode:                      "Collapse directory or select parent",
+		ExpandTreeNode:                        "Expand directory or select first child",
 		BranchActionResetReviewPrompt:         "Current HEAD: %q at %s\nSelected source: %q (%s) at %s\n\nReset affects current HEAD, with index/worktree effects determined by the chosen mode. It does not reset another selected branch.",
 		BranchActionResetHardWarning:          "Are you sure you want to do a hard reset? This discards staged and unstaged tracked changes and may overwrite untracked or ignored paths that obstruct the selected commit. No automatic retry or rollback will run.",
 		BranchActionDetachedHead:              "HEAD (detached)",

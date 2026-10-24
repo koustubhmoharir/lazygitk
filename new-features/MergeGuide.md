@@ -42,6 +42,21 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Directional tree navigation
+
+- `filetree/directional_navigation.go` handles visible trees independently of
+  pane switching: Left collapses or selects a visible parent, Right expands or
+  selects the first visible child. Respect flat mode, compressed/filtered paths,
+  hidden roots, and the visible root's no-parent boundary. Selection indices
+  returned by the helper must be applied before the controller refresh.
+- The two additive keyless action hooks in Files and CommitFiles use
+  `controllers/tree_navigation.go`. The fork projection will assign arrows
+  together with the final navigation profile; upstream bindings remain active
+  until that migration. Keep the historical diff-action hook separate.
+- Focused tree checks exercise real working-tree and historical-tree models,
+  compressed/filtered paths, root expansion/collapse, leaves and flat mode.
+
+
 ### Pasted-hash historical comparisons
 
 - `git_commands/historical_commit_comparison.go` resolves only unambiguous
