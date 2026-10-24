@@ -5,6 +5,7 @@ import (
 	"slices"
 
 	"github.com/jesseduffield/lazygit/pkg/commands"
+	"github.com/jesseduffield/lazygit/pkg/gui/mergeconflicts"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 )
 
@@ -18,6 +19,30 @@ type forkCommandOrigin struct {
 	generation int32
 	selections []forkCommandSelection
 	diff       *forkCommandDiffSelection
+	conflict   *forkCommandConflictSelection
+}
+
+type forkConflictStateContext interface {
+	GetState() *mergeconflicts.State
+}
+
+type forkCommandConflictSelection struct {
+	present                 bool
+	path                    string
+	content                 [32]byte
+	markerSize, first, last int
+	selection               mergeconflicts.Selection
+}
+
+func captureForkConflictSelection(state *mergeconflicts.State) forkCommandConflictSelection {
+	if state == nil {
+		return forkCommandConflictSelection{}
+	}
+	first, last := state.GetSelectedRange()
+	return forkCommandConflictSelection{
+		present: true, path: state.GetPath(), content: sha256.Sum256([]byte(state.GetContent())),
+		markerSize: state.GetMarkerSize(), first: first, last: last, selection: state.Selection(),
+	}
 }
 
 type forkCommandSelection struct {
@@ -56,6 +81,10 @@ func (gui *Gui) captureForkCommandOrigin() *forkCommandOrigin {
 			first: first, last: last, selectable: selectable, state: *pane.DiffSelectState(),
 		}
 	}
+	if pane, ok := origin.context.(forkConflictStateContext); ok {
+		selected := captureForkConflictSelection(pane.GetState())
+		origin.conflict = &selected
+	}
 	return origin
 }
 
@@ -76,6 +105,9 @@ func (origin *forkCommandOrigin) valid(gui *Gui) bool {
 			*diff.context.DiffSelectState() != diff.state || sha256.Sum256([]byte(diff.context.GetView().Buffer())) != diff.content {
 			return false
 		}
+	}
+	if origin.conflict != nil && captureForkConflictSelection(origin.context.(forkConflictStateContext).GetState()) != *origin.conflict {
+		return false
 	}
 	return true
 }

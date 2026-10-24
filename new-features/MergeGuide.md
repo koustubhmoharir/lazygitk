@@ -267,7 +267,9 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 - `gui/fork_prefix_menu.go` owns visible prefix frames with one-use acceptance
   tokens. `fork_command_origin.go` pins the repository instance/generation,
-  static and side contexts, selected IDs/ranges, and focused diff content/mode.
+  static and side contexts, selected IDs/ranges, focused diff content/mode,
+  and conflict file/content/marker size/hunk selection. A pending prefix must
+  not resolve a newly selected conflict side or follow a refreshed file.
   Freeze dynamic labels before opening the popup; run guards again after Pop.
 - `CreateMenuOptions.BeforeAccept` runs before native Pop. Its matching model
   callback is reset on every `createMenu`; `BlockUnmatchedKeys` consumes invalid

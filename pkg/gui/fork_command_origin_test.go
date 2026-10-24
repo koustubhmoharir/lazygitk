@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/jesseduffield/lazygit/pkg/commands"
+	"github.com/jesseduffield/lazygit/pkg/gui/mergeconflicts"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -12,6 +13,31 @@ type forkOriginTestList struct {
 	types.Context
 	ids         []string
 	first, last int
+}
+
+func TestForkCommandOriginChecksConflictFileAndSelectedHunk(t *testing.T) {
+	gui := newForkKeymapTestGui(t)
+	pane := gui.State.Contexts.MergeConflicts
+	gui.State.ContextMgr.ContextStack = []types.Context{gui.State.Contexts.Files, pane}
+	state := mergeconflicts.NewState()
+	content := "<<<<<<< ours\nours\n=======\ntheirs\n>>>>>>> theirs\n"
+	state.SetContent(content, "file", 7)
+	pane.SetState(state)
+	origin := gui.captureForkCommandOrigin()
+	assert.True(t, origin.valid(gui))
+	state.SelectNextConflictHunk()
+	assert.False(t, origin.valid(gui), "a prefix cannot resolve a newly selected side")
+	state.SelectPrevConflictHunk()
+	assert.True(t, origin.valid(gui))
+	state.SetContent(content, "different-file", 7)
+	assert.False(t, origin.valid(gui), "identical text in another file is a different target")
+	state.SetContent(content+"changed\n", "file", 7)
+	assert.False(t, origin.valid(gui), "refreshed conflict contents require a fresh prefix")
+	pane.SetState(nil)
+	assert.False(t, origin.valid(gui))
+	origin = gui.captureForkCommandOrigin()
+	pane.SetState(state)
+	assert.False(t, origin.valid(gui), "loading conflict state cannot activate an old empty prefix")
 }
 
 func (list *forkOriginTestList) GetSelectedItemIds() ([]string, int, int) {

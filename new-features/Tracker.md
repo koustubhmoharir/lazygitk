@@ -85,7 +85,8 @@ custom commands. Frequency persistence and sorting remain item 9.
    [keymap-behavior-gaps.md](keymap-behavior-gaps.md) as source evidence, not proof
    that these flows are already implemented.
 5. Connect the implemented visible two-/three-key menu flow to normal-pane
-   registration and verify captured origin/repository and selection checks. Keep prefixes free of mutations and hidden timing state;
+   registration and verify captured origin/repository and selection checks
+   (including the implemented conflict-file/content/hunk snapshots). Keep prefixes free of mutations and hidden timing state;
    Explicit single-key overrides now displace default continuations; explicitly
    configured leaf/descendant collisions retain a visible choice. Verify
    nested Esc/back behavior and safely handle invalid continuations,
