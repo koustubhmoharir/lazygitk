@@ -39,6 +39,11 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
+| `` 1 `` | Focus 狀態 panel |  |
+| `` 2 `` | Focus 檔案 panel |  |
+| `` 3 `` | Focus 分支 panel |  |
+| `` 4 `` | Focus 提交 panel |  |
+| `` 5 `` | Focus 收藏 (Stash) panel |  |
 | `` , `` | 上一頁 |  |
 | `` . `` | 下一頁 |  |
 | `` <, <home> `` | 捲動到頂部 |  |

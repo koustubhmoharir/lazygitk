@@ -471,6 +471,9 @@ func (gui *Gui) SetMouseKeybinding(binding *gocui.ViewMouseBinding) {
 }
 
 func (gui *Gui) callKeybindingHandler(binding *types.Binding) error {
+	if binding.CommandActive != nil && !binding.CommandActive() {
+		return nil
+	}
 	if binding.GetDisabledReason != nil {
 		if disabledReason := binding.GetDisabledReason(); disabledReason != nil {
 			// Fork defaults consume inapplicable actions instead of falling

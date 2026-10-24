@@ -35,3 +35,9 @@ func TestForkExplicitOverrideRetainsDisabledDispatchAndRealErrors(t *testing.T) 
 	binding.Handler = func() error { return failure }
 	assert.ErrorIs(t, gui.callKeybindingHandler(binding), failure)
 }
+
+func TestForkInactiveSemanticRouteConsumesAnExplicitKey(t *testing.T) {
+	gui := &Gui{}
+	binding := &types.Binding{CommandActive: func() bool { return false }, Handler: func() error { t.Fatal("inactive route ran"); return nil }, GetDisabledReason: func() *types.DisabledReason { t.Fatal("inactive route inspected operation guards"); return nil }}
+	assert.NoError(t, gui.callKeybindingHandler(binding))
+}

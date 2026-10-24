@@ -51,21 +51,14 @@ func (gui *Gui) projectForkBindings(bindings []*types.Binding) ([]*types.Binding
 				continue
 			}
 		}
-		_, legacyExplicit, _, err := keymap.ResolvePaths(gui.c.UserConfig(), original.CommandID, original.CommandID, original.ViewName)
-		if err != nil {
-			return nil, err
-		}
-		if _, commandOverride := gui.c.UserConfig().CommandBindings[original.CommandID]; commandOverride {
-			legacyExplicit = false
-		}
 		variants := forkCommandVariants[original.CommandID]
-		if len(variants) == 0 || legacyExplicit {
+		if len(variants) == 0 {
 			copy := *original
 			if original.CommandIDFunc != nil {
 				copy.CommandID = original.GetCommandID()
 				copy.CommandIDFunc = nil
 			}
-			if err := gui.projectForkBinding(&copy, original.CommandID, legacyExplicit); err != nil {
+			if err := gui.projectForkBinding(&copy, original.CommandID); err != nil {
 				return nil, err
 			}
 			output = append(output, &copy)
@@ -75,8 +68,10 @@ func (gui *Gui) projectForkBindings(bindings []*types.Binding) ([]*types.Binding
 			copy := *original
 			copy.CommandID, copy.Verb = variant.id, variant.verb
 			copy.CommandIDFunc, copy.VerbFunc = nil, nil
+			copy.CommandActive = func() bool { return original.GetCommandID() == variant.id }
+			gui.labelForkCommandVariant(&copy)
 			copy.GetDisabledReason = func() *types.DisabledReason {
-				if original.GetCommandID() != variant.id {
+				if !copy.CommandActive() {
 					return &types.DisabledReason{Text: gui.Tr.NoApplicableCommandsInThisContext, Inapplicable: true}
 				}
 				if original.GetDisabledReason != nil {
@@ -84,7 +79,7 @@ func (gui *Gui) projectForkBindings(bindings []*types.Binding) ([]*types.Binding
 				}
 				return nil
 			}
-			if err := gui.projectForkBinding(&copy, original.CommandID, false); err != nil {
+			if err := gui.projectForkBinding(&copy, original.CommandID); err != nil {
 				return nil, err
 			}
 			output = append(output, &copy)
@@ -93,7 +88,7 @@ func (gui *Gui) projectForkBindings(bindings []*types.Binding) ([]*types.Binding
 	return output, nil
 }
 
-func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string, legacyExplicit bool) error {
+func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string) error {
 	paths, explicit, known, err := keymap.ResolvePaths(gui.c.UserConfig(), binding.CommandID, sourceID, binding.ViewName)
 	if err != nil {
 		return err
@@ -128,16 +123,11 @@ func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string, lega
 			// repository/model refresh, matching the global refresh action.
 			binding.Handler = func() error { gui.c.Refresh(types.RefreshOptions{}); return nil }
 		}
-		if binding.CommandID == "navigation.focus-panel" {
+		if strings.HasPrefix(binding.CommandID, "navigation.focus-panel.") {
 			// Each numbered jump has the same verb/ID but a different target.
 			// Preserve its constructor's individual configured number keys.
 			return nil
 		}
-	}
-	// Explicit legacy mode keys intentionally retain upstream mode-dependent
-	// dispatch; explicit per-command paths above remain separate action routes.
-	if legacyExplicit {
-		binding.DefaultCommand = false
 	}
 	binding.SetCommandPaths(paths)
 	return nil

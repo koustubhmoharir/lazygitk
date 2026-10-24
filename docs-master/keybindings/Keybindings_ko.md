@@ -39,6 +39,11 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
+| `` 1 `` | Focus 상태 panel |  |
+| `` 2 `` | Focus 파일 panel |  |
+| `` 3 `` | Focus 브랜치 panel |  |
+| `` 4 `` | Focus 커밋 panel |  |
+| `` 5 `` | Focus Stash panel |  |
 | `` , `` | 이전 페이지 |  |
 | `` . `` | 다음 페이지 |  |
 | `` <, <home> `` | 맨 위로 스크롤  |  |

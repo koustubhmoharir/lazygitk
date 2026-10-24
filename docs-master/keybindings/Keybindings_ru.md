@@ -39,6 +39,11 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
+| `` 1 `` | Focus Статус panel |  |
+| `` 2 `` | Focus Файлы panel |  |
+| `` 3 `` | Focus Ветки panel |  |
+| `` 4 `` | Focus Коммиты panel |  |
+| `` 5 `` | Focus Хранилище panel |  |
 | `` , `` | Предыдущая страница |  |
 | `` . `` | Следующая страница |  |
 | `` <, <home> `` | Пролистать наверх |  |

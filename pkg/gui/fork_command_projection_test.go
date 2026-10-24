@@ -1,6 +1,8 @@
 package gui
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
@@ -93,4 +95,49 @@ func TestForkProjectionStagedDiscardAliasKeepsImmediateUnstage(t *testing.T) {
 		}
 	}
 	assert.True(t, found)
+}
+
+func TestForkProjectionNamesInactiveActionsByTheirOwnVerb(t *testing.T) {
+	gui := newForkKeymapTestGui(t)
+	bindings, err := gui.projectForkBindings([]*types.Binding{{CommandID: "diff.primary-selection", ViewName: "main", CommandIDFunc: func() string { return "diff.stage-selection" }, DescriptionFunc: func() string { return "Stage current mode" }, TooltipFunc: func() string { return "Current staging tooltip" }}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	labels := map[string]string{}
+	for _, b := range bindings {
+		labels[b.CommandID] = b.GetDescription()
+		if b.CommandID != "diff.stage-selection" {
+			assert.NotEqual(t, "Current staging tooltip", b.GetTooltip())
+		}
+	}
+	assert.Equal(t, gui.Tr.ForkUnstageSelection, labels["diff.unstage-selection"])
+	assert.Equal(t, gui.Tr.ToggleSelectionForPatch, labels["patch.toggle-selection"])
+	assert.Equal(t, gui.Tr.ForkRemovePatchSelection, labels["patch.remove-selection"])
+}
+
+func TestForkProjectionLegacyModeKeyStaysLiveWithSpecificOverride(t *testing.T) {
+	gui := newForkKeymapTestGui(t)
+	path := filepath.Join(t.TempDir(), "config.yml")
+	if err := os.WriteFile(path, []byte("keybinding:\n  universal:\n    select: '<f6>'\ncommandBindings:\n  patch.toggle-selection: [['g', 'p']]\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := gui.Config.ReloadUserConfigForRepo([]*config.ConfigFile{{Path: path, Policy: config.ConfigFilePolicyErrorIfMissing}}); err != nil {
+		t.Fatal(err)
+	}
+	gui.Common.SetUserConfig(gui.Config.GetUserConfig())
+	id := "diff.stage-selection"
+	bindings, err := gui.projectForkBindings([]*types.Binding{{CommandID: "diff.primary-selection", ViewName: "main", CommandIDFunc: func() string { return id }}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	byID := map[string]*types.Binding{}
+	for _, b := range bindings {
+		byID[b.CommandID] = b
+	}
+	assert.Equal(t, []string{"<f6>"}, byID["diff.stage-selection"].KeyLabels())
+	assert.Equal(t, []string{"g p"}, byID["patch.toggle-selection"].KeyLabels())
+	assert.Equal(t, []*types.Binding{byID["diff.stage-selection"]}, forkApplicableBindings(bindings))
+	id = "patch.toggle-selection"
+	assert.Equal(t, []*types.Binding{byID["patch.toggle-selection"]}, forkApplicableBindings(bindings))
+	assert.False(t, byID["patch.toggle-selection"].DefaultCommand)
 }

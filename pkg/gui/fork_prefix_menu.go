@@ -47,6 +47,9 @@ func freezeForkCommandTree(tree *keymap.CommandTree) *keymap.CommandTree {
 func forkApplicableBindings(bindings []*types.Binding) []*types.Binding {
 	var applicable, explicit []*types.Binding
 	for _, binding := range bindings {
+		if binding.CommandActive != nil && !binding.CommandActive() {
+			continue
+		}
 		if binding.GetDisabledReason != nil {
 			if reason := binding.GetDisabledReason(); reason != nil && (reason.Inapplicable || reason.AllowFurtherDispatching) && binding.DefaultCommand {
 				continue
@@ -58,9 +61,23 @@ func forkApplicableBindings(bindings []*types.Binding) []*types.Binding {
 		}
 	}
 	if len(explicit) > 0 {
-		return explicit
+		applicable = explicit
 	}
-	return applicable
+	// Several upstream entry points may be aliases of one semantic action.
+	// Explicit routes win before coalescing so an alias cannot hide an override.
+	seen := make(map[string]bool, len(applicable))
+	result := applicable[:0]
+	for _, binding := range applicable {
+		id := binding.GetCommandID()
+		if id != "" && seen[id] {
+			continue
+		}
+		if id != "" {
+			seen[id] = true
+		}
+		result = append(result, binding)
+	}
+	return result
 }
 
 func (flow *forkPrefixFlow) run(tree *keymap.CommandTree, path []gocui.Key, parent func() error) error {

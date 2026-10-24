@@ -13,7 +13,13 @@ import (
 // legacy fields, then falls back to the fork catalogue. Merely matching a
 // default value is never evidence that a user configured it.
 func ResolvePaths(userConfig *config.UserConfig, id, staticID, view string) (paths [][]gocui.Key, explicit, known bool, err error) {
-	if configured, ok := userConfig.CommandBindings[id]; ok {
+	configured, overridden := userConfig.CommandBindings[id]
+	if !overridden && id != staticID {
+		// An explicit shared-route override keeps its mode-dependent meaning,
+		// unless a more specific semantic command supplies its own path.
+		configured, overridden = userConfig.CommandBindings[staticID]
+	}
+	if overridden {
 		for _, labels := range configured {
 			var path []gocui.Key
 			for _, label := range labels {

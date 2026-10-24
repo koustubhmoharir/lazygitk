@@ -28,7 +28,10 @@ type Binding struct {
 	// DefaultCommand enables fork applicability/no-op behavior. Explicit key
 	// overrides and custom commands retain their existing error semantics.
 	DefaultCommand bool
-	Description    string
+	// CommandActive selects a semantic route of a shared upstream binding.
+	// It is independent of disabled-action errors and explicit key overrides.
+	CommandActive func() bool
+	Description   string
 	// DescriptionFunc is used instead of Description if non-nil, and is useful for dynamic
 	// descriptions that change depending on context. Important: this must not be an expensive call.
 	// Note that you should still provide a generic, non-dynamic description in the Description field,

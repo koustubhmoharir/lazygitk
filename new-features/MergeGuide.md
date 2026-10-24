@@ -42,6 +42,27 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Semantic mode routes and pane target identities
+
+- `Binding.CommandActive` distinguishes an inactive shared-key route from a
+  disabled operation. The projection always keeps per-mode semantic routes,
+  including explicit legacy keys. A specific command override wins over an
+  explicit shared-route override, then legacy field provenance, then defaults.
+  Dispatch skips inactive routes before checking operation errors; aliases of
+  the same action coalesce only after explicit-override priority is resolved.
+- `gui/fork_command_labels.go` names each mode's actual verb, including inactive
+  palette entries. Do not reuse a shared upstream binding's dynamic label for
+  every split action: it describes only the currently active mode.
+- `JumpToSideWindowController` assigns stable target IDs such as
+  `navigation.focus-panel.files`, and labels them for discovery. Positional
+  `jumpToBlock` keys retain their configured targets; a stable-ID override can
+  now address one pane independently. Preserve the target suffix through
+  palette deduplication and future usage tracking. The source identity test
+  covers all default platforms/locales and cleared key configuration.
+- These refine the pending dispatcher migration. The normal registration hook
+  is still unchanged until the accepted operation flows and matrix checks pass.
+
+
 ### Diff discard approval and staged unstage exception
 
 - `WorkingTreeDiffActions.DiscardSelection` delegates confirmation to

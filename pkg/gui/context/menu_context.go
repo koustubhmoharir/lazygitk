@@ -304,6 +304,9 @@ func (self *MenuContext) GetKeybindings(opts types.KeybindingsOpts) []*types.Bin
 }
 
 func (self *MenuContext) OnMenuPress(selectedItem *types.MenuItem) error {
+	if selectedItem != nil && selectedItem.Binding != nil && selectedItem.Binding.CommandActive != nil && !selectedItem.Binding.CommandActive() {
+		return nil
+	}
 	if selectedItem != nil && selectedItem.DisabledReason != nil {
 		if selectedItem.Binding != nil && selectedItem.Binding.DefaultCommand && selectedItem.DisabledReason.Inapplicable {
 			return nil

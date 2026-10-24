@@ -39,6 +39,11 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
+| `` 1 `` | Focus ステータス panel |  |
+| `` 2 `` | Focus ファイル panel |  |
+| `` 3 `` | Focus ブランチ panel |  |
+| `` 4 `` | Focus コミット panel |  |
+| `` 5 `` | Focus スタッシュ panel |  |
 | `` , `` | 前のページ |  |
 | `` . `` | 次のページ |  |
 | `` <, <home> `` | 先頭にスクロール |  |

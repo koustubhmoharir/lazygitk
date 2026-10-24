@@ -95,3 +95,20 @@ func TestResolveLegacySharedIDDoesNotLeakBranchOverrideIntoCommitView(t *testing
 	assert.False(t, explicit)
 	assert.Equal(t, "n t", pathString(paths[0]))
 }
+
+func TestResolveSharedRouteOverrideAndSpecificPriority(t *testing.T) {
+	cfg := loadedKeymapConfig(t, "keybinding:\n  universal:\n    select: '<f6>'\ncommandBindings:\n  diff.primary-selection: [['g', 'h']]\n  patch.toggle-selection: [['g', 'p']]\n")
+	paths, explicit, known, err := ResolvePaths(cfg, "diff.stage-selection", "diff.primary-selection", "main")
+	requireKeymapNoError(t, err)
+	assert.True(t, explicit && known)
+	assert.Equal(t, "g h", pathString(paths[0]))
+	paths, explicit, known, err = ResolvePaths(cfg, "patch.toggle-selection", "diff.primary-selection", "main")
+	requireKeymapNoError(t, err)
+	assert.True(t, explicit && known)
+	assert.Equal(t, "g p", pathString(paths[0]))
+	cfg.CommandBindings["patch.toggle-selection"] = nil
+	paths, explicit, known, err = ResolvePaths(cfg, "patch.toggle-selection", "diff.primary-selection", "main")
+	requireKeymapNoError(t, err)
+	assert.True(t, explicit && known)
+	assert.Empty(t, paths)
+}

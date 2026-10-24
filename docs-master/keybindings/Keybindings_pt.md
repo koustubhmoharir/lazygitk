@@ -39,6 +39,11 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
+| `` 1 `` | Focus Status panel |  |
+| `` 2 `` | Focus Arquivos panel |  |
+| `` 3 `` | Focus Branches panel |  |
+| `` 4 `` | Focus Commits panel |  |
+| `` 5 `` | Focus Stash panel |  |
 | `` , `` | Aba anterior |  |
 | `` . `` | Próxima aba |  |
 | `` <, <home> `` | Voltar ao topo |  |

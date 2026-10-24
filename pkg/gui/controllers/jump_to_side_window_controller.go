@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 )
@@ -40,11 +42,15 @@ func (self *JumpToSideWindowController) GetKeybindings(opts types.KeybindingsOpt
 			keys = opts.GetKeys(jumpKeys[i])
 		}
 		bindings = append(bindings, &types.Binding{
-			ViewName:  "",
-			Keys:      keys,
-			Handler:   opts.Guards.NoPopupPanel(self.goToSideWindow(windows[i])),
-			CommandID: "navigation.focus-panel",
-			Verb:      "focus-panel",
+			ViewName: "",
+			Keys:     keys,
+			Handler:  opts.Guards.NoPopupPanel(self.goToSideWindow(windows[i])),
+			// Fork: distinct target identities keep explicit overrides and palette
+			// deduplication from conflating five different destinations.
+			CommandID:   "navigation.focus-panel." + windows[i],
+			Description: fmt.Sprintf(self.c.Tr.FocusPanel, self.focusPanelTitle(windows[i])),
+			Tag:         "navigation",
+			Verb:        "focus-panel",
 		})
 	}
 	return bindings
@@ -62,4 +68,30 @@ func (self *JumpToSideWindowController) goToSideWindow(window string) func() err
 		self.c.Context().Push(context, types.OnFocusOpts{})
 		return nil
 	}
+}
+
+func (self *JumpToSideWindowController) focusPanelTitle(window string) string {
+	switch window {
+	case "status":
+		return self.c.Tr.StatusTitle
+	case "files":
+		return self.c.Tr.FilesTitle
+	case "branches":
+		return self.c.Tr.BranchesTitle
+	case "commits":
+		return self.c.Tr.CommitsTitle
+	case "stash":
+		return self.c.Tr.StashTitle
+	case "worktrees":
+		return self.c.Tr.WorktreesTitle
+	case "submodules":
+		return self.c.Tr.SubmodulesTitle
+	case "remotes":
+		return self.c.Tr.RemotesTitle
+	case "tags":
+		return self.c.Tr.TagsTitle
+	case "reflog":
+		return self.c.Tr.ReflogCommitsTitle
+	}
+	return window
 }

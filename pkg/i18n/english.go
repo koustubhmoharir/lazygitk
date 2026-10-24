@@ -11,6 +11,10 @@ Todo list when making a new translation
 package i18n
 
 type TranslationSet struct {
+	FocusPanel                           string
+	ForkToggleFileStage                  string
+	ForkUnstageSelection                 string
+	ForkRemovePatchSelection             string
 	CollapseTreeNode                     string
 	ExpandTreeNode                       string
 	BranchActionResetReviewPrompt        string
@@ -1443,6 +1447,10 @@ const englishNonReloadableConfigWarning = `The following config settings were ch
 // exporting this so we can use it in tests
 func EnglishTranslationSet() *TranslationSet {
 	return &TranslationSet{
+		FocusPanel:                            "Focus %s panel",
+		ForkToggleFileStage:                   "Toggle staging of selected files",
+		ForkUnstageSelection:                  "Unstage selected changes",
+		ForkRemovePatchSelection:              "Remove selected lines from custom patch",
 		CollapseTreeNode:                      "Collapse directory or select parent",
 		ExpandTreeNode:                        "Expand directory or select first child",
 		BranchActionResetReviewPrompt:         "Current HEAD: %q at %s\nSelected source: %q (%s) at %s\n\nReset affects current HEAD, with index/worktree effects determined by the chosen mode. It does not reset another selected branch.",

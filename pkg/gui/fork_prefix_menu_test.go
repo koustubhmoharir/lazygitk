@@ -279,3 +279,14 @@ func TestForkPrefixFlowDirectLeafBindingDoesNotOpenContinuationMenu(t *testing.T
 		t.Fatalf("direct leaf opened menu or failed to invoke: menus=%d invoked=%v", len(h.menus), h.invoked)
 	}
 }
+
+func TestForkApplicableBindingsChoosesLiveExplicitAliasesOnce(t *testing.T) {
+	inactive := &types.Binding{CommandID: "inactive", CommandActive: func() bool { return false }}
+	oldDefault := &types.Binding{CommandID: "same-action", DefaultCommand: true}
+	explicit := &types.Binding{CommandID: "same-action"}
+	alias := &types.Binding{CommandID: "same-action"}
+	got := forkApplicableBindings([]*types.Binding{inactive, oldDefault, explicit, alias})
+	if len(got) != 1 || got[0] != explicit {
+		t.Fatalf("applicable aliases = %#v", got)
+	}
+}

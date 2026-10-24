@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"regexp"
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
@@ -75,7 +76,7 @@ func assertFocusPanelBindings(t *testing.T, bindings []*types.Binding, userConfi
 
 	var focusBindings []*types.Binding
 	for _, binding := range bindings {
-		if binding.CommandID == "navigation.focus-panel" {
+		if strings.HasPrefix(binding.CommandID, "navigation.focus-panel.") {
 			focusBindings = append(focusBindings, binding)
 		}
 	}
@@ -87,8 +88,12 @@ func assertFocusPanelBindings(t *testing.T, bindings []*types.Binding, userConfi
 		if binding.Handler == nil {
 			t.Errorf("navigation.focus-panel factory %d lost its handler", index)
 		}
-		if binding.Description != "" {
-			t.Errorf("navigation.focus-panel factory %d unexpectedly has description %q", index, binding.Description)
+		if binding.Description == "" {
+			t.Errorf("navigation.focus-panel factory %d lost its target description", index)
+		}
+		wantID := "navigation.focus-panel." + userConfig.Gui.SidePanels[index][0]
+		if binding.CommandID != wantID {
+			t.Errorf("focus target ID = %s, want %s", binding.CommandID, wantID)
 		}
 		if keysCleared {
 			if len(binding.Keys) != 0 {
