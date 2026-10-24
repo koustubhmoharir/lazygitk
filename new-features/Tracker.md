@@ -66,7 +66,9 @@ custom commands. Frequency persistence and sorting remain item 9.
    preserve all selected full messages in ancestor-first order and leave
    unselected history intact. The first version supports non-adjacent selections on linear ancestry and
    refuses selections containing or crossing merges (user confirmed). Derive
-   ancestry from Git parents, never graph row/date order.
+   ancestry from Git parents, never graph row/date order. The pure linear
+   topology/message planner is implemented; repository capture, message editor,
+   native rebase execution and conflict continuation remain.
    Retain native concurrency/overwrite protection and no implicit stash. Use
    [keymap-behavior-gaps.md](keymap-behavior-gaps.md) as source evidence, not proof
    that these flows are already implemented.

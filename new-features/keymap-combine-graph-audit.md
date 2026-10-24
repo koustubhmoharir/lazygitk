@@ -125,3 +125,22 @@ describes ancestor-to-descendant execution order and merge-preservation limits.
 These guide the review; neither establishes arbitrary graph-selection support
 for the fork. The requested selected-ancestor keeper and preservation of
 unselected history require an explicit topology-aware plan.
+
+## Implemented linear planning core
+
+`git_commands/combine_plan.go` now validates a captured first-parent chain,
+canonicalizes full object IDs, finds the selected ancestor independently of UI
+order, and refuses merges in the rewritten suffix. Its TODO puts every selected
+fixup directly after the keeper before replaying unselected commits, so an
+unselected intervening commit can never accidentally absorb a fixup. A merge
+before the keeper stays outside the rewritten range. The editor seed preserves
+all selected full messages, including blank lines and the keeper's own message.
+
+This is a pure planner, not an executable combine operation. Repository/HEAD
+capture, clean-tree and ignored-file reviews, editable-message flow, native
+rebase/daemon execution and conflict continuation still need integration. The
+message must survive a paused native rebase without replacing an unselected
+commit's message during continuation. Large messages/TODOs should use private
+files rather than rely on environment-variable size limits. Preserve Git's
+normal locking and explicit conflict resolution; add no implicit stash, retry,
+transaction lock or rollback.
