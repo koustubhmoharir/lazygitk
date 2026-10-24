@@ -31,6 +31,9 @@ func TestDefaultPathsUserRoutes(t *testing.T) {
 		{"app.refresh", "f5"},
 		{"file.refresh", "f5"},
 		{"navigation.focus-diff", "v"},
+		{"navigation.diff.previous-hunk", "t p h"},
+		{"navigation.diff.previous-file", "t p f"},
+		{"navigation.conflict.previous", "t p c"},
 	}
 	for _, test := range tests {
 		t.Run(test.id, func(t *testing.T) {

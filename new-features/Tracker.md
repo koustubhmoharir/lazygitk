@@ -39,7 +39,8 @@ custom commands. Frequency persistence and sorting remain item 9.
    handler, context and legacy configuration field before enabling defaults.
    The TortoiseGit guide and concrete verb/prefix table are recorded; the table
    names every instantiated operation ID and the known dynamic variants.
-   Implementation is authorized. Incorporate
+   The fork-owned path catalogue is present, including distinct previous/next
+   hunk, file and conflict paths. Implementation is authorized. Incorporate
    the latest user table, including Files-only commit Enter, Escape cancellation, combine `g c`, scoped Space, tree
    arrows, `d w`/`d p`/`d c`, `s h`/`s m`/`s s`/`s c`, `n b` and
    `c y`/`c x`/`c p`. Keep Pull in a deliberate menu path. Define source-field
