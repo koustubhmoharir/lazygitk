@@ -35,6 +35,12 @@ func (self *RebaseCommands) rebaseIgnoredPaths(target, replayBase, head string) 
 			candidates[path] = struct{}{}
 		}
 	}
+	return self.ignoredRisksForPaths(candidates)
+}
+
+// Share collision and content-fingerprint policy with other captured history
+// operations. Callers supply exactly the paths their native operation may touch.
+func (self *RebaseCommands) ignoredRisksForPaths(candidates map[string]struct{}) ([]string, string, error) {
 	ignoredOutput, err := self.selectedRebaseGitOutput(NewGitCmd("ls-files").Arg("--others", "--ignored", "--exclude-standard", "-z").ToArgv())
 	if err != nil {
 		return nil, "", fmt.Errorf("list ignored files: %w", err)

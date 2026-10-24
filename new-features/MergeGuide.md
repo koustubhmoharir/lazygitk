@@ -42,6 +42,28 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Captured native cherry-pick backend
+
+- `git_commands/captured_cherry_pick.go` captures literal commit objects, current
+  HEAD identity and affected ignored-file fingerprints. Git supplies ancestry
+  order; canonicalized input ordering makes unrelated tips deterministic across
+  preparation and validation. Getters return independent plan data.
+- Merges require an explicit common mainline parent, validated for every merge.
+  Ignored-path risks require approval and fresh fingerprints. The command is
+  one native sequencer invocation with exact reviewed OIDs, explicit cwd and
+  disabled application lock retries. Git preserves harmless dirty files or
+  rejects overlaps; no stash, custom lock, rollback or CAS is introduced.
+- `rebase_ignored_files.go` extracts `ignoredRisksForPaths` so existing rebase
+  policy and cherry-pick share collision/fingerprint handling. Preserve the
+  caller-specific candidate path sets when merging: cherry-pick uses changed
+  paths, including every merge parent for conservative risk review.
+- Focused real-Git checks cover misleading dates and unrelated tips, SHA-256,
+  literal/hex-ref identity, detached/unborn states, markers/bare repos, merge
+  parents, ignored changes, native dirty-file protection and conflict sequence
+  preservation. The controller review and shortcut migration integrate this
+  backend separately.
+
+
 ### Idempotent cherry-pick marking
 
 - `modes/cherrypicking/fork_marks.go` keeps mark/unmark separate from upstream's
