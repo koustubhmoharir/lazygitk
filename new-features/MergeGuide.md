@@ -488,6 +488,10 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   for three platforms after legacy alias folding. Its default/cleared-key
   snapshots use the command normalizer for collision candidates, preserve raw
   key tuples and declaration order, and read actual native parent pointers.
+  Rows record complete sequential command paths; collisions compare whole
+  paths, so a shared prefix root is not a collision. The cleared snapshot adds
+  an explicit empty `commandBindings` override per projected command ID so
+  catalogue defaults cannot reappear once legacy fields are cleared.
   Logical parent contexts are separate metadata. The tool never calls action,
   availability or dynamic metadata callbacks; the source-reviewed mode matrix
   supplements its deliberately non-exhaustive runtime snapshot. These are

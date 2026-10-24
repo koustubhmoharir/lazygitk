@@ -8,6 +8,7 @@ import (
 	"os"
 	"reflect"
 	"sort"
+	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/common"
@@ -25,28 +26,30 @@ type keyRow struct {
 }
 
 type bindingRow struct {
-	Declaration        int      `json:"declaration"`
-	IdentityOrdinal    int      `json:"identityOrdinal"`
-	DefaultDeclaration *int     `json:"defaultDeclaration,omitempty"`
-	ID                 string   `json:"id"`
-	Verb               string   `json:"verb"`
-	Description        string   `json:"description"`
-	View               string   `json:"view"`
-	Tag                string   `json:"tag"`
-	Keys               []string `json:"defaultKeys"`
-	RawKeys            []keyRow `json:"rawKeys"`
-	DynamicID          bool     `json:"hasDynamicID"`
-	DynamicVerb        bool     `json:"hasDynamicVerb"`
-	DynamicDesc        bool     `json:"hasDynamicDescription"`
-	Guarded            bool     `json:"guarded"`
-	Contexts           []string `json:"contexts,omitempty"`
+	Declaration        int        `json:"declaration"`
+	IdentityOrdinal    int        `json:"identityOrdinal"`
+	DefaultDeclaration *int       `json:"defaultDeclaration,omitempty"`
+	ID                 string     `json:"id"`
+	Verb               string     `json:"verb"`
+	Description        string     `json:"description"`
+	View               string     `json:"view"`
+	Tag                string     `json:"tag"`
+	Keys               []string   `json:"defaultKeys"`
+	RawKeys            []keyRow   `json:"rawKeys"`
+	CommandPaths       []string   `json:"defaultCommandPaths"`
+	RawCommandPaths    [][]keyRow `json:"rawCommandPaths"`
+	DynamicID          bool       `json:"hasDynamicID"`
+	DynamicVerb        bool       `json:"hasDynamicVerb"`
+	DynamicDesc        bool       `json:"hasDynamicDescription"`
+	Guarded            bool       `json:"guarded"`
+	Contexts           []string   `json:"contexts,omitempty"`
 }
 
 type collision struct {
 	Platform  string   `json:"platform"`
 	ScopeKind string   `json:"scopeKind"`
 	Scope     string   `json:"scope"`
-	Key       keyRow   `json:"key"`
+	Path      []keyRow `json:"path"`
 	Class     string   `json:"class"`
 	Origins   []string `json:"origins"`
 	IDs       []string `json:"ids"`
@@ -56,11 +59,12 @@ type collision struct {
 }
 
 type snapshot struct {
-	Platform    string       `json:"platform"`
-	Bindings    []bindingRow `json:"bindings"`
-	Cleared     []bindingRow `json:"clearedKeyBindings"`
-	Collides    []collision  `json:"collisions"`
-	ParentEdges []parentEdge `json:"parentViewEdges"`
+	Platform          string       `json:"platform"`
+	Bindings          []bindingRow `json:"bindings"`
+	Cleared           []bindingRow `json:"clearedKeyBindings"`
+	ClearedCommandIDs []string     `json:"clearedCommandIDs"`
+	Collides          []collision  `json:"collisions"`
+	ParentEdges       []parentEdge `json:"parentViewEdges"`
 }
 
 type parentEdge struct {
@@ -78,16 +82,16 @@ type report struct {
 func main() {
 	out := report{Description: "Instantiated default snapshots; not all modes, dynamic menus, or live availability.", Platforms: make([]snapshot, 0, 3)}
 	for _, platform := range []string{"linux", "darwin", "windows"} {
-		guiInstance, cleanup := instantiate(platform, false)
+		guiInstance, cleanup, _ := instantiate(platform, false)
 		bindings := guiInstance.GetCheatsheetKeybindings()
 		rows := rowsFor(bindings, guiInstance.State.Contexts.Flatten())
 		parentEdges := viewParentEdges(guiInstance)
 		cleanup()
-		clearedGui, cleanup := instantiate(platform, true)
+		clearedGui, cleanup, clearedCommandIDs := instantiate(platform, true)
 		clearedRows := rowsFor(clearedGui.GetCheatsheetKeybindings(), clearedGui.State.Contexts.Flatten())
 		cleanup()
 		matchClearedRows(rows, clearedRows)
-		out.Platforms = append(out.Platforms, snapshot{Platform: platform, Bindings: rows, Cleared: clearedRows, Collides: analyze(platform, rows, parentEdges), ParentEdges: parentEdges})
+		out.Platforms = append(out.Platforms, snapshot{Platform: platform, Bindings: rows, Cleared: clearedRows, ClearedCommandIDs: clearedCommandIDs, Collides: analyze(platform, rows, parentEdges), ParentEdges: parentEdges})
 	}
 	encoder := json.NewEncoder(os.Stdout)
 	encoder.SetIndent("", "  ")
@@ -107,7 +111,7 @@ func viewParentEdges(instance *gui.Gui) []parentEdge {
 	return rows
 }
 
-func instantiate(platform string, clear bool) (*gui.Gui, func()) {
+func instantiate(platform string, clear bool) (*gui.Gui, func(), []string) {
 	tempDir, err := os.MkdirTemp("", "lazygit-keymap-audit-")
 	if err != nil {
 		panic(err)
@@ -116,20 +120,38 @@ func instantiate(platform string, clear bool) (*gui.Gui, func()) {
 	userConfig := config.GetDefaultConfigForPlatform(platform)
 	*cfg.GetUserConfig() = *userConfig
 	cfg.GetUserConfig().Keybinding.MergeLegacyAltKeybindings()
-	if clear {
-		clearLeaves(reflect.ValueOf(&cfg.GetUserConfig().Keybinding))
-	}
 	cmn := common.NewDummyCommonWithUserConfigAndAppState(cfg.GetUserConfig(), cfg.GetAppState())
 	instance, err := gui.NewGui(cmn, cfg, &git_commands.GitVersion{Major: 2, Minor: 51}, nil, false, tempDir, nil)
 	if err != nil {
 		_ = os.RemoveAll(tempDir)
 		panic(err)
 	}
+	var clearedCommandIDs []string
+	if clear {
+		// Capture projected static IDs before clearing the legacy config. Explicit
+		// nil command paths disable catalogue defaults while retaining each
+		// binding's identity, description, verb, view, and handler metadata.
+		ids := make(map[string]struct{})
+		for _, binding := range instance.GetCheatsheetKeybindings() {
+			if binding.CommandID != "" {
+				ids[binding.CommandID] = struct{}{}
+			}
+		}
+		if cfg.GetUserConfig().CommandBindings == nil {
+			cfg.GetUserConfig().CommandBindings = make(map[string]config.CommandBindingPaths, len(ids))
+		}
+		for id := range ids {
+			cfg.GetUserConfig().CommandBindings[id] = nil
+			clearedCommandIDs = append(clearedCommandIDs, id)
+		}
+		sort.Strings(clearedCommandIDs)
+		clearLeaves(reflect.ValueOf(&cfg.GetUserConfig().Keybinding))
+	}
 	return instance, func() {
 		if err := os.RemoveAll(tempDir); err != nil {
 			panic(err)
 		}
-	}
+	}, clearedCommandIDs
 }
 
 func clearLeaves(value reflect.Value) {
@@ -166,6 +188,15 @@ func rowsFor(bindings []*types.Binding, contexts []types.Context) []bindingRow {
 			row.Keys = append(row.Keys, config.LabelForKey(key))
 			row.RawKeys = append(row.RawKeys, keyRow{Name: int(key.KeyName()), Str: key.Str(), Mod: int(key.Mod()), Label: config.LabelForKey(key)})
 		}
+		for _, path := range b.CommandPaths {
+			rawPath := make([]keyRow, len(path))
+			for i, key := range path {
+				label := config.LabelForKey(key)
+				rawPath[i] = keyRow{Name: int(key.KeyName()), Str: key.Str(), Mod: int(key.Mod()), Label: label}
+			}
+			row.CommandPaths = append(row.CommandPaths, types.CommandPathLabel(path))
+			row.RawCommandPaths = append(row.RawCommandPaths, rawPath)
+		}
 		for _, context := range contexts {
 			if context.GetViewName() == b.ViewName || b.ViewName == "" && context.GetKind() == types.GLOBAL_CONTEXT {
 				row.Contexts = append(row.Contexts, contextChain(context)...)
@@ -183,8 +214,19 @@ func matchClearedRows(defaultRows, clearedRows []bindingRow) {
 	}
 	for i := range clearedRows {
 		if index, ok := indices[identityKey(clearedRows[i])]; ok {
-			declaration := defaultRows[index].Declaration
+			defaultRow := defaultRows[index]
+			declaration := defaultRow.Declaration
 			clearedRows[i].DefaultDeclaration = &declaration
+			clearedRows[i].ID = defaultRow.ID
+			clearedRows[i].Verb = defaultRow.Verb
+			clearedRows[i].Description = defaultRow.Description
+			clearedRows[i].View = defaultRow.View
+			clearedRows[i].Tag = defaultRow.Tag
+			clearedRows[i].DynamicID = defaultRow.DynamicID
+			clearedRows[i].DynamicVerb = defaultRow.DynamicVerb
+			clearedRows[i].DynamicDesc = defaultRow.DynamicDesc
+			clearedRows[i].Guarded = defaultRow.Guarded
+			clearedRows[i].Contexts = append([]string(nil), defaultRow.Contexts...)
 		}
 	}
 }
@@ -209,16 +251,16 @@ func collisionRows(platform string, rows []bindingRow, parentEdges []parentEdge)
 	type group struct {
 		kind, scope, normalized, evidence string
 		rows                              []bindingRow
-		key                               keyRow
+		path                              []keyRow
 	}
 	bases := map[string]*group{}
 	baseOrder := []string{}
-	add := func(kind, scope, evidence string, row bindingRow, key keyRow) {
-		n := normalizeRawKey(key)
+	add := func(kind, scope, evidence string, row bindingRow, path []keyRow) {
+		n := normalizeRawPath(path)
 		id := kind + "\x00" + scope + "\x00" + n
 		g := bases[id]
 		if g == nil {
-			g = &group{kind: kind, scope: scope, normalized: n, evidence: evidence, key: canonicalKey(key)}
+			g = &group{kind: kind, scope: scope, normalized: n, evidence: evidence, path: canonicalPath(path)}
 			bases[id] = g
 			baseOrder = append(baseOrder, id)
 		}
@@ -226,10 +268,18 @@ func collisionRows(platform string, rows []bindingRow, parentEdges []parentEdge)
 	}
 	for _, row := range rows {
 		for _, key := range row.RawKeys {
+			path := []keyRow{key}
 			if row.View == "" {
-				add("global", "", "", row, key)
+				add("global", "", "", row, path)
 			} else {
-				add("view", row.View, "", row, key)
+				add("view", row.View, "", row, path)
+			}
+		}
+		for _, path := range row.RawCommandPaths {
+			if row.View == "" {
+				add("global", "", "", row, path)
+			} else {
+				add("view", row.View, "", row, path)
 			}
 		}
 	}
@@ -243,7 +293,7 @@ func collisionRows(platform string, rows []bindingRow, parentEdges []parentEdge)
 		}
 		global := bases["global\x00\x00"+local.normalized]
 		if global != nil {
-			g := &group{kind: "local-global", scope: local.scope, normalized: local.normalized, evidence: "global bindings may be considered after the focused view", key: local.key, rows: append(append([]bindingRow{}, local.rows...), global.rows...)}
+			g := &group{kind: "local-global", scope: local.scope, normalized: local.normalized, evidence: "global bindings may be considered after the focused view", path: local.path, rows: append(append([]bindingRow{}, local.rows...), global.rows...)}
 			key := "local-global\x00" + g.scope + "\x00" + g.normalized
 			bases[key] = g
 			all = append(all, key)
@@ -268,7 +318,7 @@ func collisionRows(platform string, rows []bindingRow, parentEdges []parentEdge)
 			pgs := parent[n]
 			for _, cg := range cgs {
 				for _, pg := range pgs {
-					g := &group{kind: "local-parent", scope: edge.Child + "->" + edge.Parent, normalized: n, evidence: edge.Evidence, key: cg.key, rows: append(append([]bindingRow{}, cg.rows...), pg.rows...)}
+					g := &group{kind: "local-parent", scope: edge.Child + "->" + edge.Parent, normalized: n, evidence: edge.Evidence, path: cg.path, rows: append(append([]bindingRow{}, cg.rows...), pg.rows...)}
 					id := "local-parent\x00" + g.scope + "\x00" + n
 					if _, exists := bases[id]; !exists {
 						bases[id] = g
@@ -301,7 +351,7 @@ func collisionRows(platform string, rows []bindingRow, parentEdges []parentEdge)
 		} else if allSame(ids) {
 			class = "same-id-different-verb"
 		}
-		out = append(out, collision{Platform: platform, ScopeKind: g.kind, Scope: g.scope, Key: g.key, Class: class, Origins: origins, IDs: ids, Verbs: verbs, Order: order, Evidence: g.evidence})
+		out = append(out, collision{Platform: platform, ScopeKind: g.kind, Scope: g.scope, Path: g.path, Class: class, Origins: origins, IDs: ids, Verbs: verbs, Order: order, Evidence: g.evidence})
 	}
 	sort.Slice(out, func(i, j int) bool {
 		if out[i].ScopeKind != out[j].ScopeKind {
@@ -310,13 +360,7 @@ func collisionRows(platform string, rows []bindingRow, parentEdges []parentEdge)
 		if out[i].Scope != out[j].Scope {
 			return out[i].Scope < out[j].Scope
 		}
-		if out[i].Key.Name != out[j].Key.Name {
-			return out[i].Key.Name < out[j].Key.Name
-		}
-		if out[i].Key.Str != out[j].Key.Str {
-			return out[i].Key.Str < out[j].Key.Str
-		}
-		return out[i].Key.Mod < out[j].Key.Mod
+		return normalizeRawPath(out[i].Path) < normalizeRawPath(out[j].Path)
 	})
 	return out
 }
@@ -346,4 +390,20 @@ func allSame(values []string) bool {
 func normalizeRawKey(key keyRow) string {
 	canonical := canonicalKey(key)
 	return fmt.Sprintf("%d\x00%s\x00%d", canonical.Name, canonical.Str, canonical.Mod)
+}
+
+func canonicalPath(path []keyRow) []keyRow {
+	canonical := make([]keyRow, len(path))
+	for i, key := range path {
+		canonical[i] = canonicalKey(key)
+	}
+	return canonical
+}
+
+func normalizeRawPath(path []keyRow) string {
+	parts := make([]string, len(path))
+	for i, key := range path {
+		parts[i] = normalizeRawKey(key)
+	}
+	return fmt.Sprintf("%d\x00%s", len(path), strings.Join(parts, "\x01"))
 }
