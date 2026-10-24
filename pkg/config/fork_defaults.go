@@ -8,6 +8,8 @@ func applyForkDefaults(config *UserConfig) *UserConfig {
 	config.Git.AutoRefresh = false
 	config.Git.AutoForwardBranches = "none"
 	config.Git.AutoStageResolvedConflicts = false
+	// Include all refs in the history by default, while preserving config overrides.
+	config.Git.Log.ShowWholeGraph = true
 	// Reserve provisional keys for direct comparisons. The keymap milestone
 	// will rebind displaced commands; they remain available in the palette.
 	// This overlay changes defaults only, so explicitly loaded bindings remain authoritative.

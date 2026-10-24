@@ -15,9 +15,9 @@ review flow, with sensible defaults and explicit confirmation.
 
 ## User-specified commands
 
-These commands apply to normal panes. The user confirmed that Enter retains
-normal confirm/input behavior in dialogs, search and editors. Enter opens the
-current repository's commit flow from any normal pane, using prepared index changes; it is not an inspection key.
+Enter opens the commit flow only while the Files pane is focused. It is a
+handled no-op in every other normal pane, including a focused working-tree
+diff. Dialogs, search and editors retain normal Enter/input behavior.
 
 | Path | Meaning | Action identities / integration |
 | --- | --- | --- |
@@ -40,7 +40,7 @@ current repository's commit flow from any normal pane, using prepared index chan
 | `s s` | Soft reset current branch to selected commit, with confirmation | Preselect soft mode in captured reset flow |
 | `s c` | Switch/checkout selected branch or commit; review branch name/create/move options | Unified selected-source checkout flow; existing named-checkout backend is a foundation |
 | `n b` | Create branch at selected branch/commit without checkout; name and move-non-current options | Extend `branch.place-at-selected-commit` to selected branch sources |
-| Enter | Open commit flow globally, regardless of focused normal pane | Route `commit.create` through a global action |
+| Enter in Files | Open commit flow | `commit.create`; other normal panes consume Enter without action |
 | `i` | Ignore/exclude selected working path | `file.ignore-menu` |
 | `u u` | Undo the last applicable operation | `branch.reflog-undo`, `conflict.undo` |
 | `u r` | Redo | `branch.reflog-redo` |
@@ -55,6 +55,8 @@ current repository's commit flow from any normal pane, using prepared index chan
 | `c y` | Mark selected commits for cherry-pick, idempotently | Split mark-only behavior from `commit.copy-for-cherry-pick` toggle |
 | `c x` | Unmark only selected commits for cherry-pick | New selected-only unmark; do not reuse reset-all |
 | `c p` | Cherry-pick marked or selected commits; confirm the exact ordered list | Extend `commit.cherry-pick` beyond copied-set/count-only confirmation |
+| Escape | Exit the active UI layer/mode; clearing cherry-pick mode unmarks all commits | General cancel flow; no separate unmark-all shortcut |
+| `g c` | Combine selected commits into a replacement for their first selected ancestor | New combine action replaces normal squash/fixup commands; editable message |
 | `y` | Open copy choices | Keep copy actions under the visible copy group |
 
 ## Remaining operation paths proposed for review
@@ -73,25 +75,18 @@ line-staging actions can remain independently discoverable in `?`.
 | `n r` | Add remote | `remote.create` |
 | `n f` | Add fork remote | `remote.add-fork` |
 | `n s` | Add submodule | `submodule.create` |
-| `g c f` | Restore selected historical file version | `history-file.checkout`; keep separate from branch/commit switching |
+| `g v f` | Restore selected historical file version | `history-file.checkout`; moved so `g c` is a leaf, not a prefix |
 | `g l` | Pull/update review; deliberately no single-key Pull | `branch.pull-current`, `branch.pull-selected` |
 | `g f` | Fast-forward selected branches | `branch.fast-forward-selected` |
 | `g t` | Configure upstream/tracking | `branch.upstream-menu`, `branch.set-upstream-to-selection` |
 | `g i` | Start interactive rebase | `commit.rebase-interactive` |
 | `g b` | Bisect choices | `bisect.options-menu` |
-| `g v` | Revert selected commit | `commit.revert` |
+| `g v c` | Revert selected commit | `commit.revert`; shares the revert/restore group with `g v f` |
 | `g a` | Apply selected stash | `stash.apply` |
 | `g o` | Continue/skip/abort current merge/rebase, through its operation menu | `branch.merge-rebase-menu` |
 | `g y` | Git-flow choices | `branch.git-flow-menu` |
-| `g x m` | Mark selected commit as fixup | `commit.mark-fixup` |
-| `g x c` | Create fixup commit | `commit.create-fixup-menu` |
-| `g x f` | Find fixup target | `commit.find-fixup-target` |
-| `g x s` | Set fixup message | `commit.set-fixup-message` |
-| `g q s` | Squash selected commits | `commit.squash-down` |
-| `g q a` | Apply autosquash/fixup commits | `commit.autosquash` |
 | `g r b` | Mark rebase base | `commit.mark-rebase-base` |
 | `g r p` | Mark rebase todo as pick | `commit.mark-pick` |
-| `c a` | Unmark all cherry-pick commits | `commit.clear-cherry-pick-selection`; distinct from selected-only `c x` |
 | `g m n` | Move commits to a new branch | `branch.move-commits-to-new` |
 | `g m u` | Move selected commit up | `commit.move-up` |
 | `g m d` | Move selected commit down | `commit.move-down` |
@@ -126,8 +121,8 @@ line-staging actions can remain independently discoverable in `?`.
 
 Inspection means branch → commits, commit → changed files, historical file →
 diff, or focusing selected read-only details. It never applies a stash, checks
-out a ref or switches worktrees. Space performs this outside Files. `v` is a
-proposed inspect alias in all normal panes, including Files, so inspecting a
+out a ref or switches worktrees. Space performs this outside Files. The user approved `v` for inspection in all
+normal panes, including Files, so inspecting a
 working file does not compete with staging. Directory inspection in Files must
 focus its details rather than toggle staging or unexpectedly collapse the tree.
 
@@ -179,20 +174,27 @@ Left on a file or collapsed directory selects its visible parent; at the root
 it does nothing. Right on an expanded directory selects its first visible
 child; on a file or empty tree it does nothing. Respect compressed directories,
 filtering and tree-root visibility; flat views must not fall through to pane
-switching. The remaining navigation table is proposed for review. `h`/`l` and Tab/Backtab are proposed pane-navigation
-alternates. `[`/`]` mean previous/next tab. Alt+Left/Right scroll
-horizontally. Numbered pane jumps keep their explicit numbered targets. Search
-match navigation moves to F3/Shift+F3. These navigation roles cover the
+switching. The remaining navigation table is proposed for review.
+The user approved `h`/`l` for previous/next pane and Tab/Shift+Tab for
+next/previous tab (Backtab is the legacy terminal name for Shift+Tab). Number
+keys keep their explicit pane targets. Alt+Left/Right are proposed horizontal
+scrolling controls. F3/Shift+F3 are approved for next/previous search match.
+`/` enters search text; letters remain literal while typing. Once search is
+submitted, `p` remains Push, not previous-match; `n` remains the creation menu,
+not search-next. Vim-style `n`/`N` would also violate case-insensitive command
+matching. These navigation roles cover the
 `navigation.*` / `selection.*` factories not individually named above, without
 reusing action letters. Mouse navigation/link activation remains physical input.
 
 ## Modal controls and generic identities
 
 Enter confirms a modal choice or single-line prompt; Esc cancels/returns, with
-child-prefix Esc returning to the parent prefix. Multiline-editor Enter inserts
-a newline. F10 submits the commit editor from either field; Alt+Enter is an
+child-prefix Esc returning to the parent prefix. Leaving cherry-pick marking
+mode through Escape clears all marks; there is no `c a` shortcut.
+Multiline-editor Enter inserts a newline. F10 submits the commit editor from either field; Alt+Enter is an
 alternate. Editor field switching uses Tab/Backtab, message history Alt+Up/Down,
-and editor-specific options F4 (F2 is reserved for rename/reword). Search input history uses Up/Down. Suggestions
+and editor-specific options F4 (F2 is reserved for rename/reword). Search input
+history uses Up/Down. Suggestions
 use Enter to accept, Esc to cancel, Tab to return to input, Delete/`e` to delete/edit
 only when the suggestions list has focus. Menu navigation retains physical
 keys; printable letters in filterable menus are text, not accelerators.
@@ -202,6 +204,51 @@ These modal roles cover `menu.*`, `confirmation.*`, `prompt.*`, `suggestion.*`,
 `commit.cancel-drag`, `navigation.diff.escape`, `navigation.return-files` and
 `game.snake.cancel`. Game directions remain explicit game-mode navigation.
 `ui.information.activate` is mouse-only today; no keyboard operation is invented.
+
+## Combine selected commits and history display
+
+`g c` combines at least two selected commits into one replacement at the first
+selected commit: the selected commit that is an ancestor of every other selected
+commit. Determine this from Git ancestry, not timestamps, visible row order or
+the most recently selected row. Do not squash into an unselected parent. With
+no unique selected ancestor, explain why the selection cannot be combined.
+
+The editable summary is prefilled from that first commit's subject. The editable
+description contains **every selected commit's full message, subject and body**,
+in ancestor-first order, including the first message; this text policy was
+confirmed by the user. Show the complete source list, replacement position,
+current branch/HEAD and history-rewrite effects before starting. Preserve edits
+through the final confirmation. No selected message is silently discarded.
+
+This replaces the normal squash/fixup interface and its separate `g q …` /
+`g x …` routes. Git rebase implementation primitives may still use those terms;
+they are not competing defaults in the fork's normal interface. A distinct
+combine action/identity is needed, not a relabel of upstream squash-down or
+fixup behavior. `g c` has no chord descendants: file restoration moves from
+`g c f` to `g v f`, and commit revert from `g v` to `g v c`.
+
+Capture immutable IDs and the affected destination before the editor or review.
+Respect the existing clean tracked/index rule for rebase, allow harmless
+untracked files, and never autostash. Preserve unselected commits and side refs;
+review non-adjacent selections and merge topology explicitly rather than
+silently including extra commits or flattening history. Full-graph visibility
+must not cause implicit checkout or rewriting of a different branch. The exact
+topology support/eligibility requires source-backed design before implementation;
+refuse an unsupported plan with a reason instead of guessing a linear order.
+
+The log defaults to the full graph (`git.log.showWholeGraph: true`, Git's
+all-ref history), not only current-branch history. Keep explicit user/repository
+`false` overrides and the log-view toggle. This setting is independent of the
+paused final bindings; the default implementation/verification is recorded in
+[MergeGuide.md](MergeGuide.md). Graph drawing (`showGraph`) and history loading
+are distinct; changing the default does not remove pagination or fetch refs.
+
+Escape is the general cancellation mechanism. Modal/prefix/search input gets
+its normal cancel handling; normal-pane cherry-pick marking can be exited with
+Escape and all marks are cleared. Resolve cancellation priority with existing
+range/filter/detail layers so repeated Escape unwinds them predictably. Escape
+must not silently abort an in-progress Git operation or discard working files;
+Git abort remains an explicit reviewed operation.
 
 ## Review and target behavior
 

@@ -18,7 +18,7 @@ context parents identify history sources; they do not inherit keyboard bindings.
 
 | Pane | Operation target and important existing overloads | Migration constraint |
 | --- | --- | --- |
-| Files | Selected working paths/range; Space stages, except a single dialog-only conflict opens resolution choices; `d` discards; `r` refreshes | Separate stage, conflict choices and discard. Refresh is an application verb. The latest proposal uses global Enter for commit and `v` for inspection; Left/Right navigate the tree. |
+| Files | Selected working paths/range; Space stages, except a single dialog-only conflict opens resolution choices; `d` discards; `r` refreshes | Separate stage, conflict choices and discard. Refresh is an application verb. The latest proposal uses Files-only Enter for commit and `v` for inspection; Left/Right navigate the tree. |
 | Local branches | Selected refs/range; Space checks out, Enter views history; rename and rebase use opposite cases | Checkout gets its own path; preserve captured selected-branch push/update/delete flows. |
 | Remote branches | Selected full remote ref; Space checks out/creates a local branch, Enter views history | Keep source-ref identity; creation and checkout are distinct from inspection. |
 | Remotes | Selected named remote; Enter views remote branches; fetch differs from repository-wide fetch in scope | Fetch may share a verb, with its target labeled. Remote creation has a distinct creation leaf. |

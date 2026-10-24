@@ -10,10 +10,19 @@ keybindings; the user wants to decide whether the proposed bindings are right.
 [keymap-design.md](keymap-design.md) and
 [keymap-allocation.md](keymap-allocation.md) remain proposals for that review.
 The latest user table reserves `d` for diff, `s` for reset/switch, `c` for
-cherry-pick and `u` for undo/redo. Enter commits globally from normal panes;
-dialogs/search/editors retain normal Enter behavior (confirmed by the user).
+cherry-pick and `u` for undo/redo. Enter commits only while Files is focused;
+it is a no-op in other normal panes. Dialogs/search/editors retain normal Enter.
+`v` inspection, `h`/`l` pane switching, Tab/Shift+Tab tab switching and F3/Shift+F3
+search navigation are approved. Escape exits marking mode and clears all
+cherry-pick marks; remove the separate `c a` shortcut. `g c` combines selected
+commits at their first selected ancestor, replacing squash/fixup, with editable
+first subject and all full messages in ancestor-first order (confirmed).
 Space stages only in Files and inspects elsewhere. Left/Right navigate the
 Files tree; number keys remain available for pane switching.
+
+The independent full-graph default uses `git.log.showWholeGraph: true` before
+user config; explicit false overrides remain supported. Final keybindings and
+combine remain proposals until user review.
 
 Scope: one command meaning per default key/path across panes. ASCII command
 letters are case-insensitive; inapplicable actions consume their key without
@@ -21,8 +30,8 @@ side effects or global fallback. Reserve Ctrl defaults for custom commands,
 while preserving normal text entry and terminal Enter/Tab byte aliases. Use
 visible accelerator menus for two-/three-letter paths. Keep working-tree and
 previous-version diff separate as `d w` / `d p`, add pasted-hash comparison
-on `d c`; Pull has no single-letter shortcut. Preserve explicit overrides and custom commands. Frequency persistence
-and sorting remain item 9.
+on `d c`; Pull has no single-letter shortcut. Preserve explicit overrides and
+custom commands. Frequency persistence and sorting remain item 9.
 
 ## Remaining tasks for item 8
 
@@ -31,7 +40,7 @@ and sorting remain item 9.
    The TortoiseGit guide and concrete verb/prefix table are recorded; the table
    names every instantiated operation ID and the known dynamic variants.
    Present the final proposal for user review before implementation. Incorporate
-   the latest user table, including global commit Enter, scoped Space, tree
+   the latest user table, including Files-only commit Enter, Escape cancellation, combine `g c`, scoped Space, tree
    arrows, `d w`/`d p`/`d c`, `s h`/`s m`/`s s`/`s c`, `n b` and
    `c y`/`c x`/`c p`. Keep Pull in a deliberate menu path. Define source-field
    override projection for commands with several legacy aliases or context-specific fields.
@@ -43,11 +52,16 @@ and sorting remain item 9.
    Preserve literal input, search/filter text, subprocess typing, explicit
    override behavior and custom Ctrl commands; retain genuine errors after an action is invoked.
 4. After user review, extend the captured operation flows required by the
-   requested bindings: pasted-hash diff for commits/files, global commit entry,
+   requested bindings: pasted-hash diff for commits/files, Files-only commit Enter,
    full-refresh/re-render F5 without fetch, mandatory discard confirmation,
    explanatory rebase/merge/reset confirmation with preselected reset mode,
    unified selected branch/commit checkout and ref-only branch placement,
-   idempotent cherry-pick mark/unmark and exact-list marked/selected review.
+   idempotent cherry-pick mark/unmark, Escape mark clearing and exact-list
+   marked/selected review, plus ancestry-based combine with an editable message.
+   Combine must replace the first selected ancestor (not an unselected parent),
+   preserve all selected full messages in ancestor-first order and leave
+   unselected history intact. Resolve non-adjacent/merge topology eligibility
+   before implementation; do not derive ancestry from graph row/date order.
    Retain native concurrency/overwrite protection and no implicit stash. Use
    [keymap-behavior-gaps.md](keymap-behavior-gaps.md) as source evidence, not proof
    that these flows are already implemented.
@@ -99,6 +113,9 @@ and sorting remain item 9.
 runs successfully. Headless invocations share `/tmp/lazygit/test_lazygit` and
 fixture directories: serialize their builds/runs. Use bounded eventual checks
 for background events, not immediate UI assertions or synthetic refreshes.
+Use verbose named terminal runs and verify the expected scenario names actually
+ran; a successful exit with "no tests to run" is not coverage. Test names are
+`TestIntegration/<group>/<scenario>` (there is no literal `group` segment).
 Finish generation successfully before starting headless checks, and keep
 integration-test sources frozen during the run. Each scenario variable must be
 its filename converted from snake_case to PascalCase, using unqualified

@@ -29,9 +29,10 @@ opens the diff group. No invisible chord buffer or inter-key timeout is needed.
 The latest user-specified bindings in the [allocation table](keymap-allocation.md)
 replace earlier proposals. Space is an explicit scoped exception: in Files it
 stages/unstages the selected files/directory/root; elsewhere it inspects details.
-Enter opens the commit flow globally from every normal pane. The user confirmed
-that dialogs, search and editors keep their normal Enter/input behavior. Modal
-Enter confirms/executes, Esc cancels/returns, and multiline Enter inserts a newline.
+Enter opens the commit flow only when Files is focused and does nothing in
+other normal panes. Dialogs, search and editors keep normal Enter/input behavior.
+Modal Enter confirms/executes, Esc cancels/returns, and multiline Enter inserts
+a newline.
 
 | Key/path | Normal-pane meaning |
 | --- | --- |
@@ -49,7 +50,7 @@ Enter confirms/executes, Esc cancels/returns, and multiline Enter inserts a newl
 | `s h` / `s m` / `s s` | Hard / mixed / soft reset current branch to selected commit, with confirmation |
 | `s c` | Switch/checkout selected branch/commit, with new-name and move-non-current options |
 | `n b` | Create/move branch at selected branch/commit without checkout |
-| Enter | Open commit flow globally from every normal pane |
+| Enter | Commit only from Files; no-op in other normal panes |
 | `i` | Ignore/exclude selected working-tree path |
 | `u u` / `u r` | Undo / redo |
 | `q` | Quit |
@@ -61,13 +62,18 @@ Enter confirms/executes, Esc cancels/returns, and multiline Enter inserts a newl
 | `c y` / `c x` | Mark / unmark selected commits for cherry-pick, without toggling unrelated marks |
 | `c p` | Cherry-pick marked or selected commits after exact-list confirmation |
 | `y` | Open copy choices |
+| `v` | Inspect details (approved) |
+| Escape | Exit the active UI layer/mode; exiting cherry-pick marking clears all marks |
+| `g c` | Combine selected commits at their first selected ancestor; editable first subject and full messages in ancestor-first order |
 
-Remaining proposed navigation: `v` inspects selected details in all normal panes,
-including Files where Space stages; `j`/`k` and Up/Down move between items;
-`h`/`l`, Tab/Backtab and number keys switch panes; Shift+Up/Down extend selection;
-Home/End move to first/last item; PageUp/PageDown page the focused view;
-Alt+Up/Down scroll main output; F3/Shift+F3 navigate search matches. These
-remaining choices require review; physical Left/Right in Files follow the user's
+The user approved `v` to inspect details (including Files), `h`/`l` to switch
+panes, Tab/Shift+Tab to switch tabs, and F3/Shift+F3 for search-match navigation.
+`/` opens search; input letters remain text. After submission `p` remains Push,
+and `n`/`N` are not next/previous search aliases. Remaining proposed navigation:
+`j`/`k` and Up/Down move between items, number keys switch panes, Shift+Up/Down
+extend selection, Home/End select first/last item, PageUp/PageDown page the
+focused view, and Alt+Up/Down scroll main output. These remaining choices
+require review; physical Left/Right in Files follow the user's
 explicit tree behavior and must not fall through to pane switching.
 
 These are proposed meanings, not a completed allocation of every action. The
@@ -90,7 +96,13 @@ The previous `w`/`v` diff shortcuts, `r` rename, single `d` deletion, `c` commit
 F2 is reserved for rename/reword, so editor options move to proposed F4; Delete
 also replaces the suggestions-list delete shortcut. Checkout variants belong in
 `s c` options/palette entries; historical-file restoration remains a separate
-proposed `g c f` action. Stage-all remains discoverable, without a default key;
+proposed `g v f` action (commit revert moves to `g v c`, leaving `g c` free).
+The `c a` unmark-all proposal is removed: Escape exits cherry-pick marking
+and clears all marks. `g c` replaces the normal squash/fixup paths, using Git
+ancestry to find the first selected ancestor, preserving the first subject and
+all selected full messages in an editable ancestor-first description. The log
+now defaults to the full all-ref graph, independently of keybinding activation.
+Stage-all remains discoverable, without a default key;
 working-tree line staging can use proposed `g h s`/`g h u` or the palette.
 
 The [allocation draft](keymap-allocation.md) assigns concrete third letters and

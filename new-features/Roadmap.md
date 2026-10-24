@@ -603,9 +603,13 @@ the selected branch/commit without checkout. Reuse captured target/backend
 flows and native Git concurrency/dirty-file protections. Reserved/occupied
 branches remain protected; current-branch relocation belongs to reset.
 
-Enter opens the commit flow globally regardless of focused normal pane. The
-user explicitly confirmed that dialogs, search and editors retain their normal
-Enter behavior. Space is an agreed scoped exception: only in Files it toggles
+Enter opens the commit flow only when the Files pane is focused; it must do
+nothing in other normal panes, including a focused working-tree diff. Dialogs,
+search and editors retain their normal Enter behavior. The user approved `v`
+for inspection, `h`/`l` for pane switching, Tab/Shift+Tab for tab switching and
+F3/Shift+F3 for next/previous search matches. `/` enters search text; after
+submission `p` remains Push. Do not use mode-specific `p`/`n` search navigation,
+or Vim-style `n`/`N` next/previous aliases that violate case-insensitivity. Space is an agreed scoped exception: only in Files it toggles
 staging (including directory/root selection); on other selections it inspects
 details without mutation. Do not add `s t` or a stage-all shortcut: selecting
 the tree root covers all files. Left in Files collapses an expanded directory,
@@ -620,8 +624,31 @@ exact ordered commits and current destination. Do not reuse upstream toggle,
 reset-all or count-only confirmation as equivalents. No implicit stash. The
 proposed review offers a marked/selected source choice when both exist.
 `u u` / `u r` undo/redo, `i` ignores, `q` quits, `?` discovers commands, `/` searches,
-`:` enters a command, and `y` opens copy choices. Remaining navigation and less
+`:` enters a command, and `y` opens copy choices. Escape is the general exit/cancel
+mechanism; leaving cherry-pick marking clears every mark and replaces a separate
+`c a` unmark-all command. Preserve normal modal/prefix cancellation and never
+interpret Escape as silent Git abort or working-file discard. Remaining navigation and less
 common operation paths stay proposed until final review.
+
+`g c` replaces the normal squash/fixup commands with **Combine selected
+commits**. The replacement sits at the first selected commit, defined by Git
+ancestry: it must be an ancestor of every other selected commit, not just the
+oldest timestamp/last visible row. Do not combine into an unselected parent.
+Prefill the summary from that first commit; the editable description preserves
+every selected full message (subject and body), including the first, in
+ancestor-first order. The user confirmed preservation of all message text.
+Capture and review exact commits, destination, rewrite effects and edited text;
+preserve unselected history/side refs and never silently flatten merges. Resolve
+topology eligibility before implementation. No implicit checkout to another
+branch or autostash. Remove competing squash/fixup default paths and relocate
+`g c f` file restoration to proposed `g v f` (`g v c` reverts a commit), so `g c`
+is a leaf with no conflicting descendants.
+
+Default log scope is the full all-ref graph, rather than only current-branch
+history: `git.log.showWholeGraph: true`. Preserve explicit user/repository false
+and ordinary view toggles. This independent default can be delivered while
+final keybindings remain paused. The setting selects Git's `--all` history; it
+is distinct from drawing graph characters, pagination and fetching remote data.
 
 For a reserved action key whose verb is inapplicable, consume the event with no
 side effect. Do not fall through to an unrelated parent/global binding, show

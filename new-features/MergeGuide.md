@@ -42,6 +42,30 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Full-graph history default (independent of paused final keybindings)
+
+- `config/fork_defaults.go` now sets `Git.Log.ShowWholeGraph = true` before
+  loading user/repository config. Keep the upstream constructor unchanged and
+  retain explicit false overrides. `showGraph` remains the separate rendering
+  setting; this change uses the existing all-ref query (`GetCommitsOptions.All`,
+  `git log --all`) without changing pagination, sorting, live toggle persistence
+  or fetching refs. Final keybinding and combine proposals are still paused.
+- `test/default_test_config/config.yml` pins `git.log.showWholeGraph: false` for
+  existing terminal scenarios whose row/range assumptions require branch-only
+  history. `commit/full_graph_default` restores the real default constructor
+  value and checks local-side, remote-only and current-branch commits together,
+  without changing HEAD. Keep that targeted default-policy coverage when
+  updating the common harness. Config tests cover all platform defaults,
+  explicit user opt-out, repository precedence and restoration after reload.
+- Generation updates the config guide/schema default and registers the terminal
+  scenario. The only application-policy change is the fork overlay assignment;
+  no command key or graph-loader codepath is replaced by this commit.
+  Config/context/helper short tests passed (2.110s / 0.050s / 47.427s), as did
+  generation, debug build, formatting and scoped lint. The verbose terminal run
+  explicitly executed `commit/full_graph_default`, `commit/highlight` and
+  `commit/do_not_show_branch_marker_for_head_commit` (4.899s, all passed). The
+  initial incorrect filter ran no scenarios and is not counted as coverage.
+
 ### Command-key foundation (item 8 in progress)
 
 - `config/fork_keybinding_overrides.go` records explicitly loaded keybinding
