@@ -170,6 +170,9 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   their previous behavior. The small `createMenu` and `ContextMgr.Activate`
   hooks invalidate old tokens when menus/focus are replaced. Preserve this
   pre-pop/post-pop order when merging upstream menu or focus changes.
+- Explicit single-key overrides take precedence over default prefix descendants.
+  If both the leaf and descendants are explicitly configured, present the
+  visible choice; do not silently discard either user-configured action.
 - `registerForkCommands` merges global paths into each normal pane and reserves
   other core root keys as no-ops. It retains exact custom/editor/mouse routes;
   global custom routes precede compiled defaults. Registration is implemented

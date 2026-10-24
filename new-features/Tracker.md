@@ -79,7 +79,9 @@ custom commands. Frequency persistence and sorting remain item 9.
    that these flows are already implemented.
 5. Connect the implemented visible two-/three-key menu flow to normal-pane
    registration and verify captured origin/repository and selection checks. Keep prefixes free of mutations and hidden timing state;
-   define nested Esc/back behavior and safely handle invalid continuations,
+   Explicit single-key overrides now displace default continuations; explicitly
+   configured leaf/descendant collisions retain a visible choice. Verify
+   nested Esc/back behavior and safely handle invalid continuations,
    focus/repository changes and popup replacement. Expose leaves independently
    through `?` and show their complete paths.
 6. Apply the reviewed defaults across Linux/macOS/Windows. Remove core Ctrl

@@ -85,6 +85,13 @@ func (flow *forkPrefixFlow) run(tree *keymap.CommandTree, path []gocui.Key, pare
 		return nil
 	}
 	bindings := forkApplicableBindings(tree.Bindings)
+	// An explicit single-key action overrides default continuations. If the
+	// user explicitly configured both a leaf and descendants, keep the visible
+	// choice instead of guessing which configured action they intended.
+	explicitLeaf := len(bindings) > 0 && !bindings[0].DefaultCommand
+	if explicitLeaf && !forkExplicitDescendants(tree) {
+		tree = &keymap.CommandTree{Bindings: tree.Bindings}
+	}
 	if len(tree.Children) == 0 {
 		if len(bindings) == 0 {
 			return nil
@@ -94,6 +101,20 @@ func (flow *forkPrefixFlow) run(tree *keymap.CommandTree, path []gocui.Key, pare
 		}
 	}
 	return flow.show(tree, bindings, path, parent)
+}
+
+func forkExplicitDescendants(tree *keymap.CommandTree) bool {
+	for _, edge := range tree.Children {
+		for _, binding := range edge.Tree.Bindings {
+			if !binding.DefaultCommand {
+				return true
+			}
+		}
+		if forkExplicitDescendants(edge.Tree) {
+			return true
+		}
+	}
+	return false
 }
 
 func (flow *forkPrefixFlow) show(tree *keymap.CommandTree, bindings []*types.Binding, path []gocui.Key, parent func() error) error {

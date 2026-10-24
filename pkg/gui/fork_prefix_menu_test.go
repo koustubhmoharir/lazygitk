@@ -290,3 +290,24 @@ func TestForkApplicableBindingsChoosesLiveExplicitAliasesOnce(t *testing.T) {
 		t.Fatalf("applicable aliases = %#v", got)
 	}
 }
+
+func TestForkPrefixExplicitLeafOverridesDefaultContinuations(t *testing.T) {
+	h := &forkPrefixMenuHarness{valid: true}
+	leaf := &types.Binding{CommandID: "legacy-action"}
+	child := &types.Binding{CommandID: "default-child", DefaultCommand: true}
+	tree := &keymap.CommandTree{Bindings: []*types.Binding{leaf}, Children: []keymap.CommandEdge{{Key: gocui.NewKeyRune('p'), Tree: &keymap.CommandTree{Bindings: []*types.Binding{child}}}}}
+	if err := h.flow().run(tree, nil, nil); err != nil {
+		t.Fatal(err)
+	}
+	if len(h.menus) != 0 || len(h.invoked) != 1 || h.invoked[0] != leaf {
+		t.Fatal("a new default prefix changed an explicit one-key shortcut")
+	}
+	h = &forkPrefixMenuHarness{valid: true}
+	child.DefaultCommand = false
+	if err := h.flow().run(tree, nil, nil); err != nil {
+		t.Fatal(err)
+	}
+	if len(h.menus) != 1 || len(h.invoked) != 0 {
+		t.Fatal("conflicting explicit leaf and descendant routes must offer a visible choice")
+	}
+}
