@@ -76,7 +76,7 @@ func (self *Common) ContinueOnConflictsResolved(command string) {
 func (self *Common) ConfirmDiscardLines() {
 	self.t.ExpectPopup().Confirmation().
 		Title(Equals("Discard change")).
-		Content(Contains("Are you sure you want to discard this change")).
+		Content(Contains("Discard the selected unstaged changes from the working tree?")).
 		Confirm()
 }
 

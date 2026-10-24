@@ -3,19 +3,142 @@
 disableStartupPopups: true
 promptToReturnFromSubprocess: false
 
-# Legacy operation scenarios use these explicit, non-conflicting test shortcuts.
-# w/W and v/V remain the real direct-diff defaults. Tests of the default keymap
-# must restore the constructor's Keybinding value in SetupConfig rather than
-# treating this compatibility fixture as product defaults.
+# Compatibility bindings for integration scenarios that press legacy keybinding
+# fields through TestDriver. They are explicit test overrides of upstream
+# defaults, not the product keymap. Where an uppercase upstream binding would
+# share a case-folded key with another command in the same scope, the lowercase
+# command keeps its upstream key and the uppercase one moves to a distinct key.
+# Tests of the real defaults must replace the loaded Keybinding value with the
+# platform constructor in SetupConfig.
 keybinding:
   universal:
+    quit: [q, '<c-c>']
+    return: '<esc>'
+    prevItem: '<up>'
+    nextItem: '<down>'
+    prevPage: ','
+    nextPage: '.'
+    scrollLeft: '<alt+h>'
+    scrollRight: '<alt+l>'
+    gotoTop: '<'
+    gotoBottom: '>'
+    togglePanel: '<alt+tab>'
+    rangeSelectDown: '<shift+down>'
+    rangeSelectUp: '<shift+up>'
+    jumpToBlock: ['1', '2', '3', '4', '5']
+    focusMainView: '0'
+    jumpToFile: '<ctrl+g>'
+    startSearch: '/'
+    optionMenu: '?'
+    select: '<space>'
+    goInto: '<enter>'
+    confirm: '<enter>'
+    confirmMenu: '<enter>'
+    confirmSuggestion: '<enter>'
+    copyToClipboard: '<ctrl+o>'
+    remove: d
+    new: n
+    edit: e
+    openFile: o
+    openRecentRepos: '<ctrl+r>'
+    scrollUpMain: '<pgup>'
+    scrollDownMain: '<pgdown>'
+    executeShellCommand: ':'
+    createRebaseOptionsMenu: m
+    pushFiles: '<ctrl+shift+p>'
+    pullFiles: p
+    refresh: '<f12>'
+    createPatchOptionsMenu: '<ctrl+p>'
+    nextScreenMode: '+'
+    prevScreenMode: '_'
+    cycleDiffRenderers: '|'
+    cycleDiffRenderersReverse: '\'
+    undo: z
+    redo: '<ctrl+shift+z>'
+    filteringMenu: '<ctrl+s>'
+    toggleWhitespaceInDiffView: '<ctrl+w>'
+    increaseContextInDiffView: '}'
+    decreaseContextInDiffView: '{'
+    increaseRenameSimilarityThreshold: ')'
+    decreaseRenameSimilarityThreshold: '('
     newWorktree: '<f6>'
     diffingMenu: '<f7>'
     toggleRangeSelect: '<f8>'
+  status:
+    allBranchesLogGraph: a
+    allBranchesLogGraphReverse: '<ctrl+alt+b>'
   files:
+    commitChanges: c
     commitChangesWithoutHook: '<f9>'
+    amendLastCommit: '<ctrl+shift+a>'
+    findBaseCommitForFixup: '<ctrl+f>'
+    ignoreFile: i
+    refreshFiles: r
+    stashAllChanges: s
+    viewStashOptions: '<ctrl+alt+s>'
+    toggleStagedAll: a
+    viewResetOptions: '<ctrl+alt+d>'
+    fetch: f
+    toggleTreeView: '`'
+    openMergeOptions: '<ctrl+alt+m>'
+    openStatusFilter: '<ctrl+b>'
+    copyFileInfoToClipboard: y
+    collapseAll: '-'
+    expandAll: '='
+  branches:
+    createPullRequest: o
+    viewPullRequestOptions: '<ctrl+alt+o>'
+    checkoutBranchByName: c
+    checkoutPreviousBranch: '-'
+    rebaseBranch: r
+    renameBranch: '<ctrl+shift+r>'
+    mergeIntoCurrentBranch: '<ctrl+shift+m>'
+    moveCommitsToNewBranch: '<ctrl+alt+n>'
+    fastForward: f
+    createTag: T
+    pushTag: '<ctrl+shift+p>'
+    setUpstream: u
+    addForkRemote: '<ctrl+alt+f>'
+    sortOrder: s
   commits:
     pasteCommits: '<f10>'
+    amendToCommit: '<ctrl+shift+a>'
+    checkoutCommit: '<space>'
+    cherryPickCopy: '<ctrl+shift+y>'
+    copyCommitAttributeToClipboard: y
+    createFixupCommit: '<ctrl+alt+f>'
+    tagCommit: '<ctrl+shift+t>'
+    markCommitAsBaseForRebase: '<ctrl+alt+b>'
+    markCommitAsFixup: f
+    moveDownCommit: ['<ctrl+j>', '<alt-down>']
+    moveUpCommit: ['<ctrl+k>', '<alt-up>']
+    openPullRequestInBrowser: '<ctrl+shift+g>'
+    pickCommit: p
+    renameCommit: r
+    renameCommitWithEditor: '<ctrl+alt+r>'
+    resetCherryPick: '<ctrl+r>'
+    resetCommitAuthor: a
+    revertCommit: t
+    selectCommitsOfCurrentBranch: '*'
+    setFixupMessage: c
+    squashAboveCommits: '<ctrl+alt+s>'
+    squashDown: s
+    startInteractiveRebase: i
+    viewBisectOptions: b
+    viewResetOptions: g
+  stash:
+    popStash: g
+    renameStash: r
+  commitFiles:
+    checkoutCommitFile: c
+  main:
+    prevHunk: ['<left>', 'h']
+    nextHunk: ['<right>', 'l']
+    prevFile: '<ctrl+alt+p>'
+    nextFile: n
+    toggleSelectHunk: a
+    pickBothHunks: b
+    editSelectHunk: '<ctrl+alt+e>'
 
 gui:
   theme:

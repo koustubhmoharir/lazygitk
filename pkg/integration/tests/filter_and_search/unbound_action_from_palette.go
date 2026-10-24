@@ -38,6 +38,11 @@ var UnboundActionFromPalette = NewIntegrationTest(NewIntegrationTestArgs{
 					Clear().
 					Type("renamed-from-palette").
 					Confirm()
+
+				t.ExpectPopup().Confirmation().
+					Title(Equals("Rename branch")).
+					Content(Contains("renamed-from-palette")).
+					Confirm()
 			}).
 			Lines(
 				Contains("renamed-from-palette"),

@@ -97,7 +97,9 @@ custom commands. Frequency persistence and sorting remain item 9.
    unique paths, disabled no-ops, no parent/global fallback, prefix cancellation
    and captured targets, editors/filtering, custom commands/overrides and actual
    side effects. Run generation, formatting, builds, focused/full short tests,
-   affected terminal scenarios and lint. When item 8 acceptance passes, complete
+   affected terminal scenarios and lint. The full integration suite (715
+   scenarios) and full short suite pass with the explicit legacy compatibility
+   fixture; rerun both after the remaining tasks. When item 8 acceptance passes, complete
    its roadmap description and replace this tracker with item 9's task plan in
    that same commit.
 

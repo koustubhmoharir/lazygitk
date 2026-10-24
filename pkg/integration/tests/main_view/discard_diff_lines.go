@@ -37,7 +37,7 @@ var DiscardDiffLines = NewIntegrationTest(NewIntegrationTestArgs{
 			Tap(func() {
 				t.ExpectPopup().Confirmation().
 					Title(Equals("Discard change")).
-					Content(Contains("Are you sure you want to discard this change")).
+					Content(Contains("Discard the selected unstaged changes from the working tree?")).
 					Confirm()
 			})
 

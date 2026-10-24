@@ -14,7 +14,14 @@ var HistoricalDiffActions = NewIntegrationTest(NewIntegrationTestArgs{
 	SetupConfig: func(appConfig *config.AppConfig) {
 		// Shared integration config can carry legacy alternate bindings from an
 		// earlier scenario; exercise the real constructor defaults for this one.
-		appConfig.GetUserConfig().Keybinding = config.GetDefaultConfig().Keybinding
+		loaded := appConfig.GetUserConfig()
+		appearance := loaded.Gui
+		*loaded = *config.GetDefaultConfigForPlatform(config.KeybindingPlatform())
+		loaded.Gui = appearance
+		loaded.DisableStartupPopups = true
+		loaded.PromptToReturnFromSubprocess = false
+		loaded.Git.AutoDetectExternalChanges = false
+		loaded.Git.Log.ShowWholeGraph = false
 	},
 	SetupRepo: func(shell *Shell) {
 		shell.CreateFile(".gitignore", "/chosen file.txt\n")
@@ -78,10 +85,11 @@ exit 0
 		t.Views().Commits().
 			Focus().
 			SelectedLine(Contains("historical"))
-		t.Views().Options().Content(MatchesRegexp("^Diff with working tree: w"))
-		t.Views().Commits().Press(keys.Commits.CherryPickCopy)
-		t.Views().Options().Content(Contains("Find Paste (cherry-pick) in palette: ?"))
-		t.Views().Commits().Press(keys.Commits.ResetCherryPick)
+		t.Views().Options().Content(Contains("Diff with working tree: d w"))
+		t.Views().Commits().Press(config.Keybinding{"c"})
+		t.GlobalPress(config.Keybinding{"y"})
+		t.Views().Options().Content(Contains("Paste (cherry-pick): c p"))
+		t.Views().Commits().Press(keys.Universal.Return)
 
 		// Set sticky diff state to a different base and direction before checking
 		// that the direct actions continue to use their captured endpoints.
@@ -110,41 +118,36 @@ exit 0
 			Confirm()
 
 		t.Views().Commits().
-			Press(config.Keybinding{"w"})
+			Press(config.Keybinding{"d"})
+		t.GlobalPress(config.Keybinding{"w"})
 		t.Views().Commits().IsFocused()
 		assertToolInputs("historical\n", "working\n")
 
-		t.Views().Commits().Press(config.Keybinding{"W"})
+		// Letters are case-insensitive by design, so uppercase reaches the same action.
+		t.Views().Commits().Press(config.Keybinding{"D"})
+		t.GlobalPress(config.Keybinding{"W"})
 		t.Views().Commits().IsFocused()
 		assertToolInputs("historical\n", "working\n")
 
-		t.Views().Commits().Press(config.Keybinding{"v"})
+		t.Views().Commits().Press(config.Keybinding{"d"})
+		t.GlobalPress(config.Keybinding{"p"})
 		t.Views().Commits().IsFocused()
 		assertToolInputs("before\n", "historical\n")
 
-		t.Views().Commits().Press(config.Keybinding{"V"})
-		t.Views().Commits().IsFocused()
-		assertToolInputs("before\n", "historical\n")
-
-		t.Views().Commits().PressEnter()
+		t.Views().Commits().Press(config.Keybinding{"<space>"})
 		t.Views().CommitFiles().
 			IsFocused().
 			NavigateToLine(Contains("sample.txt"))
-		t.Views().Options().Content(MatchesRegexp("^Diff with working tree: w"))
-		t.Views().CommitFiles().Press(config.Keybinding{"w"})
+		t.Views().Options().Content(Contains("Diff with working tree: d w"))
+		t.Views().CommitFiles().Press(config.Keybinding{"d"})
+		t.GlobalPress(config.Keybinding{"w"})
 		t.Views().CommitFiles().IsFocused()
 		assertToolInputs("historical\n", "working\n")
 
-		t.Views().CommitFiles().Press(config.Keybinding{"W"})
-		t.Views().CommitFiles().IsFocused()
-		assertToolInputs("historical\n", "working\n")
 		t.FileSystem().FileContent("sample.txt", Equals("working\n"))
 
-		t.Views().CommitFiles().Press(config.Keybinding{"v"})
-		t.Views().CommitFiles().IsFocused()
-		assertToolInputs("before\n", "historical\n")
-
-		t.Views().CommitFiles().Press(config.Keybinding{"V"})
+		t.Views().CommitFiles().Press(config.Keybinding{"d"})
+		t.GlobalPress(config.Keybinding{"p"})
 		t.Views().CommitFiles().IsFocused()
 		assertToolInputs("before\n", "historical\n")
 
@@ -183,7 +186,8 @@ exit 0
 		assertRepoUnchanged()
 
 		t.Shell().CreateFile(".git/fail-diff-tool", "fail")
-		t.Views().CommitFiles().Press(config.Keybinding{"w"})
+		t.Views().CommitFiles().Press(config.Keybinding{"d"})
+		t.GlobalPress(config.Keybinding{"w"})
 		t.ExpectPopup().Alert().
 			Title(Equals("Error")).
 			Content(Contains("128")).
@@ -198,7 +202,8 @@ exit 0
 			t.Fail("Removing historical diff tool failure flag: " + err.Error())
 			return
 		}
-		t.Views().CommitFiles().Press(config.Keybinding{"w"})
+		t.Views().CommitFiles().Press(config.Keybinding{"d"})
+		t.GlobalPress(config.Keybinding{"w"})
 		t.Views().CommitFiles().IsFocused()
 		assertToolInputs("historical\n", "working\n")
 		if !assertSourceRemoved() {

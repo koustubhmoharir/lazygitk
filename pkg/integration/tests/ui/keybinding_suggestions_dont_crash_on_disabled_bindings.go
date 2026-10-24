@@ -16,6 +16,6 @@ var KeybindingSuggestionsDontCrashOnDisabledBindings = NewIntegrationTest(NewInt
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
 		t.Views().Files().Focus()
 		t.Views().Options().Content(
-			Equals("Commit: c | Reset: D | Keybindings: ?"))
+			Equals("Commit: c | Reset: <ctrl+alt+d> | Keybindings: ?"))
 	},
 })
