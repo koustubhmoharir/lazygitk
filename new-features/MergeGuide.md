@@ -336,6 +336,12 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ### Command identity and path projection
 
+- The terminal `interactive_rebase/combine_selected` scenario resets the entire
+  loaded configuration to real defaults and invokes uppercase `G C`. Its graph
+  assertions include original history retained by an unrelated branch; separate
+  native log assertions verify only the rewritten branch's topology/messages.
+  Do not mistake the full-graph rows for extra commits on the rewritten branch.
+
 - The integration-only `AppConfig.SaveGlobalUserConfig` delegates keybinding
   serialization to `fork_test_config_save.go`. Preserve explicit legacy leaves
   and programmatic changes, but omit unchanged implicit defaults; otherwise

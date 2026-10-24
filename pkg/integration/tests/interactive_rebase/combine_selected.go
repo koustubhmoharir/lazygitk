@@ -7,7 +7,16 @@ import (
 
 var CombineSelected = NewIntegrationTest(NewIntegrationTestArgs{
 	Description: "Combine at the selected ancestor with editable full messages, cancellation and dirty-tree draft recovery",
-	SetupConfig: func(config *config.AppConfig) { config.GetUserConfig().Git.Log.ShowGraph = "never" },
+	SetupConfig: func(appConfig *config.AppConfig) {
+		loaded := appConfig.GetUserConfig()
+		appearance := loaded.Gui
+		*loaded = *config.GetDefaultConfigForPlatform(config.KeybindingPlatform())
+		loaded.Gui = appearance
+		loaded.DisableStartupPopups = true
+		loaded.PromptToReturnFromSubprocess = false
+		loaded.Git.AutoDetectExternalChanges = false
+		loaded.Git.Log.ShowGraph = "never"
+	},
 	SetupRepo: func(shell *Shell) {
 		shell.CreateFileAndAdd("first", "first\n").Commit("first subject\n\nfirst full description").
 			CreateFileAndAdd("second", "second\n").Commit("second subject\n\nsecond full description").
@@ -21,8 +30,9 @@ var CombineSelected = NewIntegrationTest(NewIntegrationTestArgs{
 		commits := t.Views().Commits()
 		commits.Focus().NavigateToLine(Contains("second subject")).Press(keys.Universal.RangeSelectDown)
 		open := func() {
-			commits.IsFocused().Press(keys.Universal.OptionMenu)
-			t.ExpectPopup().Menu().Title(Equals("Keybindings")).Filter("Combine selected commits").Confirm()
+			commits.IsFocused().Press(config.Keybinding{"G"})
+			t.ExpectPopup().Menu().Title(Equals("g"))
+			t.Views().Menu().Press(config.Keybinding{"C"})
 		}
 		review := func() *ConfirmationDriver {
 			return t.ExpectPopup().Confirmation().Title(Equals("Review commit combination")).Content(Contains(keeper).Contains(second).Contains(original).Contains("Unselected commits remain separate"))
@@ -65,7 +75,9 @@ var CombineSelected = NewIntegrationTest(NewIntegrationTestArgs{
 		t.ExpectPopup().Confirmation().Title(Equals("Review commit combination")).
 			Content(Contains(freshHead).Contains(keeper).Contains(second).Contains("fresh state")).Confirm()
 		t.ExpectPopup().CommitMessagePanel().InitialText(Equals("approved combined subject")).Confirm()
-		commits.Focus().Lines(Contains("external after review"), Contains("unselected tail"), Contains("approved combined subject"))
+		// The default full graph also shows the original history retained by
+		// 'unchanged'. Check the rewritten branch independently below.
+		commits.Focus().Content(Contains("external after review").Contains("unselected tail").Contains("approved combined subject").Contains(original[:8]).Contains(keeper[:8]))
 		if got := t.Git().GetCommitHash("unchanged"); got != original {
 			t.Fail("combine moved an unrelated branch")
 		}
