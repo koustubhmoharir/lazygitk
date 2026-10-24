@@ -64,7 +64,8 @@ custom commands. Frequency persistence and sorting remain item 9.
    explanatory rebase/merge confirmation,
    unified selected branch/commit checkout and ref-only branch placement,
    Escape mark clearing and integration of exact-list marked/selected review
-   with the captured native cherry-pick planner, plus ancestry-based combine
+   with the captured native cherry-pick planner, preserving upstream paused-
+   rebase support and post-pick buffer behavior, plus ancestry-based combine
    with an editable message.
    Combine must replace the first selected ancestor (not an unselected parent),
    preserve all selected full messages in ancestor-first order and leave

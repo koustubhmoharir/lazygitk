@@ -58,10 +58,16 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   caller-specific candidate path sets when merging: cherry-pick uses changed
   paths, including every merge parent for conservative risk review.
 - Focused real-Git checks cover misleading dates and unrelated tips, SHA-256,
-  literal/hex-ref identity, detached/unborn states, markers/bare repos, merge
+  literal/hex-ref identity, detached/unborn states, paused rebases/bare repos, merge
   parents, ignored changes, native dirty-file protection and conflict sequence
   preservation. The controller review and shortcut migration integrate this
   backend separately.
+- Preserve native/upstream operation-state behavior: a paused interactive rebase
+  can accept a cherry-pick. Do not add blanket marker rejection to this path.
+  Git enforces valid operation state. Retain upstream version-dependent empty
+  handling and the existing post-action continuation/conflict helper; the new
+  feature changes selection/review and removes implicit stashing, not those
+  unrelated behaviors.
 
 
 ### Idempotent cherry-pick marking

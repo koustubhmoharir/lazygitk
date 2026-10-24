@@ -226,30 +226,38 @@ func TestCapturedCherryPickDetachedAndUnborn(t *testing.T) {
 	}
 }
 
-func TestCapturedCherryPickActiveOperationsAndBare(t *testing.T) {
+func TestCapturedCherryPickBare(t *testing.T) {
 	root, _, first, _ := capturedCherryPickReplayFixture(t)
-	commands := capturedCherryPickCommands(t, root)
-	plan, err := commands.PrepareCherryPickPlan([]string{first})
-	capturedCherryPickRequireNoError(t, err)
-	for _, marker := range []string{"rebase-merge", "rebase-apply", "MERGE_HEAD", "CHERRY_PICK_HEAD", "REVERT_HEAD", "sequencer", "BISECT_START"} {
-		t.Run(marker, func(t *testing.T) {
-			path := filepath.Join(root, ".git", marker)
-			if marker == "rebase-merge" || marker == "rebase-apply" || marker == "sequencer" {
-				capturedCherryPickRequireNoError(t, os.Mkdir(path, 0o755))
-			} else {
-				writeTestFile(t, path, []byte(first+"\n"), 0o644)
-			}
-			defer func() { capturedCherryPickRequireNoError(t, os.RemoveAll(path)) }()
-			_, err := commands.PrepareCherryPickPlan([]string{first})
-			assert.Error(t, err)
-			_, err = commands.CherryPickCommand(plan)
-			assert.Error(t, err)
-		})
-	}
 	bare := filepath.Join(t.TempDir(), "bare.git")
 	gitTest(t, root, "clone", "--bare", "-q", root, bare)
-	_, err = capturedCherryPickCommands(t, bare).PrepareCherryPickPlan([]string{first})
+	_, err := capturedCherryPickCommands(t, bare).PrepareCherryPickPlan([]string{first})
 	assert.ErrorContains(t, err, "bare")
+}
+
+func TestCapturedCherryPickPreservesPausedRebaseSupport(t *testing.T) {
+	root, base, first, second := capturedCherryPickReplayFixture(t)
+	capturedCherryPickCommit(t, root, "destination.txt", "destination\n", "destination change", capturedCherryPickDate)
+	start := exec.Command("git", "-C", root, "rebase", "--interactive", "--exec", "false", base)
+	start.Env = append(os.Environ(), "GIT_SEQUENCE_EDITOR=true")
+	output, err := start.CombinedOutput()
+	if err == nil {
+		t.Fatalf("expected paused exec rebase, got success: %s", output)
+	}
+	assert.DirExists(t, filepath.Join(root, ".git", "rebase-merge"))
+	commands := capturedCherryPickCommands(t, root)
+	plan, err := commands.PrepareCherryPickPlan([]string{second, first})
+	capturedCherryPickRequireNoError(t, err)
+	assert.Empty(t, plan.HeadRef(), "paused rebase is detached")
+	cmd, err := commands.CherryPickCommand(plan)
+	capturedCherryPickRequireNoError(t, err)
+	capturedCherryPickRequireNoError(t, cmd.Run())
+	assert.DirExists(t, filepath.Join(root, ".git", "rebase-merge"))
+	gitTest(t, root, "-c", "core.editor=true", "rebase", "--continue")
+	assert.NoDirExists(t, filepath.Join(root, ".git", "rebase-merge"))
+	assert.Equal(t, "source", gitTest(t, root, "show", "HEAD:collision.txt"))
+	assert.Equal(t, "remaining", gitTest(t, root, "show", "HEAD:remaining.txt"))
+	assert.Equal(t, "destination", gitTest(t, root, "branch", "--show-current"))
+	capturedCherryPickAssertNoStash(t, root)
 }
 
 func TestCapturedCherryPickDirtyFilesNativeProtectionAndNoStash(t *testing.T) {
@@ -450,11 +458,11 @@ func capturedCherryPickCommands(t *testing.T, root string) *RebaseCommands {
 }
 
 func capturedCherryPickArgv(version *GitVersion) []string {
-	option := "--keep-redundant-commits"
+	args := []string{"git", "cherry-pick", "--allow-empty"}
 	if version.IsAtLeast(2, 45, 0) {
-		option = "--empty=keep"
+		args = append(args, "--empty=keep")
 	}
-	return []string{"git", "cherry-pick", "--allow-empty", option}
+	return args
 }
 
 func capturedCherryPickOIDs(plan CherryPickPlan) []string {

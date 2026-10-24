@@ -29,6 +29,9 @@ Supporting evidence: [repository map](repository-map.md) and
 - The first version supports operations on other branches that do not require
   another worktree. General off-branch merges, rebases, and cherry-picks are
   deferred; never temporarily switch the user's checkout to simulate them.
+- Preserve upstream behavior outside the requested feature changes. In
+  particular, cherry-picking while an interactive rebase is paused remains
+  supported; do not impose a new blanket active-operation restriction.
 - Distinguish the selected object, the checked-out branch, and the operation's
   destination in labels and confirmations. Selection must not silently change
   while a prompt or worker is running.

@@ -101,9 +101,6 @@ func (self *RebaseCommands) PrepareCherryPickPlan(oids []string) (CherryPickPlan
 	if bare {
 		return CherryPickPlan{}, fmt.Errorf("cannot cherry-pick in a bare repository")
 	}
-	if err := self.rejectWorktreeOperation("start a cherry-pick"); err != nil {
-		return CherryPickPlan{}, err
-	}
 	ref, head, err := branches.namedCheckoutHead()
 	if err != nil {
 		return CherryPickPlan{}, err
@@ -211,7 +208,7 @@ func (self *RebaseCommands) CherryPickCommand(plan CherryPickPlan) (*oscommands.
 	if len(fresh.ignoredPaths) > 0 && !plan.ignoredApproved {
 		return nil, ErrRebaseIgnoredApprovalRequired
 	}
-	args := NewGitCmd("cherry-pick").Arg("--allow-empty").ArgIfElse(self.version.IsAtLeast(2, 45, 0), "--empty=keep", "--keep-redundant-commits")
+	args := NewGitCmd("cherry-pick").Arg("--allow-empty").ArgIf(self.version.IsAtLeast(2, 45, 0), "--empty=keep")
 	if hasMerge {
 		args.Arg(fmt.Sprintf("-m%d", plan.mainline))
 	}
