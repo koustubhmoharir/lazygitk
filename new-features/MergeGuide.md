@@ -42,6 +42,35 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Command-key foundation (item 8 in progress)
+
+- `pkg/gocui/command_key.go` owns ASCII-letter command normalization. It folds
+  only a single ASCII letter with no modifiers or Shift alone. `Key.Equals`,
+  text, Unicode, punctuation and Ctrl/Alt/Meta combinations remain exact.
+- `SetCommandKeybinding` in `command_binding.go` is an opt-in alternative to
+  `SetKeybinding`. A small `keybinding.matchKeypress` seam normalizes candidates
+  only for those registrations. `execKeybindings` excludes printable command
+  registrations from local, native-parent and global dispatch while editing,
+  even if an editor declines a shifted-letter event. Editors receive the
+  original event. Preserve this check before remembering global candidates.
+  Normal handled/fallthrough ordering and paste guards remain native.
+- The application has **not** switched to this registration API yet: old
+  case-only defaults must be replaced before activation. Do not globally
+  normalize key equality or incoming events as a substitute. Runtime no-op
+  routing, prefix ownership and default allocation remain Tracker tasks.
+- `new-features/keymap/generate.go` instantiates the exported cheatsheet path
+  for three platforms after legacy alias folding. Its default/cleared-key
+  snapshots use the command normalizer for collision candidates, preserve raw
+  key tuples and declaration order, and read actual native parent pointers.
+  Logical parent contexts are separate metadata. The tool never calls action,
+  availability or dynamic metadata callbacks; the source-reviewed mode matrix
+  supplements its deliberately non-exhaustive runtime snapshot. These are
+  standalone explicit-file tools/tests, excluded from application generation.
+  Independent verification: full gocui short tests passed (3.795s), standalone
+  audit tests passed (0.023s), two generated snapshots matched byte-for-byte,
+  and scoped gocui lint reported zero issues. This foundation does not activate
+  the new defaults, so no new terminal interaction flow is claimed as tested.
+
 ### Selected-branch operations (item 7 complete)
 
 - `helpers/captured_branch_delete*.go` now replaces the local/remote branch

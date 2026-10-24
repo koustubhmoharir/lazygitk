@@ -19,6 +19,7 @@ type Modifier tcell.ModMask
 type keybinding struct {
 	viewName string
 	key      Key
+	command  bool
 	handler  func(*Gui, *View) error
 }
 
@@ -34,6 +35,11 @@ func newKeybinding(viewname string, key Key, handler func(*Gui, *View) error) (k
 
 // matchKeypress returns if the keybinding matches the keypress.
 func (kb *keybinding) matchKeypress(key Key) bool {
+	// Fork: opt-in command registrations replace exact letter matching; ordinary
+	// bindings and the original event passed to editors retain their semantics.
+	if kb.command {
+		key = NormalizeCommandKey(key)
+	}
 	return kb.key.Equals(key)
 }
 

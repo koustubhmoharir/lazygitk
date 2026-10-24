@@ -2066,6 +2066,12 @@ func (g *Gui) execKeybindings(v *View, ev *GocuiEvent) error {
 		if kb.handler == nil {
 			continue
 		}
+		// Fork opt-in command bindings replace exact matching with canonical
+		// matching; keep command letters reserved while editing, including
+		// shifted terminal aliases when the editor declines the original event.
+		if kb.command && g.currentView != nil && g.currentView.Editable && !g.currentView.KeybindOnEdit && kb.key.IsPrintable() {
+			continue
+		}
 		if !kb.matchKeypress(ev.Key) {
 			continue
 		}

@@ -1,8 +1,12 @@
 # Current work
 
 Roadmap item: [8. Consistent default keys and no-op behavior](Roadmap.md#8-consistent-default-keys-and-no-op-behavior).
-Status: item 7 acceptance passed. Start with the complete factory inventory and
-runtime dispatch audit, then review the verb/key table before changing defaults.
+Status: the default registration audit and source-reviewed mode matrix are
+recorded in [keymap/README.md](keymap/README.md),
+[keymap-mode-matrix.md](keymap-mode-matrix.md) and the linked dispatch/default
+audits. Complete the command/path allocation before changing application
+defaults. [keymap-design.md](keymap-design.md) is a draft; Space's proposed
+staging role is still a pending user preference.
 
 Scope: one command meaning per default key/path across panes. ASCII command
 letters are case-insensitive; inapplicable actions consume their key without
@@ -15,18 +19,15 @@ and sorting remain item 9.
 
 ## Remaining tasks for item 8
 
-1. Refresh the inventory into an effective key/action matrix. Audit local,
-   parent/global and mode-specific dispatch, menus, hardcoded keys, platform
-   variants, editors, custom commands and terminal control-byte aliases. Record
-   which bindings mean navigation/selection versus operation verbs and where
-   fallback can invoke unrelated actions.
 2. Consult TortoiseGit for operation/navigation behavior and produce a concrete
    verb-to-key and prefix table. Review it against every context and the user's
    preferences before allocating defaults. Resolve any meaningful design
    questions with the user; preserve the provisional direct `w`/`v` comparisons
    and make Pull a deliberate menu path.
-3. Implement ASCII command matching/collision normalization and inactive-key
-   consumption at small central integration points. Preserve literal input,
+3. Integrate the opt-in ASCII command matching/collision normalization and add
+   inactive-key consumption at small central integration points. The command
+   matcher is implemented independently of exact keys and input events; the
+   application still uses its existing registration path. Preserve literal input,
    search/filter text, subprocess typing, explicit override behavior and custom
    Ctrl commands; retain genuine errors after an action is invoked.
 4. Add visible two-/three-key command menus with captured origin/repository and
