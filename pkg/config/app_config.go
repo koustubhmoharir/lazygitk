@@ -162,6 +162,11 @@ func loadUserConfigWithDefaults(configFiles []*ConfigFile, isGuiInitialized bool
 }
 
 func loadUserConfig(configFiles []*ConfigFile, base *UserConfig, isGuiInitialized bool) (*UserConfig, error) {
+	if base.keybindingExplicitFields == nil {
+		// Fork: distinguish a loaded config from a fresh constructor value when
+		// the integration harness saves and reloads its effective configuration.
+		base.keybindingExplicitFields = make(map[string]struct{})
+	}
 	for _, configFile := range configFiles {
 		path := configFile.Path
 		statInfo, err := os.Stat(path)
@@ -891,7 +896,13 @@ func (c *AppConfig) SaveGlobalUserConfig() {
 		panic("expected exactly one global user config file")
 	}
 
-	yamlContent, err := yaml.Marshal(c.userConfig)
+	// Fork: plain YAML marshaling would turn implicit legacy defaults into
+	// explicit overrides and bypass the semantic default profile on reload.
+	original, err := loadUserConfigWithDefaults(c.globalUserConfigFiles, false)
+	if err != nil {
+		log.Fatalf("error loading original user config: %v", err)
+	}
+	yamlContent, err := marshalForkTestConfig(c.userConfig, original)
 	if err != nil {
 		log.Fatalf("error marshalling user config: %v", err)
 	}

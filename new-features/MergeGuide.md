@@ -336,6 +336,15 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ### Command identity and path projection
 
+- The integration-only `AppConfig.SaveGlobalUserConfig` delegates keybinding
+  serialization to `fork_test_config_save.go`. Preserve explicit legacy leaves
+  and programmatic changes, but omit unchanged implicit defaults; otherwise
+  saving the harness configuration silently tests legacy overrides instead of
+  fork defaults. Loader provenance is nonnil even with no explicit leaves;
+  constructor replacements remain nil. Narrowed primary bindings neutralize
+  unchanged implicit legacy aliases. Round-trip tests cover all platforms,
+  disabled bindings, explicit aliases and constructor resets with overrides.
+
 - `gui/types/command_paths.go` keeps direct keys separate from sequential menu
   paths and provides full labels. `gui/keymap/command_tree.go` compiles paths
   without evaluating handlers or metadata: local routes shadow globals only at
