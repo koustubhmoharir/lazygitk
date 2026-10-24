@@ -22,7 +22,6 @@ func TestDefaultPathsUserRoutes(t *testing.T) {
 		{"commit.combine-selected", "g c"},
 		{"commit.mark-cherry-pick", "c y"},
 		{"commit.unmark-cherry-pick", "c x"},
-		{"commit.copy-for-cherry-pick", "c y"},
 		{"commit.cherry-pick", "c p"},
 		{"file.toggle-stage", "space"},
 		{"diff.stage-selection", "g h s"},
@@ -118,4 +117,11 @@ func pathString(path []gocui.Key) string {
 		labels = append(labels, strings.Trim(label, "<>"))
 	}
 	return strings.Join(labels, " ")
+}
+
+func TestDefaultCherryCopyToggleHasNoNormalPath(t *testing.T) {
+	paths, known := DefaultPaths("commit.copy-for-cherry-pick")
+	if !known || len(paths) != 0 {
+		t.Fatalf("legacy toggle paths = %v, known %t", paths, known)
+	}
 }

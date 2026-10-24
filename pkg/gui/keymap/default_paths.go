@@ -60,7 +60,6 @@ func buildDefaultPaths() map[string][][]gocui.Key {
 	add("commit.unmark-cherry-pick", "c x")
 	add("commit.cherry-pick", "c p")
 	add("commit.combine-selected", "g c")
-	add("commit.copy-for-cherry-pick", "c y")
 	add("clipboard.copy-file-path clipboard.copy-branch-name clipboard.copy-tag-name clipboard.copy-commit-hash clipboard.copy-submodule-name", "y i")
 	add("file.copy-menu history-file.copy-menu commit.copy-attribute-menu clipboard.copy-diff-selection clipboard.copy-confirmation", "y c")
 	add("branch.copy-pull-request-url", "y u")
@@ -160,7 +159,7 @@ func buildDefaultPaths() map[string][][]gocui.Key {
 	}
 
 	// Replaced normal routes intentionally remain recognized with no path.
-	for _, id := range strings.Fields("commit.squash-down commit.mark-fixup commit.set-fixup-message commit.create-fixup-menu commit.autosquash commit.find-fixup-target commit.clear-cherry-pick-selection branch.create-and-checkout branch.reset-menu branch.checkout-by-name branch.checkout-previous branch.force-checkout file.toggle-stage-all diff.primary-selection diff.discard-selection") {
+	for _, id := range strings.Fields("commit.copy-for-cherry-pick commit.squash-down commit.mark-fixup commit.set-fixup-message commit.create-fixup-menu commit.autosquash commit.find-fixup-target commit.clear-cherry-pick-selection branch.create-and-checkout branch.reset-menu branch.checkout-by-name branch.checkout-previous branch.force-checkout file.toggle-stage-all diff.primary-selection diff.discard-selection") {
 		if _, exists := paths[id]; !exists {
 			paths[id] = nil
 		}

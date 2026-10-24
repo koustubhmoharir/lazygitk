@@ -63,7 +63,7 @@ custom commands. Frequency persistence and sorting remain item 9.
    full-refresh/re-render F5 without fetch,
    explanatory rebase/merge confirmation,
    unified selected branch/commit checkout and ref-only branch placement,
-   idempotent cherry-pick mark/unmark, Escape mark clearing and exact-list
+   Escape mark clearing and exact-list
    marked/selected review, plus ancestry-based combine with an editable message.
    Combine must replace the first selected ancestor (not an unselected parent),
    preserve all selected full messages in ancestor-first order and leave

@@ -42,6 +42,22 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Idempotent cherry-pick marking
+
+- `modes/cherrypicking/fork_marks.go` keeps mark/unmark separate from upstream's
+  copy-range toggle. Mark unions by object ID without removing existing marks;
+  unmark removes only the selected objects. Stored commits own their hash,
+  parent and tag data instead of pointing into mutable UI models.
+- `controllers/fork_cherry_marks.go` adds keyless actions through the existing
+  BasicCommits fork hook and repaints local/reflog/branch histories. The normal
+  catalogue assigns `c y` / `c x`; the old toggle has no default path, while
+  explicitly configured legacy toggle bindings remain supported.
+- Mode and controller checks cover repeated marking, cross-selection union,
+  selected-only removal, invalid/synthetic selections, copied ownership and
+  repainting. Normal shortcut activation and Escape terminal checks remain in
+  the current tracker item.
+
+
 ### Semantic mode routes and pane target identities
 
 - `Binding.CommandActive` distinguishes an inactive shared-key route from a

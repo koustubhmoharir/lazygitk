@@ -11,6 +11,8 @@ Todo list when making a new translation
 package i18n
 
 type TranslationSet struct {
+	MarkForCherryPick                    string
+	UnmarkForCherryPick                  string
 	FocusPanel                           string
 	ForkToggleFileStage                  string
 	ForkUnstageSelection                 string
@@ -1447,6 +1449,8 @@ const englishNonReloadableConfigWarning = `The following config settings were ch
 // exporting this so we can use it in tests
 func EnglishTranslationSet() *TranslationSet {
 	return &TranslationSet{
+		MarkForCherryPick:                     "Mark selected commits for cherry-pick",
+		UnmarkForCherryPick:                   "Unmark selected commits for cherry-pick",
 		FocusPanel:                            "Focus %s panel",
 		ForkToggleFileStage:                   "Toggle staging of selected files",
 		ForkUnstageSelection:                  "Unstage selected changes",
