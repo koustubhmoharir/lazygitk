@@ -38,6 +38,7 @@ const (
 	DaemonKindDropMergeCommit
 	DaemonKindMoveFixupCommitDown
 	DaemonKindWriteRebaseTodo
+	DaemonKindCombineRebase
 )
 
 const (
@@ -60,6 +61,7 @@ func getInstruction() Instruction {
 		DaemonKindMoveTodosDown:                   deserializeInstruction[*MoveTodosDownInstruction],
 		DaemonKindInsertBreak:                     deserializeInstruction[*InsertBreakInstruction],
 		DaemonKindWriteRebaseTodo:                 deserializeInstruction[*WriteRebaseTodoInstruction],
+		DaemonKindCombineRebase:                   deserializeInstruction[*CombineRebaseInstruction],
 	}
 
 	return mapping[getDaemonKind()](jsonData)

@@ -42,6 +42,29 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Combine message persistence in native rebase
+
+- `daemon/combine_rebase.go` introduces an appended daemon kind and one mapping
+  entry in `daemon.go`. Keep existing kind numbers stable across merges.
+  A private JSON file carries the logical TODO and approved full message;
+  only its pathname travels in the environment.
+- The sequence editor compiles the keeper's logical reword into a native pick
+  followed by an exec amendment using `--cleanup=verbatim --file`. It installs
+  the message next to Git's TODO. The exec line is constant, resolving the
+  worktree's state path through quoted `git rev-parse --git-path`; it embeds no
+  user text or repository path and works with spaces/newlines in paths.
+- This replaces a native reword specifically because a pre-commit hook failure
+  can cause native continue to bypass the reword editor and lose the approved
+  message. The caller must use `--reschedule-failed-exec`: a failed amendment
+  stops once and remains queued for the user's explicit continue. Hooks and
+  signing remain native; there is no application retry or rollback.
+- Git owns the message file in `rebase-merge` through success/abort. Later
+  fixup/pick conflicts and process restarts need no original temporary payload
+  or in-memory callback. The real-Git daemon tests cover root/nonroot,
+  non-adjacent selections, large messages, hook rejection, both conflict stages,
+  unselected messages and native abort cleanup. Capture/editor/executor wiring
+  remains separate; this commit does not enable `g c`.
+
 ### Ref-only placement from branch lists
 
 - `controllers/branch_placement_refs.go` adds the existing placement command to
