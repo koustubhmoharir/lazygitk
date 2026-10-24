@@ -106,8 +106,9 @@ baseline evidence; the main implementation work owns the default change.
 The combined description preserves every selected full message (subject and
 body), including the first, in ancestor-first order; the summary starts with
 the first subject. This is a selected-commit operation, independent of the
-cherry-pick mark buffer. `g c` replaces normal squash/fixup actions and remains
-being implemented for linear history. The user confirmed non-adjacent
+cherry-pick mark buffer. The combine operation is implemented for linear history and discoverable in
+the palette; the normal `g c` replacement for squash/fixup awaits full-profile
+activation. The user confirmed non-adjacent
 selections with intervening commits preserved, refusing merges in the rewritten
 ancestry. Merges before the first selected commit need not be rewritten.
 
@@ -136,11 +137,27 @@ unselected intervening commit can never accidentally absorb a fixup. A merge
 before the keeper stays outside the rewritten range. The editor seed preserves
 all selected full messages, including blank lines and the keeper's own message.
 
-This is a pure planner, not an executable combine operation. Repository/HEAD
-capture, clean-tree and ignored-file reviews, editable-message flow, native
-rebase/daemon execution and conflict continuation still need integration. The
-message must survive a paused native rebase without replacing an unselected
-commit's message during continuation. Large messages/TODOs should use private
-files rather than rely on environment-variable size limits. Preserve Git's
-normal locking and explicit conflict resolution; add no implicit stash, retry,
-transaction lock or rollback.
+The pure planner is now complemented by `captured_combine_plan.go`,
+`combine_command.go`, `daemon/combine_rebase.go` and the editable controller
+flow in `fork_combine.go`. Capture reads native ancestry and exact object
+messages, refuses unavailable shallow parents and checks clean tracked state
+and ignored-file approval before one native interactive rebase.
+
+The sequence editor puts the approved message in Git-owned rebase state and
+compiles the keeper message action to a native exec amendment. Native reword
+can bypass its editor after a pre-commit hook failure; the exec route with
+`--reschedule-failed-exec` preserves the approved message for explicit continue.
+Its constant command resolves the worktree's state path without embedding user
+text or repository paths. Original temporary payloads can be removed when the
+initial command returns, even after a pause. Native success/abort removes the
+Git-owned message file.
+
+Real-Git checks cover root/nonroot, non-adjacent selections, large/raw messages,
+hook failure, selected fixup and unselected pick conflicts, abort, shallow
+boundaries, stale/foreign captures, ignored fingerprints and normal dirty-file
+protection. The terminal GUI scenario covers all-message editing, cancel,
+dirty-tree draft recovery, explicit fresh-HEAD review, preserved external empty
+commits and unrelated refs. Terminal signing reuses existing routing; focused
+checks exercise cleanup/error handling, not an actual signing device. Final
+normal-profile activation and its `g c` regression checks remain. No implicit
+stash, application retry, transaction lock or rollback is introduced.

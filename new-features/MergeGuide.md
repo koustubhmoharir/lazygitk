@@ -42,6 +42,29 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Editable combine review
+
+- `controllers/fork_combine.go` adds one keyless BasicCommits action, separate
+  from upstream squash/fixup and the cherry-pick buffer. Capture selected OIDs
+  and repository generation before worker inspection. Review full ordered IDs
+  and subjects, current HEAD and the selected-ancestor keeper before opening
+  the shared commit message editor with all original messages in its body.
+- Ignored-file approval, review acceptance and mutation are explicit. A stale
+  capture offers fresh review of the same selected commits or return to the
+  draft. Pre-start errors, including a failed fresh capture, restore the edited
+  draft on the original repository. Reopen the editor before raising its error
+  popup so dismissal returns to the draft rather than replacing the error.
+- Reuse the existing merge/rebase result and terminal-signing helpers. Keep
+  private payload cleanup on worker, terminal failure and repository-change
+  paths. A native conflict/hook failure remains an in-progress native rebase;
+  do not reopen a normal commit operation or rerun the combine implicitly.
+- The named terminal combine scenario covers cancel, editable full messages,
+  both dirty-tree failure paths, explicit fresh-HEAD review, preserved external
+  empty commits, unrelated refs and final file contents. Focused controller
+  checks cover source guards, retained inputs, repeated mutation approval and
+  terminal failure/cleanup. The palette command is available; `g c` awaits the
+  full normal-profile activation.
+
 ### Captured combine topology and native execution
 
 - `git_commands/captured_combine_plan.go` binds the linear topology to literal

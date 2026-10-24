@@ -19,6 +19,21 @@ type TranslationSet struct {
 	CherryPickSourceTitle                string
 	CherryPickMarkedSource               string
 	CherryPickSelectedSource             string
+	CombineSelected                      string
+	CombineSelectCommits                 string
+	CombineChecking                      string
+	CombineIgnoredTitle                  string
+	CombineIgnoredPrompt                 string
+	CombineApproveIgnored                string
+	CombineReviewTitle                   string
+	CombineReviewPrompt                  string
+	CombineChanged                       string
+	CombineFreshReview                   string
+	CombineApplying                      string
+	CombineRepositoryChanged             string
+	CombineKeeperTitle                   string
+	CombineDescriptionTitle              string
+	CombineErrorTitle                    string
 	CherryPickMainlineTitle              string
 	CherryPickMainlinePrompt             string
 	CherryPickMainlineChoice             string
@@ -1467,6 +1482,21 @@ func EnglishTranslationSet() *TranslationSet {
 		CherryPickSourceTitle:                 "Choose commits to cherry-pick",
 		CherryPickMarkedSource:                "Previously marked commits (%d)",
 		CherryPickSelectedSource:              "Selected commits (%d)",
+		CombineSelected:                       "Combine selected commits",
+		CombineSelectCommits:                  "Select at least two full commit IDs to combine.",
+		CombineChecking:                       "Inspecting selected commits",
+		CombineIgnoredTitle:                   "Review ignored files before combining commits",
+		CombineIgnoredPrompt:                  "Git may overwrite these ignored files while rewriting history. Cancel or explicitly approve this risk:\n%s",
+		CombineApproveIgnored:                 "Proceed and accept the reviewed ignored-file risks",
+		CombineReviewTitle:                    "Review commit combination",
+		CombineReviewPrompt:                   "Current HEAD: %s at %s\n\nKeeper (earliest selected ancestor): %s\nSelected commits, ancestor first:\n%s\n\nGit will rewrite the keeper through HEAD. Unselected commits remain separate. Git may stop for conflicts or hooks. No automatic stash, retry or rollback will run.",
+		CombineChanged:                        "The captured history or ignored-file risks changed. Review the fresh state before proceeding.",
+		CombineFreshReview:                    "Capture and review current history again using the same selected commit IDs",
+		CombineApplying:                       "Combining selected commits",
+		CombineRepositoryChanged:              "The repository changed while reviewing the commit combination.",
+		CombineKeeperTitle:                    "Combined commit summary",
+		CombineDescriptionTitle:               "Combined commit message (all selected messages, ancestor first)",
+		CombineErrorTitle:                     "Error",
 		CherryPickMainlineTitle:               "Choose the merge parent to compare against",
 		CherryPickMainlinePrompt:              "The selected commits include merges. Choose the parent number used as the baseline for each merge. Pick merges separately if they require different parent numbers.",
 		CherryPickMainlineChoice:              "Use parent %d of each selected merge",

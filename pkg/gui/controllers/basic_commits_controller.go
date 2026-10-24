@@ -53,6 +53,7 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 		self.branchPlacementBinding(opts),
 		// Fork: ordinary rebase onto a captured commit is independent of marked base.
 		self.selectedCommitRebaseBinding(opts),
+		self.combineSelectedBinding(),
 		{
 			CommandID:         "commit.checkout-menu",
 			Verb:              "checkout",

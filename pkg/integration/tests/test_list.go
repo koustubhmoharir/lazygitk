@@ -330,6 +330,7 @@ var tests = []*components.IntegrationTest{
 	interactive_rebase.AmendHeadCommitDuringRebase,
 	interactive_rebase.AmendMerge,
 	interactive_rebase.AmendNonHeadCommitDuringRebase,
+	interactive_rebase.CombineSelected,
 	interactive_rebase.DeleteUpdateRefTodo,
 	interactive_rebase.DontShowBranchHeadsForTodoItems,
 	interactive_rebase.DragKeepsSelectionHighlighted,
