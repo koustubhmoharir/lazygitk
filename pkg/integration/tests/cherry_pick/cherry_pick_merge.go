@@ -26,6 +26,9 @@ var CherryPickMerge = NewIntegrationTest(NewIntegrationTestArgs{
 			Checkout("first-branch")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		baseOID := t.Git().GetCommitHash("first-branch")
+		mergeOID := t.Git().GetCommitHash("master")
+		firstParentOID := t.Git().GetCommitHash("master^1")
 		t.Views().Branches().
 			Focus().
 			Lines(
@@ -56,10 +59,11 @@ var CherryPickMerge = NewIntegrationTest(NewIntegrationTestArgs{
 			).
 			Press(keys.Commits.PasteCommits).
 			Tap(func() {
-				t.ExpectPopup().Alert().
-					Title(Equals("Cherry-pick")).
-					Content(Contains("Are you sure you want to cherry-pick the 1 copied commit(s) onto this branch?")).
-					Confirm()
+				t.Common().ChooseMarkedCherryPickSource()
+				t.Common().ChooseFirstCherryPickMergeParent()
+				t.Common().ConfirmCherryPickList("refs/heads/first-branch", baseOID,
+					CherryPickReviewRow(1, mergeOID, "Merge branch 'second-branch'")+" (relative to parent 1: "+firstParentOID+")",
+				)
 			}).
 			Tap(func() {
 				t.Views().Information().Content(DoesNotContain("commit copied"))

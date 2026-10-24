@@ -17,6 +17,8 @@ var CherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.HardReset("HEAD^^")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		destinationOID := t.Git().GetCommitHash("master")
+		threeOID := t.Git().GetCommitHash("HEAD@{1}")
 		t.Views().ReflogCommits().
 			Focus().
 			Lines(
@@ -37,10 +39,10 @@ var CherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 			).
 			Press(keys.Commits.PasteCommits).
 			Tap(func() {
-				t.ExpectPopup().Alert().
-					Title(Equals("Cherry-pick")).
-					Content(Contains("Are you sure you want to cherry-pick the 1 copied commit(s) onto this branch?")).
-					Confirm()
+				t.Common().ChooseMarkedCherryPickSource()
+				t.Common().ConfirmCherryPickList("refs/heads/master", destinationOID,
+					CherryPickReviewRow(1, threeOID, "three"),
+				)
 			}).
 			Lines(
 				Contains("three"),

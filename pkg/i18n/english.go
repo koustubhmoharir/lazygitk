@@ -11,12 +11,22 @@ Todo list when making a new translation
 package i18n
 
 type TranslationSet struct {
-	MarkForCherryPick                    string
-	UnmarkForCherryPick                  string
 	FocusPanel                           string
 	ForkToggleFileStage                  string
 	ForkUnstageSelection                 string
 	ForkRemovePatchSelection             string
+	CherryPickChangedNote                string
+	CherryPickSourceTitle                string
+	CherryPickMarkedSource               string
+	CherryPickSelectedSource             string
+	CherryPickMainlineTitle              string
+	CherryPickMainlinePrompt             string
+	CherryPickMainlineChoice             string
+	CherryPickMergeParentDetail          string
+	CherryPickIgnoredPrompt              string
+	CherryPickReviewPrompt               string
+	MarkForCherryPick                    string
+	UnmarkForCherryPick                  string
 	CollapseTreeNode                     string
 	ExpandTreeNode                       string
 	BranchActionResetReviewPrompt        string
@@ -1449,12 +1459,22 @@ const englishNonReloadableConfigWarning = `The following config settings were ch
 // exporting this so we can use it in tests
 func EnglishTranslationSet() *TranslationSet {
 	return &TranslationSet{
-		MarkForCherryPick:                     "Mark selected commits for cherry-pick",
-		UnmarkForCherryPick:                   "Unmark selected commits for cherry-pick",
 		FocusPanel:                            "Focus %s panel",
 		ForkToggleFileStage:                   "Toggle staging of selected files",
 		ForkUnstageSelection:                  "Unstage selected changes",
 		ForkRemovePatchSelection:              "Remove selected lines from custom patch",
+		CherryPickChangedNote:                 "The destination or ignored-file risks changed. Review the fresh state before proceeding.",
+		CherryPickSourceTitle:                 "Choose commits to cherry-pick",
+		CherryPickMarkedSource:                "Previously marked commits (%d)",
+		CherryPickSelectedSource:              "Selected commits (%d)",
+		CherryPickMainlineTitle:               "Choose the merge parent to compare against",
+		CherryPickMainlinePrompt:              "The selected commits include merges. Choose the parent number used as the baseline for each merge. Pick merges separately if they require different parent numbers.",
+		CherryPickMainlineChoice:              "Use parent %d of each selected merge",
+		CherryPickMergeParentDetail:           " (relative to parent %d: %s)",
+		CherryPickIgnoredPrompt:               "Cherry-picking may overwrite these ignored paths. Approve this risk to proceed to the commit review.",
+		CherryPickReviewPrompt:                "Current destination: %s at %s\n\nCherry-pick these commits in this order:\n%s\n\nGit may stop for conflicts. No automatic stash, retry or rollback will run.",
+		MarkForCherryPick:                     "Mark selected commits for cherry-pick",
+		UnmarkForCherryPick:                   "Unmark selected commits for cherry-pick",
 		CollapseTreeNode:                      "Collapse directory or select parent",
 		ExpandTreeNode:                        "Expand directory or select first child",
 		BranchActionResetReviewPrompt:         "Current HEAD: %q at %s\nSelected source: %q (%s) at %s\n\nReset affects current HEAD, with index/worktree effects determined by the chosen mode. It does not reset another selected branch.",

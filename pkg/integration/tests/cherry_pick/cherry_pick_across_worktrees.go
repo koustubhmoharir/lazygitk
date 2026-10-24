@@ -18,6 +18,9 @@ var CherryPickAcrossWorktrees = NewIntegrationTest(NewIntegrationTestArgs{
 			EmptyCommit("two")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		baseOID := t.Git().GetCommitHash("master~2")
+		oneOID := t.Git().GetCommitHash("master~1")
+		twoOID := t.Git().GetCommitHash("master")
 		t.Views().Commits().
 			Focus().
 			Lines(
@@ -65,10 +68,11 @@ var CherryPickAcrossWorktrees = NewIntegrationTest(NewIntegrationTestArgs{
 			).
 			Press(keys.Commits.PasteCommits).
 			Tap(func() {
-				t.ExpectPopup().Alert().
-					Title(Equals("Cherry-pick")).
-					Content(Contains("Are you sure you want to cherry-pick the 2 copied commit(s) onto this branch?")).
-					Confirm()
+				t.Common().ChooseMarkedCherryPickSource()
+				t.Common().ConfirmCherryPickList("refs/heads/newbranch", baseOID,
+					CherryPickReviewRow(1, oneOID, "one"),
+					CherryPickReviewRow(2, twoOID, "two"),
+				)
 			}).
 			Lines(
 				Contains("two"),

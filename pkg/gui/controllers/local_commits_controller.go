@@ -630,7 +630,7 @@ func (self *LocalCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 			Verb:              "cherry-pick",
 			Handler:           opts.Guards.OutsideFilterMode(self.paste),
 			GetDisabledReason: self.require(self.canPaste),
-			Description:       self.c.Tr.PasteCommits,
+			Description:       self.c.Tr.CherryPick,
 			DisplayStyle:      &style.FgCyan,
 		},
 		{
@@ -1859,15 +1859,12 @@ func (self *LocalCommitsController) context() *context.LocalCommitsContext {
 }
 
 func (self *LocalCommitsController) paste() error {
-	return self.c.Helpers().CherryPick.Paste()
+	// Fork: replace count-only autostash paste with captured, exact-list review.
+	return beginForkCherryPick(self.c)
 }
 
 func (self *LocalCommitsController) canPaste() *types.DisabledReason {
-	if !self.c.Helpers().CherryPick.CanPaste() {
-		return &types.DisabledReason{Text: self.c.Tr.NoCopiedCommits}
-	}
-
-	return nil
+	return forkCherryPickDisabledReason(self.c)
 }
 
 func (self *LocalCommitsController) markAsBaseCommit(commit *models.Commit) error {

@@ -24,6 +24,9 @@ var CherryPickCommitThatBecomesEmpty = NewIntegrationTest(NewIntegrationTestArgs
 			Checkout("master")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		twoChangesOID := t.Git().GetCommitHash("master")
+		singleChangeOID := t.Git().GetCommitHash("branch^")
+		unrelatedChangeOID := t.Git().GetCommitHash("branch")
 		t.Views().Branches().
 			Focus().
 			Lines(
@@ -54,10 +57,11 @@ var CherryPickCommitThatBecomesEmpty = NewIntegrationTest(NewIntegrationTestArgs
 			).
 			Press(keys.Commits.PasteCommits).
 			Tap(func() {
-				t.ExpectPopup().Alert().
-					Title(Equals("Cherry-pick")).
-					Content(Contains("Are you sure you want to cherry-pick the 2 copied commit(s) onto this branch?")).
-					Confirm()
+				t.Common().ChooseMarkedCherryPickSource()
+				t.Common().ConfirmCherryPickList("refs/heads/master", twoChangesOID,
+					CherryPickReviewRow(1, singleChangeOID, "single change"),
+					CherryPickReviewRow(2, unrelatedChangeOID, "unrelated change"),
+				)
 			})
 
 		if t.Git().Version().IsAtLeast(2, 45, 0) {

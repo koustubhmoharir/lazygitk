@@ -75,6 +75,27 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   remote naming choices, repository changes during name entry, dirty-file
   carry and overwrite refusal. Existing named-checkout checks remain green.
 
+### Captured cherry-pick source and exact-list review
+
+- `controllers/fork_cherry_pick.go` adds a global keyless selected/marked
+  action and replaces `LocalCommitsController.paste`/`canPaste`. Freeze both
+  source choices before the chooser; never combine marked and selected commits
+  implicitly. The native plan supplies full ordered OIDs, subjects, destination,
+  merge-parent choices and ignored-path approval.
+- Repository pointer/generation and a one-use approval retain origin. Changed
+  HEAD or ignored risks require a fresh review. Execution delegates conflict,
+  empty-commit and paused-rebase handling to the existing
+  `MergeAndRebase.CheckMergeOrRebaseWithRefreshOptions`; do not replace it with
+  a normal commit operation or forbid otherwise valid native operation states.
+- Successful marked paste retains the upstream buffer and sets `DidPaste` to
+  hide it, only if it is still the captured buffer. Selected paste does not
+  hide unrelated marks. Preserve the old reset/refresh/continuation semantics.
+- Integration fixtures explicitly choose marked source and assert the actual
+  full destination and ordered commits. Paused-rebase review uses detached
+  HEAD, and raw commit subjects must not include rendered author prefixes.
+  Checks cover all nine cherry-pick scenarios plus reflog and demo selection.
+  Read the post-pick destination only after its refreshed commit list is visible.
+
 ### Captured native cherry-pick backend
 
 - `git_commands/captured_cherry_pick.go` captures literal commit objects, current

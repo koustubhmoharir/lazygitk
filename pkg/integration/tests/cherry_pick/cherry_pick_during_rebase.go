@@ -27,6 +27,8 @@ var CherryPickDuringRebase = NewIntegrationTest(NewIntegrationTestArgs{
 			Checkout("first-branch")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		threeOID := t.Git().GetCommitHash("second-branch^")
+		var pausedHeadOID string
 		t.Views().Branches().
 			Focus().
 			Lines(
@@ -66,12 +68,13 @@ var CherryPickDuringRebase = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("     CI one").IsSelected(),
 				Contains("     CI base"),
 			).
+			Tap(func() { pausedHeadOID = t.Git().GetCommitHash("HEAD") }).
 			Press(keys.Commits.PasteCommits).
 			Tap(func() {
-				t.ExpectPopup().Alert().
-					Title(Equals("Cherry-pick")).
-					Content(Contains("Are you sure you want to cherry-pick the 1 copied commit(s) onto this branch?")).
-					Confirm()
+				t.Common().ChooseMarkedCherryPickSource()
+				t.Common().ConfirmCherryPickList("HEAD (detached)", pausedHeadOID,
+					CherryPickReviewRow(1, threeOID, "three"),
+				)
 			}).
 			Tap(func() {
 				t.Views().Information().Content(DoesNotContain("commit copied"))

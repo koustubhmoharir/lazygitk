@@ -18,6 +18,9 @@ var CherryPickConflictsEmptyCommitAfterResolving = NewIntegrationTest(NewIntegra
 		shared.MergeConflictsSetup(shell)
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		firstChangeOID := t.Git().GetCommitHash("first-change-branch")
+		secondChangeOID := t.Git().GetCommitHash("second-change-branch^")
+		unrelatedOID := t.Git().GetCommitHash("second-change-branch")
 		t.Views().Branches().
 			Focus().
 			Lines(
@@ -46,10 +49,11 @@ var CherryPickConflictsEmptyCommitAfterResolving = NewIntegrationTest(NewIntegra
 			).
 			Press(keys.Commits.PasteCommits)
 
-		t.ExpectPopup().Alert().
-			Title(Equals("Cherry-pick")).
-			Content(Contains("Are you sure you want to cherry-pick the 2 copied commit(s) onto this branch?")).
-			Confirm()
+		t.Common().ChooseMarkedCherryPickSource()
+		t.Common().ConfirmCherryPickList("refs/heads/first-change-branch", firstChangeOID,
+			CherryPickReviewRow(1, secondChangeOID, "second change"),
+			CherryPickReviewRow(2, unrelatedOID, "second-change-branch unrelated change"),
+		)
 
 		t.Common().AcknowledgeConflicts()
 

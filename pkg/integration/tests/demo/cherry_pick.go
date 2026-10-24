@@ -29,6 +29,9 @@ var CherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 			Checkout("hotfix/fix-bug")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		destinationOID := t.Git().GetCommitHash("hotfix/fix-bug")
+		handleSessionOID := t.Git().GetCommitHash("feature/user-module^")
+		addWebpackOID := t.Git().GetCommitHash("feature/user-module")
 		t.SetCaptionPrefix("Cherry pick commits from another branch")
 		t.Wait(1000)
 
@@ -69,10 +72,11 @@ var CherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 			Press(keys.Commits.PasteCommits).
 			Tap(func() {
 				t.Wait(1000)
-				t.ExpectPopup().Alert().
-					Title(Equals("Cherry-pick")).
-					Content(Contains("Are you sure you want to cherry-pick the 2 copied commit(s) onto this branch?")).
-					Confirm()
+				t.Common().ChooseMarkedCherryPickSource()
+				t.Common().ConfirmCherryPickList("refs/heads/hotfix/fix-bug", destinationOID,
+					CherryPickReviewRow(1, handleSessionOID, "Handle session timeout gracefully"),
+					CherryPickReviewRow(2, addWebpackOID, "Add Webpack for asset bundling"),
+				)
 			}).
 			TopLines(
 				Contains("Add Webpack for asset bundling"),

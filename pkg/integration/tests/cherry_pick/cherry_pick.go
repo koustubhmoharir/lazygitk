@@ -26,6 +26,10 @@ var CherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 			Checkout("first-branch")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		baseOID := t.Git().GetCommitHash("master")
+		firstBranchOID := t.Git().GetCommitHash("first-branch")
+		threeOID := t.Git().GetCommitHash("second-branch^")
+		fourOID := t.Git().GetCommitHash("second-branch")
 		t.Views().Branches().
 			Focus().
 			Lines(
@@ -66,10 +70,11 @@ var CherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 				t.Views().Information().Content(Contains("2 commits copied"))
 			}).
 			Tap(func() {
-				t.ExpectPopup().Alert().
-					Title(Equals("Cherry-pick")).
-					Content(Contains("Are you sure you want to cherry-pick the 2 copied commit(s) onto this branch?")).
-					Confirm()
+				t.Common().ChooseMarkedCherryPickSource()
+				t.Common().ConfirmCherryPickList("refs/heads/first-branch", firstBranchOID,
+					CherryPickReviewRow(1, threeOID, "three"),
+					CherryPickReviewRow(2, fourOID, "four"),
+				)
 			}).
 			Tap(func() {
 				t.Views().Information().Content(DoesNotContain("commits copied"))
@@ -95,10 +100,11 @@ var CherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 			).
 			Press(keys.Commits.PasteCommits).
 			Tap(func() {
-				t.ExpectPopup().Alert().
-					Title(Equals("Cherry-pick")).
-					Content(Contains("Are you sure you want to cherry-pick the 2 copied commit(s) onto this branch?")).
-					Confirm()
+				t.Common().ChooseMarkedCherryPickSource()
+				t.Common().ConfirmCherryPickList("refs/heads/master", baseOID,
+					CherryPickReviewRow(1, threeOID, "three"),
+					CherryPickReviewRow(2, fourOID, "four"),
+				)
 			}).
 			Tap(func() {
 				t.Views().Information().Content(DoesNotContain("commits copied"))

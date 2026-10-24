@@ -24,6 +24,8 @@ func NewGlobalController(
 
 func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	return []*types.Binding{
+		// Fork: captured cherry-pick is available for marks or focused history.
+		forkCherryPickBinding(self.c),
 		{
 			CommandID:   "app.shell-command",
 			Verb:        "run-shell-command",

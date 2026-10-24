@@ -25,6 +25,12 @@ var CherryPickRangeAfterPaste = NewIntegrationTest(NewIntegrationTestArgs{
 			Checkout("target")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
+		baseOID := t.Git().GetCommitHash("master")
+		fiveOID := t.Git().GetCommitHash("source")
+		twoOID := t.Git().GetCommitHash("source~3")
+		threeOID := t.Git().GetCommitHash("source~2")
+		fourOID := t.Git().GetCommitHash("source~1")
+		var targetAfterFirstPaste string
 		t.Views().Branches().
 			Focus().
 			Lines(
@@ -54,16 +60,17 @@ var CherryPickRangeAfterPaste = NewIntegrationTest(NewIntegrationTestArgs{
 			).
 			Press(keys.Commits.PasteCommits).
 			Tap(func() {
-				t.ExpectPopup().Alert().
-					Title(Equals("Cherry-pick")).
-					Content(Equals("Are you sure you want to cherry-pick the 1 copied commit(s) onto this branch?")).
-					Confirm()
+				t.Common().ChooseMarkedCherryPickSource()
+				t.Common().ConfirmCherryPickList("refs/heads/target", baseOID,
+					CherryPickReviewRow(1, fiveOID, "five"),
+				)
 			}).
 			Lines(
 				Contains("five"),
 				Contains("base").IsSelected(),
 			).
 			Tap(func() {
+				targetAfterFirstPaste = t.Git().GetCommitHash("target")
 				// After paste, CherryPicking.DidPaste is true, so it looks to the user as if no
 				// commits are copied:
 				t.Views().Information().Content(DoesNotContain("commits copied"))
@@ -89,10 +96,12 @@ var CherryPickRangeAfterPaste = NewIntegrationTest(NewIntegrationTestArgs{
 			NavigateToLine(Contains("base")).
 			Press(keys.Commits.PasteCommits).
 			Tap(func() {
-				t.ExpectPopup().Alert().
-					Title(Equals("Cherry-pick")).
-					Content(Equals("Are you sure you want to cherry-pick the 3 copied commit(s) onto this branch?")).
-					Confirm()
+				t.Common().ChooseMarkedCherryPickSource()
+				t.Common().ConfirmCherryPickList("refs/heads/target", targetAfterFirstPaste,
+					CherryPickReviewRow(1, twoOID, "two"),
+					CherryPickReviewRow(2, threeOID, "three"),
+					CherryPickReviewRow(3, fourOID, "four"),
+				)
 			})
 
 		t.Views().Commits().Lines(
