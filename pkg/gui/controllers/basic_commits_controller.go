@@ -158,7 +158,8 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 	}
 
 	// Fork direct-diff actions are additive; the existing sticky comparison remains available.
-	return append(self.historicalDiffBindings(opts), bindings...)
+	// Fork: expose each captured reset mode as a separately discoverable action.
+	return self.addSelectedResetBindings(append(self.historicalDiffBindings(opts), bindings...))
 }
 
 func (self *BasicCommitsController) getCommitMessageBody(hash string) string {

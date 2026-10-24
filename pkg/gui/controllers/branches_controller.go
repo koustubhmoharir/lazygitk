@@ -39,7 +39,8 @@ func NewBranchesController(
 }
 
 func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
-	return []*types.Binding{
+	// Fork: expose preselected reset modes alongside the upstream bindings.
+	return self.addSelectedResetBindings([]*types.Binding{
 		{
 			CommandID: "branch.checkout",
 			Verb:      "checkout",
@@ -238,7 +239,7 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			Description:       self.c.Tr.OpenDiffTool,
 		},
-	}
+	})
 }
 
 func (self *BranchesController) GetOnRenderToMain() func() {

@@ -42,6 +42,22 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Direct reset-mode actions
+
+- `helpers/captured_reset.go` adds `ResetCurrentToCapturedSourceMode` beside
+  the existing mode menu. It shares source/HEAD/repository capture and native
+  execution, but always confirms the requested hard/mixed/soft mode with its
+  effects and captured endpoints. Never route these direct actions through the
+  warning-skipping menu callbacks. Replayed approvals remain single-use.
+- `controllers/selected_reset_bindings.go` adds separate keyless mode actions to
+  branch and basic commit controllers; the fork catalogue supplies `s h`, `s m`
+  and `s s` when the dispatcher is enabled. Preserve the two additive controller
+  hooks and existing reset-menu behavior for explicit legacy overrides.
+- Real-Git focused helper checks cover all three effects, cancellation, changed
+  HEAD/source ref/repository, invalid mode and replayed approval. Normal-pane
+  shortcut activation and terminal checks remain in the current tracker item.
+
+
 ### Command identity and path projection
 
 - `gui/types/command_paths.go` keeps direct keys separate from sequential menu

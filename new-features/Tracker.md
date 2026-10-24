@@ -58,7 +58,7 @@ custom commands. Frequency persistence and sorting remain item 9.
 4. Extend the captured operation flows required by the
    requested bindings: pasted-hash diff for commits/files, Files-only commit Enter,
    full-refresh/re-render F5 without fetch, mandatory discard confirmation,
-   explanatory rebase/merge/reset confirmation with preselected reset mode,
+   explanatory rebase/merge confirmation,
    unified selected branch/commit checkout and ref-only branch placement,
    idempotent cherry-pick mark/unmark, Escape mark clearing and exact-list
    marked/selected review, plus ancestry-based combine with an editable message.

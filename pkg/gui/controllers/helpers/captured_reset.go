@@ -19,6 +19,21 @@ type branchActionResetFlow struct {
 // Capture source identity before any menu, not a pointer into a mutable model.
 // The source may be a full local/upstream ref or a full detached commit OID.
 func ResetCurrentToCapturedSource(c *HelperCommon, label, ref string) error {
+	return resetCurrentToCapturedSource(c, label, ref, "")
+}
+
+// ResetCurrentToCapturedSourceMode resets the current branch to a captured
+// source using mode, after an explicit confirmation.
+func ResetCurrentToCapturedSourceMode(c *HelperCommon, label, ref, mode string) error {
+	switch mode {
+	case "hard", "mixed", "soft":
+	default:
+		return fmt.Errorf("invalid reset mode %q", mode)
+	}
+	return resetCurrentToCapturedSource(c, label, ref, mode)
+}
+
+func resetCurrentToCapturedSource(c *HelperCommon, label, ref, mode string) error {
 	target := captureActionRepository(c)
 	var upstreamBranch string
 	if ref == "@{upstream}" {
@@ -60,10 +75,41 @@ func ResetCurrentToCapturedSource(c *HelperCommon, label, ref string) error {
 		}
 		c.OnUIThread(func() error {
 			flow := &branchActionResetFlow{target: target, snapshot: snapshot, label: label}
+			if mode != "" {
+				return flow.confirmMode(mode)
+			}
 			return flow.menu()
 		})
 		return nil
 	})
+}
+
+func (flow *branchActionResetFlow) confirmMode(mode string) error {
+	if err := flow.target.checkRepository(); err != nil {
+		return err
+	}
+	var title, effect string
+	switch mode {
+	case "hard":
+		title, effect = flow.target.c.Tr.Actions.HardReset, flow.target.c.Tr.BranchActionResetHardWarning
+	case "mixed":
+		title, effect = flow.target.c.Tr.Actions.MixedReset, flow.target.c.Tr.ResetMixedTooltip
+	case "soft":
+		title, effect = flow.target.c.Tr.Actions.SoftReset, flow.target.c.Tr.ResetSoftTooltip
+	default:
+		return fmt.Errorf("invalid reset mode %q", mode)
+	}
+	flow.target.c.Confirm(types.ConfirmOpts{
+		Title: title, Prompt: effect + "\n\n" + flow.prompt(),
+		HandleConfirm: func() error {
+			if err := flow.target.checkRepository(); err != nil {
+				return err
+			}
+			return flow.execute(mode)
+		},
+		HandleClose: flow.target.checkRepository,
+	})
+	return nil
 }
 
 func (flow *branchActionResetFlow) prompt() string {
