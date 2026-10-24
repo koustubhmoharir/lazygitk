@@ -42,6 +42,26 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Pasted-hash historical comparisons
+
+- `git_commands/historical_commit_comparison.go` resolves only unambiguous
+  hexadecimal commit IDs and builds literal-pathspec difftool commands with
+  fixed left/right OIDs. Separate stdout from Git diagnostics, including full
+  hex-named ref warnings; never recover object identity from mixed output.
+- The additive keyless `diff.commit.selected-commit` and
+  `diff.history-file.selected-commit` actions in `historical_diff_actions.go`
+  capture the selected OID/path and repository generation before prompting.
+  The selected revision is left, pasted revision right. Files/directories and
+  deleted paths use native two-tree comparison; explicit rename/arbitrary
+  worktree-file selection remains the separate existing flow.
+- `controllers/historical_commit_comparison.go` refuses repo switches and
+  preserves the captured source even if models change. The normal `d c` route
+  is in the catalogue, awaiting dispatcher activation; the action is already
+  discoverable through the palette. Focused Git-backed checks cover partial,
+  full, ambiguous, non-commit and SHA-256 IDs, ref shadows, exact argv/cwd,
+  cancellation, copied paths and repository changes.
+
+
 ### Captured command menus and disabled defaults
 
 - `gui/fork_prefix_menu.go` owns visible prefix frames with one-use acceptance

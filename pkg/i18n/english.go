@@ -949,6 +949,8 @@ type TranslationSet struct {
 	DiffingMenuTitle                      string
 	DiffWithWorkingTree                   string
 	DiffWithPreviousCommit                string
+	DiffWithSelectedCommit                string
+	HistoricalDiffCommitPrompt            string
 	DiffWithWorkingFile                   string
 	HistoricalDiffMissingSelection        string
 	HistoricalDiffRootCommit              string
@@ -2379,6 +2381,8 @@ func EnglishTranslationSet() *TranslationSet {
 		DiffingMenuTitle:                 "Diffing",
 		DiffWithWorkingTree:              "Diff with working tree",
 		DiffWithPreviousCommit:           "Diff with previous commit",
+		DiffWithSelectedCommit:           "Diff with commit…",
+		HistoricalDiffCommitPrompt:       "Compare selected %s (left) with commit hash (right)",
 		DiffWithWorkingFile:              "Diff with working file…",
 		HistoricalDiffMissingSelection:   "Select a commit to compare.",
 		HistoricalDiffRootCommit:         "This commit has no available first parent to compare.",

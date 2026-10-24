@@ -56,7 +56,7 @@ custom commands. Frequency persistence and sorting remain item 9.
    Preserve literal input, search/filter text, subprocess typing, explicit
    override behavior and custom Ctrl commands; retain genuine errors after an action is invoked.
 4. Extend the captured operation flows required by the
-   requested bindings: pasted-hash diff for commits/files, Files-only commit Enter,
+   requested bindings: Files-only commit Enter,
    full-refresh/re-render F5 without fetch, mandatory discard confirmation,
    explanatory rebase/merge confirmation,
    unified selected branch/commit checkout and ref-only branch placement,

@@ -36,6 +36,12 @@ func (self *BasicCommitsController) historicalDiffBindings(opts types.Keybinding
 			GetDisabledReason: self.require(func() *types.DisabledReason { return self.canHistoricalDiffCommit(true) }),
 			Description:       self.c.Tr.DiffWithPreviousCommit,
 		},
+		{
+			CommandID: "diff.commit.selected-commit", Verb: "diff-commit",
+			Handler:           self.promptHistoricalCommitComparison,
+			GetDisabledReason: self.require(func() *types.DisabledReason { return self.canHistoricalDiffCommit(false) }),
+			Description:       self.c.Tr.DiffWithSelectedCommit, OpensMenu: true,
+		},
 	}
 }
 
@@ -119,6 +125,12 @@ func (self *CommitFilesController) historicalDiffBindings(opts types.Keybindings
 			GetDisabledReason: self.require(func() *types.DisabledReason { return self.canHistoricalFileDiff(false, true) }),
 			Description:       self.c.Tr.DiffWithWorkingFile, OpensMenu: true,
 		},
+		{
+			CommandID: "diff.history-file.selected-commit", Verb: "diff-commit",
+			Handler:           self.promptHistoricalCommitComparison,
+			GetDisabledReason: self.require(self.canHistoricalFileComparison),
+			Description:       self.c.Tr.DiffWithSelectedCommit, OpensMenu: true,
+		},
 	}
 }
 
@@ -164,6 +176,11 @@ func (self *CommitFilesController) canHistoricalFileDiff(previous, arbitrary boo
 		return &types.DisabledReason{Text: self.c.Tr.HistoricalDiffDeletedFile}
 	}
 	return nil
+}
+
+func (self *CommitFilesController) canHistoricalFileComparison() *types.DisabledReason {
+	_, reason := self.captureHistoricalFileSelection()
+	return reason
 }
 
 func (self *CommitFilesController) diffHistoricalFileWithWorktree() error {
