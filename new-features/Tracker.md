@@ -44,6 +44,8 @@ custom commands. Frequency persistence and sorting remain item 9.
    arrows, `d w`/`d p`/`d c`, `s h`/`s m`/`s s`/`s c`, `n b` and
    `c y`/`c x`/`c p`. Keep Pull in a deliberate menu path. Define source-field
    override projection for commands with several legacy aliases or context-specific fields.
+   The stable-ID path configuration parser/schema is present; connect it through
+   the projection and dispatcher before treating overrides as active.
 3. Integrate the opt-in ASCII command matching/collision normalization and add
    inactive-key consumption at small central integration points. The command
    matcher is implemented independently of exact keys and input events; the

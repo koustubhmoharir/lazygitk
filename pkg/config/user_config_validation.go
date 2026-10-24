@@ -14,6 +14,9 @@ import (
 )
 
 func (config *UserConfig) Validate() error {
+	if err := config.validateCommandBindings(); err != nil {
+		return err
+	}
 	if err := validateEnum("gui.statusPanelView", config.Gui.StatusPanelView,
 		[]string{"dashboard", "allBranchesLog"}); err != nil {
 		return err

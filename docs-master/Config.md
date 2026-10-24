@@ -679,6 +679,12 @@ disableStartupPopups: false
 # See https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_Command_Keybindings.md
 customCommands: []
 
+# Alternate key paths for stable command IDs. For example,
+# commandBindings: {diff.commit.worktree: [[d, w], '<f6>']} binds d then w,
+# or F6. An empty or null value disables a command; omitted IDs keep their
+# built-in paths.
+commandBindings: {}
+
 # See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-pull-request-urls
 services: {}
 

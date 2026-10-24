@@ -10,6 +10,31 @@
       "type": "object",
       "description": "See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-branch-color"
     },
+    "CommandBindingPaths": {
+      "oneOf": [
+        {
+          "items": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "maxItems": 3,
+                "minItems": 1
+              }
+            ]
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "CommitConfig": {
       "properties": {
         "signOff": {
@@ -4268,6 +4293,13 @@
           "type": "array",
           "uniqueItems": true,
           "description": "User-configured commands that can be invoked from within Lazygit\nSee https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_Command_Keybindings.md"
+        },
+        "commandBindings": {
+          "additionalProperties": {
+            "$ref": "#/$defs/CommandBindingPaths"
+          },
+          "type": "object",
+          "description": "Alternate key paths for stable command IDs. For example,\ncommandBindings: {diff.commit.worktree: [[d, w], '\u003cf6\u003e']} binds d then w,\nor F6. An empty or null value disables a command; omitted IDs keep their\nbuilt-in paths."
         },
         "services": {
           "additionalProperties": {

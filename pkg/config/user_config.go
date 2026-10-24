@@ -30,6 +30,11 @@ type UserConfig struct {
 	// User-configured commands that can be invoked from within Lazygit
 	// See https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_Command_Keybindings.md
 	CustomCommands []CustomCommand `yaml:"customCommands" jsonschema:"uniqueItems=true"`
+	// Alternate key paths for stable command IDs. For example,
+	// commandBindings: {diff.commit.worktree: [[d, w], '<f6>']} binds d then w,
+	// or F6. An empty or null value disables a command; omitted IDs keep their
+	// built-in paths.
+	CommandBindings map[string]CommandBindingPaths `yaml:"commandBindings,omitempty"`
 	// See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-pull-request-urls
 	Services map[string]string `yaml:"services"`
 	// What to do when opening Lazygit outside of a git repo.

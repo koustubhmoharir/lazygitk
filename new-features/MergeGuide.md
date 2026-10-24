@@ -42,6 +42,20 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Command path configuration foundation
+
+- `UserConfig.CommandBindings` and its validation hook introduce paths keyed by
+  stable command ID. Each outer list contains alternate paths; each inner list
+  is a sequence of one to three keys. Empty/null values disable that command.
+  Keep this distinct from legacy `Keybinding`, whose list means alternate keys.
+- `config/fork_command_bindings.go` supplies JSON decoding/schema; YAML uses the
+  existing Keybinding decoder. Loader coverage checks layered maps, explicit
+  disabling, and coexistence with legacy bindings and custom commands.
+- This is configuration support for the pending dispatcher integration. Parsing
+  alone does not activate the new defaults. Regenerate `docs-master/Config.md`
+  and `schema-master/config.json` when these definitions change.
+
+
 ### Modal editor word movement
 
 - `config/fork_editor_defaults.go` adds Ctrl+Left/Right before user config is
