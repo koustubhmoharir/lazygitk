@@ -21,8 +21,9 @@ type CommandEdge struct {
 	Tree *CommandTree
 }
 
-// BuildCommandTree builds a normalized command trie for view. View-specific
-// routes shadow global routes only when their complete paths are identical.
+// BuildCommandTree builds a normalized command trie for view. Explicit routes
+// precede defaults; within either class, local routes precede global routes.
+// Ownership applies to complete paths, never an entire shared prefix.
 func BuildCommandTree(bindings []*types.Binding, view string) *CommandTree {
 	type route struct {
 		binding *types.Binding
@@ -57,31 +58,9 @@ func BuildCommandTree(bindings []*types.Binding, view string) *CommandTree {
 		}
 	}
 
-	// Record locally-owned complete routes before insertion so a local route
-	// shadows its global counterpart regardless of source order.
-	var localPaths [][]gocui.Key
-	for _, item := range routes {
-		if item.binding.ViewName == view && view != "" {
-			localPaths = append(localPaths, item.path)
-		}
-	}
-
 	root := &CommandTree{}
 	seen := make(map[*types.Binding]map[*CommandTree]struct{})
 	for _, item := range routes {
-		if item.binding.ViewName == "" && view != "" {
-			shadowed := false
-			for _, localPath := range localPaths {
-				if equalPath(item.path, localPath) {
-					shadowed = true
-					break
-				}
-			}
-			if shadowed {
-				continue
-			}
-		}
-
 		node := root
 		for _, key := range item.path {
 			node = nodeForKey(node, key)
@@ -96,8 +75,36 @@ func BuildCommandTree(bindings []*types.Binding, view string) *CommandTree {
 		node.Bindings = append(node.Bindings, item.binding)
 	}
 
+	pruneCommandTreeOwners(root, view)
 	sortCommandTree(root)
 	return root
+}
+
+func pruneCommandTreeOwners(tree *CommandTree, view string) {
+	priority := func(binding *types.Binding) int {
+		value := 0
+		if !binding.DefaultCommand {
+			value += 2
+		}
+		if view != "" && binding.ViewName == view {
+			value++
+		}
+		return value
+	}
+	best := -1
+	for _, binding := range tree.Bindings {
+		best = max(best, priority(binding))
+	}
+	kept := tree.Bindings[:0]
+	for _, binding := range tree.Bindings {
+		if priority(binding) == best {
+			kept = append(kept, binding)
+		}
+	}
+	tree.Bindings = kept
+	for _, edge := range tree.Children {
+		pruneCommandTreeOwners(edge.Tree, view)
+	}
 }
 
 func nodeForKey(node *CommandTree, key gocui.Key) *CommandTree {
@@ -118,16 +125,4 @@ func sortCommandTree(tree *CommandTree) {
 	for i := range tree.Children {
 		sortCommandTree(tree.Children[i].Tree)
 	}
-}
-
-func equalPath(a, b []gocui.Key) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if !a[i].Equals(b[i]) {
-			return false
-		}
-	}
-	return true
 }

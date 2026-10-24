@@ -681,8 +681,8 @@ customCommands: []
 
 # Alternate key paths for stable command IDs. For example,
 # commandBindings: {diff.commit.worktree: [[d, w], '<f6>']} binds d then w,
-# or F6. An empty or null value disables a command; omitted IDs keep their
-# built-in paths.
+# or F6. An empty or null value removes keyboard paths; the action remains
+# discoverable in the command palette. Omitted IDs keep their built-in paths.
 commandBindings: {}
 
 # See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-pull-request-urls
@@ -700,7 +700,9 @@ notARepository: prompt
 # view the output of the subprocess before returning to Lazygit.
 promptToReturnFromSubprocess: true
 
-# Keybindings.
+# Legacy keybinding overrides and native modal/editor controls. Values shown
+# here are compatibility values, not the fork's effective normal-pane defaults.
+# Copy only fields you want to override; use commandBindings for semantic paths.
 # Each binding can be a single key or a list of keys; see
 # https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md
 # for the syntax.
@@ -722,8 +724,8 @@ keybinding:
     toggleRangeSelect: null
     rangeSelectDown: <shift+down>
     rangeSelectUp: <shift+up>
-    prevBlock: [<left>, h, <backtab>]
-    nextBlock: [<right>, l, <tab>]
+    prevBlock: h
+    nextBlock: l
     jumpToBlock:
       - "1"
       - "2"
@@ -732,8 +734,8 @@ keybinding:
       - "5"
     focusMainView: "0"
     jumpToFile: <ctrl+g>
-    nextMatch: "n"
-    prevMatch: "N"
+    nextMatch: <f3>
+    prevMatch: <shift+f3>
     startSearch: /
 
     # <alt+left> on Mac
@@ -773,8 +775,8 @@ keybinding:
     pullFiles: p
     refresh: R
     createPatchOptionsMenu: <ctrl+p>
-    nextTab: ']'
-    prevTab: '['
+    nextTab: <tab>
+    prevTab: <backtab>
     nextScreenMode: +
     prevScreenMode: _
     cycleDiffRenderers: '|'

@@ -256,6 +256,14 @@ func (self *MenuViewModel) GetNonModelItems() []*NonModelItem {
 }
 
 func (self *MenuContext) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
+	if len(self.blockUnmatchedKeys) > 0 {
+		// Fork prefixes reserve physical navigation; configured letter aliases
+		// must not consume a continuation before its command accelerator.
+		opts.Config.Universal.PrevItem = []string{"<up>"}
+		opts.Config.Universal.NextItem = []string{"<down>"}
+		opts.Config.Universal.ConfirmMenu = []string{"<enter>"}
+		opts.Config.Universal.Return = []string{"<esc>"}
+	}
 	basicBindings := self.ListContextTrait.GetKeybindings(opts)
 
 	if self.filterAsYouType {

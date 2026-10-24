@@ -1,5 +1,10 @@
 ## Custom Keybindings
 
+This fork uses [semantic command paths](Fork_Keybindings.md) in normal panes.
+ASCII command letters are case-insensitive there. The legacy syntax below still
+applies to explicit overrides and native dialog/editor controls; custom commands
+retain exact key matching. Copy only the fields you intend to override.
+
 A keybinding is one of:
 
 - A single printable character, e.g. `q`, `?`, `5`. Uppercase letters mean

@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jesseduffield/generics/set"
-	"github.com/jesseduffield/lazygit/pkg/config"
-	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/style"
@@ -37,23 +34,27 @@ func (gui *Gui) renderContextOptionsMap() {
 func (self *OptionsMapMgr) renderContextOptionsMap() {
 	currentContext := self.c.Context().Current()
 
-	currentContextBindings := currentContext.GetKeybindings(self.c.KeybindingsOpts())
-	globalBindings := self.c.Contexts().Global.GetKeybindings(self.c.KeybindingsOpts())
+	allBindings, _ := self.c.GetInitialKeybindingsWithCustomCommands()
+	view := currentContext.GetViewName()
+	displayBindings := make([]*types.Binding, 0, len(allBindings))
+	for _, binding := range allBindings {
+		// Normal command compilation owns global core routes only in normal
+		// panes. Popup/editor hints retain native custom-command registrations.
+		if !forkHintBindingInContext(binding, view) {
+			continue
+		}
+		displayBindings = append(displayBindings, binding)
+	}
+	// Preserve native local-before-global precedence for aliases and footer order.
+	displayBindings = localFirstForkHintBindings(displayBindings)
+	displayBindings = deduplicateForkDisplayAliases(displayBindings)
+	modeHintBindings := displayBindings
 
-	currentContextKeys := set.NewFromSlice(
-		lo.FlatMap(currentContextBindings, func(binding *types.Binding, _ int) []gocui.Key {
-			return binding.Keys
-		}))
-
-	allBindings := append(currentContextBindings, lo.Filter(globalBindings, func(b *types.Binding, _ int) bool {
-		return len(b.Keys) > 0 && !currentContextKeys.Includes(b.Keys[0])
-	})...)
-
-	bindingsToDisplay := lo.Filter(allBindings, func(binding *types.Binding, _ int) bool {
+	bindingsToDisplay := lo.Filter(displayBindings, func(binding *types.Binding, _ int) bool {
 		// A binding that describes itself as nothing has nothing to do where we are —
 		// that is how a command which only applies to some of a view's contents says so
 		// — and an empty entry in the options bar would say nothing about it.
-		return len(binding.Keys) > 0 && binding.DisplayOnScreen && !binding.IsDisabled() &&
+		return len(binding.KeyLabels()) > 0 && binding.DisplayOnScreen && !binding.IsDisabled() &&
 			binding.GetShortDescription() != ""
 	})
 	// Fork: prioritize the primary history comparison in hints only; upstream
@@ -67,7 +68,7 @@ func (self *OptionsMapMgr) renderContextOptionsMap() {
 		}
 
 		return bindingInfo{
-			key:         config.LabelForKey(binding.Keys[0]),
+			key:         strings.Join(binding.KeyLabels(), ", "),
 			description: binding.GetShortDescription(),
 			style:       displayStyle,
 		}
@@ -76,38 +77,46 @@ func (self *OptionsMapMgr) renderContextOptionsMap() {
 	// Mode-specific local keybindings
 	if currentContext.GetKey() == context.LOCAL_COMMITS_CONTEXT_KEY {
 		if self.c.Modes().CherryPicking.Active() {
-			// Fork: replace the upstream empty paste-key hint with a palette hint
-			// when the command is unbound, preserving explicit shortcut hints.
-			optionsMap = utils.Prepend(optionsMap, cherryPickModeHint(self.c.KeybindingsOpts().Config, self.c.Tr))
+			optionsMap = appendModeHint(optionsMap, effectiveModeHint(displayBindings, "commit.cherry-pick", self.c.Tr.PasteCommits, self.c.Tr.PasteCommitsPaletteHint, modeHintBindings, style.FgCyan))
 		}
 
 		if self.c.Model().BisectInfo.Started() {
-			optionsMap = utils.Prepend(optionsMap, bindingInfo{
-				key:         self.c.KeybindingsOpts().Config.Commits.ViewBisectOptions.String(),
-				description: self.c.Tr.ViewBisectOptions,
-				style:       style.FgGreen,
-			})
+			optionsMap = appendModeHint(optionsMap, effectiveModeHint(displayBindings, "bisect.options-menu", self.c.Tr.ViewBisectOptions, "View bisect options", modeHintBindings, style.FgGreen))
 		}
 	}
 
 	// Mode-specific global keybindings
 	if state := self.c.Model().WorkingTreeStateAtLastCommitRefresh; state.Any() {
-		optionsMap = utils.Prepend(optionsMap, bindingInfo{
-			key:         self.c.KeybindingsOpts().Config.Universal.CreateRebaseOptionsMenu.String(),
-			description: state.OptionsMapTitle(self.c.Tr),
-			style:       style.FgYellow,
-		})
+		optionsMap = appendModeHint(optionsMap, effectiveModeHint(displayBindings, "branch.merge-rebase-menu", state.OptionsMapTitle(self.c.Tr), state.OptionsMapTitle(self.c.Tr), modeHintBindings, style.FgYellow))
 	}
 
 	if self.c.Git().Patch.PatchBuilder.Active() {
-		optionsMap = utils.Prepend(optionsMap, bindingInfo{
-			key:         self.c.KeybindingsOpts().Config.Universal.CreatePatchOptionsMenu.String(),
-			description: self.c.Tr.ViewPatchOptions,
-			style:       style.FgYellow,
-		})
+		optionsMap = appendModeHint(optionsMap, effectiveModeHint(displayBindings, "patch.options-menu", self.c.Tr.ViewPatchOptions, self.c.Tr.ViewPatchOptions, modeHintBindings, style.FgYellow))
 	}
 
 	self.renderOptions(self.formatBindingInfos(optionsMap))
+}
+
+func localFirstForkHintBindings(bindings []*types.Binding) []*types.Binding {
+	result := make([]*types.Binding, 0, len(bindings))
+	for _, binding := range bindings {
+		if binding.ViewName != "" {
+			result = append(result, binding)
+		}
+	}
+	for _, binding := range bindings {
+		if binding.ViewName == "" {
+			result = append(result, binding)
+		}
+	}
+	return result
+}
+
+func forkHintBindingInContext(binding *types.Binding, view string) bool {
+	if binding.ViewName != "" && binding.ViewName != view {
+		return false
+	}
+	return binding.ViewName != "" || forkCommandView(view) || strings.HasPrefix(binding.GetCommandID(), "custom.")
 }
 
 func (self *OptionsMapMgr) formatBindingInfos(bindingInfos []bindingInfo) string {

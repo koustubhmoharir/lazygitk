@@ -55,6 +55,8 @@ func (gui *Gui) GetCheatsheetKeybindings() []*types.Binding {
 	gui.State = &GuiRepoState{}
 	gui.State.Contexts = gui.contextTree()
 	gui.State.ContextMgr = NewContextMgr(gui, gui.State.Contexts)
+	// Fork command projection needs a canonical focused source even offline.
+	gui.State.ContextMgr.ContextStack = []types.Context{gui.State.Contexts.Files}
 	gui.resetHelpersAndControllers()
 	bindings, _ := gui.GetInitialKeybindings()
 	return bindings
@@ -401,10 +403,26 @@ func (gui *Gui) GetInitialKeybindings() ([]*types.Binding, []*gocui.ViewMouseBin
 		},
 	}...)
 
-	return bindings, mouseKeybindings
+	// Fork: project semantic defaults once at the source shared by dispatch,
+	// palettes and generated cheatsheets, replacing upstream's pane-key table.
+	projected, err := gui.projectForkBindings(bindings)
+	if err != nil {
+		panic(err) // User configuration paths have already been validated.
+	}
+	return projected, mouseKeybindings
 }
 
 func (gui *Gui) GetInitialKeybindingsWithCustomCommands() ([]*types.Binding, []*gocui.ViewMouseBinding) {
+	bindings, custom, mouse := gui.initialBindingsWithCustomCommands()
+	all := append(custom, bindings...)
+	view := gui.State.ContextMgr.CurrentStatic().GetViewName()
+	if forkCommandView(view) {
+		all = effectiveForkDisplayBindings(all, view)
+	}
+	return all, mouse
+}
+
+func (gui *Gui) initialBindingsWithCustomCommands() ([]*types.Binding, []*types.Binding, []*gocui.ViewMouseBinding) {
 	// if the search or filter prompt is open, we only want the keybindings for
 	// that context. It shouldn't be possible, for example, to open a menu while
 	// the prompt is showing; you first need to confirm or cancel the search/filter.
@@ -414,7 +432,7 @@ func (gui *Gui) GetInitialKeybindingsWithCustomCommands() ([]*types.Binding, []*
 		for _, binding := range bindings {
 			binding.ViewName = viewName
 		}
-		return bindings, nil
+		return bindings, nil, nil
 	}
 
 	bindings, mouseBindings := gui.GetInitialKeybindings()
@@ -422,19 +440,17 @@ func (gui *Gui) GetInitialKeybindingsWithCustomCommands() ([]*types.Binding, []*
 	if err != nil {
 		log.Fatal(err)
 	}
-	// prepending because we want to give our custom keybindings precedence over default keybindings
-	bindings = append(customBindings, bindings...)
-	return bindings, mouseBindings
+	return bindings, customBindings, mouseBindings
 }
 
 func (gui *Gui) resetKeybindings() {
 	gui.g.DeleteAllKeybindings()
 
-	bindings, mouseBindings := gui.GetInitialKeybindingsWithCustomCommands()
-
-	for _, binding := range bindings {
-		gui.SetKeybinding(binding)
-	}
+	bindings, customBindings, mouseBindings := gui.initialBindingsWithCustomCommands()
+	// Fork: normal panes use compiled command paths and no-op reservations;
+	// custom, modal, editor and mouse routes retain native registration.
+	gui.registerForkCommands(bindings, customBindings)
+	gui.updateForkPanelJumpLabels(bindings, customBindings)
 
 	for _, binding := range mouseBindings {
 		gui.SetMouseKeybinding(binding)

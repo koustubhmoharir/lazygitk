@@ -3,9 +3,9 @@ package gui
 import (
 	"testing"
 
-	"github.com/jesseduffield/lazygit/pkg/config"
+	"github.com/jesseduffield/lazygit/pkg/gocui"
+	"github.com/jesseduffield/lazygit/pkg/gui/style"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
-	"github.com/jesseduffield/lazygit/pkg/i18n"
 )
 
 func TestHistoricalDiffHintPriorityDoesNotReorderDispatch(t *testing.T) {
@@ -22,16 +22,20 @@ func TestHistoricalDiffHintPriorityDoesNotReorderDispatch(t *testing.T) {
 	}
 }
 
-func TestCherryPickModeHint(t *testing.T) {
-	keys := config.GetDefaultConfig().Keybinding
-	tr := i18n.EnglishTranslationSet()
-	hint := cherryPickModeHint(keys, tr)
-	if hint.key != keys.Universal.OptionMenu.String() || hint.description != tr.PasteCommitsPaletteHint {
-		t.Fatalf("unbound paste should point to palette: %+v", hint)
+func TestModeHintUsesEffectiveCommandOrPalettePath(t *testing.T) {
+	key := func(r rune) gocui.Key { return gocui.NewKeyRune(r) }
+	mode := &types.Binding{CommandID: "commit.cherry-pick", CommandPaths: [][]gocui.Key{{key('c'), key('p')}}}
+	palette := &types.Binding{CommandID: "app.command-palette", CommandPaths: [][]gocui.Key{{key('?')}}}
+	hint := effectiveModeHint([]*types.Binding{mode}, "commit.cherry-pick", "Paste", "Open palette", []*types.Binding{palette}, style.FgCyan)
+	if hint.key != "c p" || hint.description != "Paste" {
+		t.Fatalf("bound mode command should show its effective path: %+v", hint)
 	}
-	keys.Commits.PasteCommits = config.Keybinding{"x"}
-	hint = cherryPickModeHint(keys, tr)
-	if hint.key != "x" || hint.description != tr.PasteCommits {
-		t.Fatalf("configured paste should keep its shortcut: %+v", hint)
+	hint = effectiveModeHint(nil, "commit.cherry-pick", "Paste", "Open palette", []*types.Binding{palette}, style.FgCyan)
+	if hint.key != "?" || hint.description != "Open palette" {
+		t.Fatalf("unbound mode command should point to effective palette path: %+v", hint)
+	}
+	hint = effectiveModeHint(nil, "commit.cherry-pick", "Paste", "Open palette", nil, style.FgCyan)
+	if hint.key != "" || appendModeHint(nil, hint) != nil {
+		t.Fatalf("both commands unbound should omit the mode hint: %+v", hint)
 	}
 }

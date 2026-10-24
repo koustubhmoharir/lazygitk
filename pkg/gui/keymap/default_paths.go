@@ -36,7 +36,7 @@ func buildDefaultPaths() map[string][][]gocui.Key {
 	add("branch.rename stash.rename commit.reword", "f2")
 	add("file.edit file.edit-line commit.edit remote.edit-url submodule.edit-url", "e")
 	add("file.open worktree.open-editor commit.open-browser", "o")
-	add("app.refresh file.refresh", "f5")
+	add("app.refresh", "f5")
 	add("branch.delete-menu remote-branch.delete remote.delete tag.delete-menu stash.drop commit.drop submodule.delete worktree.remove-menu", "delete")
 	add("file.discard-menu commit.discard-file-changes diff.discard-worktree-selection commit.discard-selection", "x")
 	add("commit.amend-head commit.amend-selected", "a")
@@ -159,7 +159,7 @@ func buildDefaultPaths() map[string][][]gocui.Key {
 	}
 
 	// Replaced normal routes intentionally remain recognized with no path.
-	for _, id := range strings.Fields("commit.copy-for-cherry-pick commit.squash-down commit.mark-fixup commit.set-fixup-message commit.create-fixup-menu commit.autosquash commit.find-fixup-target commit.clear-cherry-pick-selection branch.create-and-checkout branch.reset-menu branch.checkout-by-name branch.checkout-previous branch.force-checkout file.toggle-stage-all diff.primary-selection diff.discard-selection") {
+	for _, id := range strings.Fields("file.refresh commit.copy-for-cherry-pick commit.squash-down commit.mark-fixup commit.set-fixup-message commit.create-fixup-menu commit.autosquash commit.find-fixup-target commit.clear-cherry-pick-selection branch.create-and-checkout branch.reset-menu branch.checkout-by-name branch.checkout-previous branch.force-checkout file.toggle-stage-all diff.primary-selection diff.discard-selection") {
 		if _, exists := paths[id]; !exists {
 			paths[id] = nil
 		}

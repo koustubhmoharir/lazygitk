@@ -687,6 +687,8 @@ var tests = []*components.IntegrationTest{
 	ui.EmptyMenu,
 	ui.FilteringScrollsSelectionIntoView,
 	ui.FindBaseCommitForFixupScrollsIntoView,
+	ui.ForkDefaultKeymap,
+	ui.ForkPrefixOverrides,
 	ui.HideSidePanel,
 	ui.KeybindingSuggestionsDontCrashOnDisabledBindings,
 	ui.KeybindingSuggestionsWhenSwitchingRepos,

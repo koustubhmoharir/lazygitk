@@ -32,6 +32,11 @@ func TestCommandBindingsYAMLAndValidation(t *testing.T) {
 		"commandBindings: { x: [[a, b, c, d]] }",
 		"commandBindings: { x: [[<disabled>]] }",
 		"commandBindings: { x: [[not-a-key]] }",
+		"commandBindings: { x: [[g, <enter>]] }",
+		"commandBindings: { x: [[g, <esc>]] }",
+		"commandBindings: { x: [[g, <up>]] }",
+		"commandBindings: { x: [[g, <down>]] }",
+		"commandBindings: { x: [[g, <mouseleft>]] }",
 	} {
 		invalid := *GetDefaultConfig()
 		if err := yaml.Unmarshal([]byte(value), &invalid); err != nil {
@@ -55,6 +60,14 @@ func TestCommandBindingsLayeringAndLegacyCompatibility(t *testing.T) {
 	assert.Nil(t, config.CommandBindings["retained"])
 	assert.Contains(t, config.Keybinding.Universal.Quit, "q")
 	assert.Contains(t, config.CustomCommands, CustomCommand{Key: Keybinding{"<c-t>"}, Command: "echo legacy"})
+}
+
+func TestCommandBindingsPermitNavigationAtRootAndModifiedContinuations(t *testing.T) {
+	for _, path := range []string{"[<up>]", "[<enter>]", "[<esc>]", "[g, <a-up>]"} {
+		config := *GetDefaultConfig()
+		requireCommandBindingNoError(t, yaml.Unmarshal([]byte("commandBindings: { x: ["+path+"] }"), &config))
+		assert.NoError(t, config.Validate(), path)
+	}
 }
 
 func TestCommandBindingsRoundTrip(t *testing.T) {

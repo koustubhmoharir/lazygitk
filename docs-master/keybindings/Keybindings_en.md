@@ -6,34 +6,36 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` <ctrl+r> `` | Switch to a recent repo |  |
-| `` <pgup>, K, <ctrl+u> (fn+up/shift+k) `` | Scroll up main window |  |
-| `` <pgdown>, J, <ctrl+d> (fn+down/shift+j) `` | Scroll down main window |  |
-| `` @ `` | View command log options | View options for the command log e.g. show/hide the command log and focus the command log. |
-| `` P `` | Push | Uses the branch selected when the action starts; changing selection cannot redirect an open prompt or running operation. |
-| `` p `` | Pull | Uses the branch selected when the action starts; changing selection cannot redirect an open prompt or running operation. |
-| `` ) `` | Increase rename similarity threshold | Increase the similarity threshold for a deletion and addition pair to be treated as a rename.<br><br>The default can be changed in the config file with the key 'git.renameSimilarityThreshold'. |
-| `` ( `` | Decrease rename similarity threshold | Decrease the similarity threshold for a deletion and addition pair to be treated as a rename.<br><br>The default can be changed in the config file with the key 'git.renameSimilarityThreshold'. |
-| `` } `` | Increase diff context size | Increase the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
-| `` { `` | Decrease diff context size | Decrease the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
+| `` t r r `` | Switch to a recent repo |  |
+| `` <alt+up>, <pgup> (fn+up/shift+k) `` | Scroll up main window |  |
+| `` <alt+down>, <pgdown> (fn+down/shift+j) `` | Scroll down main window |  |
+| `` t l c `` | View command log options | View options for the command log e.g. show/hide the command log and focus the command log. |
+| `` p `` | Push | Uses the branch selected when the action starts; changing selection cannot redirect an open prompt or running operation. |
+| `` g l `` | Pull | Uses the branch selected when the action starts; changing selection cannot redirect an open prompt or running operation. |
+| `` t d > `` | Increase rename similarity threshold | Increase the similarity threshold for a deletion and addition pair to be treated as a rename.<br><br>The default can be changed in the config file with the key 'git.renameSimilarityThreshold'. |
+| `` t d < `` | Decrease rename similarity threshold | Decrease the similarity threshold for a deletion and addition pair to be treated as a rename.<br><br>The default can be changed in the config file with the key 'git.renameSimilarityThreshold'. |
+| `` t d + `` | Increase diff context size | Increase the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
+| `` t d - `` | Decrease diff context size | Decrease the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
+| `` c p `` | Cherry-pick |  |
 | `` : `` | Execute shell command | Bring up a prompt where you can enter a shell command to execute. |
-| `` <ctrl+p> `` | View custom patch options |  |
-| `` m `` | View merge/rebase options | View options to abort/continue/skip the current merge/rebase. |
-| `` R `` | Refresh | Refresh the git state (i.e. run `git status`, `git branch`, etc in background to update the contents of panels). This does not run `git fetch`. |
-| `` + `` | Next screen mode (normal/half/fullscreen) |  |
-| `` _ `` | Prev screen mode |  |
-| `` \| `` | Cycle diff renderers | Choose the next renderer in the list of configured diff renderers. |
-| `` \ `` | Cycle diff renderers (reverse) | Choose the previous renderer in the list of configured diff renderers. |
-| `` <ctrl+g> `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
+| `` g h o `` | View custom patch options |  |
+| `` g o `` | View merge/rebase options | View options to abort/continue/skip the current merge/rebase. |
+| `` <f5> `` | Refresh | Refresh the git state (i.e. run `git status`, `git branch`, etc in background to update the contents of panels). This does not run `git fetch`. |
+| `` t s n `` | Next screen mode (normal/half/fullscreen) |  |
+| `` t s p `` | Prev screen mode |  |
+| `` t d n `` | Cycle diff renderers | Choose the next renderer in the list of configured diff renderers. |
+| `` t d p `` | Cycle diff renderers (reverse) | Choose the previous renderer in the list of configured diff renderers. |
+| `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
 | `` <esc> `` | Cancel |  |
 | `` ? `` | Open keybindings menu |  |
-| `` <ctrl+s> `` | View filter options | View options for filtering the commit log, so that only commits matching the filter are shown. |
-| `` q, <ctrl+c> `` | Quit |  |
-| `` <ctrl+z> `` | Suspend the application |  |
-| `` <ctrl+w> `` | Toggle whitespace | Toggle whether or not whitespace changes are shown in the diff view.<br><br>The default can be changed in the config file with the key 'git.ignoreWhitespaceInDiffView'. |
-| `` <alt+shift+c> `` | Edit config file | Open file in external editor. |
-| `` z `` | Undo | The reflog will be used to determine what git command to run to undo the last git command. This does not include changes to the working tree; only commits are taken into consideration. |
-| `` Z `` | Redo | The reflog will be used to determine what git command to run to redo the last git command. This does not include changes to the working tree; only commits are taken into consideration. |
+| `` t f o `` | View filter options | View options for filtering the commit log, so that only commits matching the filter are shown. |
+| `` t d c `` | View diffing options | View options relating to diffing two refs e.g. diffing against selected ref, entering ref to diff against, and reversing the diff direction. |
+| `` q `` | Quit |  |
+| `` t a s `` | Suspend the application |  |
+| `` t d w `` | Toggle whitespace | Toggle whether or not whitespace changes are shown in the diff view.<br><br>The default can be changed in the config file with the key 'git.ignoreWhitespaceInDiffView'. |
+| `` t a c `` | Edit config file | Open file in external editor. |
+| `` u u `` | Undo | The reflog will be used to determine what git command to run to undo the last git command. This does not include changes to the working tree; only commits are taken into consideration. |
+| `` u r `` | Redo | The reflog will be used to determine what git command to run to redo the last git command. This does not include changes to the working tree; only commits are taken into consideration. |
 
 ## List panel navigation
 
@@ -44,39 +46,47 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` 3 `` | Focus Branches panel |  |
 | `` 4 `` | Focus Commits panel |  |
 | `` 5 `` | Focus Stash panel |  |
+| `` <pgup> `` | Previous page |  |
+| `` <pgdown> `` | Next page |  |
+| `` <home> `` | Scroll to top |  |
+| `` <end> `` | Scroll to bottom |  |
+| `` t h r `` | Toggle range select |  |
+| `` <shift+down> `` | Range select down |  |
+| `` <shift+up> `` | Range select up |  |
+| `` / `` | Search the current view by text |  |
 | `` , `` | Previous page |  |
 | `` . `` | Next page |  |
 | `` <, <home> `` | Scroll to top |  |
 | `` >, <end> `` | Scroll to bottom |  |
-| `` <shift+down> `` | Range select down |  |
-| `` <shift+up> `` | Range select up |  |
-| `` / `` | Search the current view by text |  |
-| `` H `` | Scroll left |  |
-| `` L `` | Scroll right |  |
-| `` ] `` | Next tab |  |
-| `` [ `` | Previous tab |  |
+| `` <alt+left> `` | Scroll left |  |
+| `` <alt+right> `` | Scroll right |  |
+| `` <tab> `` | Next tab |  |
+| `` <backtab> `` | Previous tab |  |
 
 ## Commit files
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` <ctrl+o> `` | Copy path to clipboard |  |
-| `` w, W `` | Diff with working tree |  |
-| `` v, V `` | Diff with previous commit |  |
-| `` y `` | Copy to clipboard |  |
-| `` c `` | Checkout | Checkout file. This replaces the file in your working tree with the version from the selected commit. |
-| `` d `` | Discard | Discard this commit's changes to this file. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes this file. |
+| `` y i `` | Copy path to clipboard |  |
+| `` d w `` | Diff with working tree |  |
+| `` d p `` | Diff with previous commit |  |
+| `` t d f `` | Diff with working file… |  |
+| `` d c `` | Diff with commit… |  |
+| `` y c `` | Copy to clipboard |  |
+| `` g v f `` | Checkout | Checkout file. This replaces the file in your working tree with the version from the selected commit. |
+| `` x `` | Discard | Discard this commit's changes to this file. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes this file. |
 | `` o `` | Open file | Open file in default application. |
 | `` e `` | Edit | Open file in external editor. |
-| `` <ctrl+t> `` | Diff using current comparison mode |  |
-| `` <space> `` | Toggle file included in patch | Toggle whether the file is included in the custom patch. See https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches. |
-| `` a `` | Toggle all files | Add/remove all commit's files to custom patch. See https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches. |
-| `` <enter> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
-| `` ` `` | Toggle file tree view | Toggle file view between flat and tree layout. Flat layout shows all file paths in a single list, tree layout groups files by directory.<br><br>The default can be changed in the config file with the key 'gui.showFileTree'. |
-| `` - `` | Collapse all files | Collapse all directories in the files tree |
-| `` = `` | Expand all files | Expand all directories in the file tree |
-| `` 0 `` | Focus main view |  |
-| `` / `` | Filter the current view by text |  |
+| `` t d e `` | Diff using current comparison mode |  |
+| `` g h t `` | Toggle file included in patch | Toggle whether the file is included in the custom patch. See https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches. |
+| `` g h a `` | Toggle all files | Add/remove all commit's files to custom patch. See https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches. |
+| `` v, <space> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
+| `` t t t `` | Toggle file tree view | Toggle file view between flat and tree layout. Flat layout shows all file paths in a single list, tree layout groups files by directory.<br><br>The default can be changed in the config file with the key 'gui.showFileTree'. |
+| `` t t c `` | Collapse all files | Collapse all directories in the files tree |
+| `` t t e `` | Expand all files | Expand all directories in the file tree |
+| `` <left> `` | Collapse directory or select parent |  |
+| `` <right> `` | Expand directory or select first child |  |
+| `` t f t `` | Filter the current view by text |  |
 
 ## Commit summary
 
@@ -89,42 +99,43 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` <ctrl+o> `` | Copy abbreviated commit hash to clipboard |  |
-| `` <ctrl+r> `` | Reset copied (cherry-picked) commits selection |  |
-| `` b `` | View bisect options |  |
-| `` s `` | Squash | Squash the selected commit into the commit below it. The selected commit's message will be appended to the commit below it. |
-| `` f `` | Fixup | Meld the selected commit into the commit below it. Similar to squash, but the selected commit's message will be discarded. |
-| `` c `` | Set fixup message | Set the message option for the fixup commit. The -C option means to use this commit's message instead of the target commit's message. |
-| `` r `` | Reword | Reword the selected commit's message. |
-| `` R `` | Reword with editor |  |
-| `` d `` | Drop | Drop the selected commit. This will remove the commit from the branch via a rebase. If the commit makes changes that later commits depend on, you may need to resolve merge conflicts. |
+| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` g b `` | View bisect options |  |
+| `` <f2> `` | Reword | Reword the selected commit's message. |
+| `` g e r `` | Reword with editor |  |
+| `` <delete> `` | Drop | Drop the selected commit. This will remove the commit from the branch via a rebase. If the commit makes changes that later commits depend on, you may need to resolve merge conflicts. |
 | `` e `` | Edit (start interactive rebase) | Edit the selected commit. Use this to start an interactive rebase from the selected commit. When already mid-rebase, this will mark the selected commit for editing, which means that upon continuing the rebase, the rebase will pause at the selected commit to allow you to make changes. |
-| `` i `` | Start interactive rebase | Start an interactive rebase for the commits on your branch. This will include all commits from the HEAD commit down to the first merge commit or main branch commit.<br>If you would instead like to start an interactive rebase from the selected commit, press `e`. |
-| `` p `` | Pick | Mark the selected commit to be picked (when mid-rebase). This means that the commit will be retained upon continuing the rebase. |
-| `` F `` | Create fixup commit | Create 'fixup!' commit for the selected commit. Later on, you can press `S` on this same commit to apply all above fixup commits. |
-| `` S `` | Apply fixup commits | Squash all 'fixup!' commits, either above the selected commit, or all in current branch (autosquash). |
-| `` <ctrl+j>, <alt+down> `` | Move commit down one |  |
-| `` <ctrl+k>, <alt+up> `` | Move commit up one |  |
-| `` B `` | Mark as base commit for rebase | Select a base commit for the next rebase. When you rebase onto a branch, only commits above the base commit will be brought across. This uses the `git rebase --onto` command. |
-| `` A `` | Amend | Amend commit with staged changes. If the selected commit is the HEAD commit, this will perform `git commit --amend`. Otherwise the commit will be amended via a rebase. |
-| `` a `` | Amend commit attribute | Set/Reset commit author or set co-author. |
-| `` t `` | Revert | Create a revert commit for the selected commit, which applies the selected commit's changes in reverse. |
-| `` T `` | Tag commit | Create a new tag pointing at the selected commit. You'll be prompted to enter a tag name and optional description. |
-| `` <ctrl+l> `` | View log options | View options for commit log e.g. changing sort order, hiding the git graph, showing the whole git graph. |
-| `` G `` | Open pull request in browser |  |
-| `` w, W `` | Diff with working tree |  |
-| `` v, V `` | Diff with previous commit |  |
-| `` <space> `` | Checkout | Checkout the selected commit as a detached HEAD. |
-| `` y `` | Copy commit attribute to clipboard | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
+| `` g i `` | Start interactive rebase | Start an interactive rebase for the commits on your branch. This will include all commits from the HEAD commit down to the first merge commit or main branch commit.<br>If you would instead like to start an interactive rebase from the selected commit, press `e`. |
+| `` g r p `` | Pick | Mark the selected commit to be picked (when mid-rebase). This means that the commit will be retained upon continuing the rebase. |
+| `` g m d `` | Move commit down one |  |
+| `` g m u `` | Move commit up one |  |
+| `` c p `` | Cherry-pick |  |
+| `` g r b `` | Mark as base commit for rebase | Select a base commit for the next rebase. When you rebase onto a branch, only commits above the base commit will be brought across. This uses the `git rebase --onto` command. |
+| `` a `` | Amend | Amend commit with staged changes. If the selected commit is the HEAD commit, this will perform `git commit --amend`. Otherwise the commit will be amended via a rebase. |
+| `` g e a `` | Amend commit attribute | Set/Reset commit author or set co-author. |
+| `` g v c `` | Revert | Create a revert commit for the selected commit, which applies the selected commit's changes in reverse. |
+| `` n t `` | Tag commit | Create a new tag pointing at the selected commit. You'll be prompted to enter a tag name and optional description. |
+| `` t l o `` | View log options | View options for commit log e.g. changing sort order, hiding the git graph, showing the whole git graph. |
+| `` g p v `` | Open pull request in browser |  |
+| `` c y `` | Mark selected commits for cherry-pick |  |
+| `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s h `` | Hard reset |  |
+| `` s m `` | Mixed reset |  |
+| `` s s `` | Soft reset |  |
+| `` d w `` | Diff with working tree |  |
+| `` d p `` | Diff with previous commit |  |
+| `` d c `` | Diff with commit… |  |
+| `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
+| `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
+| `` g c `` | Combine selected commits |  |
+| `` s c `` | Checkout | Checkout the selected commit as a detached HEAD. |
+| `` y c `` | Copy commit attribute to clipboard | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | Open commit in browser |  |
-| `` n `` | Create branch and check it out… |  |
-| `` N `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
-| `` g `` | Reset | View reset options (soft/mixed/hard) for resetting onto selected item. |
-| `` C `` | Copy (cherry-pick) | Mark commit as copied. Then, in the local commits view, choose Paste (cherry-pick) from the command palette. Use `<esc>` to cancel the selection. |
-| `` <ctrl+t> `` | Diff using current comparison mode |  |
-| `` * `` | Select commits of current branch |  |
-| `` 0 `` | Focus main view |  |
-| `` <enter> `` | View files |  |
+| `` g m n `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
+| `` n w `` | New worktree |  |
+| `` t d e `` | Diff using current comparison mode |  |
+| `` t l s `` | Select commits of current branch |  |
+| `` v, <space> `` | View files |  |
 | `` / `` | Search the current view by text |  |
 
 ## Confirmation panel
@@ -139,33 +150,33 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` <ctrl+o> `` | Copy path to clipboard |  |
-| `` <space> `` | Stage | Toggle staged for selected file. |
-| `` <ctrl+b> `` | Filter files by status |  |
-| `` y `` | Copy to clipboard |  |
-| `` c `` | Commit | Commit staged changes. |
-| `` A `` | Amend last commit |  |
-| `` C `` | Commit changes using git editor |  |
-| `` <ctrl+f> `` | Find base commit for fixup | Find the commit that your current changes are building upon, for the sake of amending/fixing up the commit. This spares you from having to look through your branch's commits one-by-one to see which commit should be amended/fixed up. See docs: <https://github.com/jesseduffield/lazygit/tree/master/docs/Fixup_Commits.md> |
+| `` y i `` | Copy path to clipboard |  |
+| `` <space> `` | Toggle staging of selected files | Toggle staged for selected file. |
+| `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
+| `` t f s `` | Filter files by status |  |
+| `` y c `` | Copy to clipboard |  |
+| `` <enter> `` | Commit | Commit staged changes. |
+| `` g e n `` | Commit changes without pre-commit hook |  |
+| `` a `` | Amend last commit |  |
+| `` g e c `` | Commit changes using git editor |  |
 | `` e `` | Edit | Open file in external editor. |
 | `` o `` | Open file | Open file in default application. |
 | `` i `` | Ignore or exclude file |  |
-| `` r `` | Refresh files |  |
-| `` s `` | Stash | Stash all changes. For other variations of stashing, use the view stash options keybinding. |
-| `` S `` | View stash options | View stash options (e.g. stash all, stash staged, stash unstaged). |
-| `` a `` | Stage all | Toggle staged/unstaged for all files in working tree. |
-| `` <enter> `` | Focus file diff / Collapse directory | If the selected item is a file, focus its diff so you can act on individual hunks or lines. If it is a directory, collapse or expand it. |
-| `` d `` | Discard | View options for discarding changes to the selected file. |
-| `` g `` | View upstream reset options |  |
-| `` D `` | Reset | View reset options for working tree (e.g. nuking the working tree). |
-| `` ` `` | Toggle file tree view | Toggle file view between flat and tree layout. Flat layout shows all file paths in a single list, tree layout groups files by directory.<br><br>The default can be changed in the config file with the key 'gui.showFileTree'. |
-| `` <ctrl+t> `` | Open external diff tool (git difftool) |  |
-| `` M `` | View merge conflict options | View options for resolving merge conflicts. |
+| `` <f5> `` | Refresh | Refresh the git state (i.e. run `git status`, `git branch`, etc in background to update the contents of panels). This does not run `git fetch`. |
+| `` g s s `` | Stash | Stash all changes. For other variations of stashing, use the view stash options keybinding. |
+| `` g s o `` | View stash options | View stash options (e.g. stash all, stash staged, stash unstaged). |
+| `` x `` | Discard | View options for discarding changes to the selected file. |
+| `` g z u `` | View upstream reset options |  |
+| `` g z w `` | Reset | View reset options for working tree (e.g. nuking the working tree). |
+| `` t t t `` | Toggle file tree view | Toggle file view between flat and tree layout. Flat layout shows all file paths in a single list, tree layout groups files by directory.<br><br>The default can be changed in the config file with the key 'gui.showFileTree'. |
+| `` t d e `` | Open external diff tool (git difftool) |  |
 | `` f `` | Fetch | Fetch changes from remote. |
-| `` - `` | Collapse all files | Collapse all directories in the files tree |
-| `` = `` | Expand all files | Expand all directories in the file tree |
-| `` 0 `` | Focus main view |  |
-| `` / `` | Filter the current view by text |  |
+| `` t t c `` | Collapse all files | Collapse all directories in the files tree |
+| `` t t e `` | Expand all files | Expand all directories in the file tree |
+| `` <left> `` | Collapse directory or select parent |  |
+| `` <right> `` | Expand directory or select first child |  |
+| `` v `` | Focus main view |  |
+| `` t f t `` | Filter the current view by text |  |
 
 ## Input prompt
 
@@ -178,46 +189,45 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` <ctrl+o> `` | Copy branch name to clipboard |  |
-| `` i `` | Show git-flow options |  |
-| `` <space> `` | Checkout | Checkout selected item. |
-| `` n `` | New branch |  |
-| `` N `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
-| `` o `` | Create pull request |  |
-| `` O `` | View create pull request options |  |
-| `` G `` | Open pull request in browser |  |
-| `` <ctrl+y> `` | Copy pull request URL to clipboard |  |
-| `` c `` | Checkout by name | Checkout by name. In the input box you can enter '-' to switch to the previous branch. |
-| `` - `` | Checkout previous branch |  |
-| `` F `` | Force checkout | Force checkout selected branch. This will discard all local changes in your working directory before checking out the selected branch. |
-| `` d `` | Delete | View delete options for local/remote branch. |
+| `` y i `` | Copy branch name to clipboard |  |
+| `` g y `` | Show git-flow options |  |
+| `` s h `` | Hard reset |  |
+| `` s m `` | Mixed reset |  |
+| `` s s `` | Soft reset |  |
+| `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
+| `` s c `` | Checkout | Checkout selected item. |
+| `` g m n `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
+| `` n w `` | New worktree |  |
+| `` g p c `` | Create pull request |  |
+| `` g p o `` | View create pull request options |  |
+| `` g p v `` | Open pull request in browser |  |
+| `` y u `` | Copy pull request URL to clipboard |  |
+| `` <delete> `` | Delete | View delete options for local/remote branch. |
 | `` r `` | Rebase current onto selected branch… | Rebase the checked-out branch onto the selected branch. |
-| `` M `` | Merge selected branch into current… | View options for merging the selected item into the current branch (regular merge, squash merge) |
-| `` f `` | Fast-forward selected branches… | Review an upstream fetch and a forward-only update of the captured selected branches. Divergent or rewritten history is never reset; tips occupied by another worktree are not moved. A selected checked-out branch uses native fast-forward integration with explicit review. Multiple selections require final batch approval. Saved upstream settings stay unchanged. |
-| `` T `` | New tag |  |
-| `` s `` | Sort order |  |
-| `` g `` | Reset checked-out branch to selected ref… |  |
-| `` R `` | Rename branch |  |
-| `` u `` | View upstream options | View options relating to the branch's upstream e.g. setting/unsetting the upstream and resetting to the upstream. |
-| `` <ctrl+t> `` | Open external diff tool (git difftool) |  |
-| `` 0 `` | Focus main view |  |
-| `` <enter> `` | View commits |  |
-| `` / `` | Filter the current view by text |  |
+| `` m `` | Merge selected branch into current… | View options for merging the selected item into the current branch (regular merge, squash merge) |
+| `` g f `` | Fast-forward selected branches… | Review an upstream fetch and a forward-only update of the captured selected branches. Divergent or rewritten history is never reset; tips occupied by another worktree are not moved. A selected checked-out branch uses native fast-forward integration with explicit review. Multiple selections require final batch approval. Saved upstream settings stay unchanged. |
+| `` n t `` | New tag |  |
+| `` t s o `` | Sort order |  |
+| `` <f2> `` | Rename branch |  |
+| `` g t `` | View upstream options | View options relating to the branch's upstream e.g. setting/unsetting the upstream and resetting to the upstream. |
+| `` t d e `` | Open external diff tool (git difftool) |  |
+| `` v, <space> `` | View commits |  |
+| `` t f t `` | Filter the current view by text |  |
 
 ## Main panel (merging)
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` <space> `` | Pick hunk |  |
-| `` b `` | Pick both hunks |  |
-| `` <up>, k `` | Previous hunk |  |
-| `` <down>, j `` | Next hunk |  |
-| `` <left>, h `` | Previous conflict |  |
-| `` <right>, l `` | Next conflict |  |
-| `` z `` | Undo | Undo last merge conflict resolution. |
+| `` g h p `` | Pick hunk |  |
+| `` g h b `` | Pick both hunks |  |
+| `` k, <up> `` | Previous hunk |  |
+| `` j, <down> `` | Next hunk |  |
+| `` t p c `` | Previous conflict |  |
+| `` t n c `` | Next conflict |  |
+| `` u u `` | Undo | Undo last merge conflict resolution. |
 | `` e `` | Edit file | Open file in external editor. |
 | `` o `` | Open file | Open file in default application. |
-| `` M `` | View merge conflict options | View options for resolving merge conflicts. |
+| `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
 | `` <esc> `` | Return to files panel |  |
 
 ## Main panel (normal)
@@ -226,23 +236,28 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` <mouse wheel down> (fn+up) `` | Scroll down |  |
 | `` <mouse wheel up> (fn+down) `` | Scroll up |  |
-| `` <tab> `` | Switch diff pane | Switch to the other focused diff pane. |
-| `` a `` | Toggle hunk selection | Toggle line-by-line vs. hunk selection mode. |
+| `` t n d `` | Switch diff pane | Switch to the other focused diff pane. |
+| `` t h s `` | Toggle hunk selection | Toggle line-by-line vs. hunk selection mode. |
+| `` t h r `` | Toggle range select |  |
 | `` e `` | Edit file | Open file in external editor. |
-| `` <space> `` | Stage | Toggle selection staged / unstaged. |
-| `` d `` | Discard | When unstaged change is selected, discard the change using `git reset`. When staged change is selected, unstage the change. |
-| `` E `` | Edit hunk | Edit selected hunk in external editor. |
-| `` <ctrl+o> `` | Copy selected diff lines to clipboard |  |
-| `` <left>, h `` | Go to previous hunk |  |
-| `` <right>, l `` | Go to next hunk |  |
-| `` N `` | Go to previous file |  |
-| `` n `` | Go to next file |  |
-| `` <ctrl+g> `` | Jump to file |  |
-| `` G `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
+| `` g h s `` | Stage | Toggle selection staged / unstaged. |
+| `` g h u `` | Unstage selected changes |  |
+| `` g h t `` | Toggle lines in patch |  |
+| `` g h t `` | Remove selected lines from custom patch |  |
+| `` x `` | Discard | When unstaged change is selected, discard the change using `git reset`. When staged change is selected, unstage the change. |
+| `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
+| `` x `` | Unstage selected changes |  |
+| `` g e h `` | Edit hunk | Edit selected hunk in external editor. |
+| `` y c `` | Copy selected diff lines to clipboard |  |
+| `` t p h `` | Go to previous hunk |  |
+| `` t n h `` | Go to next hunk |  |
+| `` t p f `` | Go to previous file |  |
+| `` t n f `` | Go to next file |  |
+| `` t n j `` | Jump to file |  |
+| `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | Exit back to side panel |  |
-| `` c `` | Commit | Commit staged changes. |
-| `` C `` | Commit changes using git editor |  |
-| `` <ctrl+f> `` | Find base commit for fixup | Find the commit that your current changes are building upon, for the sake of amending/fixing up the commit. This spares you from having to look through your branch's commits one-by-one to see which commit should be amended/fixed up. See docs: <https://github.com/jesseduffield/lazygit/tree/master/docs/Fixup_Commits.md> |
+| `` g e n `` | Commit changes without pre-commit hook |  |
+| `` g e c `` | Commit changes using git editor |  |
 | `` / `` | Search the current view by text |  |
 
 ## Menu
@@ -257,156 +272,168 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` <ctrl+o> `` | Copy abbreviated commit hash to clipboard |  |
-| `` w, W `` | Diff with working tree |  |
-| `` v, V `` | Diff with previous commit |  |
-| `` <space> `` | Checkout | Checkout the selected commit as a detached HEAD. |
-| `` y `` | Copy commit attribute to clipboard | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
+| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` c y `` | Mark selected commits for cherry-pick |  |
+| `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s h `` | Hard reset |  |
+| `` s m `` | Mixed reset |  |
+| `` s s `` | Soft reset |  |
+| `` d w `` | Diff with working tree |  |
+| `` d p `` | Diff with previous commit |  |
+| `` d c `` | Diff with commit… |  |
+| `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
+| `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
+| `` g c `` | Combine selected commits |  |
+| `` s c `` | Checkout | Checkout the selected commit as a detached HEAD. |
+| `` y c `` | Copy commit attribute to clipboard | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | Open commit in browser |  |
-| `` n `` | Create branch and check it out… |  |
-| `` N `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
-| `` g `` | Reset | View reset options (soft/mixed/hard) for resetting onto selected item. |
-| `` C `` | Copy (cherry-pick) | Mark commit as copied. Then, in the local commits view, choose Paste (cherry-pick) from the command palette. Use `<esc>` to cancel the selection. |
-| `` <ctrl+r> `` | Reset copied (cherry-picked) commits selection |  |
-| `` <ctrl+t> `` | Diff using current comparison mode |  |
-| `` * `` | Select commits of current branch |  |
-| `` 0 `` | Focus main view |  |
-| `` <enter> `` | View commits |  |
-| `` / `` | Filter the current view by text |  |
+| `` g m n `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
+| `` n w `` | New worktree |  |
+| `` t d e `` | Diff using current comparison mode |  |
+| `` t l s `` | Select commits of current branch |  |
+| `` t f t `` | Filter the current view by text |  |
 
 ## Remote branches
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` <ctrl+o> `` | Copy branch name to clipboard |  |
-| `` <space> `` | Checkout | Checkout a new local branch based on the selected remote branch, or the remote branch as a detached head. |
-| `` n `` | New branch |  |
-| `` M `` | Merge | View options for merging the selected item into the current branch (regular merge, squash merge) |
+| `` y i `` | Copy branch name to clipboard |  |
+| `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
+| `` s c `` | Checkout | Checkout a new local branch based on the selected remote branch, or the remote branch as a detached head. |
+| `` n w `` | New worktree |  |
+| `` m `` | Merge | View options for merging the selected item into the current branch (regular merge, squash merge) |
 | `` r `` | Rebase current onto selected branch… | Rebase the checked-out branch onto the selected branch. |
-| `` d `` | Delete | Delete the remote branch from the remote. |
-| `` u `` | Set as upstream | Set the selected remote branch as the upstream of the checked-out branch. |
-| `` s `` | Sort order |  |
-| `` g `` | Reset | View reset options (soft/mixed/hard) for resetting onto selected item. |
-| `` <ctrl+t> `` | Open external diff tool (git difftool) |  |
-| `` 0 `` | Focus main view |  |
-| `` <enter> `` | View commits |  |
-| `` / `` | Filter the current view by text |  |
+| `` <delete> `` | Delete | Delete the remote branch from the remote. |
+| `` g t `` | Set as upstream | Set the selected remote branch as the upstream of the checked-out branch. |
+| `` t s o `` | Sort order |  |
+| `` t d e `` | Open external diff tool (git difftool) |  |
+| `` v, <space> `` | View commits |  |
+| `` t f t `` | Filter the current view by text |  |
 
 ## Remotes
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` <enter> `` | View branches |  |
-| `` n `` | New remote |  |
-| `` d `` | Remove | Remove the selected remote. Any local branches tracking a remote branch from the remote will be unaffected. |
+| `` v, <space> `` | View branches |  |
+| `` n r `` | New remote |  |
+| `` <delete> `` | Remove | Remove the selected remote. Any local branches tracking a remote branch from the remote will be unaffected. |
 | `` e `` | Edit | Edit the selected remote's name or URL. |
 | `` f `` | Fetch | Fetch updates from the remote repository. This retrieves new commits and branches without merging them into your local branches. |
-| `` F `` | Add fork remote | Quickly add a fork remote by replacing the owner in the origin URL and optionally check out a branch from new remote. |
-| `` / `` | Filter the current view by text |  |
+| `` n f `` | Add fork remote | Quickly add a fork remote by replacing the owner in the origin URL and optionally check out a branch from new remote. |
+| `` t f t `` | Filter the current view by text |  |
 
 ## Secondary
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` <tab> `` | Switch diff pane | Switch to the other focused diff pane. |
-| `` a `` | Toggle hunk selection | Toggle line-by-line vs. hunk selection mode. |
+| `` t n d `` | Switch diff pane | Switch to the other focused diff pane. |
+| `` t h s `` | Toggle hunk selection | Toggle line-by-line vs. hunk selection mode. |
+| `` t h r `` | Toggle range select |  |
 | `` e `` | Edit file | Open file in external editor. |
-| `` <space> `` | Stage | Toggle selection staged / unstaged. |
-| `` d `` | Discard | When unstaged change is selected, discard the change using `git reset`. When staged change is selected, unstage the change. |
-| `` E `` | Edit hunk | Edit selected hunk in external editor. |
-| `` <ctrl+o> `` | Copy selected diff lines to clipboard |  |
-| `` <left>, h `` | Go to previous hunk |  |
-| `` <right>, l `` | Go to next hunk |  |
-| `` N `` | Go to previous file |  |
-| `` n `` | Go to next file |  |
-| `` <ctrl+g> `` | Jump to file |  |
-| `` G `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
+| `` g h s `` | Stage | Toggle selection staged / unstaged. |
+| `` g h u `` | Unstage selected changes |  |
+| `` g h t `` | Toggle lines in patch |  |
+| `` g h t `` | Remove selected lines from custom patch |  |
+| `` x `` | Discard | When unstaged change is selected, discard the change using `git reset`. When staged change is selected, unstage the change. |
+| `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
+| `` x `` | Unstage selected changes |  |
+| `` g e h `` | Edit hunk | Edit selected hunk in external editor. |
+| `` y c `` | Copy selected diff lines to clipboard |  |
+| `` t p h `` | Go to previous hunk |  |
+| `` t n h `` | Go to next hunk |  |
+| `` t p f `` | Go to previous file |  |
+| `` t n f `` | Go to next file |  |
+| `` t n j `` | Jump to file |  |
+| `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | Exit back to side panel |  |
-| `` c `` | Commit | Commit staged changes. |
-| `` C `` | Commit changes using git editor |  |
-| `` <ctrl+f> `` | Find base commit for fixup | Find the commit that your current changes are building upon, for the sake of amending/fixing up the commit. This spares you from having to look through your branch's commits one-by-one to see which commit should be amended/fixed up. See docs: <https://github.com/jesseduffield/lazygit/tree/master/docs/Fixup_Commits.md> |
+| `` g e n `` | Commit changes without pre-commit hook |  |
+| `` g e c `` | Commit changes using git editor |  |
 | `` / `` | Search the current view by text |  |
 
 ## Stash
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` <space> `` | Apply | Apply the stash entry to your working directory. |
-| `` g `` | Pop | Apply the stash entry to your working directory and remove the stash entry. |
-| `` d `` | Drop | Remove the stash entry from the stash list. |
-| `` n `` | New branch | Create a new branch from the selected stash entry. This works by git checking out the commit that the stash entry was created from, creating a new branch from that commit, then applying the stash entry to the new branch as an additional commit. |
-| `` r `` | Rename stash |  |
-| `` 0 `` | Focus main view |  |
-| `` <enter> `` | View files |  |
-| `` / `` | Filter the current view by text |  |
+| `` g a `` | Apply | Apply the stash entry to your working directory. |
+| `` g s p `` | Pop | Apply the stash entry to your working directory and remove the stash entry. |
+| `` <delete> `` | Drop | Remove the stash entry from the stash list. |
+| `` n w `` | New worktree |  |
+| `` <f2> `` | Rename stash |  |
+| `` v, <space> `` | View files |  |
+| `` t f t `` | Filter the current view by text |  |
 
 ## Status
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` e `` | Edit config file | Open file in external editor. |
-| `` u `` | Check for update |  |
-| `` <enter> `` | Switch to a recent repo |  |
-| `` a `` | Show/cycle all branch logs |  |
-| `` A `` | Show/cycle all branch logs (reverse) |  |
-| `` 0 `` | Focus main view |  |
+| `` t a c `` | Edit config file | Open file in external editor. |
+| `` t a u `` | Check for update |  |
+| `` t r r `` | Switch to a recent repo |  |
+| `` t l n `` | Show/cycle all branch logs |  |
+| `` t l p `` | Show/cycle all branch logs (reverse) |  |
+| `` v, <space> `` | Focus main view |  |
 
 ## Sub-commits
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` <ctrl+o> `` | Copy abbreviated commit hash to clipboard |  |
-| `` w, W `` | Diff with working tree |  |
-| `` v, V `` | Diff with previous commit |  |
-| `` <space> `` | Checkout | Checkout the selected commit as a detached HEAD. |
-| `` y `` | Copy commit attribute to clipboard | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
+| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` c y `` | Mark selected commits for cherry-pick |  |
+| `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s h `` | Hard reset |  |
+| `` s m `` | Mixed reset |  |
+| `` s s `` | Soft reset |  |
+| `` d w `` | Diff with working tree |  |
+| `` d p `` | Diff with previous commit |  |
+| `` d c `` | Diff with commit… |  |
+| `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
+| `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
+| `` g c `` | Combine selected commits |  |
+| `` s c `` | Checkout | Checkout the selected commit as a detached HEAD. |
+| `` y c `` | Copy commit attribute to clipboard | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | Open commit in browser |  |
-| `` n `` | Create branch and check it out… |  |
-| `` N `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
-| `` g `` | Reset | View reset options (soft/mixed/hard) for resetting onto selected item. |
-| `` C `` | Copy (cherry-pick) | Mark commit as copied. Then, in the local commits view, choose Paste (cherry-pick) from the command palette. Use `<esc>` to cancel the selection. |
-| `` <ctrl+r> `` | Reset copied (cherry-picked) commits selection |  |
-| `` <ctrl+t> `` | Diff using current comparison mode |  |
-| `` * `` | Select commits of current branch |  |
-| `` 0 `` | Focus main view |  |
-| `` <enter> `` | View files |  |
+| `` g m n `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
+| `` n w `` | New worktree |  |
+| `` t d e `` | Diff using current comparison mode |  |
+| `` t l s `` | Select commits of current branch |  |
+| `` v, <space> `` | View files |  |
 | `` / `` | Search the current view by text |  |
 
 ## Submodules
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` <ctrl+o> `` | Copy submodule name to clipboard |  |
-| `` <enter> `` | Enter | Enter submodule. After entering the submodule, you can press `<esc>` to escape back to the parent repo. |
-| `` d `` | Remove | Remove the selected submodule and its corresponding directory. |
-| `` u `` | Update | Update selected submodule. |
-| `` n `` | New submodule |  |
+| `` y i `` | Copy submodule name to clipboard |  |
+| `` t r s `` | Enter | Enter submodule. After entering the submodule, you can press `<esc>` to escape back to the parent repo. |
+| `` <delete> `` | Remove | Remove the selected submodule and its corresponding directory. |
+| `` g u s `` | Update | Update selected submodule. |
+| `` n s `` | New submodule |  |
 | `` e `` | Update submodule URL |  |
-| `` i `` | Initialize | Initialize the selected submodule to prepare for fetching. You probably want to follow this up by invoking the 'update' action to fetch the submodule. |
-| `` b `` | View bulk submodule options |  |
-| `` / `` | Filter the current view by text |  |
+| `` g u i `` | Initialize | Initialize the selected submodule to prepare for fetching. You probably want to follow this up by invoking the 'update' action to fetch the submodule. |
+| `` g u b `` | View bulk submodule options |  |
+| `` t a g `` | Easter egg |  |
+| `` t f t `` | Filter the current view by text |  |
 
 ## Tags
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` <ctrl+o> `` | Copy tag to clipboard |  |
-| `` <space> `` | Checkout | Checkout the selected tag as a detached HEAD. |
-| `` n `` | New tag | Create new tag from current commit. You'll be prompted to enter a tag name and optional description. |
-| `` d `` | Delete | View delete options for local/remote tag. |
-| `` P `` | Push tag | Push the selected tag to a remote. You'll be prompted to select a remote. |
-| `` g `` | Reset | View reset options (soft/mixed/hard) for resetting onto selected item. |
-| `` <ctrl+t> `` | Open external diff tool (git difftool) |  |
-| `` 0 `` | Focus main view |  |
-| `` <enter> `` | View commits |  |
-| `` / `` | Filter the current view by text |  |
+| `` y i `` | Copy tag to clipboard |  |
+| `` s c `` | Checkout | Checkout the selected tag as a detached HEAD. |
+| `` n t `` | New tag | Create new tag from current commit. You'll be prompted to enter a tag name and optional description. |
+| `` n w `` | New worktree |  |
+| `` <delete> `` | Delete | View delete options for local/remote tag. |
+| `` p `` | Push tag | Push the selected tag to a remote. You'll be prompted to select a remote. |
+| `` t d e `` | Open external diff tool (git difftool) |  |
+| `` v, <space> `` | View commits |  |
+| `` t f t `` | Filter the current view by text |  |
 
 ## Worktrees
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` n `` | New worktree |  |
-| `` <space> `` | Switch | Switch to the selected worktree. |
+| `` n w `` | New worktree |  |
+| `` t r w `` | Switch | Switch to the selected worktree. |
 | `` o `` | Open in editor |  |
-| `` d `` | Remove | Remove the selected worktree. This will both delete the worktree's directory, as well as metadata about the worktree in the .git directory. |
-| `` / `` | Filter the current view by text |  |
+| `` <delete> `` | Remove | Remove the selected worktree. This will both delete the worktree's directory, as well as metadata about the worktree in the .git directory. |
+| `` t f t `` | Filter the current view by text |  |

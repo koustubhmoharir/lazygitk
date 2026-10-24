@@ -150,7 +150,17 @@ func builtinBindingsForTest(t *testing.T, platform, language string, clearKeys b
 	if err != nil {
 		t.Fatal(err)
 	}
-	return gui.GetCheatsheetKeybindings()
+	bindings := gui.GetCheatsheetKeybindings()
+	if clearKeys {
+		// Raw legacy fields do not define the fork's semantic defaults. Explicitly
+		// unbind those commands too, while keeping their palette metadata.
+		cfg.GetUserConfig().CommandBindings = make(map[string]config.CommandBindingPaths)
+		for _, binding := range bindings {
+			cfg.GetUserConfig().CommandBindings[binding.CommandID] = nil
+		}
+		bindings = gui.GetCheatsheetKeybindings()
+	}
+	return bindings
 }
 
 func clearConfiguredKeybindingLeaves(value reflect.Value) {

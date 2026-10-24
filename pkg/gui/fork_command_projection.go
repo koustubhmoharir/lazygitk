@@ -89,6 +89,24 @@ func (gui *Gui) projectForkBindings(bindings []*types.Binding) ([]*types.Binding
 }
 
 func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string) error {
+	if binding.CommandID == "commit.search" {
+		if _, configured := gui.c.UserConfig().CommandBindings[binding.CommandID]; !configured {
+			if _, shared := gui.c.UserConfig().CommandBindings["search.open"]; shared {
+				sourceID = "search.open"
+			}
+		}
+	}
+	if binding.CommandID == "file.refresh" {
+		_, configured, _, err := keymap.ResolvePaths(gui.c.UserConfig(), binding.CommandID, sourceID, binding.ViewName)
+		if err != nil {
+			return err
+		}
+		if !configured {
+			// Fork: the default Files-only action is an alias of full refresh.
+			// Keep its native identity/handler only for explicit legacy overrides.
+			binding.CommandID, sourceID = "app.refresh", "app.refresh"
+		}
+	}
 	paths, explicit, known, err := keymap.ResolvePaths(gui.c.UserConfig(), binding.CommandID, sourceID, binding.ViewName)
 	if err != nil {
 		return err
@@ -96,13 +114,32 @@ func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string) erro
 	if !known {
 		paths = forkNavigationPaths(binding.CommandID)
 	}
+	if binding.CommandID == "commit.search" {
+		// Fork: the history-loading search replaces the generic search handler
+		// in Commits. Give native same-key aliases one semantic identity so a
+		// single search key does not open a choice between duplicate commands.
+		binding.CommandID = "search.open"
+	}
 	binding.DefaultCommand = !explicit
+	if binding.CommandID == "app.refresh" {
+		binding.Handler = gui.refreshAllForkState
+		binding.Description, binding.Tooltip = gui.Tr.Refresh, gui.Tr.RefreshTooltip
+		binding.ShortDescription = ""
+		binding.DescriptionFunc, binding.ShortDescriptionFunc, binding.TooltipFunc = nil, nil, nil
+	}
 	if binding.Tag == "global" && binding.ViewName != "" {
 		// A view-owned handler must not appear as an executable global action
 		// while the palette is focused on a different pane.
 		binding.Tag = ""
 	}
 	if !explicit {
+		if forkReplacedCommand(binding.CommandID) {
+			// Fork: combine and idempotent mark/unmark replace these upstream
+			// palette actions. Explicit legacy shortcuts still restore them.
+			binding.Description, binding.ShortDescription, binding.Tooltip = "", "", ""
+			binding.DescriptionFunc, binding.ShortDescriptionFunc, binding.TooltipFunc = nil, nil, nil
+			binding.DisplayOnScreen = false
+		}
 		if handler := gui.forkSelectedCheckoutHandler(binding.CommandID); handler != nil {
 			binding.Handler = handler
 			binding.OpensMenu = true
@@ -122,11 +159,6 @@ func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string) erro
 				paths = [][]gocui.Key{{gocui.NewKeyRune('v')}}
 			}
 		}
-		if binding.CommandID == "file.refresh" {
-			// Fork F5 replaces the upstream Files-only refresh with a full
-			// repository/model refresh, matching the global refresh action.
-			binding.Handler = func() error { gui.c.Refresh(types.RefreshOptions{}); return nil }
-		}
 		if strings.HasPrefix(binding.CommandID, "navigation.focus-panel.") {
 			// Each numbered jump has the same verb/ID but a different target.
 			// Preserve its constructor's individual configured number keys.
@@ -135,6 +167,14 @@ func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string) erro
 	}
 	binding.SetCommandPaths(paths)
 	return nil
+}
+
+func forkReplacedCommand(id string) bool {
+	switch id {
+	case "commit.copy-for-cherry-pick", "commit.squash-down", "commit.mark-fixup", "commit.set-fixup-message", "commit.create-fixup-menu", "commit.autosquash", "commit.find-fixup-target":
+		return true
+	}
+	return false
 }
 
 func forkCommandView(view string) bool {

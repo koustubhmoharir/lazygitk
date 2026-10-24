@@ -28,7 +28,6 @@ func TestDefaultPathsUserRoutes(t *testing.T) {
 		{"diff.unstage-selection", "g h u"},
 		{"branch.place-at-selected-commit", "n b"},
 		{"app.refresh", "f5"},
-		{"file.refresh", "f5"},
 		{"navigation.focus-diff", "v"},
 		{"navigation.diff.previous-hunk", "t p h"},
 		{"navigation.diff.previous-file", "t p f"},
@@ -89,6 +88,7 @@ func TestDefaultPathsUnknownAndIntentionalEmpty(t *testing.T) {
 		"branch.reset-menu", "branch.checkout-by-name", "branch.checkout-previous",
 		"branch.force-checkout", "file.toggle-stage-all", "diff.primary-selection",
 		"diff.discard-selection",
+		"file.refresh",
 	} {
 		if paths, ok := DefaultPaths(id); !ok || len(paths) != 0 {
 			t.Errorf("%s returned (%v, %t), want known with no paths", id, paths, ok)

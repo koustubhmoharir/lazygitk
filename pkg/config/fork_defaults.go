@@ -11,9 +11,19 @@ func applyForkDefaults(config *UserConfig) *UserConfig {
 	// Include all refs in the history by default, while preserving config overrides.
 	config.Git.Log.ShowWholeGraph = true
 	applyForkEditorDefaults(config)
-	// Reserve provisional keys for direct comparisons. The keymap milestone
-	// will rebind displaced commands; they remain available in the palette.
-	// This overlay changes defaults only, so explicitly loaded bindings remain authoritative.
+	// Search result navigation must not consume normal pane command letters.
+	config.Keybinding.Universal.NextMatch = Keybinding{"<f3>"}
+	config.Keybinding.Universal.PrevMatch = Keybinding{"<shift+f3>"}
+	config.Keybinding.Universal.PrevBlock = Keybinding{"h"}
+	config.Keybinding.Universal.NextBlock = Keybinding{"l"}
+	config.Keybinding.Universal.PrevBlockAlt = nil
+	config.Keybinding.Universal.NextBlockAlt = nil
+	config.Keybinding.Universal.PrevBlockAlt2 = nil
+	config.Keybinding.Universal.NextBlockAlt2 = nil
+	config.Keybinding.Universal.PrevTab = Keybinding{"<backtab>"}
+	config.Keybinding.Universal.NextTab = Keybinding{"<tab>"}
+	// Legacy single-key comparison fields remain available for explicit config
+	// compatibility. Normal defaults are compiled from semantic command paths.
 	config.Keybinding.Universal.DiffWithWorkingTree = Keybinding{"w", "W"}
 	config.Keybinding.Universal.DiffWithPreviousCommit = Keybinding{"v", "V"}
 	config.Keybinding.Universal.DiffWithWorkingFile = nil

@@ -33,7 +33,8 @@
         {
           "type": "null"
         }
-      ]
+      ],
+      "description": "Alternate keyboard command paths. Enter, Escape, Up and Down are reserved for prefix-menu control after the first key; mouse keys are not supported."
     },
     "CommitConfig": {
       "properties": {
@@ -2215,7 +2216,7 @@
       },
       "additionalProperties": false,
       "type": "object",
-      "description": "Keybindings.\nEach binding can be a single key or a list of keys; see https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md for the syntax."
+      "description": "Legacy keybinding overrides and native modal/editor controls. Values shown\nhere are compatibility values, not the fork's effective normal-pane defaults.\nCopy only fields you want to override; use commandBindings for semantic paths.\nEach binding can be a single key or a list of keys; see https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md for the syntax."
     },
     "KeybindingFilesConfig": {
       "properties": {
@@ -3069,11 +3070,7 @@
               "type": "array"
             }
           ],
-          "default": [
-            "\u003cleft\u003e",
-            "h",
-            "\u003cbacktab\u003e"
-          ]
+          "default": "h"
         },
         "nextBlock": {
           "oneOf": [
@@ -3087,11 +3084,7 @@
               "type": "array"
             }
           ],
-          "default": [
-            "\u003cright\u003e",
-            "l",
-            "\u003ctab\u003e"
-          ]
+          "default": "l"
         },
         "prevBlock-alt": {
           "oneOf": [
@@ -3105,8 +3098,7 @@
               "type": "array"
             }
           ],
-          "description": "Deprecated: add the key to `prevBlock` instead.",
-          "default": "h"
+          "description": "Deprecated: add the key to `prevBlock` instead."
         },
         "nextBlock-alt": {
           "oneOf": [
@@ -3120,8 +3112,7 @@
               "type": "array"
             }
           ],
-          "description": "Deprecated: add the key to `nextBlock` instead.",
-          "default": "l"
+          "description": "Deprecated: add the key to `nextBlock` instead."
         },
         "nextBlock-alt2": {
           "oneOf": [
@@ -3135,8 +3126,7 @@
               "type": "array"
             }
           ],
-          "description": "Deprecated: add the key to `nextBlock` instead.",
-          "default": "\u003ctab\u003e"
+          "description": "Deprecated: add the key to `nextBlock` instead."
         },
         "prevBlock-alt2": {
           "oneOf": [
@@ -3150,8 +3140,7 @@
               "type": "array"
             }
           ],
-          "description": "Deprecated: add the key to `prevBlock` instead.",
-          "default": "\u003cbacktab\u003e"
+          "description": "Deprecated: add the key to `prevBlock` instead."
         },
         "jumpToBlock": {
           "items": {
@@ -3216,7 +3205,7 @@
               "type": "array"
             }
           ],
-          "default": "n"
+          "default": "\u003cf3\u003e"
         },
         "prevMatch": {
           "oneOf": [
@@ -3230,7 +3219,7 @@
               "type": "array"
             }
           ],
-          "default": "N"
+          "default": "\u003cshift+f3\u003e"
         },
         "startSearch": {
           "oneOf": [
@@ -3686,7 +3675,7 @@
               "type": "array"
             }
           ],
-          "default": "]"
+          "default": "\u003ctab\u003e"
         },
         "prevTab": {
           "oneOf": [
@@ -3700,7 +3689,7 @@
               "type": "array"
             }
           ],
-          "default": "["
+          "default": "\u003cbacktab\u003e"
         },
         "nextScreenMode": {
           "oneOf": [
@@ -4299,7 +4288,7 @@
             "$ref": "#/$defs/CommandBindingPaths"
           },
           "type": "object",
-          "description": "Alternate key paths for stable command IDs. For example,\ncommandBindings: {diff.commit.worktree: [[d, w], '\u003cf6\u003e']} binds d then w,\nor F6. An empty or null value disables a command; omitted IDs keep their\nbuilt-in paths."
+          "description": "Alternate key paths for stable command IDs. For example,\ncommandBindings: {diff.commit.worktree: [[d, w], '\u003cf6\u003e']} binds d then w,\nor F6. An empty or null value removes keyboard paths; the action remains\ndiscoverable in the command palette. Omitted IDs keep their built-in paths."
         },
         "services": {
           "additionalProperties": {
@@ -4326,7 +4315,7 @@
         },
         "keybinding": {
           "$ref": "#/$defs/KeybindingConfig",
-          "description": "Keybindings.\nEach binding can be a single key or a list of keys; see https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md for the syntax."
+          "description": "Legacy keybinding overrides and native modal/editor controls. Values shown\nhere are compatibility values, not the fork's effective normal-pane defaults.\nCopy only fields you want to override; use commandBindings for semantic paths.\nEach binding can be a single key or a list of keys; see https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md for the syntax."
         }
       },
       "additionalProperties": false,

@@ -38,7 +38,7 @@ custom commands. Frequency persistence and sorting remain item 9.
 ## Remaining tasks for item 8
 
 2. Review [keymap-allocation.md](keymap-allocation.md) against each actual
-   handler, context and legacy configuration field before enabling defaults.
+   handler, context and legacy configuration field against the enabled defaults.
    The TortoiseGit guide and concrete verb/prefix table are recorded; the table
    names every instantiated operation ID and the known dynamic variants.
    The fork-owned path catalogue is present, including distinct previous/next
@@ -46,18 +46,11 @@ custom commands. Frequency persistence and sorting remain item 9.
    the latest user table, including Files-only commit Enter, Escape cancellation, combine `g c`, scoped Space, tree
    arrow registration (directional tree handlers are implemented), `d w`/`d p`/`d c`, `s h`/`s m`/`s s`/`s c`, `n b` and
    `c y`/`c x`/`c p`. Keep Pull in a deliberate menu path. Verify the implemented source-field projection against the remaining handlers
-   and aliases before enabling it. Stable-ID paths override explicitly configured
+   and aliases in the enabled profile. Stable-ID paths override explicitly configured
    shared-route overrides, legacy fields and catalogue defaults in that order.
    Numbered jumps retain positional keys and have independent stable target IDs.
-   The stable-ID path configuration parser/schema is present; connect it through
-   the projection and dispatcher before treating overrides as active.
-3. Integrate the opt-in ASCII command matching/collision normalization and add
-   inactive-key consumption at small central integration points. The command
-   matcher is implemented independently of exact keys and input events; the
-   loader records explicit YAML field presence separately from values/legacy
-   alias folding. The application still uses its existing registration path.
-   Preserve literal input, search/filter text, subprocess typing, explicit
-   override behavior and custom Ctrl commands; retain genuine errors after an action is invoked.
+   The stable-ID path configuration parser/schema is connected through
+   the projection and dispatcher; verify final override/operation scenarios.
 4. Extend the captured operation flows required by the
    requested bindings: Files-only commit Enter,
    full-refresh/re-render F5 without fetch,
@@ -86,19 +79,20 @@ custom commands. Frequency persistence and sorting remain item 9.
    Retain native concurrency/overwrite protection and no implicit stash. Use
    [keymap-behavior-gaps.md](keymap-behavior-gaps.md) as source evidence, not proof
    that these flows are already implemented.
-5. Connect the implemented visible two-/three-key menu flow to normal-pane
-   registration and verify captured origin/repository and selection checks
+5. Verify the connected visible two-/three-key menu flow and its
+   captured origin/repository and selection checks
    (including the implemented conflict-file/content/hunk snapshots). Keep prefixes free of mutations and hidden timing state;
    Explicit single-key overrides now displace default continuations; explicitly
    configured leaf/descendant collisions retain a visible choice. Verify
    nested Esc/back behavior and safely handle invalid continuations,
    focus/repository changes and popup replacement. Expose leaves independently
    through `?` and show their complete paths.
-6. Apply the reviewed defaults across Linux/macOS/Windows. Remove core Ctrl
-   defaults and case-only distinctions, resolve navigation/action collisions,
-   retain direct history/file comparisons, and leave user overrides explicit.
-   Update command hints, generated cheatsheets/schema, usage and a migration
-   table; maintain the merge guide at integration changes.
+6. Finish generated audit snapshots and documentation for the enabled profile.
+   Normal-pane defaults, effective command hints/panel labels, generated
+   cheatsheets/schema and the migration guide are implemented. Keep compatibility
+   operation fixtures explicit and separate from actual-default scenarios.
+   Verify the final Linux/macOS/Windows allocation and legacy/custom overrides;
+   maintain the merge guide at integration changes.
 7. Verify the default key × pane/mode matrix: case parity, no core Ctrl defaults,
    unique paths, disabled no-ops, no parent/global fallback, prefix cancellation
    and captured targets, editors/filtering, custom commands/overrides and actual

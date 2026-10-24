@@ -2,9 +2,7 @@ package gui
 
 import (
 	"errors"
-	"fmt"
 
-	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/theme"
@@ -247,42 +245,8 @@ func (gui *Gui) configureViewProperties() {
 	gui.Views.CommitDescription.TextArea.AutoWrap = gui.c.UserConfig().Git.Commit.AutoWrapCommitMessage
 	gui.Views.CommitDescription.TextArea.AutoWrapWidth = gui.c.UserConfig().Git.Commit.AutoWrapWidth
 
-	keyToTitlePrefix := func(binding config.Keybinding) string {
-		if len(binding) == 0 {
-			return ""
-		}
-		return fmt.Sprintf("[%s]", binding[0])
-	}
-
-	// The views that make up each side panel, in panel order. The whole group
-	// shares the panel's jump label.
-	panelViewGroups := lo.Map(gui.c.UserConfig().Gui.SidePanels, func(panel config.SidePanel, _ int) []*gocui.View {
-		return lo.Map(panel, func(name string, _ int) *gocui.View {
-			view, _ := gui.g.View(sidePanelViewNames[name])
-			return view
-		})
-	})
-
-	jumpBindings := gui.c.UserConfig().Keybinding.Universal.JumpToBlock
-	jumpLabelForPanel := func(panelIndex int) string {
-		if !gui.c.UserConfig().Gui.ShowPanelJumps || panelIndex >= len(jumpBindings) {
-			return ""
-		}
-		return keyToTitlePrefix(jumpBindings[panelIndex])
-	}
-
-	for panelIndex, views := range panelViewGroups {
-		prefix := jumpLabelForPanel(panelIndex)
-		for _, view := range views {
-			view.TitlePrefix = prefix
-		}
-	}
-
-	gui.focusMainViewJumpLabel = ""
-	if gui.c.UserConfig().Gui.ShowPanelJumps {
-		gui.focusMainViewJumpLabel = keyToTitlePrefix(gui.c.UserConfig().Keybinding.Universal.FocusMainView)
-	}
-	gui.showFocusMainViewJumpLabelOn(gui.Views.Main)
+	// Fork: border hints follow compiled routes, including explicit overrides.
+	gui.refreshForkPanelJumpLabels()
 
 	// Index the tab strips by view so we can both set them on views that are
 	// part of a multi-tab panel and clear them on views that no longer are

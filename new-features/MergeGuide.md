@@ -356,21 +356,46 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   carries view-specific exceptions; its generator scans upstream constructors
   and legacy alias folding. Regenerate `legacy_fields_generated.go` after
   changing source bindings or aliases and review exceptions during merges.
-- `gui/fork_command_projection.go` owns the pending normal-pane migration. It
+- `gui/fork_command_projection.go` owns the normal-pane migration. It
   splits shared upstream stage/patch/conflict keys into semantic actions with
   live guards, preserves mouse routes, restricts Enter to Files, and uses a
   read-only Files inspector. Explicit legacy mode overrides retain their
   configured behavior. Numbered pane jumps retain their individual targets.
-  The projection and compiled dispatcher are not yet connected to the default
-  registration entry point; complete operation flows and terminal verification
-  before enabling them together.
+  `GetInitialKeybindings` projects core routes; `resetKeybindings` compiles them
+  through `registerForkCommands`. Custom, modal, editor and mouse routes retain
+  native registration. Focus restoration rebuilds bindings after `HandleFocus`.
+  Offline cheatsheet generation sets a canonical Files context before projection.
+- Complete-path ownership is explicit local, explicit global, default local,
+  then default global. Prefix descendants remain available unless an explicit
+  leaf displaces only default descendants. Never infer explicit configuration
+  from equality to a default. `commit.search` aliases `search.open` after path
+  resolution, preserving the first history-loading handler instead of presenting
+  duplicate search choices. Keep explicit historical ID overrides resolvable.
+- `fork_effective_command_paths.go` supplies private display copies for the
+  palette and hints after current-pane ownership, explicit leaves and exact
+  custom-root claims. Foreign-view customs must not clear current paths. Footer
+  alias deduplication is local-first; mode hints use the effective command path
+  or the palette path. `fork_panel_labels.go` uses owned routes for border jump
+  labels, hiding normal shortcuts while a popup/editor is focused.
+- Prefix menus reserve physical Up/Down, Enter and Escape even when ordinary
+  modal navigation uses letters. Validation rejects these unmodified keys after
+  a command path's root, and rejects mouse paths. Ordinary dialogs retain their
+  configured controls. Keep prefix continuation accelerators ahead of the
+  unmatched-key blockers, and both ahead of inherited navigation.
+- `fork_full_refresh.go` replaces default global and Files refresh with one
+  `app.refresh` identity and handler. Explicit `file.refresh` overrides retain
+  the native limited operation. F5 clears the Git config cache, reloads every
+  refresh scope (including selected-ref history), renders contexts and redraws
+  the terminal without fetch. Layout-only windows have no context: skip them.
+  Preserve repository-generation guards on completion.
 
 
 ### Command path configuration foundation
 
 - `UserConfig.CommandBindings` and its validation hook introduce paths keyed by
   stable command ID. Each outer list contains alternate paths; each inner list
-  is a sequence of one to three keys. Empty/null values disable that command.
+  is a sequence of one to three keys. Empty/null values remove keyboard paths;
+  actions remain discoverable in the palette.
   Keep this distinct from legacy `Keybinding`, whose list means alternate keys.
 - `config/fork_command_bindings.go` supplies JSON decoding/schema; YAML uses the
   existing Keybinding decoder. Loader coverage checks layered maps, explicit
@@ -449,10 +474,10 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   even if an editor declines a shifted-letter event. Editors receive the
   original event. Preserve this check before remembering global candidates.
   Normal handled/fallthrough ordering and paste guards remain native.
-- The application has **not** switched to this registration API yet: old
-  case-only defaults must be replaced before activation. Do not globally
-  normalize key equality or incoming events as a substitute. Runtime no-op
-  routing, prefix ownership and default allocation remain Tracker tasks.
+- Normal panes now use this API through compiled command routes. Do not globally
+  normalize key equality or incoming events as a substitute. Native text input
+  and custom commands remain exact. Cross-mode and operation regression checks
+  remain in the current tracker item until acceptance is complete.
 - `new-features/keymap/generate.go` instantiates the exported cheatsheet path
   for three platforms after legacy alias folding. Its default/cleared-key
   snapshots use the command normalizer for collision candidates, preserve raw

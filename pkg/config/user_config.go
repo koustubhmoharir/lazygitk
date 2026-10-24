@@ -32,8 +32,8 @@ type UserConfig struct {
 	CustomCommands []CustomCommand `yaml:"customCommands" jsonschema:"uniqueItems=true"`
 	// Alternate key paths for stable command IDs. For example,
 	// commandBindings: {diff.commit.worktree: [[d, w], '<f6>']} binds d then w,
-	// or F6. An empty or null value disables a command; omitted IDs keep their
-	// built-in paths.
+	// or F6. An empty or null value removes keyboard paths; the action remains
+	// discoverable in the command palette. Omitted IDs keep their built-in paths.
 	CommandBindings map[string]CommandBindingPaths `yaml:"commandBindings,omitempty"`
 	// See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-pull-request-urls
 	Services map[string]string `yaml:"services"`
@@ -45,7 +45,9 @@ type UserConfig struct {
 	NotARepository string `yaml:"notARepository" jsonschema:"enum=prompt,enum=create,enum=skip,enum=quit"`
 	// If true, display a confirmation when subprocess terminates. This allows you to view the output of the subprocess before returning to Lazygit.
 	PromptToReturnFromSubprocess bool `yaml:"promptToReturnFromSubprocess"`
-	// Keybindings.
+	// Legacy keybinding overrides and native modal/editor controls. Values shown
+	// here are compatibility values, not the fork's effective normal-pane defaults.
+	// Copy only fields you want to override; use commandBindings for semantic paths.
 	// Each binding can be a single key or a list of keys; see https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md for the syntax.
 	Keybinding KeybindingConfig `yaml:"keybinding"`
 }

@@ -204,6 +204,11 @@ func (self *ContextMgr) Activate(c types.Context, opts types.OnFocusOpts) {
 	self.UpdateSelectionHighlights()
 
 	c.HandleFocus(opts)
+	if self.gui.ViewsSetup {
+		// Fork: current/selected command identities and modal bindings depend on
+		// focus. Rebuild after restoring the context, including a menu Pop.
+		self.gui.resetKeybindings()
+	}
 }
 
 // UpdateSelectionHighlights re-derives which views draw a selection, and which of

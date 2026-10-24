@@ -36,11 +36,22 @@ func (gui *Gui) createMenu(opts types.CreateMenuOptions) error {
 	// essential; alternates (e.g. the historical j/k that lived under
 	// `*Alt` fields) stay available to be reused by menu items, which
 	// take precedence over the inherited list bindings.
-	essentialKeys := []gocui.Key{
-		config.GetValidatedKeyBindingKeys(gui.c.UserConfig().Keybinding.Universal.ConfirmMenu)[0],
-		config.GetValidatedKeyBindingKeys(gui.c.UserConfig().Keybinding.Universal.Return)[0],
-		config.GetValidatedKeyBindingKeys(gui.c.UserConfig().Keybinding.Universal.PrevItem)[0],
-		config.GetValidatedKeyBindingKeys(gui.c.UserConfig().Keybinding.Universal.NextItem)[0],
+	var essentialKeys []gocui.Key
+	if len(opts.BlockUnmatchedKeys) > 0 {
+		// Fork prefix menus use physical controls independently of ordinary
+		// menu aliases, leaving every offered letter accelerator available.
+		essentialKeys = []gocui.Key{gocui.NewKeyName(gocui.KeyEnter), gocui.NewKeyName(gocui.KeyEsc), gocui.NewKeyName(gocui.KeyArrowUp), gocui.NewKeyName(gocui.KeyArrowDown)}
+	} else {
+		for _, binding := range []config.Keybinding{
+			gui.c.UserConfig().Keybinding.Universal.ConfirmMenu,
+			gui.c.UserConfig().Keybinding.Universal.Return,
+			gui.c.UserConfig().Keybinding.Universal.PrevItem,
+			gui.c.UserConfig().Keybinding.Universal.NextItem,
+		} {
+			if keys := config.GetValidatedKeyBindingKeys(binding); len(keys) > 0 {
+				essentialKeys = append(essentialKeys, keys[0])
+			}
+		}
 	}
 
 	for _, item := range opts.Items {

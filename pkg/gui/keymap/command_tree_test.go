@@ -122,3 +122,27 @@ func childTree(t *testing.T, tree *CommandTree, key gocui.Key) *CommandTree {
 	t.Fatalf("missing child %q", config.LabelForKey(key))
 	return nil
 }
+
+func TestBuildCommandTreeExplicitOverridesPrecedeNewLocalDefaults(t *testing.T) {
+	global := &types.Binding{CommandID: "configured-global", Keys: []gocui.Key{key('x')}}
+	localDefault := &types.Binding{CommandID: "new-local-default", ViewName: "files", DefaultCommand: true, Keys: []gocui.Key{key('x')}}
+	localSibling := &types.Binding{CommandID: "local-sibling", ViewName: "files", DefaultCommand: true, CommandPaths: [][]gocui.Key{{key('x'), key('s')}}}
+	for _, bindings := range [][]*types.Binding{{global, localDefault, localSibling}, {localSibling, localDefault, global}} {
+		root := BuildCommandTree(bindings, "files")
+		node := childTree(t, root, key('x'))
+		assert.Equal(t, []*types.Binding{global}, node.Bindings)
+		assert.Equal(t, []*types.Binding{localSibling}, childTree(t, node, key('s')).Bindings, "a complete-path override must not delete sibling continuations")
+	}
+	localDefault.DefaultCommand = false
+	root := BuildCommandTree([]*types.Binding{global, localDefault}, "files")
+	assert.Equal(t, []*types.Binding{localDefault}, childTree(t, root, key('x')).Bindings, "explicit local overrides retain native precedence over explicit globals")
+}
+
+func TestBuildCommandTreeExplicitSameViewRouteDisplacesDefault(t *testing.T) {
+	first := &types.Binding{ViewName: "files", DefaultCommand: true, Keys: []gocui.Key{key('a')}}
+	second := &types.Binding{ViewName: "files", Keys: []gocui.Key{key('a')}}
+	root := BuildCommandTree([]*types.Binding{first, second}, "files")
+	assert.Equal(t, []*types.Binding{second}, childTree(t, root, key('a')).Bindings)
+	assert.True(t, first.DefaultCommand)
+	assert.Equal(t, []gocui.Key{key('a')}, first.Keys, "ownership must not mutate source definitions")
+}
