@@ -2,7 +2,9 @@
 
 This expands [keymap-design.md](keymap-design.md) against the instantiated
 command IDs and the [mode matrix](keymap-mode-matrix.md). It is a design table,
-not the installed defaults. Space remains a pending preference. Uppercase ASCII
+not the installed defaults. The user will review the final bindings before
+implementation/activation. Space staging and Files-tree Left/Right navigation
+are agreed requirements. Uppercase ASCII
 letters are aliases of the same path; punctuation and modifiers remain literal.
 
 An ID is an action identity, not a claim that the action is available in every
@@ -36,7 +38,7 @@ review flow, with sensible defaults and explicit confirmation.
 | `?` | Discover commands | `app.command-palette` |
 | `/` | Search current view/history | `search.open`, `commit.search` |
 | `:` | Enter a shell command | `app.shell-command` |
-| Space, `s t` | Toggle staging of selected files/lines (Space pending) | `file.toggle-stage`, `diff.stage-selection`, `diff.unstage-selection` |
+| Space, `s t` | Toggle staging of selected working files/lines (Space agreed) | `file.toggle-stage`, `diff.stage-selection`, `diff.unstage-selection` |
 | `s a` | Toggle staging for all working files | `file.toggle-stage-all` |
 | `n b p` | Create/move branch pointer at selected commit, without checkout | `branch.place-at-selected-commit` |
 | `n b c` | Create and check out a new branch from selected source | `branch.create-and-checkout` |
@@ -104,6 +106,9 @@ review flow, with sensible defaults and explicit confirmation.
 These are commands; input fields retain literal letters. Enter's normal-pane
 inspection role is limited to handlers that inspect, expand, or focus details.
 Worktree/submodule repository switches get explicit paths instead.
+For example, Enter on a branch opens its commit list; on a commit, its changed
+files; on a file, its diff. These are proposed inspection/navigation actions,
+not checkout, stash application or worktree switching.
 
 | Path | Meaning | Existing command IDs |
 | --- | --- | --- |
@@ -147,8 +152,11 @@ Physical navigation uses the focused view's list/content. Up/Down and `k`/`j`
 mean previous/next item (a line, list row or conflict hunk). Shift+Up/Down extend
 the selection where supported. Home/End mean first/last item. PageUp/PageDown
 mean previous/next page in the focused view; Alt+Up/Down scroll main output
-without moving side selection. Left/Right and `h`/`l`, Tab/Backtab mean pane
-navigation in normal panes. `[`/`]` mean previous/next tab. Alt+Left/Right scroll
+without moving side selection. Left/Right must collapse/expand the Files tree,
+retaining focus in Files; they must not be pane-switching defaults there.
+The exact tree traversal details and remaining navigation table belong in the
+final proposal for review. `h`/`l` and Tab/Backtab are proposed pane-navigation
+alternates. `[`/`]` mean previous/next tab. Alt+Left/Right scroll
 horizontally. Numbered pane jumps keep their explicit numbered targets. Search
 match navigation moves to F3/Shift+F3. These navigation roles cover the
 `navigation.*` / `selection.*` factories not individually named above, without

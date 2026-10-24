@@ -541,6 +541,10 @@ stacks. Assert current HEAD/index/worktree and unrelated refs remain unchanged.
 
 ## 8. Consistent default keys and no-op behavior
 
+User review gate: pause before implementing/activating the final keybindings.
+Prepare the proposal for the user to decide whether the bindings are right.
+The matcher/provenance foundations do not constitute approval of the key table.
+
 Use milestone 2's complete inventory to produce and review a verb-to-key table
 before changing defaults. All alphabetic commands are case-insensitive: `p`
 and `P` cannot mean pull and push, and `r` and `R` cannot mean rename and
@@ -587,8 +591,12 @@ as the default action on opening that group.
 
 Known changes include splitting `r` (files refresh / branch rebase / commit
 rename), `f` (fetch / fast-forward / fixup), and `c` (commit / checkout by name /
-fixup message / restore historical file). Space currently means staging,
-checkout, or menu selection; that also needs an explicit semantic decision.
+fixup message / restore historical file). Space's agreed normal-pane meaning
+is staging/unstaging selected working files or working-tree diff lines; it does
+nothing elsewhere. Left/Right in the Files pane must collapse/expand the tree,
+not switch panes. Number keys remain available for switching panes. Proposed
+Enter inspection means opening a branch's commits, a commit's changed files,
+or a file's diff; the final navigation allocation remains subject to user review.
 `n`/`N` are new/search-next/diff-file-navigation collisions requiring resolution;
 both cases must now resolve to one command meaning.
 

@@ -5,8 +5,12 @@ Status: the default registration audit and source-reviewed mode matrix are
 recorded in [keymap/README.md](keymap/README.md),
 [keymap-mode-matrix.md](keymap-mode-matrix.md) and the linked dispatch/default
 audits. Complete the command/path allocation before changing application
-defaults. [keymap-design.md](keymap-design.md) is a draft; Space's proposed
-staging role is still a pending user preference.
+defaults. **User review gate:** pause before implementing or activating the final
+keybindings; the user wants to decide whether the proposed bindings are right.
+[keymap-design.md](keymap-design.md) and
+[keymap-allocation.md](keymap-allocation.md) remain proposals for that review.
+Space's staging role is agreed. Left/Right must collapse/expand the Files tree
+rather than switch panes; number keys remain available for pane switching.
 
 Scope: one command meaning per default key/path across panes. ASCII command
 letters are case-insensitive; inapplicable actions consume their key without
@@ -23,7 +27,8 @@ and sorting remain item 9.
    handler, context and legacy configuration field before enabling defaults.
    The TortoiseGit guide and concrete verb/prefix table are recorded; the table
    names every instantiated operation ID and the known dynamic variants.
-   Resolve Space's remaining role with the user. Preserve direct `w`/`v`
+   Present the final proposal for user review before implementation. Incorporate
+   agreed Space staging and Files-tree Left/Right navigation. Preserve direct `w`/`v`
    comparisons and Pull's deliberate menu path. Define source-field override
    projection for commands with several legacy aliases or context-specific fields.
 3. Integrate the opt-in ASCII command matching/collision normalization and add

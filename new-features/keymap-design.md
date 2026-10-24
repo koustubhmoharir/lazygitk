@@ -7,6 +7,10 @@ instantiated [binding snapshots](keymap/bindings.json),
 [mode matrix](keymap-mode-matrix.md), provide the evidence. Snapshots are not
 proof that every mode or dynamically built menu has been exercised.
 
+The user requested a pause before implementing the final keybindings so they
+can review the proposal. Keep the final bindings unimplemented/inactive until
+that review; the existing opt-in matcher and override metadata are foundations.
+
 [TortoiseGit's log dialog](https://tortoisegit.org/docs/tortoisegit/tgit-dug-showlog.html)
 keeps working-tree and previous-revision comparisons distinct and names current
 HEAD as the destination of reset/rebase actions. Its
@@ -22,8 +26,11 @@ uppercase and lowercase command letters are aliases. Punctuation stays literal.
 Menus form visible namespaces: `g c` means checkout, not the meaning of `c`
 pressed by itself. No invisible chord buffer or inter-key timeout is needed.
 
-The pending Space preference is represented here by the recommended staging
-behavior. Enter inspects or opens details. Modal Enter confirms/executes, Esc
+Space staging is agreed: stage/unstage selected working files or working-tree
+diff lines, otherwise do nothing in normal panes. The proposed Enter role means
+following the selected item: branch → commit list, commit → changed-file list,
+file → diff. It must not check out a ref, apply a stash or switch worktrees.
+Modal Enter confirms/executes, Esc
 cancels/returns, and editable inputs retain normal typing. These are explicit
 modal/input roles, not permission for normal pane commands to change meaning.
 
@@ -52,8 +59,9 @@ modal/input roles, not permission for normal pane commands to change meaning.
 | `t` | Open view/navigation/tool choices |
 | `q` | Quit the application |
 | `j` / `k` | Next / previous item, also available on Down / Up |
-| `h` / `l` | Previous / next pane, also available on Left / Right |
-| Space | Toggle staging in working-tree files/diffs; otherwise no-op (pending preference) |
+| `h` / `l` | Previous / next pane; number keys also switch panes |
+| Left / Right | Collapse / expand the Files tree; never switch panes there |
+| Space | Toggle staging in working-tree files/diffs; otherwise no-op (agreed) |
 | Enter | Inspect/open details; otherwise no-op |
 | Shift+Up / Shift+Down | Extend selection where supported |
 | Home / End | First / last item |
