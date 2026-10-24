@@ -26,6 +26,8 @@ func (gui *Gui) registerForkCommands(core, custom []*types.Binding) {
 		}
 		if binding.ViewName != "" {
 			views[binding.ViewName] = true
+		} else {
+			gui.setNativeGlobalKeys(binding)
 		}
 		copy := *binding
 		copy.ViewName = ""
@@ -59,6 +61,27 @@ func (gui *Gui) registerForkCommands(core, custom []*types.Binding) {
 				return gui.startForkCommand(node, root.Key)
 			})
 		}
+	}
+}
+
+// setNativeGlobalKeys makes a global core binding reachable from views that
+// have no compiled command tree (menus, prompts, confirmations, ...). Upstream
+// registered these single keys natively, so gocui's global fallback reaches
+// them there. Only direct keys are registered: command paths are compiled into
+// fork-view trees. The guard keeps fork views unchanged: their compiled roots
+// own every global key, and a fork view without its own bindings must not
+// gain a new global meaning.
+func (gui *Gui) setNativeGlobalKeys(binding *types.Binding) {
+	for _, key := range binding.Keys {
+		if forkMouseKey(key) {
+			continue // Mouse routes are registered by registerForkCommands.
+		}
+		gui.g.SetKeybinding("", key, func(_ *gocui.Gui, v *gocui.View) error {
+			if v != nil && forkCommandView(v.Name()) {
+				return nil
+			}
+			return gui.callKeybindingHandler(binding)
+		})
 	}
 }
 

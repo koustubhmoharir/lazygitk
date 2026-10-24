@@ -6,6 +6,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/keymap"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/stretchr/testify/assert"
 )
 
 type forkPrefixMenuHarness struct {
@@ -310,4 +311,93 @@ func TestForkPrefixExplicitLeafOverridesDefaultContinuations(t *testing.T) {
 	if len(h.menus) != 1 || len(h.invoked) != 0 {
 		t.Fatal("conflicting explicit leaf and descendant routes must offer a visible choice")
 	}
+}
+
+// forkFallbackFlow returns a flow whose handlers return scripted results.
+func forkFallbackFlow(h *forkPrefixMenuHarness, outcomes map[*types.Binding]error) *forkPrefixFlow {
+	flow := h.flow()
+	flow.invoke = func(binding *types.Binding) error {
+		h.invoked = append(h.invoked, binding)
+		return outcomes[binding]
+	}
+	return flow
+}
+
+func TestForkPrefixLeafFallsThroughToNextOwnerOnNotHandled(t *testing.T) {
+	h := &forkPrefixMenuHarness{valid: true}
+	leaf := forkPrefixBinding("leaf")
+	declining := forkPrefixBinding("declining-global")
+	handling := forkPrefixBinding("handling-global")
+	unused := forkPrefixBinding("unused-global")
+	flow := forkFallbackFlow(h, map[*types.Binding]error{
+		leaf:      gocui.ErrKeybindingNotHandled,
+		declining: gocui.ErrKeybindingNotHandled,
+		handling:  nil,
+	})
+	tree := &keymap.CommandTree{Bindings: []*types.Binding{leaf}, Fallbacks: []*types.Binding{declining, handling, unused}}
+	if err := flow.run(tree, nil, nil); err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, []*types.Binding{leaf, declining, handling}, h.invoked)
+}
+
+func TestForkPrefixLeafAllOwnersDeclineConsumesKey(t *testing.T) {
+	h := &forkPrefixMenuHarness{valid: true}
+	leaf := forkPrefixBinding("leaf")
+	global := forkPrefixBinding("global")
+	flow := forkFallbackFlow(h, map[*types.Binding]error{
+		leaf:   gocui.ErrKeybindingNotHandled,
+		global: gocui.ErrKeybindingNotHandled,
+	})
+	tree := &keymap.CommandTree{Bindings: []*types.Binding{leaf}, Fallbacks: []*types.Binding{global}}
+	assert.NoError(t, flow.run(tree, nil, nil))
+	assert.Equal(t, []*types.Binding{leaf, global}, h.invoked)
+}
+
+func TestForkPrefixDisabledLeafDoesNotFallThrough(t *testing.T) {
+	// The real handler dispatcher applies the fork's consume-on-inapplicable rule.
+	var invoked []string
+	gui := &Gui{}
+	inapplicable := &types.Binding{
+		DefaultCommand:    true,
+		Handler:           func() error { invoked = append(invoked, "leaf"); return gocui.ErrKeybindingNotHandled },
+		GetDisabledReason: func() *types.DisabledReason { return &types.DisabledReason{Text: "wrong pane", Inapplicable: true} },
+	}
+	global := &types.Binding{Handler: func() error { invoked = append(invoked, "global"); return nil }}
+	flow := &forkPrefixFlow{valid: func() bool { return true }, invoke: gui.callKeybindingHandler}
+	tree := &keymap.CommandTree{Bindings: []*types.Binding{inapplicable}, Fallbacks: []*types.Binding{global}}
+	assert.NoError(t, flow.run(tree, nil, nil))
+	assert.Empty(t, invoked)
+}
+
+func TestForkPrefixFallbackSkipsInactiveSharedRoutes(t *testing.T) {
+	h := &forkPrefixMenuHarness{valid: true}
+	leaf := forkPrefixBinding("leaf")
+	inactive := forkPrefixBinding("inactive")
+	inactive.CommandActive = func() bool { return false }
+	active := forkPrefixBinding("active")
+	flow := forkFallbackFlow(h, map[*types.Binding]error{leaf: gocui.ErrKeybindingNotHandled, active: nil})
+	tree := &keymap.CommandTree{Bindings: []*types.Binding{leaf}, Fallbacks: []*types.Binding{inactive, active}}
+	assert.NoError(t, flow.run(tree, nil, nil))
+	assert.Equal(t, []*types.Binding{leaf, active}, h.invoked)
+}
+
+func TestForkPrefixFallbacksAreNotMenuChoicesButReachMenuLeaves(t *testing.T) {
+	h := &forkPrefixMenuHarness{valid: true}
+	leaf := forkPrefixBinding("leaf")
+	global := forkPrefixBinding("global")
+	flow := forkFallbackFlow(h, map[*types.Binding]error{leaf: gocui.ErrKeybindingNotHandled, global: nil})
+	child := &keymap.CommandTree{Bindings: []*types.Binding{forkPrefixBinding("child")}}
+	tree := &keymap.CommandTree{
+		Bindings:  []*types.Binding{leaf, forkPrefixBinding("second")},
+		Fallbacks: []*types.Binding{global},
+		Children:  []keymap.CommandEdge{{Key: gocui.NewKeyRune('x'), Tree: child}},
+	}
+	assert.NoError(t, flow.run(tree, nil, nil))
+	for _, item := range h.menus[0].Items {
+		assert.NotSame(t, global, item.Binding, "fallback offered as a menu choice")
+	}
+	assert.Len(t, h.menus[0].Items, 3)
+	assert.NoError(t, forkPrefixAccept(h, h.menus[0], h.menus[0].Items[0]))
+	assert.Equal(t, []*types.Binding{leaf, global}, h.invoked)
 }

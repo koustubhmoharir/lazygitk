@@ -146,3 +146,25 @@ func TestBuildCommandTreeExplicitSameViewRouteDisplacesDefault(t *testing.T) {
 	assert.True(t, first.DefaultCommand)
 	assert.Equal(t, []gocui.Key{key('a')}, first.Keys, "ownership must not mutate source definitions")
 }
+
+func TestBuildCommandTreeKeepsLowerPriorityOwnersAsOrderedFallbacks(t *testing.T) {
+	defaultGlobal := &types.Binding{DefaultCommand: true, Keys: []gocui.Key{key('e')}}
+	defaultLocal := &types.Binding{DefaultCommand: true, ViewName: "files", Keys: []gocui.Key{key('e')}}
+	explicitGlobal := &types.Binding{Keys: []gocui.Key{key('e')}}
+	root := BuildCommandTree([]*types.Binding{defaultGlobal, defaultLocal, explicitGlobal}, "files")
+
+	node := childTree(t, root, key('e'))
+	assert.Equal(t, []*types.Binding{explicitGlobal}, node.Bindings)
+	assert.Equal(t, []*types.Binding{defaultLocal, defaultGlobal}, node.Fallbacks)
+}
+
+func TestBuildCommandTreeFallbacksKeepDefaultsOrderForEqualPriority(t *testing.T) {
+	first := &types.Binding{DefaultCommand: true, ViewName: "files", Keys: []gocui.Key{key('e')}}
+	second := &types.Binding{DefaultCommand: true, ViewName: "files", Keys: []gocui.Key{key('e')}}
+	global := &types.Binding{DefaultCommand: true, Keys: []gocui.Key{key('e')}}
+	root := BuildCommandTree([]*types.Binding{first, global, second}, "files")
+
+	node := childTree(t, root, key('e'))
+	assert.Equal(t, []*types.Binding{first, second}, node.Bindings)
+	assert.Equal(t, []*types.Binding{global}, node.Fallbacks)
+}

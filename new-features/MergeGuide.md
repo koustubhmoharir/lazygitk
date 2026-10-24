@@ -356,6 +356,14 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   without evaluating handlers or metadata: local routes shadow globals only at
   the same complete path, not an entire shared prefix. Keep mode candidates
   together for live applicability checks.
+- Normal-pane leaves that return `gocui.ErrKeybindingNotHandled` pass the key
+  to the node's pruned lower-priority owners (`CommandTree.Fallbacks`) in
+  priority order, so upstream's Escape decline reaches global `app.cancel`.
+  Fallbacks are never menu choices or hints. If every owner declines, the key is
+  consumed; inapplicable/disabled leaves still consume without fallback. Global
+  single keys are also registered natively (`setNativeGlobalKeys`) for non-fork
+  views such as popups, with a guard that leaves fork views to their compiled
+  roots.
 - `gui/keymap/resolve_paths.go` resolves stable-ID overrides before explicitly
   configured legacy fields, then the fork catalogue. Provenance uses the loader's
   field-presence metadata, never equality to an old default. `legacy_fields.go`

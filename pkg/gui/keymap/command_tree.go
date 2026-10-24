@@ -12,7 +12,11 @@ import (
 // complete routes ending at that node; Children may still contain continuations.
 type CommandTree struct {
 	Bindings []*types.Binding
-	Children []CommandEdge
+	// Fallbacks are the lower-priority owners of this node's complete path,
+	// highest priority first. They are never shown as choices; dispatch tries
+	// them only after a leaf's handler declines with ErrKeybindingNotHandled.
+	Fallbacks []*types.Binding
+	Children  []CommandEdge
 }
 
 // CommandEdge connects a key to the subtree for routes beginning with it.
@@ -91,17 +95,18 @@ func pruneCommandTreeOwners(tree *CommandTree, view string) {
 		}
 		return value
 	}
-	best := -1
-	for _, binding := range tree.Bindings {
-		best = max(best, priority(binding))
-	}
-	kept := tree.Bindings[:0]
-	for _, binding := range tree.Bindings {
-		if priority(binding) == best {
-			kept = append(kept, binding)
+	// The sort is stable, so owners of equal priority keep their input order.
+	owners := append([]*types.Binding(nil), tree.Bindings...)
+	sort.SliceStable(owners, func(i, j int) bool { return priority(owners[i]) > priority(owners[j]) })
+	if len(owners) > 0 {
+		best := priority(owners[0])
+		kept := 1
+		for kept < len(owners) && priority(owners[kept]) == best {
+			kept++
 		}
+		tree.Bindings = owners[:kept:kept]
+		tree.Fallbacks = owners[kept:]
 	}
-	tree.Bindings = kept
 	for _, edge := range tree.Children {
 		pruneCommandTreeOwners(edge.Tree, view)
 	}

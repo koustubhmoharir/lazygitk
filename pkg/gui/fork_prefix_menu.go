@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"errors"
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/config"
@@ -29,19 +30,49 @@ func (flow *forkPrefixFlow) invalidate() { flow.active = nil }
 func freezeForkCommandTree(tree *keymap.CommandTree) *keymap.CommandTree {
 	result := &keymap.CommandTree{}
 	for _, binding := range tree.Bindings {
-		copy := *binding
-		// Metadata is evaluated while the source pane still has focus. Guards and
-		// handlers remain live and are only invoked again after restoring it.
-		copy.CommandID, copy.Verb = binding.GetCommandID(), binding.GetVerb()
-		copy.Description, copy.ShortDescription, copy.Tooltip = binding.GetDescription(), binding.GetShortDescription(), binding.GetTooltip()
-		copy.CommandIDFunc, copy.VerbFunc = nil, nil
-		copy.DescriptionFunc, copy.ShortDescriptionFunc, copy.TooltipFunc = nil, nil, nil
-		result.Bindings = append(result.Bindings, &copy)
+		result.Bindings = append(result.Bindings, freezeForkBinding(binding))
+	}
+	for _, binding := range tree.Fallbacks {
+		result.Fallbacks = append(result.Fallbacks, freezeForkBinding(binding))
 	}
 	for _, edge := range tree.Children {
 		result.Children = append(result.Children, keymap.CommandEdge{Key: edge.Key, Tree: freezeForkCommandTree(edge.Tree)})
 	}
 	return result
+}
+
+func freezeForkBinding(binding *types.Binding) *types.Binding {
+	copy := *binding
+	// Metadata is evaluated while the source pane still has focus. Guards and
+	// handlers remain live and are only invoked again after restoring it.
+	copy.CommandID, copy.Verb = binding.GetCommandID(), binding.GetVerb()
+	copy.Description, copy.ShortDescription, copy.Tooltip = binding.GetDescription(), binding.GetShortDescription(), binding.GetTooltip()
+	copy.CommandIDFunc, copy.VerbFunc = nil, nil
+	copy.DescriptionFunc, copy.ShortDescriptionFunc, copy.TooltipFunc = nil, nil, nil
+	return &copy
+}
+
+// invokeLeaf runs the selected leaf. Only ErrKeybindingNotHandled, the
+// upstream "decline" result, reaches the node's fallbacks, in priority order.
+// The first owner that handles the key, or consumes it through its own
+// disabled/inapplicable result, ends dispatch. If every owner declines, the key
+// is consumed here so no global or parent meaning runs outside the fork tree.
+func (flow *forkPrefixFlow) invokeLeaf(binding *types.Binding, fallbacks []*types.Binding) error {
+	err := flow.invoke(binding)
+	if !errors.Is(err, gocui.ErrKeybindingNotHandled) {
+		return err
+	}
+	for _, next := range fallbacks {
+		// A route whose CommandActive is false is a different semantic action
+		// of a shared binding, not an owner of this key in the current mode.
+		if next.CommandActive != nil && !next.CommandActive() {
+			continue
+		}
+		if err := flow.invoke(next); !errors.Is(err, gocui.ErrKeybindingNotHandled) {
+			return err
+		}
+	}
+	return nil
 }
 
 func forkApplicableBindings(bindings []*types.Binding) []*types.Binding {
@@ -90,14 +121,14 @@ func (flow *forkPrefixFlow) run(tree *keymap.CommandTree, path []gocui.Key, pare
 	// choice instead of guessing which configured action they intended.
 	explicitLeaf := len(bindings) > 0 && !bindings[0].DefaultCommand
 	if explicitLeaf && !forkExplicitDescendants(tree) {
-		tree = &keymap.CommandTree{Bindings: tree.Bindings}
+		tree = &keymap.CommandTree{Bindings: tree.Bindings, Fallbacks: tree.Fallbacks}
 	}
 	if len(tree.Children) == 0 {
 		if len(bindings) == 0 {
 			return nil
 		}
 		if len(bindings) == 1 {
-			return flow.invoke(bindings[0])
+			return flow.invokeLeaf(bindings[0], tree.Fallbacks)
 		}
 	}
 	return flow.show(tree, bindings, path, parent)
@@ -142,7 +173,7 @@ func (flow *forkPrefixFlow) show(tree *keymap.CommandTree, bindings []*types.Bin
 				if !take() {
 					return nil
 				}
-				return flow.invoke(binding)
+				return flow.invokeLeaf(binding, tree.Fallbacks)
 			},
 		}
 		if binding.GetDisabledReason != nil {

@@ -59,7 +59,7 @@ func TestForkCommandDispatch(t *testing.T) {
 		for _, view := range []struct {
 			name   string
 			x0, x1 int
-		}{{"files", 0, 39}, {"localBranches", 40, 79}, {"main", 0, 79}} {
+		}{{"files", 0, 39}, {"localBranches", 40, 79}, {"main", 0, 79}, {"menu", 0, 79}} {
 			if _, err := heavy.SetView(view.name, view.x0, 0, view.x1, 23, 0); err != nil && !errors.Is(err, gocui.ErrUnknownView) {
 				out.err = err
 				return
@@ -99,6 +99,14 @@ func TestForkCommandDispatch(t *testing.T) {
 			return &types.DisabledReason{Text: "wrong mode", Inapplicable: true}
 		})
 		add("global.invalid-mode-fallback", "", gocui.NewKeyRune('i'), nil)
+		// A local default that declines must hand the key to the global owner.
+		bindings = append(bindings, &types.Binding{
+			CommandID: "files.decline-e", ViewName: "files", Keys: []gocui.Key{gocui.NewKeyRune('e')}, DefaultCommand: true,
+			Handler: func() error { return gocui.ErrKeybindingNotHandled },
+		})
+		add("global.e-fallback", "", gocui.NewKeyRune('e'), nil)
+		// Global single keys must reach popups natively, but never a fork view.
+		add("global.popup-key", "", gocui.NewKeyRune('g'), nil)
 		custom := []*types.Binding{
 			{CommandID: "custom.ctrl", Keys: []gocui.Key{gocui.NewKeyStrMod("k", gocui.ModCtrl)}, Handler: func() error { actions = append(actions, "custom.ctrl"); return nil }},
 			{CommandID: "custom.global-letter", Keys: []gocui.Key{gocui.NewKeyRune('z')}, Handler: func() error { actions = append(actions, "custom.global-letter"); return nil }},
@@ -117,6 +125,14 @@ func TestForkCommandDispatch(t *testing.T) {
 		})
 		heavy.SetKeybinding("", gocui.NewKeyName(gocui.KeyF9), func(*gocui.Gui, *gocui.View) error {
 			return setPane("files", filesCtx)
+		})
+		menuCtx := &forkDispatchContext{name: "menu", kind: types.TEMPORARY_POPUP}
+		heavy.SetKeybinding("", gocui.NewKeyName(gocui.KeyF8), func(*gocui.Gui, *gocui.View) error {
+			return setPane("menu", menuCtx)
+		})
+		mainCtx := &forkDispatchContext{name: "main", kind: types.MAIN_CONTEXT}
+		heavy.SetKeybinding("", gocui.NewKeyName(gocui.KeyF7), func(*gocui.Gui, *gocui.View) error {
+			return setPane("main", mainCtx)
 		})
 
 		quitKey := gocui.NewKeyName(gocui.KeyF12)
@@ -138,6 +154,11 @@ func TestForkCommandDispatch(t *testing.T) {
 			{key: tcell.KeyRune, ch: 'b'},
 			{key: tcell.KeyF9},
 			{key: tcell.KeyRune, ch: 'l'},
+			{key: tcell.KeyRune, ch: 'e'},
+			{key: tcell.KeyF8},
+			{key: tcell.KeyRune, ch: 'g'},
+			{key: tcell.KeyF7},
+			{key: tcell.KeyRune, ch: 'g'},
 			{key: tcell.KeyF12},
 		}
 		enqueued := make(chan struct{})
@@ -164,7 +185,7 @@ func TestForkCommandDispatch(t *testing.T) {
 		}
 		want := []string{
 			"files.uppercase", "files.uppercase", "custom.global-letter", "files.mode-active",
-			"custom.ctrl", "branches.only", "files.local",
+			"custom.ctrl", "branches.only", "files.local", "global.e-fallback", "global.popup-key",
 		}
 		if len(result.actions) != len(want) {
 			t.Fatalf("actions = %v, want %v", result.actions, want)
