@@ -116,7 +116,7 @@ func TestHistoricalDiffBindingMetadata(t *testing.T) {
 		Config:  config.GetDefaultConfig().Keybinding,
 		GetKeys: config.GetValidatedKeyBindingKeys,
 	})
-	want := map[string]string{"diff.commit.worktree": "diff-worktree", "diff.commit.previous": "diff-previous"}
+	want := map[string]string{"diff.commit.worktree": "diff-worktree", "diff.commit.previous": "diff-previous", "diff.commit.selected-commit": "diff-commit"}
 	seen := map[string]bool{}
 	for _, binding := range bindings {
 		if seen[binding.CommandID] {
@@ -132,10 +132,14 @@ func TestHistoricalDiffBindingMetadata(t *testing.T) {
 		if binding.CommandID == "diff.commit.previous" && binding.DisplayOnScreen {
 			t.Error("previous-commit action should not be shown in the bottom hints")
 		}
-		wantKeys := config.GetValidatedKeyBindingKeys(config.GetDefaultConfig().Keybinding.Universal.DiffWithWorkingTree)
-		if binding.CommandID == "diff.commit.previous" {
-			wantKeys = config.GetValidatedKeyBindingKeys(config.GetDefaultConfig().Keybinding.Universal.DiffWithPreviousCommit)
+		var wantedKey config.Keybinding
+		switch binding.CommandID {
+		case "diff.commit.worktree":
+			wantedKey = config.GetDefaultConfig().Keybinding.Universal.DiffWithWorkingTree
+		case "diff.commit.previous":
+			wantedKey = config.GetDefaultConfig().Keybinding.Universal.DiffWithPreviousCommit
 		}
+		wantKeys := config.GetValidatedKeyBindingKeys(wantedKey)
 		if len(binding.Keys) != len(wantKeys) {
 			t.Errorf("%s keys = %v, want %v", binding.CommandID, binding.Keys, wantKeys)
 		} else {
@@ -253,9 +257,10 @@ func TestHistoricalFileDiffBindingMetadata(t *testing.T) {
 		GetKeys: config.GetValidatedKeyBindingKeys,
 	})
 	want := map[string]string{
-		"diff.history-file.worktree":     "diff-worktree",
-		"diff.history-file.previous":     "diff-previous",
-		"diff.history-file.working-file": "diff-working-file",
+		"diff.history-file.worktree":        "diff-worktree",
+		"diff.history-file.previous":        "diff-previous",
+		"diff.history-file.working-file":    "diff-working-file",
+		"diff.history-file.selected-commit": "diff-commit",
 	}
 	seen := map[string]bool{}
 	for _, binding := range bindings {

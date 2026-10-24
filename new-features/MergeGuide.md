@@ -188,7 +188,9 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   is in the catalogue, awaiting dispatcher activation; the action is already
   discoverable through the palette. Focused Git-backed checks cover partial,
   full, ambiguous, non-commit and SHA-256 IDs, ref shadows, exact argv/cwd,
-  cancellation, copied paths and repository changes.
+  cancellation, copied paths and repository changes. Existing binding-metadata
+  checks also include the pasted-hash action, which is keyless before the
+  normal `d c` profile is activated.
 
 
 ### Captured command menus and disabled defaults
