@@ -32,6 +32,10 @@ func (plan LinearCombinePlan) Todo() string        { return plan.todo }
 func (plan LinearCombinePlan) Summary() string     { return plan.summary }
 func (plan LinearCombinePlan) Description() string { return plan.description }
 
+func (plan LinearCombinePlan) SelectedCommits() []CombineHistoryCommit {
+	return cloneCombineHistory(plan.selected)
+}
+
 func (plan LinearCombinePlan) SelectedOIDs() []string {
 	oids := make([]string, len(plan.selected))
 	for i, commit := range plan.selected {

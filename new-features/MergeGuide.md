@@ -42,6 +42,32 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Captured combine topology and native execution
+
+- `git_commands/captured_combine_plan.go` binds the linear topology to literal
+  selected objects, native HEAD and ignored-file risks. Find the earliest
+  selected ancestor using linear-count ancestry queries, then capture only its
+  first-parent suffix through HEAD. Read actual object headers/messages, so a
+  shallow boundary cannot masquerade as a root and dates cannot reorder picks.
+- `LinearCombinePlan.SelectedCommits` returns independent display data for the
+  final full-OID/subject review. Capture and getters own their slices; later
+  model changes cannot mutate the operation. The clean-status query explicitly
+  uses the captured worktree, independent of the process's current directory.
+- `combine_command.go` revalidates capture and ignored-file approval immediately
+  before building one native rebase. Explicit options disable autostash,
+  autosquash, merge rewriting and updateRefs, retain empty/redundant commits and
+  reschedule a failed exec for explicit user continuation. Preserve these flags
+  when merging upstream rebase construction. No custom locks/CAS/retries occur.
+- The caller owns cleanup of the private initial payload on every execution
+  path, including terminal signing and a native pause. Only the sequence editor
+  needs it; Git-owned continuation state survives cleanup. Tests use actual
+  Git and the serialized daemon route, preserving large full messages,
+  unrelated branch refs, harmless untracked files and native state cleanup.
+- Focused capture checks cover raw message bytes, ancestry/date order,
+  non-adjacent selections, root/detached history, merges, shallow parents,
+  staged/unstaged changes, changed cwd, stale/foreign plans and ignored-path
+  fingerprints. The GUI editor/default shortcut are integrated separately.
+
 ### Combine message persistence in native rebase
 
 - `daemon/combine_rebase.go` introduces an appended daemon kind and one mapping
