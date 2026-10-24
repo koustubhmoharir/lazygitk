@@ -1,6 +1,6 @@
 # Combine and graph keymap source audit
 
-Read-only source evidence for the paused final keybinding review. This records
+Source evidence for the approved keybinding implementation. This records
 existing behavior and integration seams; it does not claim the requested new
 commands already exist.
 
@@ -107,7 +107,9 @@ The combined description preserves every selected full message (subject and
 body), including the first, in ancestor-first order; the summary starts with
 the first subject. This is a selected-commit operation, independent of the
 cherry-pick mark buffer. `g c` replaces normal squash/fixup actions and remains
-unimplemented pending review and topology design.
+being implemented for linear history. The user confirmed non-adjacent
+selections with intervening commits preserved, refusing merges in the rewritten
+ancestry. Merges before the first selected commit need not be rewritten.
 
 The independent graph default is implemented in `pkg/config/fork_defaults.go`.
 The shared terminal harness explicitly retains branch-only history for existing

@@ -43,8 +43,9 @@ custom commands. Frequency persistence and sorting remain item 9.
    hunk, file and conflict paths. Implementation is authorized. Incorporate
    the latest user table, including Files-only commit Enter, Escape cancellation, combine `g c`, scoped Space, tree
    arrows, `d w`/`d p`/`d c`, `s h`/`s m`/`s s`/`s c`, `n b` and
-   `c y`/`c x`/`c p`. Keep Pull in a deliberate menu path. Define source-field
-   override projection for commands with several legacy aliases or context-specific fields.
+   `c y`/`c x`/`c p`. Keep Pull in a deliberate menu path. Verify the implemented source-field projection against the remaining handlers
+   and aliases before enabling it. Stable-ID paths override explicitly configured
+   legacy fields, followed by catalogue defaults; numbered jumps keep their targets.
    The stable-ID path configuration parser/schema is present; connect it through
    the projection and dispatcher before treating overrides as active.
 3. Integrate the opt-in ASCII command matching/collision normalization and add
@@ -63,8 +64,9 @@ custom commands. Frequency persistence and sorting remain item 9.
    marked/selected review, plus ancestry-based combine with an editable message.
    Combine must replace the first selected ancestor (not an unselected parent),
    preserve all selected full messages in ancestor-first order and leave
-   unselected history intact. Resolve non-adjacent/merge topology eligibility
-   before implementation; do not derive ancestry from graph row/date order.
+   unselected history intact. The first version supports non-adjacent selections on linear ancestry and
+   refuses selections containing or crossing merges (user confirmed). Derive
+   ancestry from Git parents, never graph row/date order.
    Retain native concurrency/overwrite protection and no implicit stash. Use
    [keymap-behavior-gaps.md](keymap-behavior-gaps.md) as source evidence, not proof
    that these flows are already implemented.

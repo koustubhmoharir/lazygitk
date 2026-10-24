@@ -42,6 +42,29 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Command identity and path projection
+
+- `gui/types/command_paths.go` keeps direct keys separate from sequential menu
+  paths and provides full labels. `gui/keymap/command_tree.go` compiles paths
+  without evaluating handlers or metadata: local routes shadow globals only at
+  the same complete path, not an entire shared prefix. Keep mode candidates
+  together for live applicability checks.
+- `gui/keymap/resolve_paths.go` resolves stable-ID overrides before explicitly
+  configured legacy fields, then the fork catalogue. Provenance uses the loader's
+  field-presence metadata, never equality to an old default. `legacy_fields.go`
+  carries view-specific exceptions; its generator scans upstream constructors
+  and legacy alias folding. Regenerate `legacy_fields_generated.go` after
+  changing source bindings or aliases and review exceptions during merges.
+- `gui/fork_command_projection.go` owns the pending normal-pane migration. It
+  splits shared upstream stage/patch/conflict keys into semantic actions with
+  live guards, preserves mouse routes, restricts Enter to Files, and uses a
+  read-only Files inspector. Explicit legacy mode overrides retain their
+  configured behavior. Numbered pane jumps retain their individual targets.
+  The projection and compiled dispatcher are not yet connected to the default
+  registration entry point; complete operation flows and terminal verification
+  before enabling them together.
+
+
 ### Command path configuration foundation
 
 - `UserConfig.CommandBindings` and its validation hook introduce paths keyed by

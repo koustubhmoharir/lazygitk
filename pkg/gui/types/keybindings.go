@@ -18,11 +18,17 @@ type Binding struct {
 	// Verb describes the action's semantics independently of its target.
 	Verb string
 	// VerbFunc resolves the semantic verb alongside CommandIDFunc when needed.
-	VerbFunc    func() string
-	ViewName    string
-	Handler     func() error
-	Keys        []gocui.Key
-	Description string
+	VerbFunc func() string
+	ViewName string
+	Handler  func() error
+	Keys     []gocui.Key
+	// CommandPaths are visible menu paths, not alternate single-key bindings.
+	// Keep Keys for direct shortcuts; each path here contains at least two keys.
+	CommandPaths [][]gocui.Key
+	// DefaultCommand enables fork applicability/no-op behavior. Explicit key
+	// overrides and custom commands retain their existing error semantics.
+	DefaultCommand bool
+	Description    string
 	// DescriptionFunc is used instead of Description if non-nil, and is useful for dynamic
 	// descriptions that change depending on context. Important: this must not be an expensive call.
 	// Note that you should still provide a generic, non-dynamic description in the Description field,

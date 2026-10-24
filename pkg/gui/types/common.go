@@ -209,11 +209,17 @@ const (
 )
 
 type CreateMenuOptions struct {
-	Title                      string
-	Prompt                     string // a message that will be displayed above the menu options
-	Items                      []*MenuItem
-	HideCancel                 bool
-	OnCancel                   func() error // called when the menu is dismissed without selecting an item
+	Title      string
+	Prompt     string // a message that will be displayed above the menu options
+	Items      []*MenuItem
+	HideCancel bool
+	OnCancel   func() error // called when the menu is dismissed without selecting an item
+	// BeforeAccept runs after disabled-item handling and before the menu is popped.
+	// Returning false consumes the press without popping or invoking its callback.
+	BeforeAccept func() bool
+	// BlockUnmatchedKeys consumes keys that continue a captured prefix menu but
+	// do not match any item accelerator, preventing inherited commands from firing.
+	BlockUnmatchedKeys         []gocui.Key
 	ColumnAlignment            []utils.Alignment
 	AllowFilteringKeybindings  bool
 	KeepConflictingKeybindings bool // if true, the keybindings that match essential bindings such as confirm or return will not be removed from menu items
@@ -272,6 +278,10 @@ type MenuSection struct {
 
 type DisabledReason struct {
 	Text string
+	// Inapplicable means the selection/context has no target for this verb,
+	// rather than an operation precondition failing. Default shortcuts consume
+	// these silently while menus may still explain why the action is unavailable.
+	Inapplicable bool
 
 	// When trying to invoke a disabled key binding or menu item, we normally
 	// show the disabled reason as a toast; setting this to true shows it as an
