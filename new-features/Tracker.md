@@ -9,16 +9,19 @@ defaults. **User review gate:** pause before implementing or activating the fina
 keybindings; the user wants to decide whether the proposed bindings are right.
 [keymap-design.md](keymap-design.md) and
 [keymap-allocation.md](keymap-allocation.md) remain proposals for that review.
-Space's staging role is agreed. Left/Right must collapse/expand the Files tree
-rather than switch panes; number keys remain available for pane switching.
+The latest user table reserves `d` for diff, `s` for reset/switch, `c` for
+cherry-pick and `u` for undo/redo. Enter commits globally from normal panes;
+dialogs/search/editors retain normal Enter behavior (confirmed by the user).
+Space stages only in Files and inspects elsewhere. Left/Right navigate the
+Files tree; number keys remain available for pane switching.
 
 Scope: one command meaning per default key/path across panes. ASCII command
 letters are case-insensitive; inapplicable actions consume their key without
 side effects or global fallback. Reserve Ctrl defaults for custom commands,
 while preserving normal text entry and terminal Enter/Tab byte aliases. Use
 visible accelerator menus for two-/three-letter paths. Keep working-tree and
-previous-version diff separate and directly accessible; Pull has no single-letter
-shortcut. Preserve explicit overrides and custom commands. Frequency persistence
+previous-version diff separate as `d w` / `d p`, add pasted-hash comparison
+on `d c`; Pull has no single-letter shortcut. Preserve explicit overrides and custom commands. Frequency persistence
 and sorting remain item 9.
 
 ## Remaining tasks for item 8
@@ -28,28 +31,37 @@ and sorting remain item 9.
    The TortoiseGit guide and concrete verb/prefix table are recorded; the table
    names every instantiated operation ID and the known dynamic variants.
    Present the final proposal for user review before implementation. Incorporate
-   agreed Space staging and Files-tree Left/Right navigation. Preserve direct `w`/`v`
-   comparisons and Pull's deliberate menu path. Define source-field override
-   projection for commands with several legacy aliases or context-specific fields.
+   the latest user table, including global commit Enter, scoped Space, tree
+   arrows, `d w`/`d p`/`d c`, `s h`/`s m`/`s s`/`s c`, `n b` and
+   `c y`/`c x`/`c p`. Keep Pull in a deliberate menu path. Define source-field
+   override projection for commands with several legacy aliases or context-specific fields.
 3. Integrate the opt-in ASCII command matching/collision normalization and add
    inactive-key consumption at small central integration points. The command
    matcher is implemented independently of exact keys and input events; the
    loader records explicit YAML field presence separately from values/legacy
    alias folding. The application still uses its existing registration path.
    Preserve literal input, search/filter text, subprocess typing, explicit
-   override behavior and custom
-   Ctrl commands; retain genuine errors after an action is invoked.
-4. Add visible two-/three-key command menus with captured origin/repository and
+   override behavior and custom Ctrl commands; retain genuine errors after an action is invoked.
+4. After user review, extend the captured operation flows required by the
+   requested bindings: pasted-hash diff for commits/files, global commit entry,
+   full-refresh/re-render F5 without fetch, mandatory discard confirmation,
+   explanatory rebase/merge/reset confirmation with preselected reset mode,
+   unified selected branch/commit checkout and ref-only branch placement,
+   idempotent cherry-pick mark/unmark and exact-list marked/selected review.
+   Retain native concurrency/overwrite protection and no implicit stash. Use
+   [keymap-behavior-gaps.md](keymap-behavior-gaps.md) as source evidence, not proof
+   that these flows are already implemented.
+5. Add visible two-/three-key command menus with captured origin/repository and
    selection checks. Keep prefixes free of mutations and hidden timing state;
    define nested Esc/back behavior and safely handle invalid continuations,
    focus/repository changes and popup replacement. Expose leaves independently
    through `?` and show their complete paths.
-5. Apply the reviewed defaults across Linux/macOS/Windows. Remove core Ctrl
+6. Apply the reviewed defaults across Linux/macOS/Windows. Remove core Ctrl
    defaults and case-only distinctions, resolve navigation/action collisions,
    retain direct history/file comparisons, and leave user overrides explicit.
    Update command hints, generated cheatsheets/schema, usage and a migration
    table; maintain the merge guide at integration changes.
-6. Verify the default key × pane/mode matrix: case parity, no core Ctrl defaults,
+7. Verify the default key × pane/mode matrix: case parity, no core Ctrl defaults,
    unique paths, disabled no-ops, no parent/global fallback, prefix cancellation
    and captured targets, editors/filtering, custom commands/overrides and actual
    side effects. Run generation, formatting, builds, focused/full short tests,

@@ -23,55 +23,52 @@ this design; this fork's user requirements determine the actual keys.
 One complete default key/path has one meaning across normal panes. Selected
 object types may differ; unrelated operations may not share that path. ASCII
 uppercase and lowercase command letters are aliases. Punctuation stays literal.
-Menus form visible namespaces: `g c` means checkout, not the meaning of `c`
-pressed by itself. No invisible chord buffer or inter-key timeout is needed.
+Menus form visible namespaces: `d w` means working-tree diff, while `d`
+opens the diff group. No invisible chord buffer or inter-key timeout is needed.
 
-Space staging is agreed: stage/unstage selected working files or working-tree
-diff lines, otherwise do nothing in normal panes. The proposed Enter role means
-following the selected item: branch → commit list, commit → changed-file list,
-file → diff. It must not check out a ref, apply a stash or switch worktrees.
-Modal Enter confirms/executes, Esc
-cancels/returns, and editable inputs retain normal typing. These are explicit
-modal/input roles, not permission for normal pane commands to change meaning.
+The latest user-specified bindings in the [allocation table](keymap-allocation.md)
+replace earlier proposals. Space is an explicit scoped exception: in Files it
+stages/unstages the selected files/directory/root; elsewhere it inspects details.
+Enter opens the commit flow globally from every normal pane. The user confirmed
+that dialogs, search and editors keep their normal Enter/input behavior. Modal
+Enter confirms/executes, Esc cancels/returns, and multiline Enter inserts a newline.
 
-| Key | Proposed normal-pane meaning |
+| Key/path | Normal-pane meaning |
 | --- | --- |
-| `w` | Compare selected historical version with the working tree |
-| `v` | Compare selected historical version with its previous version |
-| `p` | Push the selected/current local branch, as labeled in the review |
-| `f` | Explicit fetch |
-| `r` | Rename/reword the selected object |
-| `e` | Edit the selected object's editable content |
-| `o` | Open the selected object externally |
-| `d` | Delete/drop the selected object; never discard working-file edits |
-| `x` | Discard selected changes; never substitute ref/commit deletion |
-| `a` | Amend using the selected/current commit, explicitly labeled |
-| `b` | Rebase current onto the selected source |
-| `m` | Merge the selected source into current |
-| `z` | Reset current HEAD to the selected/reviewed source |
-| `c` | Create a commit from prepared changes |
-| `i` | Ignore the selected working-tree path |
-| `u` | Undo the last applicable Git operation |
-| `n` | Open creation choices |
-| `g` | Open Git-operation choices |
-| `s` | Open staging choices |
+| `d w` | Diff selected historical version with working tree |
+| `d p` | Diff selected historical version with previous commit |
+| `d c` | Diff with a commit specified by pasted partial/full hash |
+| `p` / `f` | Push / explicit fetch |
+| F2 | Rename/reword selected object |
+| `e` / `o` | Edit selected content / open selected object externally |
+| F5 | Refresh repository state and re-render every pane; no fetch |
+| Delete | Delete/drop selected object |
+| `x` | Discard selected changes, with confirmation |
+| `a` | Amend using selected/current commit, explicitly labeled |
+| `r` / `m` | Rebase current onto / merge into current from selected source, with explanatory confirmation |
+| `s h` / `s m` / `s s` | Hard / mixed / soft reset current branch to selected commit, with confirmation |
+| `s c` | Switch/checkout selected branch/commit, with new-name and move-non-current options |
+| `n b` | Create/move branch at selected branch/commit without checkout |
+| Enter | Open commit flow globally from every normal pane |
+| `i` | Ignore/exclude selected working-tree path |
+| `u u` / `u r` | Undo / redo |
+| `q` | Quit |
+| `?` / `/` / `:` | Discover commands / search / enter shell command |
+| Space in Files | Toggle staging; selecting root covers all files; no `s t` or stage-all shortcut |
+| Space elsewhere | Inspect selected details, with no Git mutation |
+| Left in Files | Collapse expanded directory; otherwise select visible parent |
+| Right in Files | Expand collapsed directory; otherwise select first child |
+| `c y` / `c x` | Mark / unmark selected commits for cherry-pick, without toggling unrelated marks |
+| `c p` | Cherry-pick marked or selected commits after exact-list confirmation |
 | `y` | Open copy choices |
-| `t` | Open view/navigation/tool choices |
-| `q` | Quit the application |
-| `j` / `k` | Next / previous item, also available on Down / Up |
-| `h` / `l` | Previous / next pane; number keys also switch panes |
-| Left / Right | Collapse / expand the Files tree; never switch panes there |
-| Space | Toggle staging in working-tree files/diffs; otherwise no-op (agreed) |
-| Enter | Inspect/open details; otherwise no-op |
-| Shift+Up / Shift+Down | Extend selection where supported |
-| Home / End | First / last item |
-| PageUp / PageDown | Previous / next page in the focused view |
-| Alt+Up / Alt+Down | Scroll main output without moving side selection |
-| F3 / Shift+F3 | Next / previous search match |
-| F5 | Explicit refresh |
-| `?` | Command palette |
-| `/` | Search |
-| `:` | Shell-command prompt |
+
+Remaining proposed navigation: `v` inspects selected details in all normal panes,
+including Files where Space stages; `j`/`k` and Up/Down move between items;
+`h`/`l`, Tab/Backtab and number keys switch panes; Shift+Up/Down extend selection;
+Home/End move to first/last item; PageUp/PageDown page the focused view;
+Alt+Up/Down scroll main output; F3/Shift+F3 navigate search matches. These
+remaining choices require review; physical Left/Right in Files follow the user's
+explicit tree behavior and must not fall through to pane switching.
 
 These are proposed meanings, not a completed allocation of every action. The
 review must verify each handler's actual effect; metadata synonyms do not turn
@@ -80,36 +77,21 @@ must be split or given separate paths. A path is a no-op where the operation
 has no supported target. Native precondition/overwrite failures after invocation
 remain visible.
 
-## Proposed groups
+## Groups and displaced operations
 
-| Group/path | Meaning |
-| --- | --- |
-| `n b p`, `n b c` | Create/move a branch pointer here; create and check out a new branch |
-| `n t`, `n w` | Create tag, worktree |
-| `n r`, `n f`, `n s` | Add remote, fork remote, submodule |
-| `g c s`, `g c n`, `g c p`, `g c f` | Checkout selected, by name, previous, or explicitly force checkout |
-| `g f` | Fast-forward/update the selected branch |
-| `g l` | Pull/update choices; never a one-letter Pull default |
-| `g x` | Fixup choices |
-| `g a` | Apply the selected stash |
-| `g e …` | Editor-based commit, reword, attributes and hunk choices |
-| `g b` | Bisect choices |
-| `g i` | Interactive rebase choices |
-| `g t` | Tracking/upstream choices |
-| `t r w` | Switch to the selected existing worktree |
-| `g u r` | Redo |
-| `g u …` | Explicit submodule update/initialization choices |
-| `g p …` | Pull-request operations |
-| `g q …` | Squash/autosquash operations |
-| `g r …` | Advanced rebase/base operations |
-| `g s …` | Explicit stash operations |
-| `g k …` | Collect/apply/clear cherry-pick selections |
-| `g o` | Continue/skip/abort through the operation's review menu |
-| `g m …` | Explicit commit movement operations |
-| `g h …` | Custom patch and conflict-resolution operations; separate from staging |
-| `s …` | Stage/unstage selected/all changes |
-| `y …` | Copy identifier/path/message/content, with explicit format choices |
-| `t …` | View/diff/log settings, sorting, filters, navigation and repository switching |
+`d` is the diff group; `s` contains reset/switch; `c` contains cherry-pick marking
+and application; `u` contains undo/redo. `n` contains creation, `y` copying,
+`g` less common Git operations and `t` view/navigation/tools. Prefixes do nothing
+until the user chooses a leaf. The two-letter leaves `n b` and `s c` open their
+parameter/review flows; there are no competing chord descendants beneath them.
+
+The previous `w`/`v` diff shortcuts, `r` rename, single `d` deletion, `c` commit,
+`s t`/`s a` staging, `g k …` cherry-pick and `g u r` redo assignments are removed.
+F2 is reserved for rename/reword, so editor options move to proposed F4; Delete
+also replaces the suggestions-list delete shortcut. Checkout variants belong in
+`s c` options/palette entries; historical-file restoration remains a separate
+proposed `g c f` action. Stage-all remains discoverable, without a default key;
+working-tree line staging can use proposed `g h s`/`g h u` or the palette.
 
 The [allocation draft](keymap-allocation.md) assigns concrete third letters and
 names the existing operation IDs. Verify the handler/legacy-field projection

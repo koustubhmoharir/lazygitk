@@ -5,6 +5,9 @@ Use this alongside the [instantiated keys](keymap/bindings.json),
 and [dispatch trace](key-dispatch-audit.md). This records source-reviewed mode
 differences that a fresh GUI snapshot cannot evaluate. It is an audit baseline,
 not a claim that the proposed keymap is implemented or exhaustively tested.
+This is the pre-migration baseline; the latest user requirements in
+[keymap-allocation.md](keymap-allocation.md) supersede earlier migration
+suggestions, including Enter/Space roles and the diff/reset/cherry-pick paths.
 
 ## Normal panes and selected targets
 
@@ -15,7 +18,7 @@ context parents identify history sources; they do not inherit keyboard bindings.
 
 | Pane | Operation target and important existing overloads | Migration constraint |
 | --- | --- | --- |
-| Files | Selected working paths/range; Space stages, except a single dialog-only conflict opens resolution choices; `d` discards; `r` refreshes | Separate stage, conflict choices and discard. Refresh is an application verb. Enter inspects a diff or expands a directory. |
+| Files | Selected working paths/range; Space stages, except a single dialog-only conflict opens resolution choices; `d` discards; `r` refreshes | Separate stage, conflict choices and discard. Refresh is an application verb. The latest proposal uses global Enter for commit and `v` for inspection; Left/Right navigate the tree. |
 | Local branches | Selected refs/range; Space checks out, Enter views history; rename and rebase use opposite cases | Checkout gets its own path; preserve captured selected-branch push/update/delete flows. |
 | Remote branches | Selected full remote ref; Space checks out/creates a local branch, Enter views history | Keep source-ref identity; creation and checkout are distinct from inspection. |
 | Remotes | Selected named remote; Enter views remote branches; fetch differs from repository-wide fetch in scope | Fetch may share a verb, with its target labeled. Remote creation has a distinct creation leaf. |

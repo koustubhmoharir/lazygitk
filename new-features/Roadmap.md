@@ -19,8 +19,9 @@ Supporting evidence: [repository map](repository-map.md) and
   Ctrl. Two- or three-letter bindings use menus on the first key, with nested
   menus if needed; no new key-chord engine is required. Text entry and menu
   navigation retain normal modal behavior.
-- Previous-commit diff and working-tree diff are separate actions, not target
-  choices in a menu. Working-tree diff gets priority for both a whole commit
+- Previous-commit diff and working-tree diff are separate actions. The latest
+  keymap uses separate leaves `d p` and `d w` in the visible diff group;
+  `d c` adds comparison to a commit specified by pasted partial/full hash. Working-tree diff gets priority for both a whole commit
   and one historical file. A third action compares a historical file with an
   explicitly chosen working-directory file, regardless of rename detection.
 - Disable automatic fetch, periodic file refresh, branch forwarding, and
@@ -191,9 +192,10 @@ must use their wait mode; unsupported symlink/gitlink comparisons report a reaso
 Extend the existing external-difftool machinery in `BasicCommitsController`
 and `CommitFilesController` with distinct command IDs, `?` entries and bindings
 for **Diff with previous commit** and **Diff with working tree**. Do not put a
-target-choice menu between the shortcut and comparison. Prioritize working-tree
-diff in the bottom hints with the same unmodified `w` in commit and historical-
-file lists; `v` selects the previous version. Uppercase invokes the same actions.
+shared target-choice prompt after the complete shortcut. The delivered
+provisional defaults are `w` / `v`; the user's final-keymap proposal in item 8
+replaces these with distinct `d w` / `d p` paths in commit and historical-file
+lists and adds `d c` for a pasted commit hash. Uppercase invokes the same actions.
 The fork overlay clears their colliding defaults. No new Ctrl binding is added;
 the remaining legacy Ctrl bindings are addressed by the full keymap milestone.
 
@@ -577,28 +579,49 @@ Ensure Esc, focus/repo changes, popup replacement and invalid continuation do
 not invoke another command or replay letters into a different pane. Prefix
 menus need no inter-key timeout or hidden chord state.
 
-Give working-tree diff a direct one-letter shortcut in commit and file lists;
-the provisional `w` and previous-version `v` are separate direct actions, not
-leaves in a diff-target menu. Move conflicting worktree/new/navigation bindings
-into suitable groups during the full audit. Fetch, fast-forward, fixup, rebase,
-push/pull, checkout, rename, refresh and staging all need distinct keys or
-complete menu paths. A shared verb can act on different selected object types.
-Audit collisions among globals, parents and locals, not just within one view.
-Pull must not have a single-letter default shortcut. Keep it in a multi-key
-menu path and independently accessible from `?`; prefer direct keys for more
-frequently used operations. Do not add a shortcut that immediately runs Pull
-as the default action on opening that group.
+The latest user-specified key table is authoritative in
+[keymap-allocation.md](keymap-allocation.md); displaced defaults must move
+without case-only or prefix/leaf conflicts. Diff uses `d w` (working tree),
+`d p` (previous commit) and `d c` (pasted partial/full commit hash), for both a
+whole commit and a selected historical file. These replace the provisional
+single-letter `w`/`v` defaults. The first `d` opens a visible group; each complete
+path is a separate action. Validate pasted hashes unambiguously and preserve
+captured selection and labeled endpoints through the prompt.
 
-Known changes include splitting `r` (files refresh / branch rebase / commit
-rename), `f` (fetch / fast-forward / fixup), and `c` (commit / checkout by name /
-fixup message / restore historical file). Space's agreed normal-pane meaning
-is staging/unstaging selected working files or working-tree diff lines; it does
-nothing elsewhere. Left/Right in the Files pane must collapse/expand the tree,
-not switch panes. Number keys remain available for switching panes. Proposed
-Enter inspection means opening a branch's commits, a commit's changed files,
-or a file's diff; the final navigation allocation remains subject to user review.
-`n`/`N` are new/search-next/diff-file-navigation collisions requiring resolution;
-both cases must now resolve to one command meaning.
+Use `p` push, `f` fetch, F2 rename/reword, `e` edit, `o` open, F5 full repository
+refresh and every-pane re-render without fetch, Delete delete/drop, `x` discard
+with mandatory confirmation, `a` amend, `r` rebase and `m` merge. Rebase/merge
+confirmation explains current destination, selected source and consequences.
+Pull must have no single-letter default; keep its proposed `g l` path and
+independent palette entry.
+
+`s h` / `s m` / `s s` select hard/mixed/soft reset of current branch to selected
+commit, with confirmation explaining mode effects. `s c` switches/checks out
+the selected branch/commit, with options to name a new branch or explicitly
+approve moving an existing non-current branch. `n b` creates/moves a branch at
+the selected branch/commit without checkout. Reuse captured target/backend
+flows and native Git concurrency/dirty-file protections. Reserved/occupied
+branches remain protected; current-branch relocation belongs to reset.
+
+Enter opens the commit flow globally regardless of focused normal pane. The
+user explicitly confirmed that dialogs, search and editors retain their normal
+Enter behavior. Space is an agreed scoped exception: only in Files it toggles
+staging (including directory/root selection); on other selections it inspects
+details without mutation. Do not add `s t` or a stage-all shortcut: selecting
+the tree root covers all files. Left in Files collapses an expanded directory,
+otherwise selects its visible parent; Right expands a collapsed directory,
+otherwise selects its first child. They must not switch panes. Number keys
+remain available for pane switching. Handle filtered/compressed trees and
+root/leaf/empty cases safely.
+
+`c y` marks selected commits idempotently; `c x` unmarks only selected commits;
+`c p` cherry-picks marked or selected commits after a confirmation naming the
+exact ordered commits and current destination. Do not reuse upstream toggle,
+reset-all or count-only confirmation as equivalents. No implicit stash. The
+proposed review offers a marked/selected source choice when both exist.
+`u u` / `u r` undo/redo, `i` ignores, `q` quits, `?` discovers commands, `/` searches,
+`:` enters a command, and `y` opens copy choices. Remaining navigation and less
+common operation paths stay proposed until final review.
 
 For a reserved action key whose verb is inapplicable, consume the event with no
 side effect. Do not fall through to an unrelated parent/global binding, show
@@ -694,8 +717,9 @@ they do not validate a completed UI or implementation.
 The earlier questions are answered under “Agreed direction” and the relevant
 milestones. Before milestone 8, produce the complete case-insensitive key and
 menu-path table, including Space semantics, migration from uppercase/Ctrl
-defaults, and direct shortcuts for the two frequent diff actions. No new
-behavioral confirmation is needed to continue planning from these decisions.
+defaults, and the separate `d w`/`d p`/`d c` diff actions. The user has requested
+review of the final binding table before implementation/activation; continue
+planning without treating the draft as approved.
 
 This remains an extensible backlog: add further features with target semantics,
 repository evidence, dependencies, and acceptance tests. No application feature
