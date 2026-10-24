@@ -66,9 +66,10 @@ custom commands. Frequency persistence and sorting remain item 9.
    (default local/remote/tag checkout projection now offers captured naming
    choices; local/remote lists now expose captured ref-only placement;
    verify these routes with the enabled profile),
-   Escape mark clearing and integration of exact-list marked/selected review
-   with the captured native cherry-pick planner, preserving upstream paused-
-   rebase support and post-pick buffer behavior, plus ancestry-based combine
+   Escape mark clearing and final default-profile verification of the integrated
+   exact-list marked/selected cherry-pick review (focused and terminal checks
+   preserve upstream paused-rebase support and post-pick buffer behavior),
+   plus ancestry-based combine
    with an editable message.
    Combine must replace the first selected ancestor (not an unselected parent),
    preserve all selected full messages in ancestor-first order and leave
