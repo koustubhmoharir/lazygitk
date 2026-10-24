@@ -31,7 +31,7 @@ diff. Dialogs, search and editors retain normal Enter/input behavior.
 | `o` | Open selected object externally | `file.open`, `worktree.open-editor`, `commit.open-browser` |
 | F5 | Refresh repository state and re-render every pane, without fetch | `app.refresh`; replace any Files-only refresh shadowing this command |
 | Delete | Delete/drop selected object | `branch.delete-menu`, `remote-branch.delete`, `remote.delete`, `tag.delete-menu`, `stash.drop`, `commit.drop`, `submodule.delete`, `worktree.remove-menu` |
-| `x` | Discard changes in selected object, with confirmation | `file.discard-menu`, `commit.discard-file-changes`, `diff.discard-worktree-selection`, `commit.discard-selection` |
+| `x` | Discard changes in selected object, with confirmation; staged diff only unstages, without confirmation | `file.discard-menu`, `commit.discard-file-changes`, `diff.discard-worktree-selection`, `commit.discard-selection` |
 | `a` | Amend using selected/current commit, as labeled | `commit.amend-head`, `commit.amend-selected` |
 | `r` | Rebase current onto selected source, with explanatory confirmation | `branch.rebase-current-onto-selected`, `branch.rebase-current-onto-selected-commit` |
 | `m` | Merge selected source into current, with explanatory confirmation | `branch.merge-selected-into-current` |
@@ -293,8 +293,9 @@ and selection where valid. It must not fetch or trigger another Git mutation.
 Static `diff.primary-selection` / `diff.discard-selection` are metadata fallbacks,
 not default command routes. Resolve the dynamic IDs before assigning a path,
 and split working-tree staging, patch inclusion and commit rewrite guards.
-`file.toggle-stage` similarly needs its conflict mode separated. The unstage
-discard alias has no `x` route: use staging to unstage. No core command gets a
+`file.toggle-stage` similarly needs its conflict mode separated. The staged-diff discard alias retains `x` as immediate unstage, explicitly
+confirmed by the user; `g h u` also unstages. Destructive unstaged discard
+always confirms. No core command gets a
 Ctrl default; conventional text-editing controls retain their input roles.
 
 ## Remaining review

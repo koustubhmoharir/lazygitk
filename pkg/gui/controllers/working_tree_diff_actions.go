@@ -90,19 +90,12 @@ func (self *WorkingTreeDiffActions) DiscardSelection(pane types.DiffPaneContext,
 		return nil
 	}
 
-	// Either way the change is applied backwards; which side it is applied to decides
-	// how destructive that is. On the staged side it goes to the index; this is the
-	// same as unstaging, so nothing is lost. On the unstaged side it goes to the
-	// working tree, where the change is gone for good, so we ask first.
-	return self.c.ConfirmIf(!onStagedSide && !self.c.UserConfig().Gui.SkipDiscardChangeWarning,
-		types.ConfirmOpts{
-			Title:  self.c.Tr.DiscardChangeTitle,
-			Prompt: self.c.Tr.DiscardChangePrompt,
-			HandleConfirm: func() error {
-				return self.applyDiffLineSelection(pane, firstBufferLine, linesByFile, onStagedSide,
-					git_commands.ApplyPatchOpts{Reverse: true, Cached: onStagedSide})
-			},
-		})
+	// Fork: keep staged-side unstage immediate, but replace the optional
+	// upstream worktree warning with mandatory repository-pinned approval.
+	return self.confirmDiffDiscard(onStagedSide, func() error {
+		return self.applyDiffLineSelection(pane, firstBufferLine, linesByFile, onStagedSide,
+			git_commands.ApplyPatchOpts{Reverse: true, Cached: onStagedSide})
+	})
 }
 
 // DiscardSelectionDisabledReason is nil: a change of the working tree can always be

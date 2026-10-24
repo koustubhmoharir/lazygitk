@@ -75,3 +75,22 @@ func TestForkProjectionContextControlsAndExplicitCommandOverride(t *testing.T) {
 	assert.Equal(t, []string{"<f6>"}, bindings[5].KeyLabels())
 	assert.False(t, bindings[5].DefaultCommand)
 }
+
+func TestForkProjectionStagedDiscardAliasKeepsImmediateUnstage(t *testing.T) {
+	gui := newForkKeymapTestGui(t)
+	bindings, err := gui.projectForkBindings([]*types.Binding{{CommandID: "diff.discard-selection", ViewName: "secondary", CommandIDFunc: func() string { return "diff.unstage-selection" }}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	found := false
+	for _, b := range bindings {
+		if b.CommandID == "diff.unstage-selection" {
+			found = true
+			assert.Equal(t, []string{"x"}, b.KeyLabels())
+			assert.Nil(t, b.GetDisabledReason())
+		} else {
+			assert.True(t, b.GetDisabledReason().Inapplicable)
+		}
+	}
+	assert.True(t, found)
+}

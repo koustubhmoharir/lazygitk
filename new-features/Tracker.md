@@ -17,7 +17,9 @@ search navigation are approved. Escape exits marking mode and clears all
 cherry-pick marks; remove the separate `c a` shortcut. `g c` combines selected
 commits at their first selected ancestor, replacing squash/fixup, with editable
 first subject and all full messages in ancestor-first order (confirmed).
-Space stages only in Files and inspects elsewhere. Left/Right navigate the
+Space stages only in Files and inspects elsewhere. In the staged built-in diff,
+`x` only unstages and does not confirm (user clarified); destructive unstaged
+discard still always confirms. Left/Right navigate the
 Files tree; number keys remain available for pane switching.
 
 The independent full-graph default uses `git.log.showWholeGraph: true` before
@@ -57,7 +59,7 @@ custom commands. Frequency persistence and sorting remain item 9.
    override behavior and custom Ctrl commands; retain genuine errors after an action is invoked.
 4. Extend the captured operation flows required by the
    requested bindings: Files-only commit Enter,
-   full-refresh/re-render F5 without fetch, mandatory discard confirmation,
+   full-refresh/re-render F5 without fetch,
    explanatory rebase/merge confirmation,
    unified selected branch/commit checkout and ref-only branch placement,
    idempotent cherry-pick mark/unmark, Escape mark clearing and exact-list

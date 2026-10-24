@@ -1001,6 +1001,7 @@ type TranslationSet struct {
 	HeadDetachedAt                        string
 	DiscardChangeTitle                    string
 	DiscardChangePrompt                   string
+	ForkDiscardChangePrompt               string
 	DiscardLinesFromCommitTitle           string
 	DiscardLinesFromCommitPrompt          string
 	DiscardLinesFromCommitPromptWithReset string
@@ -2435,6 +2436,7 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchUnknown:                            "Branch unknown",
 		HeadDetachedAt:                           "HEAD detached at {{.hash}}",
 		DiscardChangeTitle:                       "Discard change",
+		ForkDiscardChangePrompt:                  "Discard the selected unstaged changes from the working tree? This cannot be undone.",
 		DiscardChangePrompt:                      "Are you sure you want to discard this change (git reset)? It is irreversible.\nTo disable this dialogue set the config key of 'gui.skipDiscardChangeWarning' to true",
 		DiscardLinesFromCommitTitle:              "Discard lines from commit",
 		DiscardLinesFromCommitPrompt:             "Are you sure you want to discard the selected lines from this commit?",

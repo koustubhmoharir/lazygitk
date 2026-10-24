@@ -590,7 +590,7 @@ captured selection and labeled endpoints through the prompt.
 
 Use `p` push, `f` fetch, F2 rename/reword, `e` edit, `o` open, F5 full repository
 refresh and every-pane re-render without fetch, Delete delete/drop, `x` discard
-with mandatory confirmation, `a` amend, `r` rebase and `m` merge. Rebase/merge
+with mandatory confirmation (except immediate unstage in the staged diff), `a` amend, `r` rebase and `m` merge. Rebase/merge
 confirmation explains current destination, selected source and consequences.
 Pull must have no single-letter default; keep its proposed `g l` path and
 independent palette entry.

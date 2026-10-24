@@ -42,6 +42,22 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Diff discard approval and staged unstage exception
+
+- `WorkingTreeDiffActions.DiscardSelection` delegates confirmation to
+  `controllers/fork_diff_discard.go`. The staged diff retains upstream's
+  immediate unstage behavior, explicitly requested by the user. Destructive
+  unstaged discards always confirm, regardless of the upstream skip-warning
+  setting, with the repository instance/generation checked before application.
+- `fork_command_projection.go` exposes the staged discard handler as an `x`
+  alias of the same unstage operation while retaining the normal unstage path.
+  Keep that live mode guard separate from true worktree discard and historical
+  commit rewrite. This is a documented user-approved key meaning exception.
+- Preserve the fork prompt: upstream's old message suggests disabling the
+  optional warning, which does not apply to this path. Focused tests cover both
+  warning settings, cancellation, real errors and repository changes.
+
+
 ### Directional tree navigation
 
 - `filetree/directional_navigation.go` handles visible trees independently of

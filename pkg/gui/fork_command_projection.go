@@ -24,7 +24,7 @@ var forkCommandVariants = map[string][]forkCommandVariant{
 		{"patch.remove-selection", "remove-from-patch"},
 	},
 	"diff.discard-selection": {
-		{"diff.discard-worktree-selection", "discard"}, {"commit.discard-selection", "discard-from-commit"},
+		{"diff.discard-worktree-selection", "discard"}, {"commit.discard-selection", "discard-from-commit"}, {"diff.unstage-selection", "unstage"},
 	},
 }
 
@@ -108,6 +108,11 @@ func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string, lega
 		binding.Tag = ""
 	}
 	if !explicit {
+		// User-approved exception: x in the staged diff keeps upstream's
+		// immediate unstage operation, alongside the explicit unstage path.
+		if sourceID == "diff.discard-selection" && binding.CommandID == "diff.unstage-selection" {
+			paths = [][]gocui.Key{{gocui.NewKeyRune('x')}}
+		}
 		if binding.CommandID == "commit.create" && binding.ViewName != "files" {
 			paths = nil
 		}
