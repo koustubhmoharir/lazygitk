@@ -15,8 +15,9 @@ together when an item is finished.
 - There is no hurry. Aim for excellent code quality; always prefer a correct,
   difficult solution to a hack. Keep designs clear and maintainable.
 - Focus on usability: this fork exists to solve upstream usability problems.
-- Keep the user in control. Present meaningful choices in modal flows with
-  sensible defaults; do not silently choose behavior for the user. Respect
+- The features should be designed to keep the application user in control.
+  Present meaningful choices in modal flows with sensible defaults;
+  do not let the application silently choose behavior for the user. Respect
   choices already recorded in the roadmap and tracker.
 - For any design or implementation question, first consult TortoiseGit's
   behavior, documentation, or source as a guide. Present unresolved choices
@@ -24,5 +25,5 @@ together when an item is finished.
 - Use the `justfile` recipes for generation, formatting, builds, tests and lint.
   Keep commits small and verified, including their tracker and merge-guide
   updates. Commit completed work; refine existing commits with reviewable
-  `fixup!` commits and leave them unsquashed. Include a model co-author trailer.
+  `fixup!` commits and leave them unsquashed.
 - Do not create pull requests.
