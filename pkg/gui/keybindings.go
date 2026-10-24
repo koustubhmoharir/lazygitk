@@ -458,7 +458,11 @@ func (gui *Gui) SetKeybinding(binding *types.Binding) {
 	}
 
 	for _, key := range binding.Keys {
-		gui.g.SetKeybinding(binding.ViewName, key, handler)
+		if binding.DefaultCommand && !forkMouseKey(key) {
+			gui.g.SetCommandKeybinding(binding.ViewName, key, handler)
+		} else {
+			gui.g.SetKeybinding(binding.ViewName, key, handler)
+		}
 	}
 }
 
@@ -469,6 +473,12 @@ func (gui *Gui) SetMouseKeybinding(binding *gocui.ViewMouseBinding) {
 func (gui *Gui) callKeybindingHandler(binding *types.Binding) error {
 	if binding.GetDisabledReason != nil {
 		if disabledReason := binding.GetDisabledReason(); disabledReason != nil {
+			// Fork defaults consume inapplicable actions instead of falling
+			// through to a different pane/global meaning. Explicit overrides
+			// retain upstream disabled/error dispatch behavior.
+			if binding.DefaultCommand && (disabledReason.Inapplicable || disabledReason.AllowFurtherDispatching) {
+				return nil
+			}
 			if disabledReason.AllowFurtherDispatching {
 				return &types.ErrKeybindingNotHandled{DisabledReason: disabledReason}
 			}

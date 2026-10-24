@@ -50,13 +50,13 @@ func (self *ListControllerTrait[T]) require(callbacks ...func() *types.DisabledR
 func (self *ListControllerTrait[T]) singleItemSelected(callbacks ...func(T) *types.DisabledReason) func() *types.DisabledReason {
 	return func() *types.DisabledReason {
 		if self.context.GetList().AreMultipleItemsSelected() {
-			return &types.DisabledReason{Text: self.c.Tr.RangeSelectNotSupported}
+			return &types.DisabledReason{Text: self.c.Tr.RangeSelectNotSupported, Inapplicable: true}
 		}
 
 		var zeroValue T
 		item := self.getSelectedItem()
 		if item == zeroValue {
-			return &types.DisabledReason{Text: self.c.Tr.NoItemSelected}
+			return &types.DisabledReason{Text: self.c.Tr.NoItemSelected, Inapplicable: true}
 		}
 
 		for _, callback := range callbacks {
@@ -74,7 +74,7 @@ func (self *ListControllerTrait[T]) itemRangeSelected(callbacks ...func([]T, int
 	return func() *types.DisabledReason {
 		items, startIdx, endIdx := self.getSelectedItems()
 		if len(items) == 0 {
-			return &types.DisabledReason{Text: self.c.Tr.NoItemSelected}
+			return &types.DisabledReason{Text: self.c.Tr.NoItemSelected, Inapplicable: true}
 		}
 
 		for _, callback := range callbacks {
@@ -91,7 +91,7 @@ func (self *ListControllerTrait[T]) itemsSelected(callbacks ...func([]T) *types.
 	return func() *types.DisabledReason {
 		items, _, _ := self.getSelectedItems()
 		if len(items) == 0 {
-			return &types.DisabledReason{Text: self.c.Tr.NoItemSelected}
+			return &types.DisabledReason{Text: self.c.Tr.NoItemSelected, Inapplicable: true}
 		}
 
 		for _, callback := range callbacks {

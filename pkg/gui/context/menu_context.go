@@ -4,7 +4,6 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/style"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
@@ -67,6 +66,8 @@ type MenuViewModel struct {
 	filterAsYouType           bool
 	filterStarted             bool
 	onCancel                  func() error
+	beforeAccept              func() bool
+	blockUnmatchedKeys        []gocui.Key
 	*FilteredListViewModel[*types.MenuItem]
 }
 
@@ -82,11 +83,7 @@ func NewMenuViewModel(c *ContextCommon) *MenuViewModel {
 		func() []*types.MenuItem { return self.menuItems },
 		func(item *types.MenuItem) []string {
 			if filterKeybindings {
-				// Allow searching all configured keybindings of each item, even though only the
-				// first one is shown in the menu.
-				return lo.Map(item.Keys, func(k gocui.Key, _ int) string {
-					return config.LabelForKey(k)
-				})
+				return item.KeyLabels()
 			}
 
 			if item.FilterColumns != nil {
@@ -117,6 +114,14 @@ func (self *MenuViewModel) SetMenuItems(items []*types.MenuItem, columnAlignment
 
 func (self *MenuViewModel) SetOnCancel(onCancel func() error) {
 	self.onCancel = onCancel
+}
+
+func (self *MenuViewModel) SetBeforeAccept(beforeAccept func() bool) {
+	self.beforeAccept = beforeAccept
+}
+
+func (self *MenuViewModel) SetBlockUnmatchedKeys(keys []gocui.Key) {
+	self.blockUnmatchedKeys = append([]gocui.Key(nil), keys...)
 }
 
 func (self *MenuViewModel) GetPrompt() string {
@@ -182,8 +187,12 @@ func (self *MenuViewModel) GetDisplayStrings(_ int, _ int) [][]string {
 		}
 
 		keyLabel := ""
-		if len(item.Keys) > 0 {
-			keyLabel = style.FgCyan.Sprint(config.LabelForKey(item.Keys[0]))
+		labels := item.KeyLabels()
+		if item.Binding == nil && len(labels) > 1 {
+			labels = labels[:1]
+		}
+		if len(labels) > 0 {
+			keyLabel = style.FgCyan.Sprint(strings.Join(labels, ", "))
 		}
 
 		checkMark := ""
@@ -265,12 +274,13 @@ func (self *MenuContext) GetKeybindings(opts types.KeybindingsOpts) []*types.Bin
 	menuItemBindings := lo.Map(menuItemsWithKeys, func(item *types.MenuItem, _ int) *types.Binding {
 		return &types.Binding{
 			// Binding identity follows the item; disabled checks and row identity stay unchanged.
-			Keys:          item.Keys,
-			CommandID:     item.CommandID,
-			CommandIDFunc: item.GetCommandID,
-			Verb:          item.Verb,
-			VerbFunc:      item.GetVerb,
-			Handler:       func() error { return self.OnMenuPress(item) },
+			Keys:           item.Keys,
+			DefaultCommand: len(self.blockUnmatchedKeys) > 0,
+			CommandID:      item.CommandID,
+			CommandIDFunc:  item.GetCommandID,
+			Verb:           item.Verb,
+			VerbFunc:       item.GetVerb,
+			Handler:        func() error { return self.OnMenuPress(item) },
 		}
 	})
 
@@ -280,7 +290,10 @@ func (self *MenuContext) GetKeybindings(opts types.KeybindingsOpts) []*types.Bin
 		// allows assigning a keybinding to a menu item that overrides a non-essential binding such
 		// as 'j', 'k', 'H', 'L', etc. This is safe to do because the essential bindings such as
 		// confirm and return have already been removed from the menu items in this case.
-		return append(menuItemBindings, basicBindings...)
+		blockedKeyBindings := lo.Map(self.blockUnmatchedKeys, func(key gocui.Key, _ int) *types.Binding {
+			return &types.Binding{Keys: []gocui.Key{key}, DefaultCommand: true, Handler: func() error { return nil }}
+		})
+		return append(append(menuItemBindings, blockedKeyBindings...), basicBindings...)
 	}
 
 	// For the keybindings menu we didn't remove the essential bindings from the menu items, because
@@ -292,11 +305,18 @@ func (self *MenuContext) GetKeybindings(opts types.KeybindingsOpts) []*types.Bin
 
 func (self *MenuContext) OnMenuPress(selectedItem *types.MenuItem) error {
 	if selectedItem != nil && selectedItem.DisabledReason != nil {
+		if selectedItem.Binding != nil && selectedItem.Binding.DefaultCommand && selectedItem.DisabledReason.Inapplicable {
+			return nil
+		}
 		if selectedItem.DisabledReason.ShowErrorInPanel {
 			return errors.New(selectedItem.DisabledReason.Text)
 		}
 
 		self.c.ErrorToast(self.c.Tr.DisabledMenuItemPrefix + selectedItem.DisabledReason.Text)
+		return nil
+	}
+
+	if self.beforeAccept != nil && !self.beforeAccept() {
 		return nil
 	}
 

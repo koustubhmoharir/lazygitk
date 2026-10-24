@@ -119,6 +119,29 @@ func TestCommandPaletteBindingsUsesLiveCommandIDsForDeduplication(t *testing.T) 
 	}
 }
 
+func TestCommandPaletteBindingsMergesAndCopiesCommandPaths(t *testing.T) {
+	path := []gocui.Key{gocui.NewKeyRune('d'), gocui.NewKeyRune('w')}
+	first := &types.Binding{CommandID: "diff", ViewName: "files", Description: "Diff", CommandPaths: [][]gocui.Key{path}}
+	second := &types.Binding{CommandID: "diff", Description: "Diff alias", CommandPaths: [][]gocui.Key{path, {gocui.NewKeyRune('d'), gocui.NewKeyRune('p')}}}
+	local, _, _ := commandPaletteBindings([]*types.Binding{first, second}, "files")
+	if len(local) != 1 || len(local[0].CommandPaths) != 2 {
+		t.Fatalf("merged paths = %#v, want two unique paths", local)
+	}
+	local[0].CommandPaths[0][0] = gocui.NewKeyRune('z')
+	if path[0] != gocui.NewKeyRune('d') || first.CommandPaths[0][0] != gocui.NewKeyRune('d') || second.CommandPaths[0][0] != gocui.NewKeyRune('d') {
+		t.Fatalf("source command paths were mutated: first=%v second=%v", first.CommandPaths, second.CommandPaths)
+	}
+}
+
+func TestCommandPaletteBindingsSkipsForeignDescriptionCallbacks(t *testing.T) {
+	calls := 0
+	foreign := &types.Binding{ViewName: "branches", DescriptionFunc: func() string { calls++; return "foreign" }}
+	commandPaletteBindings([]*types.Binding{foreign}, "files")
+	if calls != 0 {
+		t.Fatalf("foreign description callback called %d times", calls)
+	}
+}
+
 func TestCommandPaletteMenuItemCarriesBindingAndDispatchesGateway(t *testing.T) {
 	id, verb := "dynamic.id", "dynamic-verb"
 	disabledCalls, handlerCalls, gatewayCalls := 0, 0, 0

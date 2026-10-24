@@ -3,8 +3,6 @@ package controllers
 import (
 	"strings"
 
-	"github.com/jesseduffield/lazygit/pkg/config"
-	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
 	"github.com/samber/lo"
@@ -24,11 +22,11 @@ func (self *OptionsMenuAction) Call() error {
 		menuItems = append(menuItems,
 			lo.Map(bindings, func(binding *types.Binding, _ int) *types.MenuItem {
 				tooltip := binding.GetTooltip()
-				if len(binding.Keys) > 1 {
+				keyLabels := binding.KeyLabels()
+				if len(keyLabels) > 1 {
 					if tooltip != "" {
 						tooltip += "\n\n"
 					}
-					keyLabels := lo.Map(binding.Keys, func(k gocui.Key, _ int) string { return config.LabelForKey(k) })
 					tooltip += self.c.Tr.KeybindingsTooltip + strings.Join(keyLabels, ", ")
 				}
 				return commandPaletteMenuItem(binding, section, tooltip, self.c.IGuiCommon.CallKeybindingHandler)

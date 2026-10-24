@@ -42,6 +42,33 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Captured command menus and disabled defaults
+
+- `gui/fork_prefix_menu.go` owns visible prefix frames with one-use acceptance
+  tokens. `fork_command_origin.go` pins the repository instance/generation,
+  static and side contexts, selected IDs/ranges, and focused diff content/mode.
+  Freeze dynamic labels before opening the popup; run guards again after Pop.
+- `CreateMenuOptions.BeforeAccept` runs before native Pop. Its matching model
+  callback is reset on every `createMenu`; `BlockUnmatchedKeys` consumes invalid
+  printable continuations before inherited/global actions. Ordinary menus keep
+  their previous behavior. The small `createMenu` and `ContextMgr.Activate`
+  hooks invalidate old tokens when menus/focus are replaced. Preserve this
+  pre-pop/post-pop order when merging upstream menu or focus changes.
+- `registerForkCommands` merges global paths into each normal pane and reserves
+  other core root keys as no-ops. It retains exact custom/editor/mouse routes;
+  global custom routes precede compiled defaults. Registration is implemented
+  but not yet enabled at `resetKeybindings`; activate it with projection and the
+  remaining accepted action flows, rather than partially switching defaults.
+- `Binding.DefaultCommand` opts into command matching and silent inapplicability.
+  List guards distinguish a missing target from genuine operation preconditions;
+  explicit bindings retain upstream error/fallback handling. Keep genuine Git
+  failures visible. Prefix menu accelerators use the opt-in command matcher.
+- Palette alias copies, menu labels/filtering and cheatsheets retain complete
+  paths through `Binding.KeyLabels`, without binding continuation letters alone.
+  Palette filtering skips other panes before calling dynamic descriptions.
+  Source key lists and path slices remain independent of display-only copies.
+
+
 ### Direct reset-mode actions
 
 - `helpers/captured_reset.go` adds `ResetCurrentToCapturedSourceMode` beside

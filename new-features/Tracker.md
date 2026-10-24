@@ -70,8 +70,8 @@ custom commands. Frequency persistence and sorting remain item 9.
    Retain native concurrency/overwrite protection and no implicit stash. Use
    [keymap-behavior-gaps.md](keymap-behavior-gaps.md) as source evidence, not proof
    that these flows are already implemented.
-5. Add visible two-/three-key command menus with captured origin/repository and
-   selection checks. Keep prefixes free of mutations and hidden timing state;
+5. Connect the implemented visible two-/three-key menu flow to normal-pane
+   registration and verify captured origin/repository and selection checks. Keep prefixes free of mutations and hidden timing state;
    define nested Esc/back behavior and safely handle invalid continuations,
    focus/repository changes and popup replacement. Expose leaves independently
    through `?` and show their complete paths.

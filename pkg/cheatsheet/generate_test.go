@@ -268,3 +268,16 @@ func TestGetBindingSections(t *testing.T) {
 		})
 	}
 }
+
+func TestCheatsheetIncludesAndDeduplicatesCommandPaths(t *testing.T) {
+	tr := i18n.EnglishTranslationSet()
+	path := []gocui.Key{gocui.NewKeyRune('d'), gocui.NewKeyRune('w')}
+	bindings := []*types.Binding{
+		{ViewName: "files", Description: "Diff", CommandPaths: [][]gocui.Key{path}},
+		{ViewName: "files", Description: "Diff", CommandPaths: [][]gocui.Key{{gocui.NewKeyRune('d'), gocui.NewKeyRune('w')}}},
+	}
+	sections := getBindingSections(bindings, tr)
+	assert.Len(t, sections, 1)
+	assert.Len(t, sections[0].bindings, 1)
+	assert.Contains(t, formatBinding(sections[0].bindings[0]), "d w")
+}

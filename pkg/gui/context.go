@@ -171,6 +171,11 @@ func (self *ContextMgr) deactivate(c types.Context, opts types.OnFocusLostOpts) 
 }
 
 func (self *ContextMgr) Activate(c types.Context, opts types.OnFocusOpts) {
+	// Fork prefixes belong to the original focus stack. A legitimate menu
+	// acceptance has already disarmed its active token before native Pop.
+	if c != self.gui.State.Contexts.Menu {
+		self.gui.invalidateForkPrefix()
+	}
 	viewName := c.GetViewName()
 	v, err := self.gui.c.GocuiGui().View(viewName)
 	if err != nil {

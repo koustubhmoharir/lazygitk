@@ -12,6 +12,9 @@ import (
 
 // note: items option is mutated by this function
 func (gui *Gui) createMenu(opts types.CreateMenuOptions) error {
+	// Fork: replace any outstanding prefix token when a menu is replaced.
+	// The new captured flow arms its token only after this menu is installed.
+	gui.invalidateForkPrefix()
 	if !opts.HideCancel {
 		// this is mutative but I'm okay with that for now
 		opts.Items = append(opts.Items, &types.MenuItem{
@@ -73,6 +76,8 @@ func (gui *Gui) createMenu(opts types.CreateMenuOptions) error {
 	gui.State.Contexts.Menu.SetKeybindingsTakePrecedence(!opts.KeepConflictingKeybindings)
 	gui.State.Contexts.Menu.SetFilterAsYouType(opts.FilterAsYouType)
 	gui.State.Contexts.Menu.SetOnCancel(opts.OnCancel)
+	gui.State.Contexts.Menu.SetBeforeAccept(opts.BeforeAccept)
+	gui.State.Contexts.Menu.SetBlockUnmatchedKeys(opts.BlockUnmatchedKeys)
 	gui.State.Contexts.Menu.SetSelection(0)
 
 	gui.Views.MenuFilter.ClearTextArea()

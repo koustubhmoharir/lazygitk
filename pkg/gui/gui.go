@@ -123,6 +123,9 @@ type Gui struct {
 
 	PopupHandler types.IPopupHandler
 
+	// Active captured command menu, owned and invalidated on the UI thread.
+	forkPrefix *forkPrefixFlow
+
 	// Bumped every time we switch to a different repository (in resetState).
 	// Used to drop refresh results that were computed for a repo we've since
 	// navigated away from. See RefreshHelper.onUIThreadUnlessRepoChanged.
