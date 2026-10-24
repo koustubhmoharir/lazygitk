@@ -57,7 +57,8 @@ modal/input roles, not permission for normal pane commands to change meaning.
 | Enter | Inspect/open details; otherwise no-op |
 | Shift+Up / Shift+Down | Extend selection where supported |
 | Home / End | First / last item |
-| PageUp / PageDown | Scroll the main content |
+| PageUp / PageDown | Previous / next page in the focused view |
+| Alt+Up / Alt+Down | Scroll main output without moving side selection |
 | F3 / Shift+F3 | Next / previous search match |
 | F5 | Explicit refresh |
 | `?` | Command palette |
@@ -77,32 +78,34 @@ remain visible.
 | --- | --- |
 | `n b p`, `n b c` | Create/move a branch pointer here; create and check out a new branch |
 | `n t`, `n w` | Create tag, worktree |
-| `n r`, `n s` | Add remote, submodule |
+| `n r`, `n f`, `n s` | Add remote, fork remote, submodule |
 | `g c s`, `g c n`, `g c p`, `g c f` | Checkout selected, by name, previous, or explicitly force checkout |
 | `g f` | Fast-forward/update the selected branch |
 | `g l` | Pull/update choices; never a one-letter Pull default |
 | `g x` | Fixup choices |
-| `g a` | Apply the selected stash/patch where supported |
-| `g e` | Create commit using the editor |
+| `g a` | Apply the selected stash |
+| `g e …` | Editor-based commit, reword, attributes and hunk choices |
 | `g b` | Bisect choices |
 | `g i` | Interactive rebase choices |
 | `g t` | Tracking/upstream choices |
-| `g w` | Switch to the selected existing worktree |
-| `g u` | Redo |
+| `t r w` | Switch to the selected existing worktree |
+| `g u r` | Redo |
+| `g u …` | Explicit submodule update/initialization choices |
 | `g p …` | Pull-request operations |
 | `g q …` | Squash/autosquash operations |
 | `g r …` | Advanced rebase/base operations |
 | `g s …` | Explicit stash operations |
 | `g k …` | Collect/apply/clear cherry-pick selections |
-| `g o …` | Continue/skip/abort an operation |
+| `g o` | Continue/skip/abort through the operation's review menu |
 | `g m …` | Explicit commit movement operations |
 | `g h …` | Custom patch and conflict-resolution operations; separate from staging |
 | `s …` | Stage/unstage selected/all changes |
 | `y …` | Copy identifier/path/message/content, with explicit format choices |
 | `t …` | View/diff/log settings, sorting, filters, navigation and repository switching |
 
-The second-level collections need their concrete third letters assigned against
-the complete action matrix. All prefix leaves are independently discoverable in
+The [allocation draft](keymap-allocation.md) assigns concrete third letters and
+names the existing operation IDs. Verify the handler/legacy-field projection
+before activation. All prefix leaves must be independently discoverable in
 `?`; a leaf may open an operation's existing review dialog. Modal parameter
 choices and confirmations are not hidden key-chord continuations. Prefixes
 never run Git mutations by themselves. Less common variants retain visible
@@ -117,10 +120,10 @@ Do not rewrite arbitrary input events or case-fold typed paths/search strings.
 Actual keyboard parent views and logical source-parent contexts are different;
 this checkout's native keyboard parent links are the menu-filter views.
 
-Preserve explicit key overrides and custom commands. Config merging currently
-loses whether a value was explicitly written, so equality with defaults cannot
-prove provenance. Track explicit key fields during loading, or provide an
-otherwise explicit compatibility mechanism, before projecting the new defaults.
+Preserve explicit key overrides and custom commands. The loader now records
+explicit migrated YAML fields, separately from values and legacy alias folding;
+equality with defaults cannot prove provenance. Use that record and each
+command's source configuration fields when projecting new defaults.
 A command-ID path override can coexist with legacy fields, but must have defined
 precedence, disabling and collision behavior. No configuration is silently
 rewritten. Custom Ctrl bindings retain their priority and exact input semantics.

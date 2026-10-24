@@ -7,6 +7,8 @@ import (
 )
 
 type UserConfig struct {
+	// Fork-only load metadata; never part of user configuration or its schema.
+	keybindingExplicitFields map[string]struct{} `yaml:"-" json:"-"`
 	// Config relating to the Lazygit UI
 	Gui GuiConfig `yaml:"gui"`
 	// Config relating to git

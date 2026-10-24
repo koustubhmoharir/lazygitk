@@ -2,7 +2,7 @@
 
 Bounded evidence for the main effective key/action matrix; this report does not allocate replacement keys. Platform values below are the checked-in `inventory.json` `platformDefaults` produced from `config.GetDefaultConfigForPlatform`. They include the fork overlay. Runtime config loading additionally merges deprecated alternate fields.
 
-## Defaults and override semantics
+## Defaults and override semantics at the audit baseline
 
 - The three serialized trees are `new-features/inventory/inventory.json` keys `platformDefaults.darwin`, `.linux`, `.windows` (approximately lines 12419–13089). Each platform has a `Universal`, `Status`, `Files`, `Branches`, `Commits`, `AmendAttribute`, `Stash`, `CommitFiles`, `Main`, `Submodules`, and `CommitMessage` group. Values can be checked directly there; the inventory README documents that they serialize `GetDefaultConfigForPlatform` and are defaults, not loaded user/repository config.
 - `pkg/config/user_config.go`: `KeybindingConfig` and group schemas begin at `KeybindingConfig`; `GetDefaultConfigForPlatform` builds the upstream table and returns `applyForkDefaults(...)`. `pkg/config/fork_defaults.go:6` documents overlay timing; `applyForkDefaults` only changes the listed fields there: it sets direct diff defaults (`w/W`, `v/V`) and nils `DiffWithWorkingFile`, `NewWorktree`, `DiffingMenu`, `DiffingMenuAlt`, `ToggleRangeSelect`, `CommitChangesWithoutHook`, and `PasteCommits`. It does not clear `j/k/h/l` alternates or Ctrl defaults.
@@ -39,3 +39,11 @@ Companion evidence: [effective factory snapshots](keymap/README.md),
 record expansion, precedence, dynamic verb/target roles and terminal byte aliases.
 This field audit makes no allocation recommendation and does not verify the new
 runtime keymap; command/path allocation and acceptance remain Tracker tasks.
+
+The subsequent override foundation adds private load metadata to `UserConfig`
+and `KeybindingIsExplicit`, without changing effective key values. It records
+recognized YAML fields after migration/validation and before alias folding,
+including explicit values equal to defaults and disabled bindings. That closes
+the baseline provenance gap above; command-to-source-field projection is still
+pending. See the [merge guide](MergeGuide.md#command-key-foundation-item-8-in-progress)
+for the loader integration and compatibility boundaries.

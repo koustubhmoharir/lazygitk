@@ -19,16 +19,20 @@ and sorting remain item 9.
 
 ## Remaining tasks for item 8
 
-2. Consult TortoiseGit for operation/navigation behavior and produce a concrete
-   verb-to-key and prefix table. Review it against every context and the user's
-   preferences before allocating defaults. Resolve any meaningful design
-   questions with the user; preserve the provisional direct `w`/`v` comparisons
-   and make Pull a deliberate menu path.
+2. Review [keymap-allocation.md](keymap-allocation.md) against each actual
+   handler, context and legacy configuration field before enabling defaults.
+   The TortoiseGit guide and concrete verb/prefix table are recorded; the table
+   names every instantiated operation ID and the known dynamic variants.
+   Resolve Space's remaining role with the user. Preserve direct `w`/`v`
+   comparisons and Pull's deliberate menu path. Define source-field override
+   projection for commands with several legacy aliases or context-specific fields.
 3. Integrate the opt-in ASCII command matching/collision normalization and add
    inactive-key consumption at small central integration points. The command
    matcher is implemented independently of exact keys and input events; the
-   application still uses its existing registration path. Preserve literal input,
-   search/filter text, subprocess typing, explicit override behavior and custom
+   loader records explicit YAML field presence separately from values/legacy
+   alias folding. The application still uses its existing registration path.
+   Preserve literal input, search/filter text, subprocess typing, explicit
+   override behavior and custom
    Ctrl commands; retain genuine errors after an action is invoked.
 4. Add visible two-/three-key command menus with captured origin/repository and
    selection checks. Keep prefixes free of mutations and hidden timing state;

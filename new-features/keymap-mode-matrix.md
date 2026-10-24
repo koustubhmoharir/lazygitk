@@ -96,6 +96,6 @@ defaults; editor submission, suspend, quit and filter actions are commands.
 
 The snapshot plus this matrix establishes the existing registration/dispatch
 baseline and the identified dynamic splits. Allocation remains subject to a
-complete command-ID/path table, an explicit override-provenance strategy and
+reviewed command-ID/path table, override projection using recorded field presence and
 runtime tests across these modes. It does not establish collision freedom or
 new no-op behavior. No existing default was changed by producing this audit.

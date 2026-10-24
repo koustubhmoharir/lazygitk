@@ -222,6 +222,11 @@ func loadUserConfig(configFiles []*ConfigFile, base *UserConfig, isGuiInitialize
 		if err := base.Validate(); err != nil {
 			return nil, fmt.Errorf("The config at `%s` has a validation error.\n%w", path, err)
 		}
+		// Fork: preserve configured keybinding presence for command projection. Capture
+		// before legacy alt fields are folded into their primary bindings.
+		if err := recordExplicitKeybindingFields(base, content); err != nil {
+			return nil, fmt.Errorf("The config at `%s` couldn't be inspected for explicit keybindings.\n%w", path, err)
+		}
 	}
 
 	base.Keybinding.MergeLegacyAltKeybindings()

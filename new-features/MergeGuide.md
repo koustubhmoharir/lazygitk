@@ -44,6 +44,27 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ### Command-key foundation (item 8 in progress)
 
+- `config/fork_keybinding_overrides.go` records explicitly loaded keybinding
+  fields. Its only upstream seams are private metadata on `UserConfig` and a
+  loader call after successful migration/unmarshal/validation, before legacy
+  alias folding. `KeybindingIsExplicit` uses YAML tags (`universal.pushFiles`,
+  for example), not Go field names or value equality. Deprecated aliases keep
+  their separate provenance. Only recognized schema group/leaf fields count;
+  unknown accepted fields cannot mask a neighboring configured binding.
+  Mapping-to-Node decoding retains accepted inline YAML merges. Existing alias
+  rejection and null-to-disabled migration remain the loader's own behavior.
+  Metadata does not serialize or set new key values. A fresh load starts from
+  fresh defaults; removed repository/user overrides do not retain stale presence.
+  Independent config short tests passed (0.269s), including nested inline
+  merges, legacy alias separation, explicit disable/omission and unknown keys.
+  Full generation and debug build passed without generated-file changes;
+  formatting and combined config/gocui scoped lint passed (zero issues).
+- Override tracking is a foundation, not yet the command projection policy.
+  Do not treat one command ID as one configuration field: worktree switching,
+  modal confirmation, tag creation and other factories use multiple legacy
+  fields or different fields in different views. Preserve those distinctions
+  when integrating the catalog. The allocation draft records proposed paths;
+  no application defaults have been replaced yet.
 - `pkg/gocui/command_key.go` owns ASCII-letter command normalization. It folds
   only a single ASCII letter with no modifiers or Shift alone. `Key.Equals`,
   text, Unicode, punctuation and Ctrl/Alt/Meta combinations remain exact.
