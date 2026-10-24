@@ -42,6 +42,25 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Selected-ref checkout choices
+
+- `helpers/selected_ref_checkout.go` captures a selected local/remote/tag ref,
+  resolves its commit on a worker and presents independent local-branch,
+  named-branch and detached choices. `gui/fork_selected_checkout.go` replaces
+  only the default direct-ref checkout handler during semantic projection;
+  explicit legacy bindings retain their original handlers. The default profile
+  remains pending activation.
+- Naming and branch-move approval reuse `namedCheckoutFlow`. Its optional
+  repository validator retains the originating generation across the complete
+  flow. Preserve that callback when merging changes to named checkout.
+- `BranchCommands.CheckoutCapturedCommit` performs one detached native checkout
+  with literal commit validation, no guessing, ignored-overwrite protection and
+  no application lock retry. It carries harmless dirty files and preserves
+  Git's overwrite rejection. The new flow never offers an implicit stash.
+- Focused real-Git helper tests cover captured branch movement, independent
+  remote naming choices, repository changes during name entry, dirty-file
+  carry and overwrite refusal. Existing named-checkout checks remain green.
+
 ### Captured native cherry-pick backend
 
 - `git_commands/captured_cherry_pick.go` captures literal commit objects, current

@@ -103,6 +103,10 @@ func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string) erro
 		binding.Tag = ""
 	}
 	if !explicit {
+		if handler := gui.forkSelectedCheckoutHandler(binding.CommandID); handler != nil {
+			binding.Handler = handler
+			binding.OpensMenu = true
+		}
 		// User-approved exception: x in the staged diff keeps upstream's
 		// immediate unstage operation, alongside the explicit unstage path.
 		if sourceID == "diff.discard-selection" && binding.CommandID == "diff.unstage-selection" {

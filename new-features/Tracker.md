@@ -62,7 +62,9 @@ custom commands. Frequency persistence and sorting remain item 9.
    requested bindings: Files-only commit Enter,
    full-refresh/re-render F5 without fetch,
    explanatory rebase/merge confirmation,
-   unified selected branch/commit checkout and ref-only branch placement,
+   unified selected branch/commit checkout and ref-only branch placement
+   (default local/remote/tag checkout projection now offers captured naming
+   choices; verify with the enabled profile),
    Escape mark clearing and integration of exact-list marked/selected review
    with the captured native cherry-pick planner, preserving upstream paused-
    rebase support and post-pick buffer behavior, plus ancestry-based combine

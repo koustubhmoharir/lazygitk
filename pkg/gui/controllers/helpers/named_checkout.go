@@ -29,12 +29,16 @@ func (self *RefsHelper) namedCheckoutItem(oid string) *types.MenuItem {
 // Capture both the source and repository before the checkout menu opens. Never
 // read a later selection or redirect a pending prompt to a different repository.
 type namedCheckoutFlow struct {
-	c   *HelperCommon
-	git *commands.GitCommand
-	oid string
+	c                  *HelperCommon
+	git                *commands.GitCommand
+	oid                string
+	validateRepository func() error
 }
 
 func (flow *namedCheckoutFlow) checkRepository() error {
+	if flow.validateRepository != nil {
+		return flow.validateRepository()
+	}
 	if flow.c.Git() != flow.git {
 		return errors.New(flow.c.Tr.NamedCheckoutRepositoryChanged)
 	}
