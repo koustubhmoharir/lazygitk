@@ -7,9 +7,11 @@ instantiated [binding snapshots](keymap/bindings.json),
 [mode matrix](keymap-mode-matrix.md), provide the evidence. Snapshots are not
 proof that every mode or dynamically built menu has been exercised.
 
-The user requested a pause before implementing the final keybindings so they
-can review the proposal. Keep the final bindings unimplemented/inactive until
-that review; the existing opt-in matcher and override metadata are foundations.
+The user has now authorized implementation of the agreed keymap, lifting the
+earlier review pause. Preserve the accepted table and resolve remaining source
+projection/topology details in the implementation. Ctrl+Left/Right must move
+by words in modal text fields; normal editor controls are exempt from the
+restriction on core Ctrl command defaults.
 
 [TortoiseGit's log dialog](https://tortoisegit.org/docs/tortoisegit/tgit-dug-showlog.html)
 keeps working-tree and previous-revision comparisons distinct and names current

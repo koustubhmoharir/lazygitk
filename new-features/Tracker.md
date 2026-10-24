@@ -4,11 +4,11 @@ Roadmap item: [8. Consistent default keys and no-op behavior](Roadmap.md#8-consi
 Status: the default registration audit and source-reviewed mode matrix are
 recorded in [keymap/README.md](keymap/README.md),
 [keymap-mode-matrix.md](keymap-mode-matrix.md) and the linked dispatch/default
-audits. Complete the command/path allocation before changing application
-defaults. **User review gate:** pause before implementing or activating the final
-keybindings; the user wants to decide whether the proposed bindings are right.
-[keymap-design.md](keymap-design.md) and
-[keymap-allocation.md](keymap-allocation.md) remain proposals for that review.
+audits. The user has approved implementation of the agreed keymap; the earlier
+review pause is lifted. [keymap-allocation.md](keymap-allocation.md) records the
+accepted table, with source/override projection and topology details to resolve
+as implementation proceeds. Modal text fields must support Ctrl+Left/Right word
+movement; these are editor controls, not core command bindings.
 The latest user table reserves `d` for diff, `s` for reset/switch, `c` for
 cherry-pick and `u` for undo/redo. Enter commits only while Files is focused;
 it is a no-op in other normal panes. Dialogs/search/editors retain normal Enter.
@@ -22,7 +22,7 @@ Files tree; number keys remain available for pane switching.
 
 The independent full-graph default uses `git.log.showWholeGraph: true` before
 user config; explicit false overrides remain supported. Final keybindings and
-combine remain proposals until user review.
+combine implementation are now authorized.
 
 Scope: one command meaning per default key/path across panes. ASCII command
 letters are case-insensitive; inapplicable actions consume their key without
@@ -39,7 +39,7 @@ custom commands. Frequency persistence and sorting remain item 9.
    handler, context and legacy configuration field before enabling defaults.
    The TortoiseGit guide and concrete verb/prefix table are recorded; the table
    names every instantiated operation ID and the known dynamic variants.
-   Present the final proposal for user review before implementation. Incorporate
+   Implementation is authorized. Incorporate
    the latest user table, including Files-only commit Enter, Escape cancellation, combine `g c`, scoped Space, tree
    arrows, `d w`/`d p`/`d c`, `s h`/`s m`/`s s`/`s c`, `n b` and
    `c y`/`c x`/`c p`. Keep Pull in a deliberate menu path. Define source-field
@@ -51,7 +51,7 @@ custom commands. Frequency persistence and sorting remain item 9.
    alias folding. The application still uses its existing registration path.
    Preserve literal input, search/filter text, subprocess typing, explicit
    override behavior and custom Ctrl commands; retain genuine errors after an action is invoked.
-4. After user review, extend the captured operation flows required by the
+4. Extend the captured operation flows required by the
    requested bindings: pasted-hash diff for commits/files, Files-only commit Enter,
    full-refresh/re-render F5 without fetch, mandatory discard confirmation,
    explanatory rebase/merge/reset confirmation with preselected reset mode,

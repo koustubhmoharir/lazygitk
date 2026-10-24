@@ -543,9 +543,9 @@ stacks. Assert current HEAD/index/worktree and unrelated refs remain unchanged.
 
 ## 8. Consistent default keys and no-op behavior
 
-User review gate: pause before implementing/activating the final keybindings.
-Prepare the proposal for the user to decide whether the bindings are right.
-The matcher/provenance foundations do not constitute approval of the key table.
+The user has authorized implementation of the agreed binding table, lifting
+the earlier review pause. Modal editor fields must support Ctrl+Left/Right word
+movement on all platforms; these are input controls, not core Ctrl commands.
 
 Use milestone 2's complete inventory to produce and review a verb-to-key table
 before changing defaults. All alphabetic commands are case-insensitive: `p`

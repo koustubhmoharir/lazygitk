@@ -2,8 +2,8 @@
 
 This expands [keymap-design.md](keymap-design.md) against the instantiated
 command IDs and the [mode matrix](keymap-mode-matrix.md). It is a design table,
-not the installed defaults. The user will review the final bindings before
-implementation/activation. The user-specified bindings below replace the earlier
+not a claim that all bindings are installed yet. The user has authorized
+implementation of the agreed table; the earlier review pause is lifted. The user-specified bindings below replace the earlier
 allocation; remaining bindings are proposals for review. Uppercase ASCII letters
 are aliases of the same path; punctuation and modifiers remain literal.
 

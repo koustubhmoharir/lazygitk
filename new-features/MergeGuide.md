@@ -42,14 +42,26 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
-### Full-graph history default (independent of paused final keybindings)
+### Modal editor word movement
+
+- `config/fork_editor_defaults.go` adds Ctrl+Left/Right before user config is
+  loaded, retaining macOS Alt+Left/Right and avoiding duplicate defaults on
+  Linux/Windows. The single integration call in `fork_defaults.go` extends the
+  upstream editor defaults; it does not register normal-pane commands. Explicit
+  editor key replacements and empty-list disabling remain authoritative.
+- `gocui/editor_word_motion_test.go` exercises the real editor with ASCII,
+  Unicode, multiline content and boundary movement. Preserve literal input and
+  native editor dispatch when merging command-key registration changes.
+
+
+### Full-graph history default
 
 - `config/fork_defaults.go` now sets `Git.Log.ShowWholeGraph = true` before
   loading user/repository config. Keep the upstream constructor unchanged and
   retain explicit false overrides. `showGraph` remains the separate rendering
   setting; this change uses the existing all-ref query (`GetCommitsOptions.All`,
   `git log --all`) without changing pagination, sorting, live toggle persistence
-  or fetching refs. Final keybinding and combine proposals are still paused.
+  or fetching refs. The user has since authorized the final keybinding and combine implementation.
 - `test/default_test_config/config.yml` pins `git.log.showWholeGraph: false` for
   existing terminal scenarios whose row/range assumptions require branch-only
   history. `commit/full_graph_default` restores the real default constructor
