@@ -91,7 +91,7 @@ func marshalForkTestConfig(current, original *UserConfig) ([]byte, error) {
 				continue
 			}
 			constructorAlias, constructorAliasOK := reflectFieldByYAMLTag(constructorGroup, alias)
-			primaryChanged := false
+			var primaryChanged bool
 			if constructorProvenance {
 				constructorPrimary, constructorPrimaryOK := reflectFieldByYAMLTag(constructorGroup, parent)
 				canonicalPrimary, canonicalPrimaryOK := reflectFieldByYAMLTag(canonicalGroup, parent)
@@ -123,7 +123,7 @@ func marshalForkTestConfig(current, original *UserConfig) ([]byte, error) {
 }
 
 func reflectFieldByYAMLTag(value reflect.Value, tag string) (reflect.Value, bool) {
-	for i := 0; i < value.NumField(); i++ {
+	for i := range value.NumField() {
 		if yamlFieldName(value.Type().Field(i)) == tag {
 			return value.Field(i), true
 		}

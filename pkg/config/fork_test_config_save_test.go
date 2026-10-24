@@ -170,10 +170,10 @@ func cloneKeybindingConfig(in KeybindingConfig) KeybindingConfig {
 	out := in
 	value := reflect.ValueOf(in)
 	outValue := reflect.ValueOf(&out).Elem()
-	for i := 0; i < value.NumField(); i++ {
+	for i := range value.NumField() {
 		group := value.Field(i)
 		groupCopy := reflect.New(group.Type()).Elem()
-		for j := 0; j < group.NumField(); j++ {
+		for j := range group.NumField() {
 			field := group.Field(j)
 			if field.Kind() == reflect.Slice && !field.IsNil() {
 				copyField := reflect.MakeSlice(field.Type(), field.Len(), field.Len())
