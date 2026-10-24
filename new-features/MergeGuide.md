@@ -42,6 +42,20 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 
 ## Live integration record
 
+### Ref-only placement from branch lists
+
+- `controllers/branch_placement_refs.go` adds the existing placement command to
+  local/remote branch lists through one additive hook per controller. Resolve
+  the captured full ref on a worker, then freeze its commit before name entry.
+- The shared `branchPlacementFlow.promptName` and optional repository validator
+  retain the existing create/move/no-op review and native mutation. Keep the
+  ref-origin generation check through later prompts and warnings; a repository
+  change must not redirect the pending operation.
+- Git-backed checks cover local and remote refs, source movement before the
+  read, frozen target placement, dirty-file preservation through the existing
+  flow and repository changes during name entry. Normal `n b` registration
+  remains part of the pending default-profile activation.
+
 ### Selected-ref checkout choices
 
 - `helpers/selected_ref_checkout.go` captures a selected local/remote/tag ref,

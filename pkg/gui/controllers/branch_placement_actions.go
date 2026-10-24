@@ -40,11 +40,19 @@ func (self *BasicCommitsController) beginBranchPlacement() error {
 		return disabledReasonError(reason)
 	}
 	flow := &branchPlacementFlow{c: self.c, git: self.c.Git(), oid: oid}
-	self.c.Prompt(types.PromptOpts{
-		Title:               fmt.Sprintf(self.c.Tr.PlaceBranchNamePrompt, utils.ShortHash(oid)),
-		FindSuggestionsFunc: self.c.Helpers().Suggestions.GetBranchNameSuggestionsFunc(),
+	return flow.promptName()
+}
+
+func (flow *branchPlacementFlow) promptName() error {
+	if err := flow.checkRepository(); err != nil {
+		return err
+	}
+	flow.c.Prompt(types.PromptOpts{
+		Title:               fmt.Sprintf(flow.c.Tr.PlaceBranchNamePrompt, utils.ShortHash(flow.oid)),
+		FindSuggestionsFunc: flow.c.Helpers().Suggestions.GetBranchNameSuggestionsFunc(),
 		PreserveWhitespace:  true,
 		AllowEditSuggestion: true,
+		HandleClose:         flow.checkRepository,
 		HandleConfirm:       func(name string) error { return flow.prepare(name, false) },
 	})
 	return nil
@@ -53,12 +61,16 @@ func (self *BasicCommitsController) beginBranchPlacement() error {
 // A flow captures repository identity and source before any prompt/worker.
 // No callback reads a later selected commit or silently redirects to a new repo.
 type branchPlacementFlow struct {
-	c   *ControllerCommon
-	git *commands.GitCommand
-	oid string
+	c                  *ControllerCommon
+	git                *commands.GitCommand
+	oid                string
+	validateRepository func() error
 }
 
 func (flow *branchPlacementFlow) checkRepository() error {
+	if flow.validateRepository != nil {
+		return flow.validateRepository()
+	}
 	if flow.c.Git() != flow.git {
 		return errors.New(flow.c.Tr.PlaceBranchRepositoryChanged)
 	}

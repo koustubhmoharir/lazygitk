@@ -41,6 +41,8 @@ func NewBranchesController(
 func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	// Fork: expose preselected reset modes alongside the upstream bindings.
 	return self.addSelectedResetBindings([]*types.Binding{
+		// Fork: add keyless ref-only placement from the captured selected branch.
+		self.branchPlacementBinding(),
 		{
 			CommandID: "branch.checkout",
 			Verb:      "checkout",

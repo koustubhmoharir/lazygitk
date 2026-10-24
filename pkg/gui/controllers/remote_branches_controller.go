@@ -35,6 +35,8 @@ func NewRemoteBranchesController(
 
 func (self *RemoteBranchesController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	return []*types.Binding{
+		// Fork: add keyless ref-only placement from the captured selected remote.
+		self.branchPlacementBinding(),
 		{
 			CommandID:         "remote-branch.checkout",
 			Verb:              "checkout",

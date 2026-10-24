@@ -64,7 +64,8 @@ custom commands. Frequency persistence and sorting remain item 9.
    explanatory rebase/merge confirmation,
    unified selected branch/commit checkout and ref-only branch placement
    (default local/remote/tag checkout projection now offers captured naming
-   choices; verify with the enabled profile),
+   choices; local/remote lists now expose captured ref-only placement;
+   verify these routes with the enabled profile),
    Escape mark clearing and integration of exact-list marked/selected review
    with the captured native cherry-pick planner, preserving upstream paused-
    rebase support and post-pick buffer behavior, plus ancestry-based combine
