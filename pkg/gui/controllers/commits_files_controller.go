@@ -57,7 +57,6 @@ func (self *CommitFilesController) diffTarget() *commitDiffTarget {
 }
 
 func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
-	//nolint:prealloc // Keep the upstream binding literal reviewable; fork tree actions are appended below.
 	bindings := []*types.Binding{
 		{
 			Keys:        opts.GetKeys(opts.Config.Files.CopyFileInfoToClipboard),
@@ -182,6 +181,8 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 		self.context().SetSelection,
 		func() { self.c.PostRefreshUpdate(self.context()) },
 	)...)
+	// Fork: the flat y copy menu's commit file actions (see fork_commit_files_copy.go).
+	bindings = self.addFlatCopyBindings(bindings)
 	// Fork direct-diff actions are additive; the existing sticky comparison remains available.
 	return append(self.historicalDiffBindings(opts), bindings...)
 }
@@ -271,7 +272,8 @@ func (self *CommitFilesController) copyFileContentToClipboard(path string) error
 	return self.c.OS().CopyToClipboard(diff)
 }
 
-func (self *CommitFilesController) openCopyMenu() error {
+// Fork: the items are shared with the flat `y` copy bindings (see fork_commit_files_copy.go).
+func (self *CommitFilesController) copyMenuItems() []*types.MenuItem {
 	node := self.context().GetSelected()
 
 	copyNameItem := &types.MenuItem{
@@ -364,16 +366,20 @@ func (self *CommitFilesController) openCopyMenu() error {
 		Keys: menuKey('c'),
 	}
 
+	return []*types.MenuItem{
+		copyNameItem,
+		copyRelativePathItem,
+		copyAbsolutePathItem,
+		copyFileDiffItem,
+		copyAllDiff,
+		copyFileContentItem,
+	}
+}
+
+func (self *CommitFilesController) openCopyMenu() error {
 	return self.c.Menu(types.CreateMenuOptions{
 		Title: self.c.Tr.CopyToClipboardMenu,
-		Items: []*types.MenuItem{
-			copyNameItem,
-			copyRelativePathItem,
-			copyAbsolutePathItem,
-			copyFileDiffItem,
-			copyAllDiff,
-			copyFileContentItem,
-		},
+		Items: self.copyMenuItems(),
 	})
 }
 

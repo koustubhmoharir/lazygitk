@@ -89,6 +89,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` f `` | Buscar | Buscar alterações do controle remoto. |
 | `` t t c `` | Recolher todos os arquivos | Recolher todos os diretórios na árvore de arquivos |
 | `` t t e `` | Expandir todos os arquivos | Expandir todos os diretórios na árvore do arquivo |
+| `` y n `` | Copy file name |  |
+| `` y f `` | Copy absolute path |  |
+| `` y d `` | Copy file diff |  |
+| `` y w `` | Copy all files diff |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
 | `` v `` | Focar visualização principal |  |
@@ -180,6 +184,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t t e `` | Expandir todos os arquivos | Expandir todos os diretórios na árvore do arquivo |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
+| `` y n `` | Copy file name |  |
+| `` y f `` | Copy absolute path |  |
+| `` y d `` | Copy file diff |  |
+| `` y c `` | Copy file content |  |
 | `` t f t `` | Filtrar a visualização atual por texto |  |
 
 ## Commits

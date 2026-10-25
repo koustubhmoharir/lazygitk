@@ -254,6 +254,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t t e `` | 展開全部檔案 | 展開檔案樹中的全部目錄 |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
+| `` y n `` | Copy file name |  |
+| `` y f `` | Copy absolute path |  |
+| `` y d `` | Copy file diff |  |
+| `` y c `` | Copy file content |  |
 | `` t f t `` | 搜尋 |  |
 
 ## 收藏 (Stash)
@@ -387,6 +391,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` f `` | 擷取 | 同步遠端異動 |
 | `` t t c `` | 摺疊全部檔案 | 摺疊檔案樹中的全部目錄 |
 | `` t t e `` | 展開全部檔案 | 展開檔案樹中的全部目錄 |
+| `` y n `` | Copy file name |  |
+| `` y f `` | Copy absolute path |  |
+| `` y d `` | Copy file diff |  |
+| `` y w `` | Copy all files diff |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
 | `` v `` | 聚焦主檢視 |  |

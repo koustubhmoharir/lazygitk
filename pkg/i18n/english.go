@@ -1022,6 +1022,11 @@ type TranslationSet struct {
 	CopyCommitDiff                        string
 	CopyCommitAuthor                      string
 	CopyCommitTags                        string
+	CopyFileNameToClipboard               string
+	CopyAbsoluteFilePathToClipboard       string
+	CopyFileDiffToClipboard               string
+	CopyAllFilesDiffToClipboard           string
+	CopyFileContentToClipboard            string
 	CopyCommitAttributeToClipboard        string
 	CopyCommitAttributeToClipboardTooltip string
 	CopyBranchNameToClipboard             string
@@ -2504,6 +2509,11 @@ func EnglishTranslationSet() *TranslationSet {
 		CopyCommitDiff:                           "Copy commit diff",
 		CopyCommitAuthor:                         "Copy commit author",
 		CopyCommitTags:                           "Copy commit tags",
+		CopyFileNameToClipboard:                  "Copy file name",
+		CopyAbsoluteFilePathToClipboard:          "Copy absolute path",
+		CopyFileDiffToClipboard:                  "Copy file diff",
+		CopyAllFilesDiffToClipboard:              "Copy all files diff",
+		CopyFileContentToClipboard:               "Copy file content",
 		CopyCommitAttributeToClipboard:           "Copy commit attribute to clipboard",
 		CopyCommitAttributeToClipboardTooltip:    "Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author).",
 		CopyBranchNameToClipboard:                "Copy branch name to clipboard",

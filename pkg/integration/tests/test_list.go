@@ -691,6 +691,7 @@ var tests = []*components.IntegrationTest{
 	ui.FindBaseCommitForFixupScrollsIntoView,
 	ui.ForkCommandBindingOverrides,
 	ui.ForkCopyCommitKeys,
+	ui.ForkCopyFileKeys,
 	ui.ForkCopyRefCommitKeys,
 	ui.ForkDefaultBranchPlacementCheckout,
 	ui.ForkDefaultCherryPick,

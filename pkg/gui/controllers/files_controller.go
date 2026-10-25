@@ -45,7 +45,6 @@ func NewFilesController(
 }
 
 func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
-	//nolint:prealloc // Keep the upstream binding literal reviewable; fork tree actions are appended below.
 	bindings := []*types.Binding{
 		{
 			Keys:              opts.GetKeys(opts.Config.Universal.Select),
@@ -266,6 +265,8 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 			GetDisabledReason: self.require(self.isInTreeMode),
 		},
 	}
+	// Fork: the flat y copy menu's file actions (see fork_files_copy.go).
+	bindings = self.addFlatCopyBindings(bindings)
 	return append(bindings, treeNavigationBindings(
 		self.c.Tr.CollapseTreeNode,
 		self.c.Tr.ExpandTreeNode,
@@ -1579,7 +1580,8 @@ func (self *FilesController) canOpenMergeConflictMenu(nodes []*filetree.FileNode
 	return nil
 }
 
-func (self *FilesController) openCopyMenu() error {
+// Fork: the items are shared with the flat `y` copy bindings (see fork_files_copy.go).
+func (self *FilesController) copyMenuItems() []*types.MenuItem {
 	node := self.context().GetSelected()
 
 	copyNameItem := &types.MenuItem{
@@ -1684,15 +1686,19 @@ func (self *FilesController) openCopyMenu() error {
 		Keys: menuKey('a'),
 	}
 
+	return []*types.MenuItem{
+		copyNameItem,
+		copyRelativePathItem,
+		copyAbsolutePathItem,
+		copyFileDiffItem,
+		copyAllDiff,
+	}
+}
+
+func (self *FilesController) openCopyMenu() error {
 	return self.c.Menu(types.CreateMenuOptions{
 		Title: self.c.Tr.CopyToClipboardMenu,
-		Items: []*types.MenuItem{
-			copyNameItem,
-			copyRelativePathItem,
-			copyAbsolutePathItem,
-			copyFileDiffItem,
-			copyAllDiff,
-		},
+		Items: self.copyMenuItems(),
 	})
 }
 

@@ -316,6 +316,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` f `` | Pobierz | Pobierz zmiany ze zdalnego serwera. |
 | `` t t c `` | Collapse all files | Collapse all directories in the files tree |
 | `` t t e `` | Expand all files | Expand all directories in the file tree |
+| `` y n `` | Copy file name |  |
+| `` y f `` | Copy absolute path |  |
+| `` y d `` | Copy file diff |  |
+| `` y w `` | Copy all files diff |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
 | `` v `` | Focus main view |  |
@@ -343,6 +347,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t t e `` | Expand all files | Expand all directories in the file tree |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
+| `` y n `` | Copy file name |  |
+| `` y f `` | Copy absolute path |  |
+| `` y d `` | Copy file diff |  |
+| `` y c `` | Copy file content |  |
 | `` t f t `` | Filtruj bieżący widok po tekście |  |
 
 ## Podsumowanie commita

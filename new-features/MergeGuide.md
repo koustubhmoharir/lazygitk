@@ -66,6 +66,12 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   and `TagsPointingAt` (`git_commands/fork_ref_commit.go`) at press time. It
   calls the copy methods on a bare `&BasicCommitsController{c: c}`; if upstream
   makes those methods use the controller's context, give refs their own copier.
+  Files and commit files split upstream `openCopyMenu` into `copyMenuItems()`
+  plus the menu call; `flatMenuItemBindings` (`fork_menu_item_bindings.go`)
+  turns chosen items into flat `y` bindings that run the same item, so the
+  copied text and disabled reasons stay identical. Building those items must
+  stay free of git calls and safe with no selection; re-check after upstream
+  changes to the copy menus.
 - Portable builds: `scripts/build_dist.sh` and `scripts/build_dist.ps1` are
   fork-owned and name binaries `lazygitk`. The only upstream-file touches are the `dist` recipe in
   `justfile` and `/dist/` in `.gitignore`; keep both when resolving conflicts.

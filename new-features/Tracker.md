@@ -3,8 +3,6 @@
 Item 12: one flat copy menu with consistent keys. Scope, key table and
 decisions are in [Roadmap.md](Roadmap.md#12-one-flat-copy-menu-with-consistent-keys).
 
-- Files, commit files, submodules, diff views and confirmations: `y n`, `y p`,
-  `y f`, `y d`, `y w`, `y y`; the file copy menus lose their default path.
 - Regenerate keybinding docs, the keymap snapshot and inventory; update fork
   docs and the merge guide, and mark the item complete.
 

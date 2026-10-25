@@ -142,6 +142,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t t e `` | すべてのファイルを展開 | ファイルツリー内のすべてのディレクトリを展開します |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
+| `` y n `` | Copy file name |  |
+| `` y f `` | Copy absolute path |  |
+| `` y d `` | Copy file diff |  |
+| `` y c `` | Copy file content |  |
 | `` t f t `` | 現在のビューをテキストでフィルタリング |  |
 
 ## コミット概要
@@ -299,6 +303,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` f `` | フェッチ | リモートから変更をフェッチします。 |
 | `` t t c `` | すべてのファイルを折りたたむ | ファイルツリー内のすべてのディレクトリを折りたたみます |
 | `` t t e `` | すべてのファイルを展開 | ファイルツリー内のすべてのディレクトリを展開します |
+| `` y n `` | Copy file name |  |
+| `` y f `` | Copy absolute path |  |
+| `` y d `` | Copy file diff |  |
+| `` y w `` | Copy all files diff |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
 | `` v `` | メインビューにフォーカス |  |
