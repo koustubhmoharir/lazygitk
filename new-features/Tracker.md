@@ -1,7 +1,13 @@
 # Current work
 
-All roadmap items (1–14) are complete. There is no current item. Add and review
-a new milestone in [Roadmap.md](Roadmap.md) before planning tasks here.
+Item 15: Catppuccin theme defaults and delta as the default diff renderer.
+Scope and decisions are in [Roadmap.md](Roadmap.md#15-catppuccin-theme-defaults-and-delta-as-the-default-diff-renderer).
+
+- Theme: record explicitly configured theme fields, and apply the Mocha or
+  Latte default to the others by background; unit tests.
+- Diff renderer: delta-then-git default when unconfigured, with the
+  missing-delta fallback and notice; unit and integration tests.
+- Docs, merge guide; mark the item complete.
 
 ## How this tracker works
 

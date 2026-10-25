@@ -70,6 +70,7 @@ tasks with the next item's plan in the same completion commit.
 | 12 | One flat copy menu with consistent keys | Complete | 2, 8 | Medium |
 | 13 | Fixed keybindings: key configuration is ignored | Complete | 8, 12 | Medium |
 | 14 | Switch repositories with `s r` and open one by path with `s n` | Complete | 8 | Small–medium |
+| 15 | Catppuccin theme defaults and delta as the default diff renderer | Planned | None | Medium |
 
 ## Fork implementation principles
 
@@ -923,6 +924,50 @@ prefixes complete to the common part and list the candidates; invalid paths
 report an error without leaving the current repository; `s r` replaces
 `t r r` in the generated key docs.
 
+## 15. Catppuccin theme defaults and delta as the default diff renderer
+
+Planned. Upstream's ANSI theme defaults were hard to read for the user, whose
+config carried Catppuccin Mocha colours and a delta renderer. Four of those
+keys had been silently ignored after upstream renamed them
+(`defaultTextColor`, `cherryPickedCommitTextStyle`,
+`markedBaseCommitTextStyle`) or removed them (`selectedRangeBgColor`). User
+decisions:
+
+- Theme fields the user's config does not set explicitly default to
+  Catppuccin Mocha on a dark background and Catppuccin Latte on a light one,
+  chosen from `gui.colorScheme` or the detected background, and re-applied
+  when the terminal reports a change. Explicitly configured theme fields win.
+
+| Field | Mocha (dark) | Latte (light) |
+| --- | --- | --- |
+| `activeBorderColor` | Lavender `#b4befe`, bold | Lavender `#7287fd`, bold |
+| `inactiveBorderColor` | Subtext0 `#a6adc8` | Subtext0 `#6c6f85` |
+| `optionsTextColor` | Blue `#89b4fa` | Blue `#1e66f5` |
+| `selectedLineBgColor` | Surface0 `#313244` | Surface0 `#ccd0da` |
+| `cherryPickedCommitBgColor` | Surface1 `#45475a` | Surface1 `#bcc0cc` |
+| `cherryPickedCommitFgColor` | Green `#a6e3a1` | Green `#40a02b` |
+| `markedBaseCommitBgColor` | Surface1 `#45475a` | Surface1 `#bcc0cc` |
+| `markedBaseCommitFgColor` | Peach `#fab387` | Peach `#fe640b` |
+| `unstagedChangesColor` | Red `#f38ba8` | Red `#d20f39` |
+| `defaultFgColor` | Text `#cdd6f4` | Text `#4c4f69` |
+
+  Other theme fields keep upstream's defaults. The marked-base background is
+  not in the user's config (their key was ignored); Surface1 replaces
+  upstream's yellow, which clashes with a Peach foreground.
+- When `git.diffRenderers` is not configured, the default list is delta
+  (`delta --{{colorScheme}} --paging=never --tabs=4`, colour always) followed
+  by git's own diff, so `|` cycles between them.
+- If delta is not on `PATH`, the default list starts with git's own diff and a
+  notice is shown once per session saying delta was not found. An explicitly
+  configured renderer list is never altered.
+
+Acceptance: with no theme config, dark and light backgrounds get the table's
+colours, and a reported background change switches them; an explicit theme
+field overrides only that field; with no renderer config and delta on `PATH`,
+diffs render through delta and `|` reaches git's diff; without delta, git's
+diff is used and the notice appears once; docs list the defaults and the
+renamed keys.
+
 ## Verification and repository workflow
 
 During implementation use narrow package tests and named integration scenarios
@@ -957,7 +1002,7 @@ they do not validate a completed UI or implementation.
 ## Next design review artifact
 
 The earlier questions are answered under “Agreed direction” and the relevant
-milestones. All numbered milestones are complete; new work after them starts by adding
+milestones. Item 15 is current; new work after them starts by adding
 a reviewed milestone here.
 
 This remains an extensible backlog: add further features with target semantics,
