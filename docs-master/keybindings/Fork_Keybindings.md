@@ -87,7 +87,9 @@ that have no default shortcut in this fork, including squash/fixup.
 | Left/Right or Tab pane switching | `h`/`l` or numbers; Tab changes tabs |
 | `n`/`N` search results | F3 / Shift+F3 |
 | Separate squash/fixup shortcuts | `g c` combine |
-| Toggle cherry-pick marking | `c y` mark / `c x` unmark; Escape clears marks |
+| Toggle cherry-pick marking | `c y` mark / `c x` unmark; Escape in a history pane clears marks (leaving a subview keeps them) |
+| Enter to resolve a conflicted file | `v` opens its resolution view or dialog |
+| Space / `b` / `z` in the merge view | `g h p` pick hunk / `g h b` pick both / `u u` undo |
 
 The history graph includes all refs by default. Set
 `git.log.showWholeGraph: false` to restrict it explicitly.
