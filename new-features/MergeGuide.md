@@ -60,7 +60,9 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   side-context copy binding is `clipboard.copy-abbreviated-commit-hash`
   (it truncates), while reflog keeps `clipboard.copy-commit-hash` (full).
   Keep these IDs distinct when merging upstream copy changes; a view must not
-  bind one command ID twice. Branch, remote-branch and tag panels get the same
+  bind one command ID twice. `LegacyFields` scopes the legacy
+  `copyToClipboard` key for those two IDs to the upstream views, so an
+  explicit legacy key never also binds the fork's flat actions elsewhere. Branch, remote-branch and tag panels get the same
   list through `RefCommitCopyController` (attached in `pkg/gui/controllers.go`),
   which resolves the selected full ref with `CommitCommands.ResolveRefCommitHash`
   and `TagsPointingAt` (`git_commands/fork_ref_commit.go`) at press time. It
