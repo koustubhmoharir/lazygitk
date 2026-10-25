@@ -50,6 +50,18 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   `config/side_panels_in_per_repo_config`, `ui/reload_side_panels`).
   `CONFIG_DIR`, `LG_CONFIG_FILE` and the `lazygit-<uid>` temp directory are
   unchanged.
+- Theme defaults and focus frame (roadmap item 15): `ThemeForBackground` in
+  `pkg/config/theme_config.go` merges `forkThemePalette`
+  (`fork_theme_palette.go`) between `gui.theme` and upstream's
+  `themeDefaults`, and `applyForkDefaults` clears those fields' static
+  defaults so the palette applies; upstream's
+  `TestBackgroundDefaultsAreDerivedFromTheBackgroundColor` now calls
+  `themeDefaults` directly for `selectedLineBgColor`. Frame runes moved from
+  upstream's border switch in `configureViewProperties` to
+  `pkg/gui/fork_focus_frame.go`; `updateFocusFrames` is called from
+  `configureViewProperties`, `ContextMgr.Activate` and the initial focus in
+  `layout`. When upstream changes the border styles, port them into
+  `focusFrameStyle`.
 - Repository switching (roadmap item 14): `repo.switch-menu` routes to `s r`
   and the global `repo.open-path` binding in `keybindings.go` to `s n`; the
   logic is `helpers/fork_open_repo_path.go`. Prompts gained an optional

@@ -202,6 +202,8 @@ func (self *ContextMgr) Activate(c types.Context, opts types.OnFocusOpts) {
 	self.gui.c.GocuiGui().Cursor = v.Editable && v.Mask == ""
 
 	self.UpdateSelectionHighlights()
+	// Fork: the focused view's frame changes with focus (fork_focus_frame.go).
+	self.gui.updateFocusFrames()
 
 	c.HandleFocus(opts)
 	if self.gui.ViewsSetup {

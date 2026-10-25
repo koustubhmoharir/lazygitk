@@ -33,6 +33,11 @@ func TestGetGocuiStyle(t *testing.T) {
 			keys:     []string{"default", "dim"},
 			expected: gocui.ColorDefault | gocui.AttrDim,
 		},
+		{
+			name:     "hex color with bold",
+			keys:     []string{"#b4befe", "bold"},
+			expected: gocui.NewRGBColor(0xb4, 0xbe, 0xfe) | gocui.AttrBold,
+		},
 	}
 
 	for _, scenario := range scenarios {

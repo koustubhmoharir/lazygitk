@@ -185,26 +185,7 @@ func frameRunesWithTopCorners(frameRunes []rune, topLeft rune, topRight rune) []
 }
 
 func (gui *Gui) configureViewProperties() {
-	frameRunes := []rune{'─', '│', '┌', '┐', '└', '┘'}
-	// The corners for a view that hangs off the bottom of another one, so that the
-	// border they share reads as a divider rather than as two frames touching.
-	teeLeft, teeRight := '├', '┤'
-	switch gui.c.UserConfig().Gui.Border {
-	case "double":
-		frameRunes = []rune{'═', '║', '╔', '╗', '╚', '╝'}
-		teeLeft, teeRight = '╠', '╣'
-	case "rounded":
-		frameRunes = []rune{'─', '│', '╭', '╮', '╰', '╯'}
-	case "hidden":
-		frameRunes = []rune{' ', ' ', ' ', ' ', ' ', ' '}
-		teeLeft, teeRight = ' ', ' '
-	case "bold":
-		frameRunes = []rune{'━', '┃', '┏', '┓', '┗', '┛'}
-		teeLeft, teeRight = '┣', '┫'
-	}
-
 	for _, mapping := range gui.orderedViewNameMappings() {
-		(*mapping.viewPtr).FrameRunes = frameRunes
 		(*mapping.viewPtr).BgColor = gui.g.BgColor
 		(*mapping.viewPtr).FgColor = theme.GocuiDefaultTextColor
 		(*mapping.viewPtr).SelBgColor = theme.GocuiSelectedLineBgColor
@@ -213,7 +194,9 @@ func (gui *Gui) configureViewProperties() {
 		(*mapping.viewPtr).SelTextColor = theme.GocuiSelectedLineFgColor
 	}
 
-	gui.Views.MenuFilterFrame.FrameRunes = frameRunesWithTopCorners(frameRunes, teeLeft, teeRight)
+	// Fork: the frame runes depend on the border style and on which view is
+	// focused, so they're set by updateFocusFrames (fork_focus_frame.go).
+	gui.updateFocusFrames()
 
 	gui.c.SetViewContent(gui.Views.SearchPrefix, gui.c.Tr.SearchPrefix)
 

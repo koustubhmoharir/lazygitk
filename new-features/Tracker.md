@@ -3,8 +3,6 @@
 Item 15: Catppuccin theme defaults and delta as the default diff renderer.
 Scope and decisions are in [Roadmap.md](Roadmap.md#15-catppuccin-theme-defaults-and-delta-as-the-default-diff-renderer).
 
-- Theme: Mocha/Latte as a fork layer of the background-dependent defaults,
-  and a heavy frame on the focused pane; unit and integration tests.
 - Diff renderer: delta-then-git default when unconfigured, with the
   missing-delta fallback and notice; unit and integration tests.
 - Docs, merge guide; mark the item complete.

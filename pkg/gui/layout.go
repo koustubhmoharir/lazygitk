@@ -17,6 +17,9 @@ func (gui *Gui) layout(g *gocui.Gui) error {
 		if _, err := gui.g.SetCurrentView(gui.defaultSideContext().GetViewName()); err != nil {
 			return err
 		}
+		// Fork: the initial focus changed without Activate, so set the frames for it
+		// (fork_focus_frame.go).
+		gui.updateFocusFrames()
 	}
 
 	g.Highlight = true

@@ -18,7 +18,11 @@ import (
 // as #rrggbb, or empty if we don't know it.
 func (c *GuiConfig) ThemeForBackground(lightBackground bool, backgroundColor string) ThemeConfig {
 	override := lo.Ternary(lightBackground, c.LightTheme, c.DarkTheme)
-	return mergeThemes(override, c.Theme, themeDefaults(lightBackground, backgroundColor))
+	// Fork: the Catppuccin palette (fork_theme_palette.go) goes after the user's
+	// gui.theme, so that user values win, and before themeDefaults, so that it
+	// wins over upstream's background-derived defaults for the same fields.
+	// Upstream's themeDefaults stays as it is, for the fields the palette leaves out.
+	return mergeThemes(override, c.Theme, forkThemePalette(lightBackground), themeDefaults(lightBackground, backgroundColor))
 }
 
 // themeDefaults returns the defaults of the theme fields whose default depends

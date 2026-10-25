@@ -190,13 +190,10 @@ gui:
   # See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#color-attributes
   theme:
     # Border color of focused window
-    activeBorderColor:
-      - green
-      - bold
+    activeBorderColor: []
 
     # Border color of non-focused windows
-    inactiveBorderColor:
-      - default
+    inactiveBorderColor: []
 
     # Border color of focused window when searching in that window
     searchingActiveBorderColor:
@@ -204,8 +201,7 @@ gui:
       - bold
 
     # Color of keybindings help text in the bottom line
-    optionsTextColor:
-      - blue
+    optionsTextColor: []
 
     # Color and attributes of the text of the selected line. The attributes are
     # added to those of the text, and a color replaces the colors of the text.
@@ -225,28 +221,22 @@ gui:
     inactiveViewSelectedLineBgColor: []
 
     # Foreground color of copied commit
-    cherryPickedCommitFgColor:
-      - blue
+    cherryPickedCommitFgColor: []
 
     # Background color of copied commit
-    cherryPickedCommitBgColor:
-      - cyan
+    cherryPickedCommitBgColor: []
 
     # Foreground color of marked base commit (for rebase)
-    markedBaseCommitFgColor:
-      - blue
+    markedBaseCommitFgColor: []
 
     # Background color of marked base commit (for rebase)
-    markedBaseCommitBgColor:
-      - yellow
+    markedBaseCommitBgColor: []
 
     # Color for file with unstaged changes
-    unstagedChangesColor:
-      - red
+    unstagedChangesColor: []
 
     # Default text color
-    defaultFgColor:
-      - default
+    defaultFgColor: []
 
     # See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-author-color
     authorColors: {}
@@ -1132,6 +1122,34 @@ gui:
 For `authorColors` and `branchColorPatterns`, each entry overrides the one with the same key in `gui.theme`, and the other entries of `gui.theme` still apply. Branch color patterns of `gui.darkTheme` or `gui.lightTheme` come before those of `gui.theme`.
 
 Lazygit asks the terminal whether its background is dark or light. If your terminal doesn't tell, lazygit assumes a dark background; set `gui.colorScheme` to `light` if yours is light.
+
+### lazygitk's default colors
+
+lazygitk's theme defaults are the [Catppuccin](https://catppuccin.com) palette:
+Mocha on a dark background and Latte on a light one. That is why the default
+config above shows these fields as empty: their value depends on the background.
+Anything you set in `gui.theme`, `gui.darkTheme` or `gui.lightTheme` still wins.
+The colors are hex values, so the terminal needs truecolor support (under tmux,
+enable its RGB/truecolor feature).
+
+| Field | Mocha (dark) | Latte (light) |
+| --- | --- | --- |
+| `activeBorderColor` | `#b4befe`, bold | `#7287fd`, bold |
+| `inactiveBorderColor` | `#a6adc8` | `#6c6f85` |
+| `optionsTextColor` | `#89b4fa` | `#1e66f5` |
+| `selectedLineBgColor` | `#313244` | `#ccd0da` |
+| `cherryPickedCommitBgColor` | `#45475a` | `#bcc0cc` |
+| `cherryPickedCommitFgColor` | `#a6e3a1` | `#40a02b` |
+| `markedBaseCommitBgColor` | `#45475a` | `#bcc0cc` |
+| `markedBaseCommitFgColor` | `#fab387` | `#fe640b` |
+| `unstagedChangesColor` | `#f38ba8` | `#d20f39` |
+| `defaultFgColor` | `#cdd6f4` | `#4c4f69` |
+
+The focused pane is drawn with a heavy frame; the others use `gui.border`
+(`hidden` hides every frame). Note that some older theme keys no longer exist:
+`defaultTextColor` is now `defaultFgColor`, `cherryPickedCommitTextStyle` is
+`cherryPickedCommitFgColor`, `markedBaseCommitTextStyle` is
+`markedBaseCommitFgColor`, and `selectedRangeBgColor` was removed.
 
 ## Custom Author Color
 

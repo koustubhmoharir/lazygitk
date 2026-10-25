@@ -34,5 +34,17 @@ func applyForkDefaults(config *UserConfig) *UserConfig {
 	config.Keybinding.Universal.ToggleRangeSelect = nil
 	config.Keybinding.Files.CommitChangesWithoutHook = nil
 	config.Keybinding.Commits.PasteCommits = nil
+	// The Catppuccin palette in fork_theme_palette.go supplies these fields' defaults
+	// per background, so gui.theme must leave them empty for it to apply.
+	config.Gui.Theme.ActiveBorderColor = nil
+	config.Gui.Theme.InactiveBorderColor = nil
+	config.Gui.Theme.OptionsTextColor = nil
+	config.Gui.Theme.CherryPickedCommitBgColor = nil
+	config.Gui.Theme.CherryPickedCommitFgColor = nil
+	config.Gui.Theme.MarkedBaseCommitBgColor = nil
+	config.Gui.Theme.MarkedBaseCommitFgColor = nil
+	config.Gui.Theme.UnstagedChangesColor = nil
+	config.Gui.Theme.DefaultFgColor = nil
+	config.Gui.Theme.SelectedLineBgColor = nil
 	return config
 }
