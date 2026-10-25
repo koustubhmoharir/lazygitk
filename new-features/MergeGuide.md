@@ -533,7 +533,7 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   `getRandomTip`, which drop any tip whose key has no label. Modal confirm/cancel hints
   keep their native keys. Re-check these sites on upstream merges.
 
-### Command usage (item 9 in progress)
+### Command usage (item 9 complete)
 
 - Usage counts persist in `command_usage.json` beside `state.yml`, through
   `pkg/commandusage` and `config.CommandUsageFilePath`. Recording lives in

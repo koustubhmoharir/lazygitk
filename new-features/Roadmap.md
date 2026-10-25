@@ -64,7 +64,7 @@ tasks with the next item's plan in the same completion commit.
 | 6 | Rebase current branch onto a selected commit | Complete | 2 | Small–medium |
 | 7 | Operate on selected branches without checkout | Complete | 4; explicit target design | Large |
 | 8 | Consistent default shortcuts and inactive-key behavior | Complete | 2–7's action inventory | Large |
-| 9 | Frequency-ordered command palette | Current | 2; works before or after 8 | Medium |
+| 9 | Frequency-ordered command palette | Complete | 2; works before or after 8 | Medium |
 
 ## Fork implementation principles
 
@@ -698,6 +698,26 @@ Provide a migration table for changed defaults in `docs-master/`.
 
 ## 9. Frequency-ordered `?` palette
 
+Complete, with these user decisions refining the plan below:
+
+- Scoring follows how the command was reached: a shortcut or prefix-menu leaf
+  subtracts 1 (the user has learned it) and palette execution adds 1. Counts
+  may go negative, so learned commands sink below never-used ones.
+- A use is pending while its handler runs. The first confirmation, prompt or
+  menu opened through `PopupHandler` meanwhile commits it on acceptance and
+  drops it on cancel; otherwise it commits when the handler returns. For easy
+  upstream merges, popups opened later from background workers are not
+  tracked, and menus whose items include their own cancel action count as
+  accepted.
+- Counts persist in a dedicated `command_usage.json` beside `state.yml`
+  (`pkg/commandusage`): deltas flush about two seconds after a use and on exit,
+  under a lock file with a temp-file rename, merging concurrent processes. An
+  unreadable file is dropped with a toast saying the counts were reset.
+- The palette merges local and global commands into one usage-sorted list with
+  a dim `local`/`global` tag; Navigation stays a static section at the bottom.
+  `gui.commandPaletteOrder: static` restores the upstream sections, and a
+  palette-only command resets the counts.
+
 Sort discoverable actions by local usage counts using stable command IDs.
 Agreed scope: global per-user counts, shared across repositories. Planned
 initial policy is lifetime frequency. The palette still shows actions relevant
@@ -762,9 +782,8 @@ they do not validate a completed UI or implementation.
 ## Next design review artifact
 
 The earlier questions are answered under “Agreed direction” and the relevant
-milestones. Milestone 8's reviewed key and menu-path table is implemented. The
-next review covers milestone 9's recording seam and persistence choices, as
-listed in the tracker.
+milestones. All numbered milestones are complete; new work starts by adding a
+reviewed milestone here.
 
 This remains an extensible backlog: add further features with target semantics,
 repository evidence, dependencies, and acceptance tests. No application feature

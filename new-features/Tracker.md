@@ -1,33 +1,7 @@
 # Current work
 
-Roadmap item: [9. Frequency-ordered `?` palette](Roadmap.md#9-frequency-ordered--palette).
-Status: design agreed with the user; implementation in progress.
-
-Agreed design (user decisions 2026-10-25, refining the roadmap):
-
-- Scoring: a direct shortcut or prefix-menu leaf subtracts 1 (the user has
-  learned it); palette execution adds 1. Counts may go negative. Sort by count
-  descending, declaration order breaking ties; order is fixed while open.
-- Recording seam: `callKeybindingHandler` receives the source. The use is
-  pending while the handler runs; a confirmation, prompt or menu opened through
-  `PopupHandler` during the handler commits it on acceptance and drops it on
-  cancel; otherwise it commits immediately. Upstream merge ease outweighs exact
-  acceptance tracking, so popups opened later from workers are not tracked.
-  Prefix group menus, disabled/inapplicable actions, navigation commands and
-  typing are not counted. Custom commands use `CommandIdentity`.
-- Storage: dedicated `command_usage.json` beside `state.yml`, IDs and counts
-  only. In-memory deltas flush (batched ~2 s, and on exit) under a lock file:
-  re-read, add deltas, write a temp file, rename, release. A corrupt file is
-  dropped with a warning that counts were reset; write failures are logged.
-- Palette: local and global commands merge into one usage-sorted list with a
-  dim local/global tag; Navigation stays a static section at the bottom. Add a
-  confirmed reset-counts command and a config option for static ordering.
-
-## Remaining tasks for item 9
-
-1. Terminal scenarios for restart persistence and the corrupt-file warning,
-   then the full short and integration suites and lint. When acceptance passes,
-   complete item 9 in the roadmap and update this tracker in that commit.
+All roadmap items (1–9) are complete. There is no current item. Add and review
+a new milestone in [Roadmap.md](Roadmap.md) before planning tasks here.
 
 ## How this tracker works
 
