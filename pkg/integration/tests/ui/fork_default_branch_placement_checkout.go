@@ -25,6 +25,7 @@ var ForkDefaultBranchPlacementCheckout = NewIntegrationTest(NewIntegrationTestAr
 			NewBranch("feature").
 			Checkout("master").
 			EmptyCommit("two").
+			CreateLightweightTag("v1", "HEAD").
 			CloneIntoRemote("origin").
 			EmptyCommit("three")
 	},
@@ -135,5 +136,22 @@ var ForkDefaultBranchPlacementCheckout = NewIntegrationTest(NewIntegrationTestAr
 			Confirm()
 		branches.IsFocused().SelectedLine(Contains("co-new"))
 		assertCurrent("co-new", oneOID)
+
+		// 8. Selected tag checkout offers only detached checkout, not an attach item.
+		tags := t.Views().Tags()
+		tags.Focus().NavigateToLine(Contains("v1")).Press(config.Keybinding{"s"})
+		t.ExpectPopup().Menu().Title(Equals("s"))
+		t.Views().Menu().Press(config.Keybinding{"c"})
+		t.Views().Menu().Content(DoesNotContain("Checkout branch '"))
+		t.ExpectPopup().Menu().
+			Title(Equals("Checkout branch or commit")).
+			Select(Contains("as detached head")).
+			Confirm()
+		t.Views().Menu().IsInvisible()
+		tags.IsFocused()
+		if got := t.Git().GetCommitHash("HEAD"); got != twoOID {
+			t.Fail("Expected detached HEAD " + twoOID + ", got " + got)
+		}
+		t.Shell().RunCommandExpectError([]string{"git", "symbolic-ref", "-q", "HEAD"})
 	},
 })
