@@ -1,5 +1,9 @@
 # Custom Command Keybindings
 
+> **lazygitk:** keybindings are fixed, so a custom command's `key` is ignored
+> (lazygitk shows a startup notice when one is set). Run custom commands from
+> the `?` command palette. The rest of this page applies unchanged.
+
 You can add custom command keybindings in your config.yml (accessible by pressing 'e' on the status panel from within lazygit) like so:
 
 ```yml

@@ -68,7 +68,7 @@ tasks with the next item's plan in the same completion commit.
 | 10 | Separate configuration and state from upstream lazygit | Complete | None | Small |
 | 11 | Push without a redundant review | Complete | 7 | Small |
 | 12 | One flat copy menu with consistent keys | Complete | 2, 8 | Medium |
-| 13 | Fixed keybindings: key configuration is ignored | Planned | 8, 12 | Medium |
+| 13 | Fixed keybindings: key configuration is ignored | Complete | 8, 12 | Medium |
 
 ## Fork implementation principles
 
@@ -570,7 +570,8 @@ Implementation notes that refine the design below:
   the relevant pane, never an upstream legacy key field.
 - Explicit legacy fields and stable-ID `commandBindings` override defaults in
   the documented order; real-default and override scenarios under
-  `pkg/integration/tests/ui/fork_*` cover the profile.
+  `pkg/integration/tests/ui/fork_*` cover the profile. Since item 13 these overrides
+  apply only inside the integration harness; users get fixed keys.
 
 Use milestone 2's complete inventory to produce and review a verb-to-key table
 before changing defaults. All alphabetic commands are case-insensitive: `p`
@@ -855,7 +856,10 @@ table; no `y` default conflicts within a panel.
 
 ## 13. Fixed keybindings: key configuration is ignored
 
-Planned. This is a personal fork, so keybindings are not configurable: the
+Complete. Ignored settings are discarded before validation, so an invalid key
+in them cannot block startup. Toasts are suppressed under the integration
+harness, so the notice text is covered by unit tests; the scenario
+`config/fork_ignored_key_config` covers the ignored keys themselves. This is a personal fork, so keybindings are not configurable: the
 fork's defaults always apply. Upstream's `keybinding` field names overlap and
 fold onto each other in the fork's case-insensitive routes (for example
 explicit `p` pull and `P` push become one key), and they leak into panels
@@ -917,7 +921,7 @@ they do not validate a completed UI or implementation.
 ## Next design review artifact
 
 The earlier questions are answered under “Agreed direction” and the relevant
-milestones. Item 13 is current; new work after them starts by adding
+milestones. All numbered milestones are complete; new work after them starts by adding
 a reviewed milestone here.
 
 This remains an extensible backlog: add further features with target semantics,

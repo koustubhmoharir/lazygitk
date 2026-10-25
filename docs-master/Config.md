@@ -1215,53 +1215,20 @@ Supported versions are "2" and "3". The deprecated config `showIcons` sets the v
 
 ## Keybindings
 
-For all possible keybinding options, check [Custom_Keybindings.md](keybindings/Custom_Keybindings.md)
+Keybindings are fixed in lazygitk. The `keybinding` section, `commandBindings`
+and the `key` of custom commands are ignored in global and per-repo config
+files, and lazygitk shows a notice at startup naming each file that contains
+them. Custom commands remain available from the `?` command palette. See
+[Fork_Keybindings.md](keybindings/Fork_Keybindings.md) for the keys.
 
-You can disable certain key bindings by specifying `<disabled>`.
-
-```yaml
-keybinding:
-  universal:
-    edit: <disabled> # disable 'edit file'
-```
+The default config below still lists the `keybinding` fields because they are
+part of the shared configuration schema; setting them has no effect.
 
 ### Overriding the platform for default keybindings
 
 A few keybindings have different defaults on macOS than on Linux and Windows (e.g. word-wise cursor movement in text inputs uses `alt` on macOS but `ctrl` elsewhere). Lazygit picks these based on the OS it's running on, but you can override that with the `LAZYGIT_KEYBINDING_PLATFORM` environment variable. Set it to `darwin`, `linux`, or `windows`; any other value is ignored and the actual OS is used.
 
 This is useful when running lazygit in a Linux container that you access over ssh from a Mac, where you'd rather use the macOS keybindings.
-
-### Example Keybindings For Colemak Users
-
-```yaml
-keybinding:
-  universal:
-    prevItem-alt: 'u'
-    nextItem-alt: 'e'
-    prevBlock-alt: 'n'
-    nextBlock-alt: 'i'
-    nextMatch: '='
-    prevMatch: '-'
-    new: 'k'
-    edit: 'o'
-    openFile: 'O'
-    scrollUpMain-alt1: 'U'
-    scrollDownMain-alt1: 'E'
-    scrollUpMain-alt2: '<c-u>'
-    scrollDownMain-alt2: '<c-e>'
-    undo: 'l'
-    redo: '<c-r>'
-    diffingMenu: 'M'
-    filteringMenu: '<c-f>'
-  files:
-    ignoreFile: 'I'
-  commits:
-    moveDownCommit: '<c-e>'
-    moveUpCommit: '<c-u>'
-  branches:
-    viewGitFlowOptions: 'I'
-    setUpstream: 'U'
-```
 
 ## Custom pull request URLs
 

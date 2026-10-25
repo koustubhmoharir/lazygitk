@@ -24,6 +24,10 @@ func (config *UserConfig) KeybindingIsExplicit(path string) bool {
 // Inspect migrated content, matching the normal typed loader. Decoding mappings
 // into Nodes resolves inline merges without interpreting unknown field values.
 func recordExplicitKeybindingFields(config *UserConfig, content []byte) error {
+	if !honourKeyConfig() {
+		// Ignored key settings are never explicit (roadmap item 13).
+		return nil
+	}
 	var document yaml.Node
 	if err := yaml.Unmarshal(content, &document); err != nil {
 		return err

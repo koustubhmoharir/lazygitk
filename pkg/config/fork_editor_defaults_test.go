@@ -25,6 +25,7 @@ func TestForkEditorDefaultsForPlatform(t *testing.T) {
 }
 
 func TestForkEditorDefaultsConfigLoadingPreservesExplicitBindings(t *testing.T) {
+	t.Setenv(HonourKeyConfigEnvVar, "1")
 	for _, platform := range []string{"linux", "darwin", "windows"} {
 		t.Run(platform, func(t *testing.T) {
 			t.Setenv("LAZYGIT_KEYBINDING_PLATFORM", platform)

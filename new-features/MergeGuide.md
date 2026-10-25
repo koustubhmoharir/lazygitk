@@ -50,6 +50,17 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   `config/side_panels_in_per_repo_config`, `ui/reload_side_panels`).
   `CONFIG_DIR`, `LG_CONFIG_FILE` and the `lazygit-<uid>` temp directory are
   unchanged.
+- Fixed keybindings (roadmap item 13): `pkg/config/fork_ignore_key_config.go`
+  discards the `keybinding` section, `commandBindings` and custom-command keys
+  per file in `loadUserConfig` (one capture before the file loop, one discard
+  before `Validate`), and `recordExplicitKeybindingFields` records nothing
+  unless `LAZYGITK_HONOUR_KEY_CONFIG` is set. The integration runner sets that
+  switch for every scenario (`pkg/integration/components/runner.go`), so
+  upstream scenarios that drive legacy keys merge and run unchanged; a
+  scenario opts out with `ExtraEnvVars`. The startup notice is
+  `pkg/gui/fork_ignored_key_config.go`, called from `onInitialViewsCreation`
+  and `onNewRepo`. New upstream key settings need no fork change; new
+  upstream config sections that carry keys would need adding to the discard.
 - Flat copy menu (roadmap item 12): `pkg/gui/keymap/default_paths.go` owns
   the `y` table; the nested copy menus (`file.copy-menu`,
   `history-file.copy-menu`, `commit.copy-attribute-menu`) stay bound for the

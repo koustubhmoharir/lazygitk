@@ -337,6 +337,9 @@ func (gui *Gui) onInitialViewsCreation() error {
 		gui.c.Toast(gui.Tr.CommandUsageReset)
 	}
 
+	// Fork: report key settings that were ignored at startup (roadmap item 13).
+	gui.showForkIgnoredKeyConfigNotices()
+
 	gui.waitForIntro.Done()
 
 	return nil

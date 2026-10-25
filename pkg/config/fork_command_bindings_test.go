@@ -47,6 +47,7 @@ func TestCommandBindingsYAMLAndValidation(t *testing.T) {
 }
 
 func TestCommandBindingsLayeringAndLegacyCompatibility(t *testing.T) {
+	t.Setenv(HonourKeyConfigEnvVar, "1")
 	dir := t.TempDir()
 	first := filepath.Join(dir, "first.yml")
 	second := filepath.Join(dir, "second.yml")

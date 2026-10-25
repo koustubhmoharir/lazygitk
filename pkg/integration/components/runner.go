@@ -11,6 +11,7 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
+	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/utils"
 	"github.com/samber/lo"
 )
@@ -281,6 +282,10 @@ func getLazygitCommand(
 	cmdObj.AddEnvVars(fmt.Sprintf("%s=%s", PWD, workingDir))
 
 	cmdObj.AddEnvVars(fmt.Sprintf("%s=%s", LAZYGIT_ROOT_DIR, rootDir))
+	// Fork: scenarios honour key configuration by default, as the shared
+	// fixture and upstream's scenarios expect. A scenario can opt out through
+	// ExtraEnvVars, which is applied after this and so overrides it.
+	cmdObj.AddEnvVars(fmt.Sprintf("%s=1", config.HonourKeyConfigEnvVar))
 
 	if args.CodeCoverageDir != "" {
 		// We set this explicitly here rather than inherit it from the test runner's

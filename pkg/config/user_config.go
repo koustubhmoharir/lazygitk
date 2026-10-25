@@ -9,6 +9,8 @@ import (
 type UserConfig struct {
 	// Fork-only load metadata; never part of user configuration or its schema.
 	keybindingExplicitFields map[string]struct{} `yaml:"-" json:"-"`
+	// Fork-only: key settings ignored while loading, reported at startup (see fork_ignore_key_config.go).
+	ignoredKeySettings []IgnoredKeySetting `yaml:"-" json:"-"`
 	// Config relating to the Lazygit UI
 	Gui GuiConfig `yaml:"gui"`
 	// Config relating to git

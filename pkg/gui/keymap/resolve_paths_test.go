@@ -68,6 +68,7 @@ func TestLegacyFieldProvenanceUsesViewAndYAMLNames(t *testing.T) {
 }
 
 func TestResolveLegacyOverridesIncludingSameDefaultAndExplicitDisable(t *testing.T) {
+	t.Setenv(config.HonourKeyConfigEnvVar, "1")
 	cfg := loadedKeymapConfig(t, "keybinding:\n  universal:\n    diffWithWorkingTree: w\n    pushFiles: []\n    prevItem-alt: '<alt+k>'\n")
 	paths, explicit, _, err := ResolvePaths(cfg, "diff.commit.worktree", "diff.commit.worktree", "commits")
 	requireKeymapNoError(t, err)
@@ -91,6 +92,7 @@ func TestResolveLegacyOverridesIncludingSameDefaultAndExplicitDisable(t *testing
 }
 
 func TestResolveLegacySharedIDDoesNotLeakBranchOverrideIntoCommitView(t *testing.T) {
+	t.Setenv(config.HonourKeyConfigEnvVar, "1")
 	cfg := loadedKeymapConfig(t, "keybinding:\n  branches:\n    createTag: '<f7>'\n")
 	paths, explicit, _, err := ResolvePaths(cfg, "tag.create-at-selection", "tag.create-at-selection", "localBranches")
 	requireKeymapNoError(t, err)
@@ -103,6 +105,7 @@ func TestResolveLegacySharedIDDoesNotLeakBranchOverrideIntoCommitView(t *testing
 }
 
 func TestResolveSharedRouteOverrideAndSpecificPriority(t *testing.T) {
+	t.Setenv(config.HonourKeyConfigEnvVar, "1")
 	cfg := loadedKeymapConfig(t, "keybinding:\n  universal:\n    select: '<f6>'\ncommandBindings:\n  diff.primary-selection: [['g', 'h']]\n  patch.toggle-selection: [['g', 'p']]\n")
 	paths, explicit, known, err := ResolvePaths(cfg, "diff.stage-selection", "diff.primary-selection", "main")
 	requireKeymapNoError(t, err)

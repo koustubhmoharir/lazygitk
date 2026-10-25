@@ -34,6 +34,7 @@ func TestForkDiffDefaultsForPlatform(t *testing.T) {
 }
 
 func TestForkDiffDefaultsConfigLoadingPreservesExplicitBindings(t *testing.T) {
+	t.Setenv(HonourKeyConfigEnvVar, "1")
 	for _, platform := range []string{"linux", "darwin", "windows"} {
 		t.Run(platform, func(t *testing.T) {
 			t.Setenv("LAZYGIT_KEYBINDING_PLATFORM", platform)

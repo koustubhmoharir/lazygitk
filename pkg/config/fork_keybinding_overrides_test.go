@@ -13,6 +13,7 @@ import (
 )
 
 func TestKeybindingExplicitProvenanceFromLoadedFiles(t *testing.T) {
+	t.Setenv(HonourKeyConfigEnvVar, "1")
 	t.Run("same default value on supported platforms", func(t *testing.T) {
 		for _, platform := range []string{"linux", "darwin", "windows"} {
 			t.Run(platform, func(t *testing.T) {
@@ -118,6 +119,7 @@ func TestKeybindingExplicitProvenanceAliasMergeStillRejectedByMigration(t *testi
 }
 
 func TestKeybindingExplicitProvenanceFreshReloadAndMissingOptional(t *testing.T) {
+	t.Setenv(HonourKeyConfigEnvVar, "1")
 	path := filepath.Join(t.TempDir(), "config.yml")
 	if err := os.WriteFile(path, []byte("keybinding:\n  universal:\n    pushFiles: [x]\n"), 0o600); err != nil {
 		t.Fatal(err)

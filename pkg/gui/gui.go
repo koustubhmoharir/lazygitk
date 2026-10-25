@@ -131,6 +131,9 @@ type Gui struct {
 	forkUsageFlushMu    sync.Mutex
 	forkUsageFlushTimer *time.Timer
 
+	// Fork: notices already shown for ignored key settings (roadmap item 13).
+	forkKeyConfigNotices forkKeyConfigNotices
+
 	Views types.Views
 
 	// Log of the commands/actions logged in the Command Log panel.
@@ -402,6 +405,9 @@ func (gui *Gui) onNewRepo(startArgs appTypes.StartArgs, contextKey types.Context
 
 	gui.resetHelpersAndControllers()
 	gui.resetKeybindings()
+	// Fork: notify about ignored key settings in the files just loaded (roadmap
+	// item 13). Toasts need the helpers, so this runs after they are reset.
+	gui.showForkIgnoredKeyConfigNotices()
 
 	gui.g.SetFocusHandler(func(Focused bool) error {
 		if Focused {

@@ -1274,6 +1274,7 @@ type TranslationSet struct {
 	NoCopiedCommits                          string
 	DisabledMenuItemPrefix                   string
 	CommandUsageReset                        string
+	IgnoredKeyConfig                         string
 	CommandPaletteScopeLocal                 string
 	CommandPaletteScopeGlobal                string
 	ResetCommandUsageCounts                  string
@@ -2757,6 +2758,7 @@ func EnglishTranslationSet() *TranslationSet {
 		InvalidLazygitEditURL:                    "Invalid lazygit-edit URL format: %s",
 		DisabledMenuItemPrefix:                   "Disabled: ",
 		CommandUsageReset:                        "Command usage counts were unreadable and have been reset.",
+		IgnoredKeyConfig:                         "Key settings are fixed in lazygitk; ignored %s in %s",
 		CommandPaletteScopeLocal:                 "local",
 		CommandPaletteScopeGlobal:                "global",
 		ResetCommandUsageCounts:                  "Reset command usage counts",

@@ -167,6 +167,9 @@ func loadUserConfig(configFiles []*ConfigFile, base *UserConfig, isGuiInitialize
 		// the integration harness saves and reloads its effective configuration.
 		base.keybindingExplicitFields = make(map[string]struct{})
 	}
+	// Fork: key settings are ignored unless the harness switch is on (see
+	// fork_ignore_key_config.go). Defaults are captured before any file merges.
+	keyDefaults := captureForkKeyConfigDefaults(base)
 	for _, configFile := range configFiles {
 		path := configFile.Path
 		statInfo, err := os.Stat(path)
@@ -223,6 +226,12 @@ func loadUserConfig(configFiles []*ConfigFile, base *UserConfig, isGuiInitialize
 		}
 
 		base.CustomCommands = append(base.CustomCommands, existingCustomCommands...)
+
+		// Fork: discard key settings from this file unless honoured (roadmap item 13).
+		// Runs before validation, so an ignored setting can never block startup.
+		if err := keyDefaults.discardKeyConfig(base, path, content); err != nil {
+			return nil, err
+		}
 
 		if err := base.Validate(); err != nil {
 			return nil, fmt.Errorf("The config at `%s` has a validation error.\n%w", path, err)

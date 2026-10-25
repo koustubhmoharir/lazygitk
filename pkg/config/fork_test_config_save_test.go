@@ -9,6 +9,7 @@ import (
 )
 
 func TestForkSaveGlobalUserConfigRoundTripsKeybindingIntent(t *testing.T) {
+	t.Setenv(HonourKeyConfigEnvVar, "1")
 	tests := []struct {
 		name       string
 		initial    string
@@ -103,6 +104,7 @@ func TestForkSaveGlobalUserConfigRoundTripsKeybindingIntent(t *testing.T) {
 }
 
 func TestForkTestConfigSaveConstructorResetAcrossPlatforms(t *testing.T) {
+	t.Setenv(HonourKeyConfigEnvVar, "1")
 	for _, platform := range []string{"linux", "darwin", "windows"} {
 		t.Run(platform, func(t *testing.T) {
 			t.Setenv("LAZYGIT_KEYBINDING_PLATFORM", platform)
@@ -189,6 +191,7 @@ func cloneKeybindingConfig(in KeybindingConfig) KeybindingConfig {
 }
 
 func TestForkSaveGlobalUserConfigKeepsExplicitLegacyAlias(t *testing.T) {
+	t.Setenv(HonourKeyConfigEnvVar, "1")
 	path := filepath.Join(t.TempDir(), "config.yml")
 	initial := "keybinding:\n  universal:\n    prevItem: [<up>, <k>]\n    prevItem-alt: [x]\n"
 	if err := os.WriteFile(path, []byte(initial), 0o600); err != nil {

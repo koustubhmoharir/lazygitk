@@ -63,35 +63,15 @@ sections in their fixed order instead.
 
 ## Configuration and migration
 
-Use stable command IDs for new overrides:
+Keybindings are fixed: lazygitk ignores the `keybinding` section,
+`commandBindings` and custom-command `key` values in every config file, and
+shows a startup notice naming each file that contains them. Upstream's setting
+names overlap once keys are matched without case (for example `p` pull and
+`P` push), so they cannot be honoured safely. Custom commands stay available
+from `?`.
 
-```yaml
-commandBindings:
-  diff.commit.worktree: [[d, w], '<f6>']
-  diff.history-file.worktree: [[d, w]]
-  app.refresh: ['<f5>']
-  branch.pull-current: []
-  branch.pull-selected: []
-```
-
-The outer list contains alternatives; each inner list is a sequence of one to
-three keys. Empty or null removes keyboard paths while keeping the action in
-`?`. Unmodified Enter, Escape, Up and Down are reserved after the first key for
-prefix-menu controls. Mouse events cannot be command paths.
-
-Specific command IDs take precedence over a shared route override, explicit
-legacy `keybinding` fields, then fork defaults. Explicit local routes win over
-explicit global ones; explicit routes win over defaults. An explicit single-key
-action displaces default continuations below that key. If both the leaf and its
-continuations are explicit, a visible menu presents the choice. Custom command
-roots retain native exact matching and take precedence over core paths.
-
-The generated configuration's legacy `keybinding` values support compatibility;
-they do not describe the effective normal-pane defaults. Copying the entire
-legacy table makes its entries explicit overrides. Keep only intentional
-overrides, and consult the [generated command tables](Keybindings_en.md) for
-the effective default paths. Explicit overrides can restore upstream actions
-that have no default shortcut in this fork, including squash/fixup.
+The effective keys are in the [generated command tables](Keybindings_en.md).
+Coming from upstream lazygit, these are the main differences:
 
 | Previous upstream shortcut | Fork default |
 | --- | --- |

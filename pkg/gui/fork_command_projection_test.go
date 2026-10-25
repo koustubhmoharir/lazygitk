@@ -215,6 +215,7 @@ func TestForkProjectionNamesInactiveActionsByTheirOwnVerb(t *testing.T) {
 }
 
 func TestForkProjectionLegacyModeKeyStaysLiveWithSpecificOverride(t *testing.T) {
+	t.Setenv(config.HonourKeyConfigEnvVar, "1")
 	gui := newForkKeymapTestGui(t)
 	path := filepath.Join(t.TempDir(), "config.yml")
 	if err := os.WriteFile(path, []byte("keybinding:\n  universal:\n    select: '<f6>'\ncommandBindings:\n  patch.toggle-selection: [['g', 'p']]\n"), 0o600); err != nil {
