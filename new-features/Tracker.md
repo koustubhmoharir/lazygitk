@@ -1,7 +1,15 @@
 # Current work
 
-All roadmap items (1–10) are complete. There is no current item. Add and review
-a new milestone in [Roadmap.md](Roadmap.md) before planning tasks here.
+Item 11: push without a redundant review. Scope and decisions are in
+[Roadmap.md](Roadmap.md#11-push-without-a-redundant-review).
+
+- Skip the ordinary push review in `branch_sync_push_flow.go` unless setting
+  upstream replaces different tracking or the push is force-with-lease; keep
+  the stacked-push flow unchanged.
+- Update the sync push scenarios that expect "Review branch push", and add
+  coverage for the typed-remote path and the tracking-replacement review.
+- Update item 7's wording, the merge guide and fork docs, and mark the item
+  complete.
 
 ## How this tracker works
 

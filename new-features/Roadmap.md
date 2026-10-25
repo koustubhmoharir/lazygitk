@@ -66,6 +66,8 @@ tasks with the next item's plan in the same completion commit.
 | 8 | Consistent default shortcuts and inactive-key behavior | Complete | 2–7's action inventory | Large |
 | 9 | Frequency-ordered command palette | Complete | 2; works before or after 8 | Medium |
 | 10 | Separate configuration and state from upstream lazygit | Complete | None | Small |
+| 11 | Push without a redundant review | Planned | 7 | Small |
+| 12 | One flat copy menu with consistent keys | Planned | 2, 8 | Medium |
 
 ## Fork implementation principles
 
@@ -776,6 +778,70 @@ state paths resolve under `lazygitk/`; an existing `lazygit/config.yml` or
 per-repo scenarios load `lazygitk.yml` files; `--print-config-dir` reports
 the `lazygitk` directory; user docs describe the new locations.
 
+## 11. Push without a redundant review
+
+Planned. The push menu already shows source, commit, remote, destination,
+upstream and submodule settings, so choosing **Push this branch** pushes after
+the usual preparation, without a second "Review branch push" confirmation.
+TortoiseGit's push dialog likewise pushes directly from its options. User
+decisions:
+
+- No review after choosing **Push this branch**, including when the remote or
+  destination was just typed in a prompt (from the menu's choose-remote or
+  choose-destination items, or because no remote was configured).
+- A review is still shown when setting upstream would replace existing,
+  different tracking, and for force-with-lease (unchanged).
+- Preparation still pins the push to the commit shown in the menu: if the
+  branch moved, the menu reopens with fresh details instead of pushing.
+  Ambiguous-upstream and multiple-push-URL choices are unchanged.
+- The stacked-push collection flow keeps its per-member review and final
+  batch approval.
+
+This refines item 7's "newly reviewed push" wording: the menu summary is the
+review for an ordinary push.
+
+Acceptance: an ordinary push from the menu reaches the remote with one
+choice; typed remote/destination paths push without a confirmation; tracking
+replacement and force-with-lease still show their reviews; a branch that moved
+after the menu opened reopens the menu and does not push.
+
+## 12. One flat copy menu with consistent keys
+
+Planned. `y` opens one flat copy menu. The nested copy menus lose their `y c`
+default (they stay reachable from `?`), and each second key means the same
+thing in every panel. No default uses Shift. Anything that points at a commit
+offers the commit options: commits, reflog, sub-commits, local branches,
+remote branches and tags (resolved to the commit at the time of the copy).
+
+| Keys | Copies | Panels |
+| --- | --- | --- |
+| `y n` | Name | local/remote branches, tags, submodules, Files, commit files |
+| `y p` | Relative path | Files, commit files |
+| `y f` | Absolute ("full") path | Files, commit files |
+| `y h` | Full commit hash | commit-like panels and refs |
+| `y i` | Abbreviated commit hash ("id") | commit-like panels and refs |
+| `y s`, `y m`, `y b` | Subject, full message, message body | commit-like panels and refs |
+| `y u` | Commit URL | commit-like panels and refs |
+| `y a` | Author | commit-like panels and refs |
+| `y t` | Tags on the commit | commit-like panels and refs |
+| `y d` | Diff of the selection: commit, selected file, or selected diff lines | commit-like panels, refs, Files, commit files, diff views |
+| `y w` | Diff of all working-tree files | Files |
+| `y r` | Pull request URL | local branches |
+| `y y` | Confirmation text | confirmation popups |
+
+- A message body or tag list that turns out empty is reported when the copy
+  is attempted, rather than pre-computed for every menu render.
+- The full-hash and abbreviated-hash actions get distinct command IDs; today
+  both use `clipboard.copy-commit-hash`.
+- Stash entries are out of scope.
+- Explicit legacy configuration (for example `copyToClipboard` or
+  `copyCommitAttributeToClipboard`) keeps its configured keys.
+
+Acceptance: every row above works in each listed panel from the `y` menu and
+the palette; copied text matches the existing menu actions; refs copy their
+resolved commit; generated keybinding docs and the keymap snapshot show the
+table; no `y` default conflicts within a panel.
+
 ## Verification and repository workflow
 
 During implementation use narrow package tests and named integration scenarios
@@ -810,8 +876,8 @@ they do not validate a completed UI or implementation.
 ## Next design review artifact
 
 The earlier questions are answered under “Agreed direction” and the relevant
-milestones. All numbered milestones are complete; new work starts by adding a
-reviewed milestone here.
+milestones. Items 11 and 12 are planned; new work after them starts by adding
+a reviewed milestone here.
 
 This remains an extensible backlog: add further features with target semantics,
 repository evidence, dependencies, and acceptance tests. No application feature
