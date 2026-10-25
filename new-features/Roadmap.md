@@ -69,6 +69,7 @@ tasks with the next item's plan in the same completion commit.
 | 11 | Push without a redundant review | Complete | 7 | Small |
 | 12 | One flat copy menu with consistent keys | Complete | 2, 8 | Medium |
 | 13 | Fixed keybindings: key configuration is ignored | Complete | 8, 12 | Medium |
+| 14 | Switch repositories with `s r` and open one by path with `s n` | Planned | 8 | Small–medium |
 
 ## Fork implementation principles
 
@@ -891,6 +892,36 @@ what was ignored; a config without them shows no notice; with the switch on,
 the existing suite passes unchanged; docs no longer describe key overrides as
 a user feature.
 
+## 14. Switch repositories with `s r` and open one by path with `s n`
+
+Planned. With lazygitk kept open in one terminal tab, a freshly cloned
+repository could only be opened by restarting it. User decisions:
+
+- `s r` opens the recent-repositories menu (global), replacing `t r r`.
+- `s n` (global) opens a "Repository path" prompt, prefilled with the
+  current repository's parent directory and a trailing separator. Confirming
+  switches to the repository containing that path through the existing
+  repository-switch helper, which also records it in the recent list. `~` is
+  expanded; a relative path is resolved against the current repository. A
+  path that is not a directory, or not inside a Git repository, shows an
+  error and keeps the prompt's text for correction.
+- Directory suggestions under the input update on every keystroke: the
+  subdirectories of the typed path's parent whose names start with the typed
+  last segment, short and sorted; hidden directories only once the segment
+  starts with `.`.
+- Tab completes shell-style: it inserts the longest common prefix of the
+  matches, plus a separator when exactly one directory matches. When nothing
+  more can be completed, Tab moves into the suggestion list as in other
+  prompts, where Enter picks the entry.
+- Switching is refused while a foreground operation runs, as for recent
+  repositories.
+
+Acceptance: from a repository, `s n`, typing a sibling's name prefix and Tab
+completes it, Enter opens it, and it then appears under `s r`; ambiguous
+prefixes complete to the common part and list the candidates; invalid paths
+report an error without leaving the current repository; `s r` replaces
+`t r r` in the generated key docs.
+
 ## Verification and repository workflow
 
 During implementation use narrow package tests and named integration scenarios
@@ -925,7 +956,7 @@ they do not validate a completed UI or implementation.
 ## Next design review artifact
 
 The earlier questions are answered under “Agreed direction” and the relevant
-milestones. All numbered milestones are complete; new work after them starts by adding
+milestones. Item 14 is current; new work after them starts by adding
 a reviewed milestone here.
 
 This remains an extensible backlog: add further features with target semantics,
