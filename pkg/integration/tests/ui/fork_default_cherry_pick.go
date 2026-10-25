@@ -47,11 +47,10 @@ var ForkDefaultCherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 			t.Fail("No-marks Files c p moved master to " + got)
 		}
 
-		// Opens the real default prefix menu for the first key, then picks the
-		// second key of a two-key path.
-		chord := func(view *ViewDriver, first, second string) {
-			view.Press(config.Keybinding{first})
-			t.ExpectPopup().Menu().Title(Equals(first))
+		// Opens the real default c prefix menu, then picks the continuation.
+		cherry := func(view *ViewDriver, second string) {
+			view.Press(config.Keybinding{"c"})
+			t.ExpectPopup().Menu().Title(Equals("c"))
 			t.Views().Menu().Press(config.Keybinding{second})
 		}
 		// The mark state is reported by the Information view as the total number
@@ -68,12 +67,12 @@ var ForkDefaultCherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 		// 1. Mark p1, then range-select p3 and p2 downwards from p3 and mark both.
 		subCommits := openSrcSubCommits()
 		subCommits.NavigateToLine(Contains("p1"))
-		chord(subCommits, "c", "y")
+		cherry(subCommits, "y")
 		assertMarkCount("1")
 
 		subCommits.NavigateToLine(Contains("p3")).Press(config.Keybinding{"<shift+down>"})
 		subCommits.TopLines(Contains("p3").IsSelected(), Contains("p2").IsSelected(), Contains("p1"))
-		chord(subCommits, "c", "y")
+		cherry(subCommits, "y")
 		assertMarkCount("3")
 
 		// A range stays active until dismissed; with a range active, Escape only
@@ -82,9 +81,9 @@ var ForkDefaultCherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 
 		// Marking p2 alone again keeps it marked; unmarking p2 leaves the rest.
 		subCommits.NavigateToLine(Contains("p2"))
-		chord(subCommits, "c", "y")
+		cherry(subCommits, "y")
 		assertMarkCount("3")
-		chord(subCommits, "c", "x")
+		cherry(subCommits, "x")
 		assertMarkCount("2")
 
 		// 2. With no range active, Escape exits SubCommits and the marks survive.
@@ -100,16 +99,16 @@ var ForkDefaultCherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 		// 4. Reopen src's SubCommits and re-mark p1 and p3.
 		subCommits = openSrcSubCommits()
 		subCommits.NavigateToLine(Contains("p1"))
-		chord(subCommits, "c", "y")
+		cherry(subCommits, "y")
 		assertMarkCount("1")
 		subCommits.NavigateToLine(Contains("p3"))
-		chord(subCommits, "c", "y")
+		cherry(subCommits, "y")
 		assertMarkCount("2")
 		subCommits.IsFocused().Press(config.Keybinding{"<esc>"})
 
 		// 5. c p in Commits with marks offers the marked and selected sources.
 		commits.Focus()
-		chord(commits, "c", "p")
+		cherry(commits, "p")
 		t.ExpectPopup().Menu().
 			Title(Equals("Choose commits to cherry-pick")).
 			ContainsLines(
@@ -129,7 +128,7 @@ var ForkDefaultCherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 		}
 		assertMarkCount("2")
 
-		chord(commits, "c", "p")
+		cherry(commits, "p")
 		t.ExpectPopup().Menu().
 			Title(Equals("Choose commits to cherry-pick")).
 			Select(Contains("Previously marked commits (2)")).
@@ -148,7 +147,7 @@ var ForkDefaultCherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 		// Retained pasted commits are intended: Files c p offers the re-paste
 		// review again, which must list p1 before p3 and then be cancelled.
 		t.Views().Files().Focus()
-		chord(t.Views().Files(), "c", "p")
+		cherry(t.Views().Files(), "p")
 		t.ExpectPopup().Confirmation().
 			Title(Equals("Cherry-pick")).
 			Content(reviewContent.Contains("master")).
