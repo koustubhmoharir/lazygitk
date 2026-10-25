@@ -1,36 +1,41 @@
 # Current work
 
 Roadmap item: [9. Frequency-ordered `?` palette](Roadmap.md#9-frequency-ordered--palette).
-Status: item 8 is complete (full short suite, lint and all 723 integration
-scenarios pass); this item has not started. Scope and validation
-are in the roadmap. Counts are global per user, keyed by stable command IDs,
-lifetime frequency, local only, with declaration order as the tie-breaker and
-the displayed order frozen while the palette is open.
+Status: design agreed with the user; implementation in progress.
+
+Agreed design (user decisions 2026-10-25, refining the roadmap):
+
+- Scoring: a direct shortcut or prefix-menu leaf subtracts 1 (the user has
+  learned it); palette execution adds 1. Counts may go negative. Sort by count
+  descending, declaration order breaking ties; order is fixed while open.
+- Recording seam: `callKeybindingHandler` receives the source. The use is
+  pending while the handler runs; a confirmation, prompt or menu opened through
+  `PopupHandler` during the handler commits it on acceptance and drops it on
+  cancel; otherwise it commits immediately. Upstream merge ease outweighs exact
+  acceptance tracking, so popups opened later from workers are not tracked.
+  Prefix group menus, disabled/inapplicable actions, navigation commands and
+  typing are not counted. Custom commands use `CommandIdentity`.
+- Storage: dedicated `command_usage.json` beside `state.yml`, IDs and counts
+  only. In-memory deltas flush (batched ~2 s, and on exit) under a lock file:
+  re-read, add deltas, write a temp file, rename, release. A corrupt file is
+  dropped with a warning that counts were reset; write failures are logged.
+- Palette: local and global commands merge into one usage-sorted list with a
+  dim local/global tag; Navigation stays a static section at the bottom. Add a
+  confirmed reset-counts command and a config option for static ordering.
 
 ## Remaining tasks for item 9
 
-1. Design the accepted-action recording seam and present it before
-   implementing. Identify the single point where a direct key, prefix-menu leaf
-   and palette execution of the same command converge, so each accepted action
-   counts once under its leaf ID. Exclude typing, navigation repeats, opening
-   `?`, prefix group menus, disabled/inapplicable actions and canceled
-   confirmations; decide how flows with a confirmation or review record only on
-   acceptance. Define the stable-ID policy for custom commands. Consult
-   TortoiseGit for any comparable usage-ordered UI.
-2. Design persistence and present the choice of app-state facility versus a
-   dedicated state file: write frequency, batching, flush on normal exit, atomic
-   writes, a lock or merge strategy across concurrent lazygit processes, and
-   tolerance of corrupt or unwritable state. Store only IDs and counts.
-3. Implement recording and persistence with unit tests for direct/menu/palette
-   parity, aliases, cancellations, failures after acceptance, restart
-   persistence, multiple processes and corrupt/unwritable state.
-4. Sort the palette by count with deterministic ties, keeping Local/Global/
-   Navigation as annotations or filters, context relevance, filtering and
-   disabled items; keep order and selection stable while open. Add reset-usage
-   and restore-static-ordering controls, with docs and merge-guide updates.
-5. Verify with focused and terminal scenarios, generation, formatting, builds,
-   full short and integration suites and lint. When item 9 acceptance passes,
-   complete its roadmap description and update this tracker in that commit.
+1. Usage store package with lock/temp/rename persistence, delta merge across
+   processes, corruption reset and unit tests.
+2. Recording seam in `callKeybindingHandler`, palette items and `PopupHandler`
+   acceptance, with unit tests for shortcut/leaf/palette parity, aliases,
+   cancellation and exclusions; flush on exit.
+3. Palette ordering, tags, Navigation section, reset command, static-order
+   option, schema/docs and merge-guide updates.
+4. Terminal scenarios (ordering after palette and shortcut use, cancel,
+   restart persistence, corrupt file warning), then generation, formatting,
+   builds, full short and integration suites and lint. When acceptance passes,
+   complete item 9 in the roadmap and update this tracker in that commit.
 
 ## How this tracker works
 
