@@ -234,8 +234,13 @@ func TestForkCherryPickRefusesRepositorySwitchAndNativeCollision(t *testing.T) {
 	})
 }
 
-func TestForkCherryPickSuccessPreservesUpstreamHiddenPickBuffer(t *testing.T) {
+func TestForkCherryPickSuccessClearsCapturedMarks(t *testing.T) {
 	c, ui, selection, _, oids := forkCherryPickFixture(t)
+	c.IGetContexts = ui
+	merge := helpers.NewMergeAndRebaseHelper(c.HelperCommon)
+	c.IGetHelpers = selectedRebaseFlowHelpers{value: &helpers.Helpers{
+		MergeAndRebase: merge, CherryPick: helpers.NewCherryPickHelper(c.HelperCommon, merge),
+	}}
 	selection.items = nil
 	ui.modes.CherryPicking.MarkCommits([]*models.Commit{historicalTestCommit(oids[1])})
 	confirm := forkCherryPickReview(t, c, ui)
@@ -248,7 +253,7 @@ func TestForkCherryPickSuccessPreservesUpstreamHiddenPickBuffer(t *testing.T) {
 	if err := ui.runUI(t); err != nil {
 		t.Fatal(err)
 	}
-	if ui.modes.CherryPicking.Active() || !ui.modes.CherryPicking.CanPaste() || !ui.modes.CherryPicking.DidPaste {
-		t.Fatal("successful marked pick changed upstream's retained-buffer behavior")
+	if ui.modes.CherryPicking.CanPaste() || ui.modes.CherryPicking.DidPaste {
+		t.Fatal("successful marked pick kept a hidden re-paste buffer")
 	}
 }

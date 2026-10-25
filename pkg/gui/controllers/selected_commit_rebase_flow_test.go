@@ -16,6 +16,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/common"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
+	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 )
@@ -47,6 +48,10 @@ func (ui *selectedRebaseFlowUI) Confirm(opts types.ConfirmOpts) {
 	ui.confirmations = append(ui.confirmations, opts)
 }
 func (ui *selectedRebaseFlowUI) OnUIThread(f func() error) { ui.ui = append(ui.ui, f) }
+
+// Mode resets re-render list contexts; the flows under test do not render.
+func (ui *selectedRebaseFlowUI) Contexts() *context.ContextTree  { return &context.ContextTree{} }
+func (ui *selectedRebaseFlowUI) PostRefreshUpdate(types.Context) {}
 func (ui *selectedRebaseFlowUI) Refresh(opts types.RefreshOptions) {
 	ui.refreshes = append(ui.refreshes, opts)
 }
