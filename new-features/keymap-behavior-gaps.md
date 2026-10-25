@@ -28,5 +28,6 @@ marks; do not add the earlier `c a` unmark-all shortcut. The combine/graph
 evidence is in [keymap-combine-graph-audit.md](keymap-combine-graph-audit.md).
 The latest key table and [allocation proposal](keymap-allocation.md) define the
 requested behavior and proposed marked/selected cherry-pick source review.
-The final bindings and behavior changes remain unimplemented pending user
-review. No application files or tests were changed by this source audit.
+This source audit changed no application files or tests. The bindings and
+behavior changes it motivated were implemented afterwards; the
+[tracker](Tracker.md) lists the verification still outstanding.

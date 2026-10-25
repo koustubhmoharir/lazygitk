@@ -44,6 +44,7 @@ The subsequent override foundation adds private load metadata to `UserConfig`
 and `KeybindingIsExplicit`, without changing effective key values. It records
 recognized YAML fields after migration/validation and before alias folding,
 including explicit values equal to defaults and disabled bindings. That closes
-the baseline provenance gap above; command-to-source-field projection is still
-pending. See the [merge guide](MergeGuide.md#command-key-foundation-item-8-in-progress)
+the baseline provenance gap above. Command-to-source-field projection was
+implemented later; the enabled profile is described in
+[Fork_Keybindings.md](../docs-master/keybindings/Fork_Keybindings.md). See the [merge guide](MergeGuide.md#command-key-foundation-item-8-in-progress)
 for the loader integration and compatibility boundaries.
