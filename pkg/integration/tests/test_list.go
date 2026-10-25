@@ -688,6 +688,8 @@ var tests = []*components.IntegrationTest{
 	ui.FilteringScrollsSelectionIntoView,
 	ui.FindBaseCommitForFixupScrollsIntoView,
 	ui.ForkDefaultBranchPlacementCheckout,
+	ui.ForkDefaultCherryPick,
+	ui.ForkDefaultHistoryOperations,
 	ui.ForkDefaultKeymap,
 	ui.ForkDefaultRefresh,
 	ui.ForkPrefixOverrides,

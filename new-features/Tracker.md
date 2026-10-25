@@ -51,29 +51,6 @@ custom commands. Frequency persistence and sorting remain item 9.
    Numbered jumps retain positional keys and have independent stable target IDs.
    The stable-ID path configuration parser/schema is connected through
    the projection and dispatcher; verify final override/operation scenarios.
-4. Extend the captured operation flows required by the
-   requested bindings: Files-only commit Enter,
-   explanatory rebase/merge confirmation,
-   Escape mark clearing and final default-profile verification of the integrated
-   exact-list marked/selected cherry-pick review (focused and terminal checks
-   preserve upstream paused-rebase support and post-pick buffer behavior),
-   plus ancestry-based combine
-   with an editable message.
-   Combine must replace the first selected ancestor (not an unselected parent),
-   preserve all selected full messages in ancestor-first order and leave
-   unselected history intact. The first version supports non-adjacent selections on linear ancestry and
-   refuses selections containing or crossing merges (user confirmed). Derive
-   ancestry from Git parents, never graph row/date order. The pure linear
-   topology/message planner and native sequence-editor message persistence are
-   implemented. The message survives explicit continuation after hook/fixup/pick
-   failures using Git-owned state. Repository capture and the native command
-   builder, editable GUI review, draft recovery and native continuation wiring
-   are implemented. The terminal combine scenario covers cancellation, dirty
-   worktrees, changed HEAD, fresh review and preserved external empty commits;
-   verify `g c` with the enabled profile and include it in final regression checks.
-   Retain native concurrency/overwrite protection and no implicit stash. Use
-   [keymap-behavior-gaps.md](keymap-behavior-gaps.md) as source evidence, not proof
-   that these flows are already implemented.
 5. Verify the connected visible two-/three-key menu flow and its
    captured origin/repository and selection checks
    (including the implemented conflict-file/content/hunk snapshots). Keep prefixes free of mutations and hidden timing state;
