@@ -74,7 +74,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y i `` | Copy abbreviated commit hash |  |
 | `` g b `` | bisectオプションを表示 |  |
 | `` <f2> `` | メッセージ変更 | 選択したコミットのメッセージを変更します。 |
 | `` g e r `` | エディタでメッセージ変更 |  |
@@ -104,12 +104,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | チェックアウト（ブランチの切り替え） | 選択したコミットをデタッチドヘッド（特定のブランチに属さない状態）としてチェックアウトします。 |
-| `` y c `` | コミット属性をクリップボードにコピー | コミット属性をクリップボードにコピーします（例：ハッシュ、URL、差分、メッセージ、作者）。 |
 | `` o `` | ブラウザでコミットを開く |  |
 | `` g m n `` | コミットを新しいブランチに移動 | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | 新しいワークツリー |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | 現在のブランチのコミットを選択 |  |
+| `` y h `` | Copy commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` v, <space> `` | ファイルを表示 |  |
 | `` / `` | 現在のビューをテキストで検索 |  |
 
@@ -117,12 +124,11 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | パスをクリップボードにコピー |  |
+| `` y p `` | パスをクリップボードにコピー |  |
 | `` d w `` | Diff with working tree |  |
 | `` d p `` | Diff with previous commit |  |
 | `` t d f `` | Diff with working file… |  |
 | `` d c `` | Diff with commit… |  |
-| `` y c `` | クリップボードにコピー |  |
 | `` g v f `` | チェックアウト（ブランチの切り替え） | ファイルをチェックアウトします。これにより、作業ツリー内のファイルが選択したコミットのバージョンに置き換えられます。 |
 | `` x `` | 破棄 | このコミットのこのファイルへの変更を破棄します。これはバックグラウンドで対話的なリベースを実行するため、後のコミットでもこのファイルが変更されている場合、マージコンフリクトが発生する可能性があります。 |
 | `` o `` | ファイルを開く | デフォルトのアプリケーションでファイルを開きます。 |
@@ -149,7 +155,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y i `` | Copy abbreviated commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s h `` | ハードリセット |  |
@@ -162,12 +168,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | チェックアウト（ブランチの切り替え） | 選択したコミットをデタッチドヘッド（特定のブランチに属さない状態）としてチェックアウトします。 |
-| `` y c `` | コミット属性をクリップボードにコピー | コミット属性をクリップボードにコピーします（例：ハッシュ、URL、差分、メッセージ、作者）。 |
 | `` o `` | ブラウザでコミットを開く |  |
 | `` g m n `` | コミットを新しいブランチに移動 | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | 新しいワークツリー |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | 現在のブランチのコミットを選択 |  |
+| `` y h `` | Copy commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` v, <space> `` | ファイルを表示 |  |
 | `` / `` | 現在のビューをテキストで検索 |  |
 
@@ -175,7 +188,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | サブモジュール名をクリップボードにコピー |  |
+| `` y n `` | サブモジュール名をクリップボードにコピー |  |
 | `` t r s `` | 入る | サブモジュールに入ります。サブモジュールに入った後、`<esc>`を押して親リポジトリに戻ることができます。 |
 | `` <delete> `` | 削除 | 選択したサブモジュールとそれに対応するディレクトリを削除します。 |
 | `` g u s `` | 更新 | 選択したサブモジュールを更新します。 |
@@ -225,7 +238,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | ハンクを編集 | 選択したハンクを外部エディタで編集します。 |
-| `` y c `` | Copy selected diff lines to clipboard |  |
+| `` y d `` | Copy selected diff lines to clipboard |  |
 | `` t p h `` | 前のハンクに移動 |  |
 | `` t n h `` | 次のハンクに移動 |  |
 | `` t p f `` | Go to previous file |  |
@@ -241,7 +254,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | タグをクリップボードにコピー |  |
+| `` y n `` | タグをクリップボードにコピー |  |
 | `` s c `` | チェックアウト（ブランチの切り替え） | 選択したタグをデタッチドHEADとしてチェックアウトします。 |
 | `` n t `` | 新しいタグを作成 | 現在のコミットから新しいタグを作成します。タグ名とオプションの説明を入力するよう促されます。 |
 | `` n w `` | 新しいワークツリー |  |
@@ -255,11 +268,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | パスをクリップボードにコピー |  |
+| `` y p `` | パスをクリップボードにコピー |  |
 | `` <space> `` | Toggle staging of selected files | 選択したファイルのステージ状態を切り替えます。 |
 | `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
 | `` t f s `` | ステータスでファイルをフィルタリング |  |
-| `` y c `` | クリップボードにコピー |  |
 | `` <enter> `` | コミット | ステージされた変更をコミットします。 |
 | `` g e n `` | pre-commitフックなしで変更をコミット |  |
 | `` a `` | 直前のコミットを修正 |  |
@@ -317,7 +329,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | ハンクを編集 | 選択したハンクを外部エディタで編集します。 |
-| `` y c `` | Copy selected diff lines to clipboard |  |
+| `` y d `` | Copy selected diff lines to clipboard |  |
 | `` t p h `` | 前のハンクに移動 |  |
 | `` t n h `` | 次のハンクに移動 |  |
 | `` t p f `` | Go to previous file |  |
@@ -341,7 +353,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y h `` | Copy commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s h `` | ハードリセット |  |
@@ -354,12 +366,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | チェックアウト（ブランチの切り替え） | 選択したコミットをデタッチドヘッド（特定のブランチに属さない状態）としてチェックアウトします。 |
-| `` y c `` | コミット属性をクリップボードにコピー | コミット属性をクリップボードにコピーします（例：ハッシュ、URL、差分、メッセージ、作者）。 |
 | `` o `` | ブラウザでコミットを開く |  |
 | `` g m n `` | コミットを新しいブランチに移動 | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | 新しいワークツリー |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | 現在のブランチのコミットを選択 |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` t f t `` | 現在のビューをテキストでフィルタリング |  |
 
 ## リモート
@@ -378,7 +397,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | ブランチ名をクリップボードにコピー |  |
+| `` y n `` | ブランチ名をクリップボードにコピー |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | チェックアウト（ブランチの切り替え） | 選択したリモートブランチに基づいて新しいローカルブランチをチェックアウトするか、リモートブランチをデタッチドヘッドとしてチェックアウトします。 |
 | `` n w `` | 新しいワークツリー |  |
@@ -395,7 +414,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | ブランチ名をクリップボードにコピー |  |
+| `` y n `` | ブランチ名をクリップボードにコピー |  |
 | `` g y `` | git-flowオプションを表示 |  |
 | `` s h `` | ハードリセット |  |
 | `` s m `` | ミックスリセット |  |
@@ -407,7 +426,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p c `` | プルリクエストを作成 |  |
 | `` g p o `` | プルリクエスト作成オプションを表示 |  |
 | `` g p v `` | Open pull request in browser |  |
-| `` y u `` | プルリクエストURLをクリップボードにコピー |  |
+| `` y r `` | プルリクエストURLをクリップボードにコピー |  |
 | `` <delete> `` | 削除 | ローカル/リモートブランチの削除オプションを表示します。 |
 | `` r `` | Rebase current onto selected branch… | チェックアウトしたブランチを選択したブランチ上にリベースします。 |
 | `` m `` | Merge selected branch into current… | 選択した項目を現在のブランチにマージするためのオプションを表示します（通常のマージ、スカッシュマージ） |

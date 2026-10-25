@@ -74,7 +74,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y h `` | Copy commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s h `` | Hard reset |  |
@@ -87,12 +87,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | 체크아웃 | Checkout the selected commit as a detached HEAD. |
-| `` y c `` | 커밋 attribute 복사 | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | 브라우저에서 커밋 열기 |  |
 | `` g m n `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | New worktree |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` t f t `` | Filter the current view by text |  |
 
 ## Secondary
@@ -111,7 +118,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Edit hunk | Edit selected hunk in external editor. |
-| `` y c `` | Copy selected diff lines to clipboard |  |
+| `` y d `` | Copy selected diff lines to clipboard |  |
 | `` t p h `` | 이전 hunk를 선택 |  |
 | `` t n h `` | 다음 hunk를 선택 |  |
 | `` t p f `` | Go to previous file |  |
@@ -139,7 +146,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y i `` | Copy abbreviated commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s h `` | Hard reset |  |
@@ -152,12 +159,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | 체크아웃 | Checkout the selected commit as a detached HEAD. |
-| `` y c `` | 커밋 attribute 복사 | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | 브라우저에서 커밋 열기 |  |
 | `` g m n `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | New worktree |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` y h `` | Copy commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` v, <space> `` | View selected item's files |  |
 | `` / `` | 검색 시작 |  |
 
@@ -213,7 +227,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Edit hunk | Edit selected hunk in external editor. |
-| `` y c `` | Copy selected diff lines to clipboard |  |
+| `` y d `` | Copy selected diff lines to clipboard |  |
 | `` t p h `` | 이전 hunk를 선택 |  |
 | `` t n h `` | 다음 hunk를 선택 |  |
 | `` t p f `` | Go to previous file |  |
@@ -229,7 +243,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | 브랜치명을 클립보드에 복사 |  |
+| `` y n `` | 브랜치명을 클립보드에 복사 |  |
 | `` g y `` | Git-flow 옵션 보기 |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
@@ -241,7 +255,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p c `` | 풀 리퀘스트 생성 |  |
 | `` g p o `` | 풀 리퀘스트 생성 옵션 |  |
 | `` g p v `` | Open pull request in browser |  |
-| `` y u `` | 풀 리퀘스트 URL을 클립보드에 복사 |  |
+| `` y r `` | 풀 리퀘스트 URL을 클립보드에 복사 |  |
 | `` <delete> `` | 삭제 | View delete options for local/remote branch. |
 | `` r `` | Rebase current onto selected branch… | Rebase the checked-out branch onto the selected branch. |
 | `` m `` | Merge selected branch into current… | View options for merging the selected item into the current branch (regular merge, squash merge) |
@@ -269,7 +283,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | 서브모듈 이름을 클립보드에 복사 |  |
+| `` y n `` | 서브모듈 이름을 클립보드에 복사 |  |
 | `` t r s `` | Enter | 서브모듈 열기 |
 | `` <delete> `` | Remove | Remove the selected submodule and its corresponding directory. |
 | `` g u s `` | Update | 서브모듈 업데이트 |
@@ -296,7 +310,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | 브랜치명을 클립보드에 복사 |  |
+| `` y n `` | 브랜치명을 클립보드에 복사 |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | 체크아웃 | Checkout a new local branch based on the selected remote branch, or the remote branch as a detached head. |
 | `` n w `` | New worktree |  |
@@ -313,7 +327,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y i `` | Copy abbreviated commit hash |  |
 | `` g b `` | Bisect 옵션 보기 |  |
 | `` <f2> `` | 커밋메시지 변경 | Reword the selected commit's message. |
 | `` g e r `` | 에디터에서 커밋메시지 수정 |  |
@@ -343,12 +357,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | 체크아웃 | Checkout the selected commit as a detached HEAD. |
-| `` y c `` | 커밋 attribute 복사 | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | 브라우저에서 커밋 열기 |  |
 | `` g m n `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | New worktree |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` y h `` | Copy commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` v, <space> `` | View selected item's files |  |
 | `` / `` | 검색 시작 |  |
 
@@ -356,12 +377,11 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | 파일명을 클립보드에 복사 |  |
+| `` y p `` | 파일명을 클립보드에 복사 |  |
 | `` d w `` | Diff with working tree |  |
 | `` d p `` | Diff with previous commit |  |
 | `` t d f `` | Diff with working file… |  |
 | `` d c `` | Diff with commit… |  |
-| `` y c `` | 클립보드에 복사 |  |
 | `` g v f `` | 체크아웃 | Checkout file |
 | `` x `` | View 'discard changes' options | Discard this commit's changes to this file |
 | `` o `` | 파일 닫기 | Open file in default application. |
@@ -388,7 +408,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy tag to clipboard |  |
+| `` y n `` | Copy tag to clipboard |  |
 | `` s c `` | 체크아웃 | Checkout the selected tag as a detached HEAD. |
 | `` n t `` | 태그를 생성 | Create new tag from current commit. You'll be prompted to enter a tag name and optional description. |
 | `` n w `` | New worktree |  |
@@ -402,11 +422,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | 파일명을 클립보드에 복사 |  |
+| `` y p `` | 파일명을 클립보드에 복사 |  |
 | `` <space> `` | Toggle staging of selected files | Toggle staged for selected file. |
 | `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
 | `` t f s `` | 파일을 필터하기 (Staged/unstaged) |  |
-| `` y c `` | 클립보드에 복사 |  |
 | `` <enter> `` | 커밋 변경내용 | 스테이징된 변경 사항 커밋. |
 | `` g e n `` | Commit changes without pre-commit hook |  |
 | `` a `` | 마지맛 커밋 수정 |  |

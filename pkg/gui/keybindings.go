@@ -143,14 +143,16 @@ func (gui *Gui) GetInitialKeybindings() ([]*types.Binding, []*gocui.ViewMouseBin
 			GetDisabledReason: gui.getCopySelectedSideContextItemToClipboardDisabledReason,
 			Description:       gui.c.Tr.CopyTagToClipboard,
 		},
+		// Fork: this handler truncates to TruncateCopiedCommitHashesTo; the
+		// full hash has its own command (clipboard.copy-commit-hash).
 		{
 			ViewName:          "commits",
 			Keys:              opts.GetKeys(opts.Config.Universal.CopyToClipboard),
-			CommandID:         "clipboard.copy-commit-hash",
+			CommandID:         "clipboard.copy-abbreviated-commit-hash",
 			Verb:              "copy",
 			Handler:           gui.handleCopySelectedSideContextItemCommitHashToClipboard,
 			GetDisabledReason: gui.getCopySelectedSideContextItemToClipboardDisabledReason,
-			Description:       gui.c.Tr.CopyCommitHashToClipboard,
+			Description:       gui.c.Tr.CopyAbbreviatedCommitHash,
 		},
 		{
 			ViewName:    "commits",
@@ -167,16 +169,18 @@ func (gui *Gui) GetInitialKeybindings() ([]*types.Binding, []*gocui.ViewMouseBin
 			Verb:              "copy",
 			Handler:           gui.handleCopySelectedSideContextItemToClipboard,
 			GetDisabledReason: gui.getCopySelectedSideContextItemToClipboardDisabledReason,
-			Description:       gui.c.Tr.CopyCommitHashToClipboard,
+			Description:       gui.c.Tr.CopyCommitHash,
 		},
+		// Fork: this handler truncates to TruncateCopiedCommitHashesTo; the
+		// full hash has its own command (clipboard.copy-commit-hash).
 		{
 			ViewName:          "subCommits",
 			Keys:              opts.GetKeys(opts.Config.Universal.CopyToClipboard),
-			CommandID:         "clipboard.copy-commit-hash",
+			CommandID:         "clipboard.copy-abbreviated-commit-hash",
 			Verb:              "copy",
 			Handler:           gui.handleCopySelectedSideContextItemCommitHashToClipboard,
 			GetDisabledReason: gui.getCopySelectedSideContextItemToClipboardDisabledReason,
-			Description:       gui.c.Tr.CopyCommitHashToClipboard,
+			Description:       gui.c.Tr.CopyAbbreviatedCommitHash,
 		},
 		{
 			ViewName:  "information",

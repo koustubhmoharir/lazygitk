@@ -821,6 +821,7 @@ remote branches and tags (resolved to the commit at the time of the copy).
 | `y n` | Name | local/remote branches, tags, submodules, Files, commit files |
 | `y p` | Relative path | Files, commit files |
 | `y f` | Absolute ("full") path | Files, commit files |
+| `y c` | File content at that commit | commit files |
 | `y h` | Full commit hash | commit-like panels and refs |
 | `y i` | Abbreviated commit hash ("id") | commit-like panels and refs |
 | `y s`, `y m`, `y b` | Subject, full message, message body | commit-like panels and refs |

@@ -67,11 +67,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copiar caminho para área de transferência |  |
+| `` y p `` | Copiar caminho para área de transferência |  |
 | `` <space> `` | Toggle staging of selected files | Alternar para staging para o arquivo selecionado. |
 | `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
 | `` t f s `` | Filtrar arquivos por status |  |
-| `` y c `` | Copy to clipboard |  |
 | `` <enter> `` | Commit | Submeter mudanças em staging |
 | `` g e n `` | Fazer commit de alterações sem pré-commit |  |
 | `` a `` | Alterar último commit |  |
@@ -99,7 +98,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copiar nome da branch para área de transferência |  |
+| `` y n `` | Copiar nome da branch para área de transferência |  |
 | `` g y `` | Exibir opções do git-flow |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
@@ -111,7 +110,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p c `` | Criar solicitação de pull |  |
 | `` g p o `` | View create pull request options |  |
 | `` g p v `` | Open pull request in browser |  |
-| `` y u `` | Copiar URL do pull request para área de transferência |  |
+| `` y r `` | Copiar URL do pull request para área de transferência |  |
 | `` <delete> `` | Apagar | Ver opções de exclusão para a branch local/remoto. |
 | `` r `` | Rebase current onto selected branch… | Refazer a branch checada na branch selecionada |
 | `` m `` | Merge selected branch into current… | Ver opções para mesclar o item selecionado no branch atual (mesclar regularmente, mesclar squash) |
@@ -128,7 +127,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copiar nome da branch para área de transferência |  |
+| `` y n `` | Copiar nome da branch para área de transferência |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | Verificar | Checar a nova branch baseada na brach remota selecionada, ou a branch remota como HEAD, desanexado |
 | `` n w `` | Nova árvore de trabalho |  |
@@ -145,12 +144,11 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copiar caminho para área de transferência |  |
+| `` y p `` | Copiar caminho para área de transferência |  |
 | `` d w `` | Diff with working tree |  |
 | `` d p `` | Diff with previous commit |  |
 | `` t d f `` | Diff with working file… |  |
 | `` d c `` | Diff with commit… |  |
-| `` y c `` | Copy to clipboard |  |
 | `` g v f `` | Verificar | Arquivo de check-out. Isso substitui o arquivo em sua árvore de trabalho com a versão do commit selecionado. |
 | `` x `` | Descartar | Descartar as alterações desse commit para este arquivo. Isso executa uma rebase interativa em segundo plano, então você pode ter um conflito de merge se um commit posterior também alterar este arquivo. |
 | `` o `` | Abrir arquivo | Abrir arquivo no aplicativo padrão. |
@@ -170,7 +168,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y i `` | Copy abbreviated commit hash |  |
 | `` g b `` | Ver opções de bissecção |  |
 | `` <f2> `` | Reword | Repetir a mensagem de submissão selecionada. |
 | `` g e r `` | Republicar com o editor |  |
@@ -200,12 +198,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | Verificar | Checkout the selected commit as a detached HEAD. |
-| `` y c `` | Copy commit attribute to clipboard | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | Abrir commit no navegador |  |
 | `` g m n `` | Mover commits para uma nova branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | Nova árvore de trabalho |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` y h `` | Copy commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` v, <space> `` | Ver arquivos |  |
 | `` / `` | Pesquisar na visualização atual por texto |  |
 
@@ -213,7 +218,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copiar etiqueta para área de transferência |  |
+| `` y n `` | Copiar etiqueta para área de transferência |  |
 | `` s c `` | Verificar | Checar a tag selecionada como um HEAD, desanexado |
 | `` n t `` | Nova etiqueta | Crie uma nova etiqueta a partir do commit atual. Você será solicitado a digitar um nome e uma descrição opcional. |
 | `` n w `` | Nova árvore de trabalho |  |
@@ -256,7 +261,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` x `` | Remover linhas do commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Editar hunk | Editar o local selecionado no editor externo. |
-| `` y c `` | Copy selected diff lines to clipboard |  |
+| `` y d `` | Copy selected diff lines to clipboard |  |
 | `` t p h `` | Ir para o local anterior |  |
 | `` t n h `` | Ir para o próximo trecho |  |
 | `` t p f `` | Go to previous file |  |
@@ -296,7 +301,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y h `` | Copy commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s h `` | Hard reset |  |
@@ -309,12 +314,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | Verificar | Checkout the selected commit as a detached HEAD. |
-| `` y c `` | Copy commit attribute to clipboard | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | Abrir commit no navegador |  |
 | `` g m n `` | Mover commits para uma nova branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | Nova árvore de trabalho |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` t f t `` | Filtrar a visualização atual por texto |  |
 
 ## Remotes
@@ -345,7 +357,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` x `` | Remover linhas do commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Editar hunk | Editar o local selecionado no editor externo. |
-| `` y c `` | Copy selected diff lines to clipboard |  |
+| `` y d `` | Copy selected diff lines to clipboard |  |
 | `` t p h `` | Ir para o local anterior |  |
 | `` t n h `` | Ir para o próximo trecho |  |
 | `` t p f `` | Go to previous file |  |
@@ -384,7 +396,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y i `` | Copy abbreviated commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s h `` | Hard reset |  |
@@ -397,12 +409,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | Verificar | Checkout the selected commit as a detached HEAD. |
-| `` y c `` | Copy commit attribute to clipboard | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | Abrir commit no navegador |  |
 | `` g m n `` | Mover commits para uma nova branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | Nova árvore de trabalho |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` y h `` | Copy commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` v, <space> `` | Ver arquivos |  |
 | `` / `` | Pesquisar na visualização atual por texto |  |
 
@@ -410,7 +429,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copiar o nome do submódulo para área de transferência |  |
+| `` y n `` | Copiar o nome do submódulo para área de transferência |  |
 | `` t r s `` | Enter | Enter submodule. After entering the submodule, you can press `<esc>` to escape back to the parent repo. |
 | `` <delete> `` | Remover | Remova o submódulo selecionado e o diretório correspondente. |
 | `` g u s `` | Atualizar | Atualizar submódulo selecionado. |

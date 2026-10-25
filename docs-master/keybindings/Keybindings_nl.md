@@ -67,11 +67,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Kopieer de bestandsnaam naar het klembord |  |
+| `` y p `` | Kopieer de bestandsnaam naar het klembord |  |
 | `` <space> `` | Toggle staging of selected files | Toggle staged for selected file. |
 | `` g h c `` | Bekijk merge conflict opties | Bekijk opties voor het oplossen van mergeconflicten. |
 | `` t f s `` | Filter bestanden op status |  |
-| `` y c `` | Kopieer naar klembord |  |
 | `` <enter> `` | Commit veranderingen | Commit gestagede wijzigingen. |
 | `` g e n `` | Commit veranderingen zonder pre-commit hook |  |
 | `` a `` | Wijzig laatste commit |  |
@@ -107,7 +106,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Kopieer branch name naar klembord |  |
+| `` y n `` | Kopieer branch name naar klembord |  |
 | `` g y `` | Laat git-flow opties zien |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
@@ -119,7 +118,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p c `` | Maak een pull-request |  |
 | `` g p o `` | Bekijk opties voor pull-aanvraag |  |
 | `` g p v `` | Open pull request in browser |  |
-| `` y u `` | Kopieer de URL van het pull-verzoek naar het klembord |  |
+| `` y r `` | Kopieer de URL van het pull-verzoek naar het klembord |  |
 | `` <delete> `` | Verwijderen | View delete options for local/remote branch. |
 | `` r `` | Rebase current onto selected branch… | Rebase de uitgecheckte branch bovenop de geselecteerde branch. |
 | `` m `` | Merge selected branch into current… | View options for merging the selected item into the current branch (regular merge, squash merge) |
@@ -143,12 +142,11 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Kopieer de bestandsnaam naar het klembord |  |
+| `` y p `` | Kopieer de bestandsnaam naar het klembord |  |
 | `` d w `` | Diff with working tree |  |
 | `` d p `` | Diff with previous commit |  |
 | `` t d f `` | Diff with working file… |  |
 | `` d c `` | Diff with commit… |  |
-| `` y c `` | Kopieer naar klembord |  |
 | `` g v f `` | Uitchecken | Bestand uitchecken |
 | `` x `` | Bekijk 'veranderingen ongedaan maken' opties | Uitsluit deze commit zijn veranderingen aan dit bestand |
 | `` o `` | Open bestand | Open bestand in standaardapplicatie. |
@@ -168,7 +166,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y i `` | Copy abbreviated commit hash |  |
 | `` g b `` | View bisect options |  |
 | `` <f2> `` | Hernoem commit | Herschrijf de commit message van de geselecteerde commit. |
 | `` g e r `` | Hernoem commit met editor |  |
@@ -198,12 +196,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | Uitchecken | Check de geselecteerde branch uit als een detached HEAD. |
-| `` y c `` | Copy commit attribute to clipboard | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | Open commit in browser |  |
 | `` g m n `` | Verplaats commits naar nieuwe branch | Maak een nieuwe branch en verplaats niet-gepushte commits van de huidige branch hier naar toe. Gebruik dit in het geval dat je deze commits eigenlijk op een nieuwe branch had willen maken.<br><br>Let op dat de selectie genegeerd wordt. De nieuwe branch komt ofwel bovenop de main branch, of bovenop de huidige branch (je kan kiezen). |
 | `` n w `` | New worktree |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` y h `` | Copy commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` v, <space> `` | Bekijk gecommite bestanden |  |
 | `` / `` | Start met zoeken |  |
 
@@ -256,7 +261,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Edit hunk | Edit selected hunk in external editor. |
-| `` y c `` | Copy selected diff lines to clipboard |  |
+| `` y d `` | Copy selected diff lines to clipboard |  |
 | `` t p h `` | Selecteer de vorige hunk |  |
 | `` t n h `` | Selecteer de volgende hunk |  |
 | `` t p f `` | Go to previous file |  |
@@ -272,7 +277,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y h `` | Copy commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s h `` | Hard reset |  |
@@ -285,19 +290,26 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | Uitchecken | Check de geselecteerde branch uit als een detached HEAD. |
-| `` y c `` | Copy commit attribute to clipboard | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | Open commit in browser |  |
 | `` g m n `` | Verplaats commits naar nieuwe branch | Maak een nieuwe branch en verplaats niet-gepushte commits van de huidige branch hier naar toe. Gebruik dit in het geval dat je deze commits eigenlijk op een nieuwe branch had willen maken.<br><br>Let op dat de selectie genegeerd wordt. De nieuwe branch komt ofwel bovenop de main branch, of bovenop de huidige branch (je kan kiezen). |
 | `` n w `` | New worktree |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` t f t `` | Filter the current view by text |  |
 
 ## Remote branches
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Kopieer branch name naar klembord |  |
+| `` y n `` | Kopieer branch name naar klembord |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | Uitchecken | Geselecteerde remote branch uitchecken als nieuwe locale branch of als detached head. |
 | `` n w `` | New worktree |  |
@@ -338,7 +350,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Edit hunk | Edit selected hunk in external editor. |
-| `` y c `` | Copy selected diff lines to clipboard |  |
+| `` y d `` | Copy selected diff lines to clipboard |  |
 | `` t p h `` | Selecteer de vorige hunk |  |
 | `` t n h `` | Selecteer de volgende hunk |  |
 | `` t p f `` | Go to previous file |  |
@@ -377,7 +389,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y i `` | Copy abbreviated commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s h `` | Hard reset |  |
@@ -390,12 +402,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | Uitchecken | Check de geselecteerde branch uit als een detached HEAD. |
-| `` y c `` | Copy commit attribute to clipboard | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | Open commit in browser |  |
 | `` g m n `` | Verplaats commits naar nieuwe branch | Maak een nieuwe branch en verplaats niet-gepushte commits van de huidige branch hier naar toe. Gebruik dit in het geval dat je deze commits eigenlijk op een nieuwe branch had willen maken.<br><br>Let op dat de selectie genegeerd wordt. De nieuwe branch komt ofwel bovenop de main branch, of bovenop de huidige branch (je kan kiezen). |
 | `` n w `` | New worktree |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` y h `` | Copy commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` v, <space> `` | Bekijk gecommite bestanden |  |
 | `` / `` | Start met zoeken |  |
 
@@ -403,7 +422,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Kopieer submodule naam naar klembord |  |
+| `` y n `` | Kopieer submodule naam naar klembord |  |
 | `` t r s `` | Enter | Enter submodule |
 | `` <delete> `` | Verwijderen | Remove the selected submodule and its corresponding directory. |
 | `` g u s `` | Update | Update selected submodule. |
@@ -418,7 +437,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy tag to clipboard |  |
+| `` y n `` | Copy tag to clipboard |  |
 | `` s c `` | Uitchecken | Geselecteerde tag uitchecken als detached HEAD. |
 | `` n t `` | Creëer tag | Maak een nieuwe tag die naar de huidige commit wijst. Je wordt gevraagd om een tag naam en optionele beschrijving. |
 | `` n w `` | New worktree |  |

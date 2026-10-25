@@ -158,6 +158,9 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 		},
 	}
 
+	// Fork: the flat `y` copy menu's commit actions (see fork_commit_copy.go).
+	bindings = append(bindings, self.commitCopyBindings()...)
+
 	// Fork direct-diff actions are additive; the existing sticky comparison remains available.
 	// Fork: expose each captured reset mode as a separately discoverable action.
 	return self.addCherryMarkBindings(self.addSelectedResetBindings(append(self.historicalDiffBindings(opts), bindings...)))

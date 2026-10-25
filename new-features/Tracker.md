@@ -3,10 +3,6 @@
 Item 12: one flat copy menu with consistent keys. Scope, key table and
 decisions are in [Roadmap.md](Roadmap.md#12-one-flat-copy-menu-with-consistent-keys).
 
-- Commit-like panels (commits, reflog, sub-commits): flat `y` bindings for
-  hash, abbreviated hash, subject, message, body, URL, diff, author and tags,
-  with distinct full/abbreviated hash command IDs; the attribute menu loses
-  its default path.
 - Refs (local branches, remote branches, tags): the same commit bindings on
   the resolved commit, plus `y n` names and `y r` pull request URL.
 - Files, commit files, submodules, diff views and confirmations: `y n`, `y p`,

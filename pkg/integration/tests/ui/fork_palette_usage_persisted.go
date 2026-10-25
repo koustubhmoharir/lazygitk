@@ -31,7 +31,7 @@ var ForkPaletteUsagePersisted = NewIntegrationTest(NewIntegrationTestArgs{
 		if err := os.MkdirAll(dir, 0o755); err != nil {
 			panic(err)
 		}
-		counts := `{"version":1,"counts":{"app.refresh":5,"clipboard.copy-commit-hash":-3}}`
+		counts := `{"version":1,"counts":{"app.refresh":5,"clipboard.copy-abbreviated-commit-hash":-3}}`
 		if err := os.WriteFile(filepath.Join(dir, "command_usage.json"), []byte(counts), 0o644); err != nil {
 			panic(err)
 		}

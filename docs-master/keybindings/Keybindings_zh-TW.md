@@ -81,7 +81,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` x `` | 從提交中移除行 | 從本次提交中移除所選行。此操作會在背景執行互動式變基，因此如果後續提交也修改了這些行，您可能會遇到合併衝突。 |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | 編輯程式碼塊 | 在外部編輯器中編輯選中的程式碼塊。 |
-| `` y c `` | Copy selected diff lines to clipboard |  |
+| `` y d `` | Copy selected diff lines to clipboard |  |
 | `` t p h `` | 選擇上一段 |  |
 | `` t n h `` | 選擇下一段 |  |
 | `` t p f `` | Go to previous file |  |
@@ -121,7 +121,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | 複製縮略提交雜湊值到剪貼簿 |  |
+| `` y i `` | Copy abbreviated commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s h `` | 強制重設 |  |
@@ -134,12 +134,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | 檢出 | 檢出所選擇的提交作為分離HEAD。 |
-| `` y c `` | 複製提交屬性 | 複製提交屬性到剪貼簿(如hash、URL、diff、訊息、作者)。 |
 | `` o `` | 在瀏覽器中開啟提交 |  |
 | `` g m n `` | 移動提交至新分支 | 建立一個新分支，並將目前分支未推送的提交移動到該分支。如果您打算開始新工作但忘記先建立新分支，這會很有用。<br><br>請注意，此操作忽略選擇，新分支總是從主分支建立或堆疊在目前分支之上（您可以選擇哪種方式）。 |
 | `` n w `` | 新建工作樹 |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | 選擇目前分支的提交 |  |
+| `` y h `` | Copy commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` v, <space> `` | 檢視所選項目的檔案 |  |
 | `` / `` | 搜尋 |  |
 
@@ -147,7 +154,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | 複製子模組名稱到剪貼簿 |  |
+| `` y n `` | 複製子模組名稱到剪貼簿 |  |
 | `` t r s `` | 進入 | 進入子模組 |
 | `` <delete> `` | 刪除 | 刪除選定的子模組及其相應的目錄。 |
 | `` g u s `` | 更新 | 更新子模組 |
@@ -172,7 +179,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | 複製縮略提交雜湊值到剪貼簿 |  |
+| `` y i `` | Copy abbreviated commit hash |  |
 | `` g b `` | 查看二分選項 |  |
 | `` <f2> `` | 改寫提交 | 改寫選中的提交訊息 |
 | `` g e r `` | 使用編輯器改寫提交 |  |
@@ -202,12 +209,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | 檢出 | 檢出所選擇的提交作為分離HEAD。 |
-| `` y c `` | 複製提交屬性 | 複製提交屬性到剪貼簿(如hash、URL、diff、訊息、作者)。 |
 | `` o `` | 在瀏覽器中開啟提交 |  |
 | `` g m n `` | 移動提交至新分支 | 建立一個新分支，並將目前分支未推送的提交移動到該分支。如果您打算開始新工作但忘記先建立新分支，這會很有用。<br><br>請注意，此操作忽略選擇，新分支總是從主分支建立或堆疊在目前分支之上（您可以選擇哪種方式）。 |
 | `` n w `` | 新建工作樹 |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | 選擇目前分支的提交 |  |
+| `` y h `` | Copy commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` v, <space> `` | 檢視所選項目的檔案 |  |
 | `` / `` | 搜尋 |  |
 
@@ -222,12 +236,11 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | 複製檔案名稱到剪貼簿 |  |
+| `` y p `` | 複製檔案名稱到剪貼簿 |  |
 | `` d w `` | Diff with working tree |  |
 | `` d p `` | Diff with previous commit |  |
 | `` t d f `` | Diff with working file… |  |
 | `` d c `` | Diff with commit… |  |
-| `` y c `` | 複製到剪貼簿 |  |
 | `` g v f `` | 檢出 | 檢出檔案 |
 | `` x `` | 捨棄 | 放棄對此檔案的提交變更。 |
 | `` o `` | 開啟檔案 | 使用預設軟體開啟 |
@@ -259,7 +272,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | 複製縮略提交雜湊值到剪貼簿 |  |
+| `` y h `` | Copy commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s h `` | 強制重設 |  |
@@ -272,19 +285,26 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | 檢出 | 檢出所選擇的提交作為分離HEAD。 |
-| `` y c `` | 複製提交屬性 | 複製提交屬性到剪貼簿(如hash、URL、diff、訊息、作者)。 |
 | `` o `` | 在瀏覽器中開啟提交 |  |
 | `` g m n `` | 移動提交至新分支 | 建立一個新分支，並將目前分支未推送的提交移動到該分支。如果您打算開始新工作但忘記先建立新分支，這會很有用。<br><br>請注意，此操作忽略選擇，新分支總是從主分支建立或堆疊在目前分支之上（您可以選擇哪種方式）。 |
 | `` n w `` | 新建工作樹 |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | 選擇目前分支的提交 |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` t f t `` | 搜尋 |  |
 
 ## 本地分支
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | 複製分支名稱到剪貼簿 |  |
+| `` y n `` | 複製分支名稱到剪貼簿 |  |
 | `` g y `` | 顯示 git-flow 選項 |  |
 | `` s h `` | 強制重設 |  |
 | `` s m `` | 混合重設 |  |
@@ -296,7 +316,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p c `` | 建立拉取請求 |  |
 | `` g p o `` | 建立拉取請求選項 |  |
 | `` g p v `` | 在瀏覽器中開啟拉取請求 |  |
-| `` y u `` | 複製拉取請求的 URL 到剪貼板 |  |
+| `` y r `` | 複製拉取請求的 URL 到剪貼板 |  |
 | `` <delete> `` | 刪除 | 檢視本地/遠端分支的刪除選項。 |
 | `` r `` | Rebase current onto selected branch… | 將檢出的分支變基到所選的分支上。 |
 | `` m `` | Merge selected branch into current… | 檢視將選中項合併到目前分支的選項(正常合併，壓縮合並) |
@@ -313,7 +333,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | 複製標籤到剪貼簿 |  |
+| `` y n `` | 複製標籤到剪貼簿 |  |
 | `` s c `` | 檢出 | 檢出選擇的標籤作為分離的HEAD。 |
 | `` n t `` | 建立標籤 | 基於目前提交建立一個新標籤。您將在彈窗中輸入標籤名稱和描述(可選)。 |
 | `` n w `` | 新建工作樹 |  |
@@ -327,11 +347,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | 複製檔案名稱到剪貼簿 |  |
+| `` y p `` | 複製檔案名稱到剪貼簿 |  |
 | `` <space> `` | Toggle staging of selected files | 切換所選檔案的暫存狀態。 |
 | `` g h c `` | 檢視合併衝突選項 | 檢視用於解決合併衝突的選項。 |
 | `` t f s `` | 篩選檔案 (預存/未預存) |  |
-| `` y c `` | 複製到剪貼簿 |  |
 | `` <enter> `` | 提交變更 | 提交暫存區變更 |
 | `` g e n `` | 沒有預提交 hook 就提交更改 |  |
 | `` a `` | 修改上次提交 |  |
@@ -371,7 +390,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` x `` | 從提交中移除行 | 從本次提交中移除所選行。此操作會在背景執行互動式變基，因此如果後續提交也修改了這些行，您可能會遇到合併衝突。 |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | 編輯程式碼塊 | 在外部編輯器中編輯選中的程式碼塊。 |
-| `` y c `` | Copy selected diff lines to clipboard |  |
+| `` y d `` | Copy selected diff lines to clipboard |  |
 | `` t p h `` | 選擇上一段 |  |
 | `` t n h `` | 選擇下一段 |  |
 | `` t p f `` | Go to previous file |  |
@@ -425,7 +444,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | 複製分支名稱到剪貼簿 |  |
+| `` y n `` | 複製分支名稱到剪貼簿 |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | 檢出 | 基於目前選中的遠端分支檢出一個新的本地分支，或者將遠端分支作分離的HEAD。 |
 | `` n w `` | 新建工作樹 |  |

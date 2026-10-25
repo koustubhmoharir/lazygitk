@@ -33,6 +33,12 @@ func TestDefaultPathsUserRoutes(t *testing.T) {
 		{"navigation.diff.previous-hunk", "t p h"},
 		{"navigation.diff.previous-file", "t p f"},
 		{"navigation.conflict.previous", "t p c"},
+		{"clipboard.copy-commit-hash", "y h"},
+		{"clipboard.copy-abbreviated-commit-hash", "y i"},
+		{"clipboard.copy-commit-subject", "y s"},
+		{"clipboard.copy-file-path", "y p"},
+		{"branch.copy-pull-request-url", "y r"},
+		{"clipboard.copy-confirmation", "y y"},
 	}
 	for _, test := range tests {
 		t.Run(test.id, func(t *testing.T) {
@@ -44,6 +50,15 @@ func TestDefaultPathsUserRoutes(t *testing.T) {
 				t.Errorf("path = %q, want %q", got, test.want)
 			}
 		})
+	}
+}
+
+// The nested copy menus lost their y c default; they remain palette commands.
+func TestDefaultPathsNestedCopyMenusHaveNoRoute(t *testing.T) {
+	for _, id := range []string{"commit.copy-attribute-menu", "file.copy-menu", "history-file.copy-menu"} {
+		if paths, ok := DefaultPaths(id); !ok || len(paths) != 0 {
+			t.Errorf("%s returned (%v, %t), want known with no paths", id, paths, ok)
+		}
 	}
 }
 

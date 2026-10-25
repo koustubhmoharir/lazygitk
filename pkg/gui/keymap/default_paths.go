@@ -60,9 +60,24 @@ func buildDefaultPaths() map[string][][]gocui.Key {
 	add("commit.unmark-cherry-pick", "c x")
 	add("commit.cherry-pick", "c p")
 	add("commit.combine-selected", "g c")
-	add("clipboard.copy-file-path clipboard.copy-branch-name clipboard.copy-tag-name clipboard.copy-commit-hash clipboard.copy-submodule-name", "y i")
-	add("file.copy-menu history-file.copy-menu commit.copy-attribute-menu clipboard.copy-diff-selection clipboard.copy-confirmation", "y c")
-	add("branch.copy-pull-request-url", "y u")
+	// Fork: one flat copy menu. Each second key has the same meaning in every
+	// panel that offers it. Nested copy menus keep no default route.
+	add("clipboard.copy-branch-name clipboard.copy-tag-name clipboard.copy-submodule-name clipboard.copy-file-name", "y n")
+	add("clipboard.copy-file-path", "y p")
+	add("clipboard.copy-absolute-file-path", "y f")
+	add("clipboard.copy-history-file-content", "y c")
+	add("clipboard.copy-commit-hash", "y h")
+	add("clipboard.copy-abbreviated-commit-hash", "y i")
+	add("clipboard.copy-commit-subject", "y s")
+	add("clipboard.copy-commit-message", "y m")
+	add("clipboard.copy-commit-body", "y b")
+	add("clipboard.copy-commit-url", "y u")
+	add("clipboard.copy-commit-author", "y a")
+	add("clipboard.copy-commit-tags", "y t")
+	add("clipboard.copy-commit-diff clipboard.copy-working-file-diff clipboard.copy-history-file-diff clipboard.copy-diff-selection", "y d")
+	add("clipboard.copy-working-tree-diff", "y w")
+	add("branch.copy-pull-request-url", "y r")
+	add("clipboard.copy-confirmation", "y y")
 	add("tag.create-at-selection tag.create-at-current", "n t")
 	add("worktree.create worktree.create-menu", "n w")
 	add("remote.create", "n r")
@@ -158,8 +173,9 @@ func buildDefaultPaths() map[string][][]gocui.Key {
 		add(id, "space")
 	}
 
-	// Replaced normal routes intentionally remain recognized with no path.
-	for _, id := range strings.Fields("file.refresh commit.copy-for-cherry-pick commit.squash-down commit.mark-fixup commit.set-fixup-message commit.create-fixup-menu commit.autosquash commit.find-fixup-target commit.clear-cherry-pick-selection branch.create-and-checkout branch.reset-menu branch.checkout-by-name branch.checkout-previous branch.force-checkout file.toggle-stage-all diff.primary-selection diff.discard-selection") {
+	// Replaced normal routes, and nested copy menus that moved into the flat y
+	// menu, intentionally remain recognized with no path.
+	for _, id := range strings.Fields("file.refresh file.copy-menu history-file.copy-menu commit.copy-attribute-menu commit.copy-for-cherry-pick commit.squash-down commit.mark-fixup commit.set-fixup-message commit.create-fixup-menu commit.autosquash commit.find-fixup-target commit.clear-cherry-pick-selection branch.create-and-checkout branch.reset-menu branch.checkout-by-name branch.checkout-previous branch.force-checkout file.toggle-stage-all diff.primary-selection diff.discard-selection") {
 		if _, exists := paths[id]; !exists {
 			paths[id] = nil
 		}

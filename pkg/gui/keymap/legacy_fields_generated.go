@@ -40,6 +40,7 @@ var legacyFields = map[string][]string{
 	"branch.set-upstream-to-selection":           {"Branches.SetUpstream"},
 	"branch.sort-menu":                           {"Branches.SortOrder"},
 	"branch.upstream-menu":                       {"Branches.SetUpstream"},
+	"clipboard.copy-abbreviated-commit-hash":     {"Universal.CopyToClipboard"},
 	"clipboard.copy-branch-name":                 {"Universal.CopyToClipboard"},
 	"clipboard.copy-commit-hash":                 {"Universal.CopyToClipboard"},
 	"clipboard.copy-confirmation":                {"Universal.CopyToClipboard"},

@@ -1013,6 +1013,15 @@ type TranslationSet struct {
 	CommitSubject                         string
 	CommitAuthor                          string
 	CommitTags                            string
+	CopyCommitHash                        string
+	CopyAbbreviatedCommitHash             string
+	CopyCommitSubject                     string
+	CopyCommitMessage                     string
+	CopyCommitMessageBody                 string
+	CopyCommitURL                         string
+	CopyCommitDiff                        string
+	CopyCommitAuthor                      string
+	CopyCommitTags                        string
 	CopyCommitAttributeToClipboard        string
 	CopyCommitAttributeToClipboardTooltip string
 	CopyBranchNameToClipboard             string
@@ -2486,6 +2495,15 @@ func EnglishTranslationSet() *TranslationSet {
 		CommitSubject:                            "Commit subject",
 		CommitAuthor:                             "Commit author",
 		CommitTags:                               "Commit tags",
+		CopyCommitHash:                           "Copy commit hash",
+		CopyAbbreviatedCommitHash:                "Copy abbreviated commit hash",
+		CopyCommitSubject:                        "Copy commit subject",
+		CopyCommitMessage:                        "Copy commit message",
+		CopyCommitMessageBody:                    "Copy commit message body",
+		CopyCommitURL:                            "Copy commit URL",
+		CopyCommitDiff:                           "Copy commit diff",
+		CopyCommitAuthor:                         "Copy commit author",
+		CopyCommitTags:                           "Copy commit tags",
 		CopyCommitAttributeToClipboard:           "Copy commit attribute to clipboard",
 		CopyCommitAttributeToClipboardTooltip:    "Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author).",
 		CopyBranchNameToClipboard:                "Copy branch name to clipboard",

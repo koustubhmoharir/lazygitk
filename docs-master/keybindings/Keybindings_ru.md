@@ -96,7 +96,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Изменить эту часть | Edit selected hunk in external editor. |
-| `` y c `` | Copy selected diff lines to clipboard |  |
+| `` y d `` | Copy selected diff lines to clipboard |  |
 | `` t p h `` | Выбрать предыдущую часть |  |
 | `` t n h `` | Выбрать следующую часть |  |
 | `` t p f `` | Go to previous file |  |
@@ -126,7 +126,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Изменить эту часть | Edit selected hunk in external editor. |
-| `` y c `` | Copy selected diff lines to clipboard |  |
+| `` y d `` | Copy selected diff lines to clipboard |  |
 | `` t p h `` | Выбрать предыдущую часть |  |
 | `` t n h `` | Выбрать следующую часть |  |
 | `` t p f `` | Go to previous file |  |
@@ -158,7 +158,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y h `` | Copy commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s h `` | Жёсткий сброс |  |
@@ -171,19 +171,26 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | Переключить | Checkout the selected commit as a detached HEAD. |
-| `` y c `` | Скопировать атрибут коммита | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | Открыть коммит в браузере |  |
 | `` g m n `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | New worktree |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` t f t `` | Filter the current view by text |  |
 
 ## Коммиты
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y i `` | Copy abbreviated commit hash |  |
 | `` g b `` | Просмотреть параметры бинарного поиска |  |
 | `` <f2> `` | Перефразировать коммит | Reword the selected commit's message. |
 | `` g e r `` | Переписать коммит с помощью редактора |  |
@@ -213,12 +220,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | Переключить | Checkout the selected commit as a detached HEAD. |
-| `` y c `` | Скопировать атрибут коммита | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | Открыть коммит в браузере |  |
 | `` g m n `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | New worktree |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` y h `` | Copy commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` v, <space> `` | Просмотреть файлы выбранного элемента |  |
 | `` / `` | Найти |  |
 
@@ -226,7 +240,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Скопировать название ветки в буфер обмена |  |
+| `` y n `` | Скопировать название ветки в буфер обмена |  |
 | `` g y `` | Показать параметры git-flow |  |
 | `` s h `` | Жёсткий сброс |  |
 | `` s m `` | Смешанный сброс |  |
@@ -238,7 +252,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p c `` | Создать запрос на принятие изменений |  |
 | `` g p o `` | Создать параметры запроса принятие изменений |  |
 | `` g p v `` | Open pull request in browser |  |
-| `` y u `` | Скопировать URL запроса на принятие изменений в буфер обмена |  |
+| `` y r `` | Скопировать URL запроса на принятие изменений в буфер обмена |  |
 | `` <delete> `` | Delete | View delete options for local/remote branch. |
 | `` r `` | Rebase current onto selected branch… | Rebase the checked-out branch onto the selected branch. |
 | `` m `` | Merge selected branch into current… | View options for merging the selected item into the current branch (regular merge, squash merge) |
@@ -271,7 +285,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy abbreviated commit hash to clipboard |  |
+| `` y i `` | Copy abbreviated commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s h `` | Жёсткий сброс |  |
@@ -284,12 +298,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` r `` | Rebase current branch onto this commit… | Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base. |
 | `` g c `` | Combine selected commits |  |
 | `` s c `` | Переключить | Checkout the selected commit as a detached HEAD. |
-| `` y c `` | Скопировать атрибут коммита | Copy commit attribute to clipboard (e.g. hash, URL, diff, message, author). |
 | `` o `` | Открыть коммит в браузере |  |
 | `` g m n `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | New worktree |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` y h `` | Copy commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` v, <space> `` | Просмотреть файлы выбранного элемента |  |
 | `` / `` | Найти |  |
 
@@ -297,7 +318,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Скопировать название подмодуля в буфер обмена |  |
+| `` y n `` | Скопировать название подмодуля в буфер обмена |  |
 | `` t r s `` | Enter | Ввести подмодуль |
 | `` <delete> `` | Remove | Remove the selected submodule and its corresponding directory. |
 | `` g u s `` | Update | Обновить подмодуль |
@@ -319,12 +340,11 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Скопировать название файла в буфер обмена |  |
+| `` y p `` | Скопировать название файла в буфер обмена |  |
 | `` d w `` | Diff with working tree |  |
 | `` d p `` | Diff with previous commit |  |
 | `` t d f `` | Diff with working file… |  |
 | `` d c `` | Diff with commit… |  |
-| `` y c `` | Copy to clipboard |  |
 | `` g v f `` | Переключить | Переключить файл |
 | `` x `` | Просмотреть параметры «отмены изменении» | Отменить изменения коммита в этом файле |
 | `` o `` | Открыть файл | Open file in default application. |
@@ -355,7 +375,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Copy tag to clipboard |  |
+| `` y n `` | Copy tag to clipboard |  |
 | `` s c `` | Переключить | Checkout the selected tag as a detached HEAD. |
 | `` n t `` | Создать тег | Create new tag from current commit. You'll be prompted to enter a tag name and optional description. |
 | `` n w `` | New worktree |  |
@@ -369,7 +389,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Скопировать название ветки в буфер обмена |  |
+| `` y n `` | Скопировать название ветки в буфер обмена |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | Переключить | Checkout a new local branch based on the selected remote branch, or the remote branch as a detached head. |
 | `` n w `` | New worktree |  |
@@ -398,11 +418,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` y i `` | Скопировать название файла в буфер обмена |  |
+| `` y p `` | Скопировать название файла в буфер обмена |  |
 | `` <space> `` | Toggle staging of selected files | Toggle staged for selected file. |
 | `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
 | `` t f s `` | Фильтровать файлы (проиндексированные/непроиндексированные) |  |
-| `` y c `` | Copy to clipboard |  |
 | `` <enter> `` | Сохранить изменения | Commit staged changes. |
 | `` g e n `` | Закоммитить изменения без предварительного хука коммита |  |
 | `` a `` | Правка последнего коммита |  |

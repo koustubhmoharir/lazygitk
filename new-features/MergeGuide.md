@@ -50,6 +50,17 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   `config/side_panels_in_per_repo_config`, `ui/reload_side_panels`).
   `CONFIG_DIR`, `LG_CONFIG_FILE` and the `lazygit-<uid>` temp directory are
   unchanged.
+- Flat copy menu (roadmap item 12): `pkg/gui/keymap/default_paths.go` owns
+  the `y` table; the nested copy menus (`file.copy-menu`,
+  `history-file.copy-menu`, `commit.copy-attribute-menu`) stay bound for the
+  palette and legacy keys but have no default route. `fork_commit_copy.go`
+  adds the commit actions to `BasicCommitsController.GetKeybindings` (one
+  append at the integration point) and skips IDs that `keybindings.go` already
+  binds in that view. In `keybindings.go` the commits and sub-commits
+  side-context copy binding is `clipboard.copy-abbreviated-commit-hash`
+  (it truncates), while reflog keeps `clipboard.copy-commit-hash` (full).
+  Keep these IDs distinct when merging upstream copy changes; a view must not
+  bind one command ID twice.
 - Portable builds: `scripts/build_dist.sh` and `scripts/build_dist.ps1` are
   fork-owned and name binaries `lazygitk`. The only upstream-file touches are the `dist` recipe in
   `justfile` and `/dist/` in `.gitignore`; keep both when resolving conflicts.
