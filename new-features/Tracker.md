@@ -25,9 +25,7 @@ Agreed design (user decisions 2026-10-25, refining the roadmap):
 
 ## Remaining tasks for item 9
 
-1. Usage store package with lock/temp/rename persistence, delta merge across
-   processes, corruption reset and unit tests.
-2. Recording seam in `callKeybindingHandler`, palette items and `PopupHandler`
+1. Recording seam in (store: `pkg/commandusage`, path `config.CommandUsageFilePath`) `callKeybindingHandler`, palette items and `PopupHandler`
    acceptance, with unit tests for shortcut/leaf/palette parity, aliases,
    cancellation and exclusions; flush on exit.
 3. Palette ordering, tags, Navigation section, reset command, static-order
