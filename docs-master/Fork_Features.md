@@ -285,3 +285,12 @@ common part of their names (adding a separator when only one matches). When
 nothing more can be completed, Tab moves into the list. `~` and paths relative
 to the current repository work. A path that is not a directory or not inside a
 Git repository shows an error and reopens the prompt with your text.
+
+
+## Colors and diffs
+
+The default theme is Catppuccin: Mocha on a dark terminal background, Latte on
+a light one (see [Config.md](Config.md#lazygitks-default-colors)). The focused
+pane has a heavy frame. Diffs render through delta by default, with git's own
+diff one `|` away; without delta installed, git's diff is used and a notice says
+so once per session.

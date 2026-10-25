@@ -1,5 +1,10 @@
 # Custom Diff Renderers
 
+> **lazygitk:** when `git.diffRenderers` is empty or not set, the default list
+> is `delta --{{colorScheme}} --paging=never --tabs=4` followed by git's own diff
+> (`|` cycles between them). If `delta` is not on `PATH`, git's own diff is used
+> and a notice is shown once per session. A list you configure is used as is.
+
 Custom diff renderers are useful for showing a better rendering of a diff than git's builtin raw diff, and using one is strongly recommended (I personally prefer delta myself, but that's a matter of personal preference). There are three types of diff renderers that lazygit supports:
 
 - **stdin filters**, e.g. [delta](#delta) and [diff-so-fancy](#diff-so-fancy). They take git's raw output as stdin and produce something nicer on stdout, and they are hooked up using git's GIT_PAGER mechanism. (These used to be called "custom pagers" in earlier lazygit versions.)

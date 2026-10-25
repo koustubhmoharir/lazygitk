@@ -343,6 +343,10 @@ func (gui *Gui) onInitialViewsCreation() error {
 	// Fork: report key settings that were ignored at startup (roadmap item 13).
 	gui.showForkIgnoredKeyConfigNotices()
 
+	// Fork: report that the default delta renderer was dropped because delta is
+	// not on PATH (roadmap item 15). This runs once, with the views' creation.
+	gui.showForkDiffRendererFallbackNotice()
+
 	gui.waitForIntro.Done()
 
 	return nil

@@ -1,0 +1,174 @@
+package config
+
+import (
+	"errors"
+	"os"
+	"path/filepath"
+	"testing"
+
+	"github.com/jesseduffield/lazygit/pkg/i18n"
+	"github.com/stretchr/testify/assert"
+)
+
+// setForkLookPath makes delta appear on PATH or not for one test, and counts
+// the lookups so that the caching can be checked.
+func setForkLookPath(t *testing.T, deltaFound bool) *int {
+	t.Helper()
+	calls := 0
+	original := forkLookPath
+	forkLookPath = func(file string) (string, error) {
+		calls++
+		if file == "delta" && deltaFound {
+			return "/usr/bin/delta", nil
+		}
+		return "", errors.New("not found")
+	}
+	t.Cleanup(func() { forkLookPath = original })
+	return &calls
+}
+
+func newForkDiffRendererTestManager(config *UserConfig) *DiffRendererConfigManager {
+	return NewDiffRendererConfigManager(func() *UserConfig { return config })
+}
+
+func loadForkDiffRendererConfig(t *testing.T, content string) *UserConfig {
+	t.Helper()
+	path := filepath.Join(t.TempDir(), "config.yml")
+	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	loaded, err := loadUserConfigWithDefaults([]*ConfigFile{{Path: path, Policy: ConfigFilePolicyErrorIfMissing}}, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return loaded
+}
+
+func TestForkDefaultDiffRenderersWhenDeltaIsFound(t *testing.T) {
+	setForkLookPath(t, true)
+	config := GetDefaultConfig()
+	manager := newForkDiffRendererTestManager(config)
+
+	current, total := manager.CurrentDiffRendererIndex()
+	assert.Equal(t, 0, current)
+	assert.Equal(t, 2, total)
+	assert.False(t, manager.DefaultDiffRendererFellBack())
+
+	tr := &i18n.TranslationSet{DefaultDiffRendererName: "(default)"}
+	assert.Equal(t, "delta", manager.CurrentDiffRendererName(tr))
+	assert.Equal(t, DiffRendererType_StdinFilter, manager.GetDiffRendererType())
+	command, err := manager.GetStdinFilterCommand(DiffRendererValues{Width: 80, LightBackground: true})
+	assert.NoError(t, err)
+	assert.Equal(t, "delta --light --paging=never --tabs=4", command)
+	assert.Equal(t, "always", manager.GetColorArg())
+
+	manager.CycleDiffRenderers()
+	assert.Equal(t, DiffRendererType_RawGit, manager.GetDiffRendererType())
+	assert.Equal(t, "default", manager.CurrentDiffRendererName(tr))
+	current, total = manager.CurrentDiffRendererIndex()
+	assert.Equal(t, 1, current)
+	assert.Equal(t, 2, total)
+}
+
+func TestForkDefaultDiffRenderersWhenDeltaIsNotFound(t *testing.T) {
+	setForkLookPath(t, false)
+	manager := newForkDiffRendererTestManager(GetDefaultConfig())
+
+	current, total := manager.CurrentDiffRendererIndex()
+	assert.Equal(t, 0, current)
+	assert.Equal(t, 1, total)
+	assert.True(t, manager.DefaultDiffRendererFellBack())
+	assert.Equal(t, DiffRendererType_RawGit, manager.GetDiffRendererType())
+	assert.Equal(t, "default", manager.CurrentDiffRendererName(&i18n.TranslationSet{}))
+
+	// With one renderer left, cycling is a no-op and does not divide by zero.
+	manager.CycleDiffRenderers()
+	manager.CycleDiffRenderersBackward()
+	current, total = manager.CurrentDiffRendererIndex()
+	assert.Equal(t, 0, current)
+	assert.Equal(t, 1, total)
+}
+
+func TestForkDefaultDiffRendererLookPathIsCached(t *testing.T) {
+	calls := setForkLookPath(t, false)
+	manager := newForkDiffRendererTestManager(GetDefaultConfig())
+
+	for range 5 {
+		manager.CurrentDiffRendererIndex()
+		manager.DefaultDiffRendererFellBack()
+		manager.CycleDiffRenderers()
+	}
+	assert.Equal(t, 1, *calls)
+}
+
+func TestUserDiffRenderersAreNeverFiltered(t *testing.T) {
+	setForkLookPath(t, false)
+	loaded := loadForkDiffRendererConfig(t, `git:
+  diffRenderers:
+    - command: delta --paging=never
+    - type: rawGit
+      name: plain
+`)
+	manager := newForkDiffRendererTestManager(loaded)
+
+	assert.Len(t, loaded.Git.DiffRenderers, 2)
+	current, total := manager.CurrentDiffRendererIndex()
+	assert.Equal(t, 0, current)
+	assert.Equal(t, 2, total)
+	assert.False(t, manager.DefaultDiffRendererFellBack())
+	assert.Equal(t, DiffRendererType_StdinFilter, manager.GetDiffRendererType())
+	assert.Equal(t, "delta", manager.CurrentDiffRendererName(&i18n.TranslationSet{}))
+}
+
+func TestUserDiffRenderersReplaceForkDefaultsWhenLoaded(t *testing.T) {
+	setForkLookPath(t, true)
+	loaded := loadForkDiffRendererConfig(t, `git:
+  diffRenderers:
+    - type: rawGit
+`)
+	assert.Len(t, loaded.Git.DiffRenderers, 1)
+	manager := newForkDiffRendererTestManager(loaded)
+	_, total := manager.CurrentDiffRendererIndex()
+	assert.Equal(t, 1, total)
+	assert.Equal(t, DiffRendererType_RawGit, manager.GetDiffRendererType())
+}
+
+func TestUnsetDiffRenderersGetTheForkDefault(t *testing.T) {
+	setForkLookPath(t, true)
+	loaded := loadForkDiffRendererConfig(t, "gui:\n  showRandomTip: false\n")
+	assert.Empty(t, loaded.Git.DiffRenderers)
+	manager := newForkDiffRendererTestManager(loaded)
+
+	_, total := manager.CurrentDiffRendererIndex()
+	assert.Equal(t, 2, total)
+	assert.Equal(t, DiffRendererType_StdinFilter, manager.GetDiffRendererType())
+}
+
+func TestExplicitEmptyDiffRenderersBehaveLikeUnset(t *testing.T) {
+	for _, deltaFound := range []bool{true, false} {
+		setForkLookPath(t, deltaFound)
+		unset := newForkDiffRendererTestManager(loadForkDiffRendererConfig(t, "gui:\n  showRandomTip: false\n"))
+		explicit := newForkDiffRendererTestManager(loadForkDiffRendererConfig(t, "git:\n  diffRenderers: []\n"))
+		tr := &i18n.TranslationSet{DefaultDiffRendererName: "(default)"}
+
+		for _, manager := range []*DiffRendererConfigManager{unset, explicit} {
+			assert.Equal(t, deltaFound, !manager.DefaultDiffRendererFellBack())
+			assert.Equal(t, deltaFound, manager.GetDiffRendererType() == DiffRendererType_StdinFilter)
+		}
+		_, unsetTotal := unset.CurrentDiffRendererIndex()
+		_, explicitTotal := explicit.CurrentDiffRendererIndex()
+		assert.Equal(t, unsetTotal, explicitTotal)
+		assert.Equal(t, unset.CurrentDiffRendererName(tr), explicit.CurrentDiffRendererName(tr))
+	}
+}
+
+func TestDiffRendererCyclingNeverSeesAnEmptyList(t *testing.T) {
+	setForkLookPath(t, false)
+	manager := newForkDiffRendererTestManager(loadForkDiffRendererConfig(t, "git:\n  diffRenderers: []\n"))
+	// Each of these would panic with a zero-length list.
+	manager.CycleDiffRenderers()
+	manager.CycleDiffRenderersBackward()
+	assert.Equal(t, DiffRendererType_RawGit, manager.GetDiffRendererType())
+	_, err := manager.GetStdinFilterCommand(DiffRendererValues{})
+	assert.NoError(t, err)
+}

@@ -218,8 +218,10 @@ func TestGetExternalDiffCommand(t *testing.T) {
 func TestCurrentDiffRendererNameWithoutDiffRenderers(t *testing.T) {
 	config := NewDiffRendererConfigManager(func() *UserConfig { return &UserConfig{} })
 
+	// Fork: an empty list is the fork default, delta or else git's own diff
+	// named "default" (fork_diff_renderers.go), so this is no longer "(default)".
 	tr := i18n.EnglishTranslationSet()
-	assert.Equal(t, tr.DefaultDiffRendererName, config.CurrentDiffRendererName(tr))
+	assert.Equal(t, "default", config.CurrentDiffRendererName(tr))
 }
 
 func TestCycleDiffRenderers(t *testing.T) {

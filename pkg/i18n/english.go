@@ -1275,6 +1275,7 @@ type TranslationSet struct {
 	DisabledMenuItemPrefix                   string
 	CommandUsageReset                        string
 	IgnoredKeyConfig                         string
+	DiffRendererDeltaNotFound                string
 	CommandPaletteScopeLocal                 string
 	CommandPaletteScopeGlobal                string
 	ResetCommandUsageCounts                  string
@@ -2763,6 +2764,7 @@ func EnglishTranslationSet() *TranslationSet {
 		DisabledMenuItemPrefix:                   "Disabled: ",
 		CommandUsageReset:                        "Command usage counts were unreadable and have been reset.",
 		IgnoredKeyConfig:                         "Key settings are fixed in lazygitk; ignored %s in %s",
+		DiffRendererDeltaNotFound:                "delta was not found on PATH; showing git's own diff",
 		CommandPaletteScopeLocal:                 "local",
 		CommandPaletteScopeGlobal:                "global",
 		ResetCommandUsageCounts:                  "Reset command usage counts",

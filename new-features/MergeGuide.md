@@ -62,6 +62,14 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   `configureViewProperties`, `ContextMgr.Activate` and the initial focus in
   `layout`. When upstream changes the border styles, port them into
   `focusFrameStyle`.
+  The default renderer list lives in `pkg/config/fork_diff_renderers.go`:
+  every read of `Git.DiffRenderers` in `diff_renderer_config_manager.go` goes
+  through `forkEffectiveDiffRenderers`, which turns an empty list into delta
+  plus git's diff (or git's diff alone when delta is not on `PATH`). The
+  upstream test `TestCurrentDiffRendererNameWithoutDiffRenderers` now expects
+  `default`. The shared integration fixture sets an explicit `rawGit`
+  renderer so scenarios never use delta. The fallback notice is called from
+  `onInitialViewsCreation`.
 - Repository switching (roadmap item 14): `repo.switch-menu` routes to `s r`
   and the global `repo.open-path` binding in `keybindings.go` to `s n`; the
   logic is `helpers/fork_open_repo_path.go`. Prompts gained an optional

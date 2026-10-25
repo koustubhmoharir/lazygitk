@@ -163,6 +163,10 @@ git:
   log:
     # Keep legacy integration scenarios on the branch-only log unless they opt in.
     showWholeGraph: false
+  # Scenarios assert git's own diff output, so they don't render through the
+  # fork's default delta renderer (which runs when delta is installed).
+  diffRenderers:
+    - type: rawGit
   # We don't want to run any periodic background git commands because it'll introduce race conditions and flakiness.
   # If we need to refresh something from within the test (which should only really happen if we've invoked a
   # shell command in the background) we should have the user press shift+R to refresh.

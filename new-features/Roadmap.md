@@ -70,7 +70,7 @@ tasks with the next item's plan in the same completion commit.
 | 12 | One flat copy menu with consistent keys | Complete | 2, 8 | Medium |
 | 13 | Fixed keybindings: key configuration is ignored | Complete | 8, 12 | Medium |
 | 14 | Switch repositories with `s r` and open one by path with `s n` | Complete | 8 | Small–medium |
-| 15 | Catppuccin theme defaults and delta as the default diff renderer | Planned | None | Medium |
+| 15 | Catppuccin theme defaults and delta as the default diff renderer | Complete | None | Medium |
 
 ## Fork implementation principles
 
@@ -926,7 +926,10 @@ report an error without leaving the current repository; `s r` replaces
 
 ## 15. Catppuccin theme defaults and delta as the default diff renderer
 
-Planned. Upstream's ANSI theme defaults were hard to read for the user, whose
+Complete. The delta default applies when `git.diffRenderers` is empty, which
+includes an explicit `[]`; the config default stays upstream's empty list.
+Delta's presence differs between machines, so the fallback is covered by unit
+tests rather than a scenario. Upstream's ANSI theme defaults were hard to read for the user, whose
 config carried Catppuccin Mocha colours and a delta renderer. Four of those
 keys had been silently ignored after upstream renamed them
 (`defaultTextColor`, `cherryPickedCommitTextStyle`,
@@ -1010,7 +1013,7 @@ they do not validate a completed UI or implementation.
 ## Next design review artifact
 
 The earlier questions are answered under “Agreed direction” and the relevant
-milestones. Item 15 is current; new work after them starts by adding
+milestones. All numbered milestones are complete; new work after them starts by adding
 a reviewed milestone here.
 
 This remains an extensible backlog: add further features with target semantics,

@@ -12,6 +12,8 @@ import (
 type DiffRendererConfigManager struct {
 	getUserConfig     func() *UserConfig
 	diffRendererIndex int
+	// Fork: caches the PATH lookup for the default delta renderer (fork_diff_renderers.go).
+	forkDelta forkDeltaAvailability
 }
 
 type DiffRendererType int
@@ -27,7 +29,9 @@ func NewDiffRendererConfigManager(getUserConfig func() *UserConfig) *DiffRendere
 }
 
 func (self *DiffRendererConfigManager) currentDiffRendererConfig() *DiffRendererConfig {
-	diffRenderers := self.getUserConfig().Git.DiffRenderers
+	// Fork: read through forkEffectiveDiffRenderers, which drops the default delta
+	// renderer when delta is not on PATH (fork_diff_renderers.go).
+	diffRenderers, _ := self.forkEffectiveDiffRenderers()
 	if len(diffRenderers) == 0 {
 		return nil
 	}
@@ -144,16 +148,22 @@ func (self *DiffRendererConfigManager) GetRawGitArgs() []string {
 }
 
 func (self *DiffRendererConfigManager) CycleDiffRenderers() {
-	self.diffRendererIndex = (self.diffRendererIndex + 1) % len(self.getUserConfig().Git.DiffRenderers)
+	// Fork: count through forkEffectiveDiffRenderers (fork_diff_renderers.go).
+	diffRenderers, _ := self.forkEffectiveDiffRenderers()
+	self.diffRendererIndex = (self.diffRendererIndex + 1) % len(diffRenderers)
 }
 
 func (self *DiffRendererConfigManager) CycleDiffRenderersBackward() {
-	n := len(self.getUserConfig().Git.DiffRenderers)
+	// Fork: count through forkEffectiveDiffRenderers (fork_diff_renderers.go).
+	diffRenderers, _ := self.forkEffectiveDiffRenderers()
+	n := len(diffRenderers)
 	self.diffRendererIndex = (self.diffRendererIndex - 1 + n) % n
 }
 
 func (self *DiffRendererConfigManager) CurrentDiffRendererIndex() (int, int) {
-	return self.diffRendererIndex, len(self.getUserConfig().Git.DiffRenderers)
+	// Fork: count through forkEffectiveDiffRenderers (fork_diff_renderers.go).
+	diffRenderers, _ := self.forkEffectiveDiffRenderers()
+	return self.diffRendererIndex, len(diffRenderers)
 }
 
 // CurrentDiffRendererName returns a name for the current diff renderer, suitable for showing
