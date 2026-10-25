@@ -37,14 +37,6 @@ custom commands. Frequency persistence and sorting remain item 9.
 
 ## Remaining tasks for item 8
 
-5. Verify the connected visible two-/three-key menu flow and its
-   captured origin/repository and selection checks
-   (including the implemented conflict-file/content/hunk snapshots). Keep prefixes free of mutations and hidden timing state;
-   Explicit single-key overrides now displace default continuations; explicitly
-   configured leaf/descendant collisions retain a visible choice. Verify
-   nested Esc/back behavior and safely handle invalid continuations,
-   focus/repository changes and popup replacement. Expose leaves independently
-   through `?` and show their complete paths.
 6. Finish generated audit snapshots and documentation for the enabled profile.
    Normal-pane defaults, option-bar hints/panel labels, generated
    cheatsheets/schema and the migration guide are implemented; the
