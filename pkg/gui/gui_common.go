@@ -214,6 +214,16 @@ func (self *guiCommon) CallPaletteKeybindingHandler(binding *types.Binding) erro
 	return self.gui.callKeybindingHandlerWithUsage(binding, forkPaletteUsageDelta)
 }
 
+// Fork: see Gui.forkCommandUsageCounts.
+func (self *guiCommon) CommandUsageCounts() map[string]int {
+	return self.gui.forkCommandUsageCounts()
+}
+
+// Fork: see Gui.resetForkCommandUsage.
+func (self *guiCommon) ResetCommandUsage() error {
+	return self.gui.resetForkCommandUsage()
+}
+
 func (self *guiCommon) ResetKeybindings() {
 	self.gui.resetKeybindings()
 }

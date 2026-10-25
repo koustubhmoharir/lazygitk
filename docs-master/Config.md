@@ -411,6 +411,13 @@ gui:
   # is already active, go to next tab instead
   switchTabsWithPanelJumpKeys: false
 
+  # Fork: how the '?' command palette orders commands.
+  # One of: 'usage' (default) | 'static'
+  # 'usage' sorts local and global commands together by use count, with Navigation
+  # last.
+  # 'static' shows the upstream Local, Global and Navigation sections.
+  commandPaletteOrder: usage
+
 # Config relating to git
 git:
   # Array of diff renderers. Each entry has the following format:

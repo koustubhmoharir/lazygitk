@@ -240,6 +240,11 @@ type GuiConfig struct {
 	SwitchToFilesAfterStashApply bool `yaml:"switchToFilesAfterStashApply"`
 	// If true, when using the panel jump keys (default 1 through 5) and target panel is already active, go to next tab instead
 	SwitchTabsWithPanelJumpKeys bool `yaml:"switchTabsWithPanelJumpKeys"`
+	// Fork: how the '?' command palette orders commands.
+	// One of: 'usage' (default) | 'static'
+	// 'usage' sorts local and global commands together by use count, with Navigation last.
+	// 'static' shows the upstream Local, Global and Navigation sections.
+	CommandPaletteOrder string `yaml:"commandPaletteOrder" jsonschema:"enum=usage,enum=static"`
 }
 
 func (c *GuiConfig) UseFuzzySearch() bool {

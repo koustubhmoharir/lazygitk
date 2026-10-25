@@ -1385,6 +1385,15 @@
           "type": "boolean",
           "description": "If true, when using the panel jump keys (default 1 through 5) and target panel is already active, go to next tab instead",
           "default": false
+        },
+        "commandPaletteOrder": {
+          "type": "string",
+          "enum": [
+            "usage",
+            "static"
+          ],
+          "description": "Fork: how the '?' command palette orders commands.\nOne of: 'usage' (default) | 'static'\n'usage' sorts local and global commands together by use count, with Navigation last.\n'static' shows the upstream Local, Global and Navigation sections.",
+          "default": "usage"
         }
       },
       "additionalProperties": false,

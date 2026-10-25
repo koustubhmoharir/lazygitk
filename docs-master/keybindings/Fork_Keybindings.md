@@ -47,6 +47,20 @@ ancestor supplies the subject; every selected full message appears in the
 editable description, ancestor first. Git's normal continue/abort flow applies
 if rewriting stops for a conflict or hook failure.
 
+## Command palette
+
+`?` lists local and global commands together, sorted by usage. Running a command
+from the palette adds one to its count, and running it from its shortcut
+subtracts one, because you already know that shortcut. Commands you use most
+come first, and never-used commands keep their declaration order. Counts may go
+negative, and they are shared by all repositories. The order is fixed while the palette is open. Each row ends with
+a dim `local` or `global` tag. Typing filters by command name only. Navigation
+commands stay at the bottom of the palette in their own section.
+
+Choose "Reset command usage counts" to clear all counts after confirmation.
+Set `gui.commandPaletteOrder: static` to show Local, Global and Navigation
+sections in their fixed order instead.
+
 ## Configuration and migration
 
 Use stable command IDs for new overrides:

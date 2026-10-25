@@ -26,6 +26,8 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 	return []*types.Binding{
 		// Fork: captured cherry-pick is available for marks or focused history.
 		forkCherryPickBinding(self.c),
+		// Fork: palette-only; clears the command usage counts after confirmation.
+		forkResetCommandUsageBinding(self.c),
 		{
 			CommandID:   "app.shell-command",
 			Verb:        "run-shell-command",

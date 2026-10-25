@@ -11,6 +11,7 @@ func applyForkDefaults(config *UserConfig) *UserConfig {
 	// Include all refs in the history by default, while preserving config overrides.
 	config.Git.Log.ShowWholeGraph = true
 	applyForkEditorDefaults(config)
+	config.Gui.CommandPaletteOrder = "usage"
 	// Search result navigation must not consume normal pane command letters.
 	config.Keybinding.Universal.NextMatch = Keybinding{"<f3>"}
 	config.Keybinding.Universal.PrevMatch = Keybinding{"<shift+f3>"}

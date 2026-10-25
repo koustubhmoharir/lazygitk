@@ -17,6 +17,7 @@ func TestForkUsageRecordable(t *testing.T) {
 		{"fork view command", &types.Binding{CommandID: "files.stage", ViewName: "files"}, true},
 		{"empty command ID", &types.Binding{}, false},
 		{"command palette opener", &types.Binding{CommandID: "app.command-palette"}, false},
+		{"palette reset command", &types.Binding{CommandID: "app.reset-command-usage"}, false},
 		{"navigation prefix", &types.Binding{CommandID: "navigation.move-down"}, false},
 		{"navigation tag", &types.Binding{CommandID: "files.move", Tag: "navigation"}, false},
 		{"modal view", &types.Binding{CommandID: "menu.cancel", ViewName: "menu"}, false},

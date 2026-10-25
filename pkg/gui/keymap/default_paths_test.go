@@ -126,3 +126,11 @@ func TestDefaultCherryCopyToggleHasNoNormalPath(t *testing.T) {
 		t.Fatalf("legacy toggle paths = %v, known %t", paths, known)
 	}
 }
+
+// Palette-only commands have no default key. Being unknown here makes the
+// projection give them no keyboard path.
+func TestDefaultPathsPaletteOnlyCommandsHaveNoPath(t *testing.T) {
+	if paths, ok := DefaultPaths("app.reset-command-usage"); ok || paths != nil {
+		t.Fatalf("palette-only command returned (%v, %t), want (nil, false)", paths, ok)
+	}
+}

@@ -1260,6 +1260,10 @@ type TranslationSet struct {
 	NoCopiedCommits                          string
 	DisabledMenuItemPrefix                   string
 	CommandUsageReset                        string
+	CommandPaletteScopeLocal                 string
+	CommandPaletteScopeGlobal                string
+	ResetCommandUsageCounts                  string
+	ResetCommandUsageCountsPrompt            string
 	QuickStartInteractiveRebase              string
 	QuickStartInteractiveRebaseTooltip       string
 	CannotQuickStartInteractiveRebase        string
@@ -2725,6 +2729,10 @@ func EnglishTranslationSet() *TranslationSet {
 		InvalidLazygitEditURL:                    "Invalid lazygit-edit URL format: %s",
 		DisabledMenuItemPrefix:                   "Disabled: ",
 		CommandUsageReset:                        "Command usage counts were unreadable and have been reset.",
+		CommandPaletteScopeLocal:                 "local",
+		CommandPaletteScopeGlobal:                "global",
+		ResetCommandUsageCounts:                  "Reset command usage counts",
+		ResetCommandUsageCountsPrompt:            "Reset all command usage counts? The ? palette returns to its default order until commands are used again.",
 		NoCopiedCommits:                          "No copied commits",
 		QuickStartInteractiveRebase:              "Start interactive rebase",
 		QuickStartInteractiveRebaseTooltip:       "Start an interactive rebase for the commits on your branch. This will include all commits from the HEAD commit down to the first merge commit or main branch commit.\nIf you would instead like to start an interactive rebase from the selected commit, press `{{.editKey}}`.",

@@ -153,6 +153,10 @@ type IGuiCommon interface {
 	CallKeybindingHandler(binding *Binding) error
 	// Fork: invokes a binding chosen from the command palette (records a palette use).
 	CallPaletteKeybindingHandler(binding *Binding) error
+	// Fork: command usage counts for ordering the palette, snapshot at the call (empty if unavailable).
+	CommandUsageCounts() map[string]int
+	// Fork: clears all command usage counts, both in memory and in the shared counts file.
+	ResetCommandUsage() error
 
 	ResetKeybindings()
 

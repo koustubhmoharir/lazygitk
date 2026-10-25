@@ -23,11 +23,11 @@ const (
 )
 
 // forkUsageRecordable reports whether invoking binding counts as a command use.
-// Navigation, the palette opener itself, unnamed bindings and bindings in
-// modal or popup views are excluded.
+// Navigation, the palette opener and its reset command, unnamed bindings and
+// bindings in modal or popup views are excluded.
 func forkUsageRecordable(binding *types.Binding) bool {
 	id := binding.GetCommandID()
-	if id == "" || id == "app.command-palette" {
+	if id == "" || id == "app.command-palette" || id == "app.reset-command-usage" {
 		return false
 	}
 	if strings.HasPrefix(id, "navigation.") || binding.Tag == "navigation" {
@@ -134,6 +134,23 @@ func (gui *Gui) openForkCommandUsage() {
 	}
 	gui.commandUsage = store
 	gui.forkUsageReset = reset
+}
+
+// forkCommandUsageCounts snapshots the counts for ordering the `?` palette.
+// Without a store, every command has no uses.
+func (gui *Gui) forkCommandUsageCounts() map[string]int {
+	if gui.commandUsage == nil {
+		return map[string]int{}
+	}
+	return gui.commandUsage.Snapshot()
+}
+
+// resetForkCommandUsage empties the counts. Without a store there is nothing to clear.
+func (gui *Gui) resetForkCommandUsage() error {
+	if gui.commandUsage == nil {
+		return nil
+	}
+	return gui.commandUsage.Reset()
 }
 
 // recordForkUsage adds a committed use to the store and arms the flush timer.

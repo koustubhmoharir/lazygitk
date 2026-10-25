@@ -44,6 +44,13 @@ func (self *MenuDriver) Lines(matchers ...*TextMatcher) *MenuDriver {
 	return self
 }
 
+// asserts on the whole text of the menu, including its section headers
+func (self *MenuDriver) Content(matcher *TextMatcher) *MenuDriver {
+	self.getViewDriver().Content(matcher)
+
+	return self
+}
+
 func (self *MenuDriver) TopLines(matchers ...*TextMatcher) *MenuDriver {
 	self.getViewDriver().TopLines(matchers...)
 

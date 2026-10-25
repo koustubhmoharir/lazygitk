@@ -33,6 +33,10 @@ func (config *UserConfig) Validate() error {
 		[]string{"mixed", "filesFirst", "foldersFirst"}); err != nil {
 		return err
 	}
+	if err := validateEnum("gui.commandPaletteOrder", config.Gui.CommandPaletteOrder,
+		[]string{"usage", "static"}); err != nil {
+		return err
+	}
 	if err := validateEnum("gui.commitGraphStyle", config.Gui.CommitGraphStyle,
 		[]string{"auto", "classic", "detailed"}); err != nil {
 		return err

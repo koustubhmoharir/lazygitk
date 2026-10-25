@@ -695,6 +695,8 @@ var tests = []*components.IntegrationTest{
 	ui.ForkDefaultHistoryOperations,
 	ui.ForkDefaultKeymap,
 	ui.ForkDefaultRefresh,
+	ui.ForkPaletteStaticOrder,
+	ui.ForkPaletteUsageOrder,
 	ui.ForkPrefixEdgeCases,
 	ui.ForkPrefixOverrides,
 	ui.HideSidePanel,

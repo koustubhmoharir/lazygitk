@@ -25,11 +25,8 @@ Agreed design (user decisions 2026-10-25, refining the roadmap):
 
 ## Remaining tasks for item 9
 
-1. Palette ordering, tags, Navigation section, reset command, static-order
-   option, schema/docs and merge-guide updates.
-2. Terminal scenarios (ordering after palette and shortcut use, cancel,
-   restart persistence, corrupt file warning), then generation, formatting,
-   builds, full short and integration suites and lint. When acceptance passes,
+1. Terminal scenarios for restart persistence and the corrupt-file warning,
+   then the full short and integration suites and lint. When acceptance passes,
    complete item 9 in the roadmap and update this tracker in that commit.
 
 ## How this tracker works

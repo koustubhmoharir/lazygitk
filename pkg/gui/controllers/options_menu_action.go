@@ -18,24 +18,37 @@ func (self *OptionsMenuAction) Call() error {
 
 	menuItems := []*types.MenuItem{}
 
+	paletteItem := func(binding *types.Binding, section *types.MenuSection) *types.MenuItem {
+		tooltip := binding.GetTooltip()
+		keyLabels := binding.KeyLabels()
+		if len(keyLabels) > 1 {
+			if tooltip != "" {
+				tooltip += "\n\n"
+			}
+			tooltip += self.c.Tr.KeybindingsTooltip + strings.Join(keyLabels, ", ")
+		}
+		// Fork: palette items record a palette use, not a shortcut use (see fork_command_usage.go).
+		return commandPaletteMenuItem(binding, section, tooltip, self.c.IGuiCommon.CallPaletteKeybindingHandler)
+	}
 	appendBindings := func(bindings []*types.Binding, section *types.MenuSection) {
 		menuItems = append(menuItems,
 			lo.Map(bindings, func(binding *types.Binding, _ int) *types.MenuItem {
-				tooltip := binding.GetTooltip()
-				keyLabels := binding.KeyLabels()
-				if len(keyLabels) > 1 {
-					if tooltip != "" {
-						tooltip += "\n\n"
-					}
-					tooltip += self.c.Tr.KeybindingsTooltip + strings.Join(keyLabels, ", ")
-				}
-				// Fork: palette items record a palette use, not a shortcut use (see fork_command_usage.go).
-				return commandPaletteMenuItem(binding, section, tooltip, self.c.IGuiCommon.CallPaletteKeybindingHandler)
+				return paletteItem(binding, section)
 			})...)
 	}
 
-	appendBindings(local, &types.MenuSection{Title: self.c.Tr.KeybindingsMenuSectionLocal, Column: 1})
-	appendBindings(global, &types.MenuSection{Title: self.c.Tr.KeybindingsMenuSectionGlobal, Column: 1})
+	// Fork: usage order merges local and global commands into one list, each
+	// tagged with its scope. The static option keeps the upstream sections.
+	if self.c.UserConfig().Gui.CommandPaletteOrder == "static" {
+		appendBindings(local, &types.MenuSection{Title: self.c.Tr.KeybindingsMenuSectionLocal, Column: 1})
+		appendBindings(global, &types.MenuSection{Title: self.c.Tr.KeybindingsMenuSectionGlobal, Column: 1})
+	} else {
+		for _, entry := range orderPaletteByUsage(local, global, self.c.CommandUsageCounts()) {
+			item := paletteItem(entry.binding, nil)
+			forkTagPaletteItem(item, entry.scope, self.c.Tr)
+			menuItems = append(menuItems, item)
+		}
+	}
 	appendBindings(navigation, &types.MenuSection{Title: self.c.Tr.KeybindingsMenuSectionNavigation, Column: 1})
 
 	return self.c.Menu(types.CreateMenuOptions{

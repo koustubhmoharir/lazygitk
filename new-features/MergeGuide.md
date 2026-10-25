@@ -555,6 +555,19 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   `ConfirmIf` line, and `Gui.PopupHandler`'s hook installation. Excluded uses:
   empty IDs, `app.command-palette`, `navigation.*` or Tag `navigation`, and
   non-fork views.
+- Palette ordering: `options_menu_action.go` branches on
+  `gui.commandPaletteOrder`. The default `usage` merges local and global
+  commands through `orderPaletteByUsage` (`fork_command_palette_order.go`) and
+  tags them with `forkTagPaletteItem`. `static` keeps the upstream sections. The
+  counts come from `IGuiCommon.CommandUsageCounts`, a snapshot taken when the
+  palette opens. Navigation remains a static section in both modes.
+- `app.reset-command-usage` is a palette-only global command
+  (`fork_command_usage_reset.go`). It has no default path and is excluded from
+  recording. `IGuiCommon.ResetCommandUsage` clears the store.
+- Integration harness: `test/default_test_config/config.yml` selects the static
+  palette for legacy scenarios. Each test already runs with its own
+  `--use-config-dir`, and `stateFilePath` resolves `command_usage.json` there, so
+  usage counts never leak between scenarios or runs.
 
 ### Selected-branch operations (item 7 complete)
 
