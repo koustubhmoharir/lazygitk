@@ -56,9 +56,8 @@ custom commands. Frequency persistence and sorting remain item 9.
    full-refresh/re-render F5 without fetch,
    explanatory rebase/merge confirmation,
    unified selected branch/commit checkout and ref-only branch placement
-   (default local/remote/tag checkout projection now offers captured naming
-   choices; local/remote lists now expose captured ref-only placement;
-   verify these routes with the enabled profile),
+   (`n b`/`s c` from Commits/Branches/Remote branches pass with the enabled
+   profile; tag `s c` remains to verify there),
    Escape mark clearing and final default-profile verification of the integrated
    exact-list marked/selected cherry-pick review (focused and terminal checks
    preserve upstream paused-rebase support and post-pick buffer behavior),
