@@ -15,6 +15,9 @@ type SwitchToFocusedMainViewController struct {
 	baseController
 	c       *ControllerCommon
 	context types.Context
+	// Fork: replaces the plain focus with a context-specific inspection
+	// (see WithInspect). Nil keeps upstream's focus-only behavior.
+	inspect func() error
 }
 
 func NewSwitchToFocusedMainViewController(
@@ -26,6 +29,14 @@ func NewSwitchToFocusedMainViewController(
 		c:              c,
 		context:        context,
 	}
+}
+
+// Fork: WithInspect makes the focus-diff key run inspect instead of only focusing
+// the main view. Files uses it so that its inspection key resolves a conflicted file
+// the same way Enter does, rather than only showing read-only details.
+func (self *SwitchToFocusedMainViewController) WithInspect(inspect func() error) *SwitchToFocusedMainViewController {
+	self.inspect = inspect
+	return self
 }
 
 func (self *SwitchToFocusedMainViewController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
@@ -73,6 +84,10 @@ func (self *SwitchToFocusedMainViewController) onClickSecondary(opts gocui.ViewM
 }
 
 func (self *SwitchToFocusedMainViewController) handleFocusMainView() error {
+	// Fork: see WithInspect. Mouse clicks still only focus the main view.
+	if self.inspect != nil {
+		return self.inspect()
+	}
 	return focusMainView(self.c, self.context, -1)
 }
 

@@ -256,9 +256,14 @@ func (gui *Gui) resetHelpersAndControllers() {
 		gui.State.Contexts.CommitFiles,
 		gui.State.Contexts.Stash,
 	} {
-		controllers.AttachControllers(context, controllers.NewSwitchToFocusedMainViewController(
-			common, context,
-		))
+		controller := controllers.NewSwitchToFocusedMainViewController(common, context)
+		if context == gui.State.Contexts.Files {
+			// Fork: the focus-diff key in Files runs the Files inspection (the same
+			// conflict-aware route as Enter) instead of only focusing the read-only
+			// main view. Upstream's focus-only handler is replaced here.
+			controller = controller.WithInspect(filesController.InspectSelected)
+		}
+		controllers.AttachControllers(context, controller)
 	}
 
 	for _, context := range []controllers.ContainsCommits{

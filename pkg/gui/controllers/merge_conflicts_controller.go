@@ -343,6 +343,10 @@ func (self *MergeConflictsController) withRenderAndFocus(f func() error) func() 
 		}
 
 		self.context().RenderAndFocus()
+		// Fork: a prefix menu returns focus here before its leaf runs, and the
+		// focus handler queues a render of the pre-action content. A newer render
+		// task supersedes it, so the view cannot revert to that stale snapshot.
+		self.c.Helpers().MergeConflicts.Render()
 		return nil
 	})
 }

@@ -690,6 +690,7 @@ var tests = []*components.IntegrationTest{
 	ui.ForkCommandBindingOverrides,
 	ui.ForkDefaultBranchPlacementCheckout,
 	ui.ForkDefaultCherryPick,
+	ui.ForkDefaultConflicts,
 	ui.ForkDefaultHistoryOperations,
 	ui.ForkDefaultKeymap,
 	ui.ForkDefaultRefresh,

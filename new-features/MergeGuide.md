@@ -508,6 +508,16 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   audit tests passed (0.023s), two generated snapshots matched byte-for-byte,
   and scoped gocui lint reported zero issues. This foundation does not activate
   the new defaults, so no new terminal interaction flow is claimed as tested.
+- Fork: Files' focus-diff handler is replaced with `FilesController.InspectSelected`
+  (`fork_files_inspect.go`)
+  via `SwitchToFocusedMainViewController.WithInspect` (attached in `controllers.go`).
+  Upstream's focus-only action would leave the default Files inspection key `v`
+  unable to reach conflict resolution, since Enter commits there. Mouse clicks keep
+  the upstream focus-only path. Re-check this seam on upstream merges.
+- Fork: `MergeConflictsController.withRenderAndFocus` also queues
+  `MergeConflictsHelper.Render`. Closing a prefix menu re-focuses the merge view,
+  whose focus handler queues a render of the pre-action content; without a newer
+  task that stale render overwrites a picked hunk or undo performed by the leaf.
 
 ### Selected-branch operations (item 7 complete)
 
