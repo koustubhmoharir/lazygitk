@@ -90,6 +90,17 @@ func (flow *branchSyncPushFlow) menuSummary() string {
 	return fmt.Sprintf(flow.target.c.Tr.BranchSyncPushSummary, flow.info.Name, utils.ShortHash(flow.info.OID), remote, destination, flow.opts.SetUpstream, flow.opts.Submodules == git_commands.BranchPushCheckSubmodules)
 }
 
+// Fork: Escape on a prompt or review opened from the push menu steps back to
+// that menu instead of cancelling the whole flow. Prompts write options only on
+// confirm, so the reopened menu shows the unchanged options. The menu's own
+// Escape still cancels.
+func (flow *branchSyncPushFlow) backToMenu() error {
+	if err := flow.target.checkRepository(); err != nil {
+		return err
+	}
+	return flow.menu()
+}
+
 func (flow *branchSyncPushFlow) promptRemote(forceContinuation bool) error {
 	if err := flow.target.checkRepository(); err != nil {
 		return err
@@ -98,7 +109,7 @@ func (flow *branchSyncPushFlow) promptRemote(forceContinuation bool) error {
 	if looksLikeBranchSyncRemoteURL(flow.info.PushRemote) {
 		title = flow.target.c.Tr.BranchSyncNamedRemoteRequired
 	}
-	flow.target.c.Prompt(types.PromptOpts{Title: title, InitialContent: flow.opts.Remote, PreserveWhitespace: true, AllowEditSuggestion: true, HandleClose: flow.target.checkRepository, HandleConfirm: func(remote string) error {
+	flow.target.c.Prompt(types.PromptOpts{Title: title, InitialContent: flow.opts.Remote, PreserveWhitespace: true, AllowEditSuggestion: true, HandleClose: flow.backToMenu, HandleConfirm: func(remote string) error {
 		if err := flow.target.checkRepository(); err != nil {
 			return err
 		}
@@ -114,7 +125,7 @@ func (flow *branchSyncPushFlow) promptDestination() error {
 		return err
 	}
 	initial := strings.TrimPrefix(flow.opts.DestinationRef, "refs/heads/")
-	flow.target.c.Prompt(types.PromptOpts{Title: flow.target.c.Tr.BranchSyncDestinationPrompt, InitialContent: initial, PreserveWhitespace: true, AllowEditSuggestion: true, HandleClose: flow.target.checkRepository, HandleConfirm: func(value string) error {
+	flow.target.c.Prompt(types.PromptOpts{Title: flow.target.c.Tr.BranchSyncDestinationPrompt, InitialContent: initial, PreserveWhitespace: true, AllowEditSuggestion: true, HandleClose: flow.backToMenu, HandleConfirm: func(value string) error {
 		if err := flow.target.checkRepository(); err != nil {
 			return err
 		}
@@ -241,12 +252,18 @@ func (flow *branchSyncPushFlow) review() error {
 	if flow.acceptPlan == nil && !branchPushReplacesTracking(plan) {
 		return flow.execute(plan)
 	}
+	// Fork: a stacked review keeps cancelling the whole collection on Escape;
+	// an ordinary review steps back to the push menu.
+	closeReview := flow.target.checkRepository
+	if flow.acceptPlan == nil {
+		closeReview = flow.backToMenu
+	}
 	flow.target.c.Confirm(types.ConfirmOpts{Title: title, Prompt: prompt, HandleConfirm: func() error {
 		if err := flow.target.checkRepository(); err != nil {
 			return err
 		}
 		return flow.execute(plan)
-	}, HandleClose: flow.target.checkRepository})
+	}, HandleClose: closeReview})
 	return nil
 }
 
@@ -287,7 +304,7 @@ func (flow *branchSyncPushFlow) promptLease(opts git_commands.BranchPushOptions,
 	if err := flow.target.checkRepository(); err != nil {
 		return err
 	}
-	flow.target.c.Prompt(types.PromptOpts{Title: flow.target.c.Tr.BranchSyncLeasePrompt, InitialContent: opts.LeaseRef, PreserveWhitespace: true, AllowEditSuggestion: true, HandleClose: flow.target.checkRepository, HandleConfirm: func(ref string) error {
+	flow.target.c.Prompt(types.PromptOpts{Title: flow.target.c.Tr.BranchSyncLeasePrompt, InitialContent: opts.LeaseRef, PreserveWhitespace: true, AllowEditSuggestion: true, HandleClose: flow.backToMenu, HandleConfirm: func(ref string) error {
 		if err := flow.target.checkRepository(); err != nil {
 			return err
 		}

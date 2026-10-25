@@ -785,7 +785,11 @@ the `lazygitk` directory; user docs describe the new locations.
 
 Complete. The "Push without tracking" choice after an ambiguous-upstream
 refusal also pushes directly, since that menu names the source and
-destination. The push menu already shows source, commit, remote, destination,
+destination. Follow-up from use: in the one-branch push, update and
+pull flows, Escape on a prompt or review opened from the flow's menu steps
+back to that menu with unchanged options; Escape on the menu itself cancels.
+Stacked batch flows, and the pull integration review (which may have no
+menu before it), keep cancelling. The push menu already shows source, commit, remote, destination,
 upstream and submodule settings, so choosing **Push this branch** pushes after
 the usual preparation, without a second "Review branch push" confirmation.
 TortoiseGit's push dialog likewise pushes directly from its options. User

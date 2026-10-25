@@ -98,11 +98,25 @@ func (flow *branchSyncUpdateFlow) summary() string {
 	return prefix + fmt.Sprintf(format, flow.info.Name, utils.ShortHash(flow.info.OID), flow.options.Remote, flow.options.RemoteRef, flow.options.TrackingRef)
 }
 
+// Fork: Escape on a prompt or review opened from this flow's menu steps back to
+// that menu instead of cancelling the whole flow. Batch collection keeps the
+// plain close because its menus are owned by the batch; the menu's own Escape
+// still cancels.
+func (flow *branchSyncUpdateFlow) backToMenu() error {
+	if err := flow.target.checkRepository(); err != nil {
+		return err
+	}
+	if flow.collector != nil {
+		return nil
+	}
+	return flow.menu()
+}
+
 func (flow *branchSyncUpdateFlow) promptRemote() error {
 	if err := flow.target.checkRepository(); err != nil {
 		return err
 	}
-	flow.target.c.Prompt(types.PromptOpts{Title: flow.target.c.Tr.BranchSyncRemotePrompt, InitialContent: flow.options.Remote, PreserveWhitespace: true, AllowEditSuggestion: true, HandleClose: flow.target.checkRepository, HandleConfirm: func(value string) error {
+	flow.target.c.Prompt(types.PromptOpts{Title: flow.target.c.Tr.BranchSyncRemotePrompt, InitialContent: flow.options.Remote, PreserveWhitespace: true, AllowEditSuggestion: true, HandleClose: flow.backToMenu, HandleConfirm: func(value string) error {
 		if err := flow.target.checkRepository(); err != nil {
 			return err
 		}
@@ -122,7 +136,7 @@ func (flow *branchSyncUpdateFlow) promptUpstream() error {
 	if err := flow.target.checkRepository(); err != nil {
 		return err
 	}
-	flow.target.c.Prompt(types.PromptOpts{Title: flow.target.c.Tr.BranchSyncUpstreamBranchPrompt, InitialContent: flow.options.RemoteRef, PreserveWhitespace: true, AllowEditSuggestion: true, HandleClose: flow.target.checkRepository, HandleConfirm: func(value string) error {
+	flow.target.c.Prompt(types.PromptOpts{Title: flow.target.c.Tr.BranchSyncUpstreamBranchPrompt, InitialContent: flow.options.RemoteRef, PreserveWhitespace: true, AllowEditSuggestion: true, HandleClose: flow.backToMenu, HandleConfirm: func(value string) error {
 		if err := flow.target.checkRepository(); err != nil {
 			return err
 		}
@@ -142,7 +156,7 @@ func (flow *branchSyncUpdateFlow) promptTrackingRef() error {
 	if err := flow.target.checkRepository(); err != nil {
 		return err
 	}
-	flow.target.c.Prompt(types.PromptOpts{Title: flow.target.c.Tr.BranchSyncTrackingRefPrompt, InitialContent: flow.options.TrackingRef, PreserveWhitespace: true, AllowEditSuggestion: true, HandleClose: flow.target.checkRepository, HandleConfirm: func(value string) error {
+	flow.target.c.Prompt(types.PromptOpts{Title: flow.target.c.Tr.BranchSyncTrackingRefPrompt, InitialContent: flow.options.TrackingRef, PreserveWhitespace: true, AllowEditSuggestion: true, HandleClose: flow.backToMenu, HandleConfirm: func(value string) error {
 		if err := flow.target.checkRepository(); err != nil {
 			return err
 		}
@@ -255,7 +269,7 @@ func (flow *branchSyncUpdateFlow) reviewFetch() error {
 			return err
 		}
 		return flow.executeFetch(plan)
-	}, HandleClose: flow.target.checkRepository})
+	}, HandleClose: flow.backToMenu})
 	return nil
 }
 
@@ -323,7 +337,7 @@ func (flow *branchSyncUpdateFlow) reviewUpdate() error {
 			return err
 		}
 		return flow.applyUpdate(plan)
-	}, HandleClose: flow.target.checkRepository})
+	}, HandleClose: flow.backToMenu})
 	return nil
 }
 

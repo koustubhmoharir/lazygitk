@@ -343,7 +343,7 @@ func (flow *branchSyncUpdateFlow) confirmCurrentFetch(review git_commands.Curren
 			return err
 		}
 		return flow.executeCurrentFetch(review, plan)
-	}, HandleClose: flow.target.checkRepository})
+	}, HandleClose: flow.backToMenu})
 	return nil
 }
 

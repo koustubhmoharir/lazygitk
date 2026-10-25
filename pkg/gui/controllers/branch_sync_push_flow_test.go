@@ -948,3 +948,100 @@ func TestBranchSyncPushAmbiguousUpstreamRejectsStaleCallbacks(t *testing.T) {
 		}
 	}
 }
+
+// Escape on a prompt opened from the push menu returns to that menu with its
+// options unchanged. Nothing is pushed by the cancelled prompt.
+func TestBranchSyncPushPromptEscapeReturnsToMenu(t *testing.T) {
+	for _, tc := range []struct {
+		name         string
+		removeRemote bool
+		item         string
+		prompt       string
+	}{
+		{name: "choose remote", item: "branch.push-selected.remote", prompt: "Remote name"},
+		{name: "push without remote", removeRemote: true, item: "branch.push-selected.execute", prompt: "Remote name"},
+		{name: "destination", item: "branch.push-selected.destination", prompt: "Destination branch name or refs/heads/..."},
+		{name: "lease", item: "branch.push-selected.force-with-lease", prompt: "Full locally available lease reference"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newBranchSyncPushFixture(t)
+			if tc.removeRemote {
+				branchSyncPushGit(t, f.root, "remote", "remove", "origin")
+			}
+			f.open(t, branchSyncSource{name: "topic", selected: true})
+			initial := f.ui.menus[0]
+			if err := menuItem(t, initial, tc.item).OnPress(); err != nil {
+				t.Fatal(err)
+			}
+			for len(f.ui.workers) > 0 || len(f.ui.ui) > 0 {
+				if len(f.ui.workers) > 0 {
+					if err := f.ui.runWorker(t); err != nil {
+						t.Fatal(err)
+					}
+				} else if err := f.ui.runUI(t); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if len(f.ui.prompts) != 1 || f.ui.prompts[0].Title != tc.prompt {
+				t.Fatalf("expected prompt %q, got %+v", tc.prompt, f.ui.prompts)
+			}
+			menusBefore := len(f.ui.menus)
+			if err := f.ui.prompts[0].HandleClose(); err != nil {
+				t.Fatal(err)
+			}
+			if len(f.ui.menus) != menusBefore+1 {
+				t.Fatalf("Escape did not reopen the push menu: %d menus, want %d", len(f.ui.menus), menusBefore+1)
+			}
+			reopened := f.ui.menus[len(f.ui.menus)-1]
+			if reopened.Title != f.sync.c.Tr.BranchSyncPushMenu || reopened.Prompt != initial.Prompt {
+				t.Fatalf("reopened menu differs from the flow menu: title %q", reopened.Title)
+			}
+			if len(f.ui.workers) != 0 || len(f.ui.confirms) != 0 {
+				t.Fatal("Escape started a preparation or review")
+			}
+			if _, err := exec.Command("git", "-C", f.remote, "show-ref", "--verify", "--quiet", "refs/heads/topic").Output(); err == nil {
+				t.Fatal("Escape on the prompt pushed the branch")
+			}
+		})
+	}
+}
+
+// Escape on the tracking-replacement review returns to the push menu. The
+// upstream stays unchanged and nothing is pushed.
+func TestBranchSyncPushTrackingReplacementEscapeReturnsToMenu(t *testing.T) {
+	f := newBranchSyncPushFixture(t)
+	branchSyncPushGit(t, f.root, "config", "branch.topic.remote", "oldremote")
+	branchSyncPushGit(t, f.root, "config", "--add", "branch.topic.merge", "refs/heads/old-one")
+	f.open(t, branchSyncSource{name: "topic", selected: true})
+	if err := menuItem(t, f.ui.menus[0], "branch.push-selected.set-upstream").OnPress(); err != nil {
+		t.Fatal(err)
+	}
+	if err := menuItem(t, f.ui.menus[len(f.ui.menus)-1], "branch.push-selected.execute").OnPress(); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.ui.runWorker(t); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.ui.runUI(t); err != nil {
+		t.Fatal(err)
+	}
+	if len(f.ui.confirms) != 1 {
+		t.Fatalf("expected one replacement review, got %d", len(f.ui.confirms))
+	}
+	menusBefore := len(f.ui.menus)
+	if err := f.ui.confirms[0].HandleClose(); err != nil {
+		t.Fatal(err)
+	}
+	if len(f.ui.menus) != menusBefore+1 {
+		t.Fatalf("Escape did not reopen the push menu: %d menus, want %d", len(f.ui.menus), menusBefore+1)
+	}
+	if !strings.Contains(f.ui.menus[len(f.ui.menus)-1].Prompt, "Set upstream for selected branch: true") {
+		t.Fatal("reopened menu lost the set-upstream choice")
+	}
+	if got := branchSyncPushGit(t, f.root, "config", "--get", "branch.topic.remote"); got != "oldremote" {
+		t.Fatalf("Escape changed upstream to %s", got)
+	}
+	if _, err := exec.Command("git", "-C", f.remote, "show-ref", "--verify", "--quiet", "refs/heads/topic").Output(); err == nil {
+		t.Fatal("Escape on the review pushed the branch")
+	}
+}

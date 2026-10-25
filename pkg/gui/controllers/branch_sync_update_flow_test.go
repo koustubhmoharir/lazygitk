@@ -735,8 +735,12 @@ func TestBranchSyncUpdateFetchCancellationKeepsLocalBranch(t *testing.T) {
 		t.Fatal(err)
 	}
 	localBefore := branchSyncPushGit(t, f.root, "rev-parse", "refs/heads/topic")
+	menusBefore := len(f.ui.menus)
 	if err := f.ui.confirms[0].HandleClose(); err != nil {
 		t.Fatal(err)
+	}
+	if len(f.ui.menus) != menusBefore+1 || f.ui.menus[len(f.ui.menus)-1].Title != f.sync.c.Tr.BranchSyncUpdateMenu {
+		t.Fatal("Escape on the fetch review did not reopen the update menu")
 	}
 	if got := branchSyncPushGit(t, f.root, "rev-parse", "refs/heads/topic"); got != localBefore {
 		t.Fatal("cancel before fetch changed the local branch")

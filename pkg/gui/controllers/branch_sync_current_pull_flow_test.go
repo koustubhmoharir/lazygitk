@@ -338,8 +338,12 @@ func TestBranchSyncCurrentPullCancelPhases(t *testing.T) {
 				t.Fatal(err)
 			}
 			if phase == "fetch" {
+				menusBefore := len(f.ui.menus)
 				if err := f.ui.confirms[len(f.ui.confirms)-1].HandleClose(); err != nil {
 					t.Fatal(err)
+				}
+				if len(f.ui.menus) != menusBefore+1 || f.ui.menus[len(f.ui.menus)-1].Title != f.sync.c.Tr.BranchSyncPullCurrent {
+					t.Fatal("Escape on the fetch review did not reopen the pull menu")
 				}
 				branchSyncCurrentPullAssertUnchanged(t, f, before)
 				if got := branchSyncPushGit(t, f.root, "rev-parse", "refs/remotes/origin/main"); got != cacheBefore {

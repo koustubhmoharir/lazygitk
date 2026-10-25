@@ -928,7 +928,9 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   and fallback menu are the review); it still confirms force-with-lease,
   stacked collection, and set-upstream that replaces different tracking
   (`branchPushReplacesTracking`). Re-check that rule if upstream changes push
-  preparation. Explicit
+  preparation. Escape on a prompt or review opened from a one-branch push or
+  update menu calls the flow's `backToMenu()` to reopen that menu; keep new
+  prompts on that rule. Explicit
   lease prompts retain their captured options/OID across later callbacks.
   This preparation adds English fallback strings; default shortcut policy is
   unchanged. Regenerate the command inventory/key docs with final binding
