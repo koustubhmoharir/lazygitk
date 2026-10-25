@@ -56,7 +56,7 @@ func (self *WorkingTreeDiffActions) showsStagedSide(pane types.DiffPaneContext) 
 func (self *WorkingTreeDiffActions) PrimaryAction(pane types.DiffPaneContext, firstBufferLine int, lastBufferLine int) error {
 	if self.c.UserConfig().Git.DiffContextSize == 0 {
 		return fmt.Errorf(self.c.Tr.Actions.NotEnoughContextToStage,
-			self.c.UserConfig().Keybinding.Universal.IncreaseContextInDiffView)
+			self.c.CommandKeyLabel("diff.context.increase", ""))
 	}
 
 	linesByFile, onStagedSide, err := self.diffLineSelection(pane, firstBufferLine, lastBufferLine)
@@ -79,7 +79,7 @@ func (self *WorkingTreeDiffActions) PrimaryAction(pane types.DiffPaneContext, fi
 func (self *WorkingTreeDiffActions) DiscardSelection(pane types.DiffPaneContext, firstBufferLine int, lastBufferLine int) error {
 	if self.c.UserConfig().Git.DiffContextSize == 0 {
 		return fmt.Errorf(self.c.Tr.Actions.NotEnoughContextToDiscard,
-			self.c.UserConfig().Keybinding.Universal.IncreaseContextInDiffView)
+			self.c.CommandKeyLabel("diff.context.increase", ""))
 	}
 
 	linesByFile, onStagedSide, err := self.diffLineSelection(pane, firstBufferLine, lastBufferLine)

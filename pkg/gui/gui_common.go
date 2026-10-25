@@ -26,6 +26,11 @@ func (self *guiCommon) LogCommand(cmdStr string, isCommandLine bool) {
 	self.gui.LogCommand(cmdStr, isCommandLine)
 }
 
+// Fork: see Gui.commandKeyLabel.
+func (self *guiCommon) CommandKeyLabel(commandID string, view string) string {
+	return self.gui.commandKeyLabel(commandID, view)
+}
+
 func (self *guiCommon) Refresh(opts types.RefreshOptions) {
 	self.gui.helpers.Refresh.Refresh(opts)
 }

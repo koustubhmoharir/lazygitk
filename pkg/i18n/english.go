@@ -262,6 +262,7 @@ type TranslationSet struct {
 	NestedRepositoryHistoryWouldBeLost    string
 	NestedRepositoryChangesWouldBeLost    string
 	StageConflictsRangeDisabled           string
+	StageConflictsRangeDisabledNoKey      string
 	Checkout                              string
 	CheckoutAsBranch                      string
 	CheckoutTooltip                       string
@@ -1697,6 +1698,7 @@ func EnglishTranslationSet() *TranslationSet {
 		PlainDirectoryDescription:            "'{{.path}}' is an untracked directory. Git shows it as a single entry because status.showUntrackedFiles is set to \"normal\".",
 		PlainDirectoryFiles:                  "Files in '{{.path}}'",
 		StageConflictsRangeDisabled:          "Cannot stage a selection that includes files with merge conflicts; resolve them individually with {{.goIntoKey}} first.",
+		StageConflictsRangeDisabledNoKey:     "Cannot stage a selection that includes files with merge conflicts; resolve them individually first.",
 		Checkout:                             "Checkout",
 		CheckoutTooltip:                      "Checkout selected item.",
 		CantCheckoutBranchWhilePulling:       "You cannot checkout another branch while pulling the current branch",

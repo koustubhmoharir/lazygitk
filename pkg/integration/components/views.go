@@ -141,3 +141,8 @@ func (self *Views) Tooltip() *ViewDriver {
 func (self *Views) Options() *ViewDriver {
 	return self.regularView("options")
 }
+
+// Extras is the window holding the command log.
+func (self *Views) Extras() *ViewDriver {
+	return self.regularView("extras")
+}

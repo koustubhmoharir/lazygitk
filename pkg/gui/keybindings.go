@@ -450,6 +450,11 @@ func (gui *Gui) resetKeybindings() {
 	// Fork: normal panes use compiled command paths and no-op reservations;
 	// custom, modal, editor and mouse routes retain native registration.
 	gui.registerForkCommands(bindings, customBindings)
+	// Fork: command key labels follow the same bindings as the registrations
+	// above, except while the search prompt narrows them to its own controls.
+	if gui.State.ContextMgr.Current().GetKey() != context.SEARCH_CONTEXT_KEY {
+		gui.setForkCommandBindings(bindings, customBindings)
+	}
 	gui.updateForkPanelJumpLabels(bindings, customBindings)
 
 	for _, binding := range mouseBindings {

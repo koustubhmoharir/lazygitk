@@ -113,6 +113,14 @@ type Gui struct {
 	// main panes that key focuses (see showFocusMainViewJumpLabelOn)
 	focusMainViewJumpLabel string
 
+	// Fork: the bindings behind command key labels (see commandKeyLabel) and a
+	// per-view cache of their labels. Background goroutines may ask for labels,
+	// so the cache is guarded by forkCommandLabelsMu.
+	forkCommandLabelsMu   sync.Mutex
+	forkCoreBindings      []*types.Binding
+	forkCustomBindings    []*types.Binding
+	forkCommandLabelCache map[string]map[string]string
+
 	Views types.Views
 
 	// Log of the commands/actions logged in the Command Log panel.

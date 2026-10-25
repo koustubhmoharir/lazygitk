@@ -27,6 +27,9 @@ type IGuiCommon interface {
 
 	LogAction(action string)
 	LogCommand(cmdStr string, isCommandLine bool)
+	// Fork: returns the effective key label (a command path in normal panes) of
+	// commandID in view, falling back to the global view, or "" if it has no key.
+	CommandKeyLabel(commandID string, view string) string
 	// we call this when we want to refetch some models and render the result. Internally calls PostRefreshUpdate
 	Refresh(RefreshOptions)
 	// Like Refresh, but withholds keyboard input until the refreshed state is

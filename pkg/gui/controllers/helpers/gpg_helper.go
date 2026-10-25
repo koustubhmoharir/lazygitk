@@ -90,7 +90,8 @@ func (self *GpgHelper) runAndStream(
 		if err := cmdObj.StreamOutput().Run(); err != nil {
 			self.c.RefreshFromWorker(failureRefreshOptions)
 			return fmt.Errorf(
-				self.c.Tr.GitCommandFailed, self.c.UserConfig().Keybinding.Universal.ExtrasMenu,
+				// Fork: the options menu is reached through its command path, not the legacy key field.
+				self.c.Tr.GitCommandFailed, self.c.CommandKeyLabel("command-log.options-menu", ""),
 			)
 		}
 

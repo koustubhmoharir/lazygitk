@@ -70,7 +70,8 @@ func (gui *Gui) LogCommand(cmdStr string, commandLine bool) {
 func (gui *Gui) printCommandLogHeader() {
 	introStr := fmt.Sprintf(
 		gui.c.Tr.CommandLogHeader,
-		gui.c.UserConfig().Keybinding.Universal.ExtrasMenu,
+		// Fork: the options menu is reached through its command path, not the legacy key field.
+		gui.c.CommandKeyLabel("command-log.options-menu", ""),
 	)
 	fmt.Fprintln(gui.Views.Extras, style.FgCyan.Sprint(introStr))
 
@@ -84,92 +85,112 @@ func (gui *Gui) printCommandLogHeader() {
 	}
 }
 
-func (gui *Gui) getRandomTip() string {
-	config := gui.c.UserConfig().Keybinding
+// commandRoute names a command and the view whose effective key label is shown.
+type commandRoute struct {
+	commandID string
+	view      string
+}
 
+// keyTip formats a tip with the effective label of each route. It returns ""
+// when any route has no key, so that the tip is dropped rather than naming a
+// key that does not exist.
+func (gui *Gui) keyTip(format string, routes ...commandRoute) string {
+	labels := make([]any, len(routes))
+	for i, route := range routes {
+		label := gui.c.CommandKeyLabel(route.commandID, route.view)
+		if label == "" {
+			return ""
+		}
+		labels[i] = label
+	}
+	return fmt.Sprintf(format, labels...)
+}
+
+func (gui *Gui) getRandomTip() string {
 	tips := []string{
 		// keybindings and lazygit-specific advice
-		fmt.Sprintf(
+		gui.keyTip(
 			"To force push, press '%s' and then if the push is rejected you will be asked if you want to force push",
-			config.Universal.Push,
+			commandRoute{"branch.push-current", ""},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"To filter commits by path, press '%s'",
-			config.Universal.FilteringMenu,
+			commandRoute{"filter.options-menu", ""},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"To start an interactive rebase, press '%s' on a commit. You can always abort the rebase by pressing '%s' and selecting 'abort'",
-			config.Universal.Edit,
-			config.Universal.CreateRebaseOptionsMenu,
+			commandRoute{"commit.rebase-interactive", "commits"},
+			commandRoute{"branch.merge-rebase-menu", ""},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"In flat file view, merge conflicts are sorted to the top. To switch to flat file view press '%s'",
-			config.Files.ToggleTreeView,
+			commandRoute{"ui.file-tree.toggle", "files"},
 		),
-		fmt.Sprintf(
-			"If you press '%s'/'%s' you can undo/redo your changes. Be wary though, this only applies to branches/commits, so only do this if your worktree is clear.\nDocs: %s",
-			config.Universal.Undo,
-			config.Universal.Redo,
-			constants.Links.Docs.Undoing,
+		gui.keyTip(
+			"If you press '%s'/'%s' you can undo/redo your changes. Be wary though, this only applies to branches/commits, so only do this if your worktree is clear.\nDocs: "+constants.Links.Docs.Undoing,
+			commandRoute{"branch.reflog-undo", "commits"},
+			commandRoute{"branch.reflog-redo", "commits"},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"to hard reset onto your current upstream branch, press '%s' in the files panel",
-			config.Commits.ViewResetOptions,
+			commandRoute{"branch.reset-upstream-menu", "files"},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"To push a tag, navigate to the tag in the tags tab and press '%s'",
-			config.Branches.PushTag,
+			commandRoute{"tag.push", "tags"},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"You can view the individual files of a stash entry by pressing '%s'",
-			config.Universal.GoInto,
+			commandRoute{"navigation.open-diff-files", "stash"},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"You can diff two commits by pressing '%s' on one commit and then navigating to the other. You can then press '%s' to view the files of the diff",
-			config.Universal.DiffingMenu,
-			config.Universal.GoInto,
+			commandRoute{"diff.options-menu", ""},
+			commandRoute{"navigation.open-diff-files", "commits"},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"press '%s' on a commit to drop it (delete it)",
-			config.Universal.Remove,
+			commandRoute{"commit.drop", "commits"},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"If you need to pull out the big guns to resolve merge conflicts, you can press '%s' in the files panel to open merge options",
-			config.Files.OpenMergeOptions,
+			commandRoute{"conflict.options-menu", "files"},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"To revert a commit, press '%s' on that commit",
-			config.Commits.RevertCommit,
+			commandRoute{"commit.revert", "commits"},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"To escape a mode, for example cherry-picking, patch-building, diffing, or filtering mode, you can just spam the '%s' button. Unless of course you have `quitOnTopLevelReturn` enabled in your config",
-			config.Universal.Return,
+			commandRoute{"app.cancel", ""},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"You can page through the items of a panel using '%s' and '%s'",
-			config.Universal.PrevPage,
-			config.Universal.NextPage,
+			commandRoute{"navigation.page.previous", "commits"},
+			commandRoute{"navigation.page.next", "commits"},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"You can jump to the top/bottom of a panel using '%s' and '%s'",
-			config.Universal.GotoTop, config.Universal.GotoBottom,
+			commandRoute{"navigation.list.first", "commits"},
+			commandRoute{"navigation.list.last", "commits"},
 		),
-		fmt.Sprintf(
-			"To collapse/expand a directory, press '%s'",
-			config.Universal.GoInto,
+		gui.keyTip(
+			"To collapse/expand a directory in the file tree, press '%s'/'%s'",
+			commandRoute{"navigation.tree.collapse", "files"},
+			commandRoute{"navigation.tree.expand", "files"},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"You can append your staged changes to an older commit by pressing '%s' on that commit",
-			config.Commits.AmendToCommit,
+			commandRoute{"commit.amend-selected", "commits"},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"You can amend the last commit with your new file changes by pressing '%s' in the files panel",
-			config.Files.AmendLastCommit,
+			commandRoute{"commit.amend-head", "files"},
 		),
-		fmt.Sprintf(
+		gui.keyTip(
 			"You can now navigate the side panels with '%s' and '%s'",
-			config.Universal.NextBlockAlt2,
-			config.Universal.PrevBlockAlt2,
+			commandRoute{"navigation.panel.next", "files"},
+			commandRoute{"navigation.panel.previous", "files"},
 		),
 
 		"You can use lazygit with a bare repo by passing the --git-dir and --work-tree arguments as you would for the git CLI",
@@ -198,7 +219,15 @@ func (gui *Gui) getRandomTip() string {
 		"You can alt-click a line in a diff to open it in your editor. Not all terminals support this; if yours doesn't, try shift-click instead.",
 	}
 
+	// Tips that name a key with no effective label are dropped.
+	available := make([]string, 0, len(tips))
+	for _, tip := range tips {
+		if tip != "" {
+			available = append(available, tip)
+		}
+	}
+
 	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
-	randomIndex := rnd.Intn(len(tips))
-	return tips[randomIndex]
+	randomIndex := rnd.Intn(len(available))
+	return available[randomIndex]
 }

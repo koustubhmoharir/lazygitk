@@ -519,6 +519,18 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   whose focus handler queues a render of the pre-action content; without a newer
   task that stale render overwrites a picked hunk or undo performed by the leaf.
 
+- Fork: hint and tip labels come from `commandKeyLabel` (`fork_command_key_labels.go`),
+  which returns the shortest effective command-path label of a command ID in a view
+  (falling back to the global view, and skipping routes whose first key a custom binding
+  claims), not the upstream legacy key fields. Its per-view cache is refreshed in
+  `resetKeybindings`. Replaced sites: the command log header and the GPG failure
+  message (`command-log.options-menu`), the increase-context messages
+  (`diff.context.increase`), the conflict resolve hint and range-staging message
+  (`navigation.focus-diff` in files; the range message falls back to
+  `StageConflictsRangeDisabledWithoutKey` when unbound), and the random tips in
+  `getRandomTip`, which drop any tip whose key has no label. Modal confirm/cancel hints
+  keep their native keys. Re-check these sites on upstream merges.
+
 ### Selected-branch operations (item 7 complete)
 
 - `helpers/captured_branch_delete*.go` now replaces the local/remote branch

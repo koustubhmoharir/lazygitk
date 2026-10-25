@@ -863,11 +863,15 @@ func (self *FilesController) enterFile(clickedViewLineIdx int) error {
 }
 
 // conflictResolutionHint formats a conflict description for the main view,
-// appending the "press <enter> to resolve" hint and wrapping it when the view is
-// wide enough that long lines would otherwise hurt readability.
+// appending the "press <key> to resolve" hint and wrapping it when the view is
+// wide enough that long lines would otherwise hurt readability. The key is the
+// effective files-view label of navigation.focus-diff, not the legacy GoInto
+// field; if the command has no key the hint is omitted rather than naming none.
 func (self *FilesController) conflictResolutionHint(description string) string {
-	message := description + "\n\n" + fmt.Sprintf(self.c.Tr.MergeConflictPressEnterToResolve,
-		self.c.UserConfig().Keybinding.Universal.GoInto)
+	message := description
+	if key := self.c.CommandKeyLabel("navigation.focus-diff", "files"); key != "" {
+		message += "\n\n" + fmt.Sprintf(self.c.Tr.MergeConflictPressEnterToResolve, key)
+	}
 	return wrapForReadability(message, self.c.Views().Main.InnerWidth())
 }
 
@@ -909,13 +913,17 @@ func (self *FilesController) canStageSelection(nodes []*filetree.FileNode) *type
 	if len(nodes) > 1 {
 		for _, node := range nodes {
 			if node.SomeFile(self.conflictNeedsResolutionDialog) {
-				return &types.DisabledReason{
-					Text: utils.ResolvePlaceholderString(
-						self.c.Tr.StageConflictsRangeDisabled, map[string]string{
-							"goIntoKey": self.c.UserConfig().Keybinding.Universal.GoInto.String(),
-						},
-					),
+				// Fork: the key is the effective files-view label of navigation.focus-diff.
+				if key := self.c.CommandKeyLabel("navigation.focus-diff", "files"); key != "" {
+					return &types.DisabledReason{
+						Text: utils.ResolvePlaceholderString(
+							self.c.Tr.StageConflictsRangeDisabled, map[string]string{
+								"goIntoKey": key,
+							},
+						),
+					}
 				}
+				return &types.DisabledReason{Text: self.c.Tr.StageConflictsRangeDisabledNoKey}
 			}
 		}
 	}

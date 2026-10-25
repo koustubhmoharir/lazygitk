@@ -95,7 +95,7 @@ func (self *CommitDiffActions) PrimaryAction(pane types.DiffPaneContext, firstBu
 
 	if self.c.UserConfig().Git.DiffContextSize == 0 {
 		return fmt.Errorf(self.c.Tr.Actions.NotEnoughContextForCustomPatch,
-			self.c.UserConfig().Keybinding.Universal.IncreaseContextInDiffView)
+			self.c.CommandKeyLabel("diff.context.increase", ""))
 	}
 
 	target := self.target()
@@ -303,7 +303,7 @@ func (self *CommitDiffActions) DiscardSelectionDisabledReason(pane types.DiffPan
 	if self.c.UserConfig().Git.DiffContextSize == 0 {
 		return &types.DisabledReason{
 			Text: fmt.Sprintf(self.c.Tr.Actions.NotEnoughContextToRemoveLines,
-				self.c.UserConfig().Keybinding.Universal.IncreaseContextInDiffView),
+				self.c.CommandKeyLabel("diff.context.increase", "")),
 			ShowErrorInPanel: true,
 		}
 	}
