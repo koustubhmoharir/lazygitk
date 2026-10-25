@@ -46,11 +46,17 @@ custom commands. Frequency persistence and sorting remain item 9.
    focus/repository changes and popup replacement. Expose leaves independently
    through `?` and show their complete paths.
 6. Finish generated audit snapshots and documentation for the enabled profile.
-   Normal-pane defaults, effective command hints/panel labels, generated
-   cheatsheets/schema and the migration guide are implemented. Keep compatibility
-   operation fixtures explicit and separate from actual-default scenarios.
-   Verify the final Linux/macOS/Windows allocation and legacy/custom overrides;
-   maintain the merge guide at integration changes.
+   Normal-pane defaults, option-bar hints/panel labels, generated
+   cheatsheets/schema and the migration guide are implemented; the
+   Linux/macOS/Windows allocations differ only in the editor submit key.
+   Remaining: messages that format upstream legacy key fields (command-log
+   header and random tips, diff-context hints, conflict "Press … to resolve",
+   staging-disabled and similar text) name upstream keys instead of effective
+   paths. Add one effective-label lookup by command ID and view, built from the
+   projected command trees (honoring custom roots and overrides), and use it at
+   those sites; omit or reword a hint whose command has no path. Keep
+   compatibility operation fixtures explicit and separate from actual-default
+   scenarios; maintain the merge guide at integration changes.
 7. Verify the default key × pane/mode matrix: case parity, no core Ctrl defaults,
    unique paths, disabled no-ops, no parent/global fallback, prefix cancellation
    and captured targets, editors/filtering, custom commands/overrides and actual
