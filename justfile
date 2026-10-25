@@ -8,6 +8,10 @@ build:
 install:
     go install
 
+# Build portable optimized binaries into dist/ (default: linux/amd64 windows/amd64); the build cache is removed afterwards.
+dist *targets:
+    ./scripts/build_dist.sh {{ targets }}
+
 run: build
     ./lazygit
 

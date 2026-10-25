@@ -39,6 +39,11 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 - Treat root `AGENTS.md` as fork-owned. Review upstream guidance changes for
   relevant technical constraints and incorporate them deliberately while
   retaining this fork's concise workflow and usability principles.
+- Portable builds: `scripts/build_dist.sh` and `scripts/build_dist.ps1` are
+  fork-owned. The only upstream-file touches are the `dist` recipe in
+  `justfile` and `/dist/` in `.gitignore`; keep both when resolving conflicts.
+  The scripts set `buildSource=forkDist`, so upstream's self-updater (which
+  needs `buildBinary`) never replaces a fork build with upstream lazygit.
 
 ## Live integration record
 
