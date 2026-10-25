@@ -25,12 +25,9 @@ Agreed design (user decisions 2026-10-25, refining the roadmap):
 
 ## Remaining tasks for item 9
 
-1. Recording seam in (store: `pkg/commandusage`, path `config.CommandUsageFilePath`) `callKeybindingHandler`, palette items and `PopupHandler`
-   acceptance, with unit tests for shortcut/leaf/palette parity, aliases,
-   cancellation and exclusions; flush on exit.
-3. Palette ordering, tags, Navigation section, reset command, static-order
+1. Palette ordering, tags, Navigation section, reset command, static-order
    option, schema/docs and merge-guide updates.
-4. Terminal scenarios (ordering after palette and shortcut use, cancel,
+2. Terminal scenarios (ordering after palette and shortcut use, cancel,
    restart persistence, corrupt file warning), then generation, formatting,
    builds, full short and integration suites and lint. When acceptance passes,
    complete item 9 in the roadmap and update this tracker in that commit.

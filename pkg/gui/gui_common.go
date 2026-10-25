@@ -208,6 +208,12 @@ func (self *guiCommon) CallKeybindingHandler(binding *types.Binding) error {
 	return self.gui.callKeybindingHandler(binding)
 }
 
+// Fork: invoked from the `?` command palette, so the use adds to the count
+// instead of subtracting as a shortcut does (see fork_command_usage.go).
+func (self *guiCommon) CallPaletteKeybindingHandler(binding *types.Binding) error {
+	return self.gui.callKeybindingHandlerWithUsage(binding, forkPaletteUsageDelta)
+}
+
 func (self *guiCommon) ResetKeybindings() {
 	self.gui.resetKeybindings()
 }

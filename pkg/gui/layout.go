@@ -331,6 +331,12 @@ func (gui *Gui) onInitialViewsCreation() error {
 
 	gui.helpers.Update.CheckForUpdateInBackground()
 
+	// Fork: report a command usage file that was unreadable and reset at startup.
+	if gui.forkUsageReset {
+		gui.forkUsageReset = false
+		gui.c.Toast(gui.Tr.CommandUsageReset)
+	}
+
 	gui.waitForIntro.Done()
 
 	return nil

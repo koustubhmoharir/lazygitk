@@ -22,6 +22,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/git_config"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
+	"github.com/jesseduffield/lazygit/pkg/commandusage"
 	"github.com/jesseduffield/lazygit/pkg/common"
 	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
@@ -120,6 +121,15 @@ type Gui struct {
 	forkCoreBindings      []*types.Binding
 	forkCustomBindings    []*types.Binding
 	forkCommandLabelCache map[string]map[string]string
+
+	// Fork: per-user command usage counts (see fork_command_usage.go). The store
+	// is nil if its path cannot be resolved; recording is then skipped. Uses are
+	// tracked while their handlers run, and the timer batches disk flushes.
+	commandUsage        *commandusage.Store
+	forkUsage           *forkUsageTracker
+	forkUsageReset      bool
+	forkUsageFlushMu    sync.Mutex
+	forkUsageFlushTimer *time.Timer
 
 	Views types.Views
 
@@ -857,6 +867,9 @@ func NewGui(
 		func() string { return gui.Views.Prompt.TextArea.GetContent() },
 		func() bool { return gui.c.InDemo() },
 	)
+	// Fork: a popup opened by a running command claims that command's use
+	// (see fork_usage_hook.go). The upstream constructor call is unchanged.
+	gui.PopupHandler.(*popup.PopupHandler).SetUsageHook(gui.attachForkUsage)
 
 	guiCommon := &guiCommon{gui: gui, IPopupHandler: gui.PopupHandler}
 	helperCommon := &helpers.HelperCommon{IGuiCommon: guiCommon, Common: cmn, IGetContexts: gui}
@@ -882,6 +895,11 @@ func NewGui(
 	gui.stateAccessor = &StateAccessor{gui: gui}
 
 	gui.diffRendererConfig = config.NewDiffRendererConfigManager(func() *config.UserConfig { return gui.UserConfig() })
+
+	// Fork: the tracker and store need gui.c for logging, so they are set up
+	// after it. Popups created earlier only call the hook once a command runs.
+	gui.forkUsage = newForkUsageTracker(gui.recordForkUsage)
+	gui.openForkCommandUsage()
 
 	return gui, nil
 }
@@ -1034,6 +1052,8 @@ func (gui *Gui) Run(startArgs appTypes.StartArgs) error {
 	gui.integrationTest = startArgs.IntegrationTest
 
 	err = gui.g.MainLoop()
+	// Fork: persist command usage recorded since the last timer flush.
+	gui.stopForkCommandUsage()
 	if errors.Is(err, gocui.ErrQuit) {
 		// Give the focused context a chance to clean up before we tear down the app.
 		gui.c.Context().Current().HandleQuit()

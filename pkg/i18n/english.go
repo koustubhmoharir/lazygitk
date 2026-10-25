@@ -1259,6 +1259,7 @@ type TranslationSet struct {
 	InvalidLazygitEditURL                    string
 	NoCopiedCommits                          string
 	DisabledMenuItemPrefix                   string
+	CommandUsageReset                        string
 	QuickStartInteractiveRebase              string
 	QuickStartInteractiveRebaseTooltip       string
 	CannotQuickStartInteractiveRebase        string
@@ -2723,6 +2724,7 @@ func EnglishTranslationSet() *TranslationSet {
 		FailedToOpenURL:                          "Failed to open URL %s\n\nError: %v",
 		InvalidLazygitEditURL:                    "Invalid lazygit-edit URL format: %s",
 		DisabledMenuItemPrefix:                   "Disabled: ",
+		CommandUsageReset:                        "Command usage counts were unreadable and have been reset.",
 		NoCopiedCommits:                          "No copied commits",
 		QuickStartInteractiveRebase:              "Start interactive rebase",
 		QuickStartInteractiveRebaseTooltip:       "Start an interactive rebase for the commits on your branch. This will include all commits from the HEAD commit down to the first merge commit or main branch commit.\nIf you would instead like to start an interactive rebase from the selected commit, press `{{.editKey}}`.",

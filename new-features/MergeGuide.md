@@ -533,6 +533,29 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   `getRandomTip`, which drop any tip whose key has no label. Modal confirm/cancel hints
   keep their native keys. Re-check these sites on upstream merges.
 
+### Command usage (item 9 in progress)
+
+- Usage counts persist in `command_usage.json` beside `state.yml`, through
+  `pkg/commandusage` and `config.CommandUsageFilePath`. Recording lives in
+  `fork_command_usage.go`, and the popup side in `popup/fork_usage_hook.go`.
+- `callKeybindingHandler` is the shortcut seam. It delegates to
+  `callKeybindingHandlerWithUsage` (delta -1), which wraps only `binding.Handler()`.
+  `CallPaletteKeybindingHandler` (delta +1) is used only by the `?` palette
+  (`options_menu_action.go`). Re-check both on upstream merges.
+- A use is pending while its handler runs. `PopupHandler` hooks, installed in
+  `NewGui` through `SetUsageHook`, claim the innermost unclaimed use for the
+  first Confirm, ConfirmIf (popup branch), Prompt or Menu opened meanwhile.
+  Accepting commits it, and closing or cancelling drops it. Menu items are
+  copied when wrapped. Popups from background workers are not tracked.
+- The store opens in `NewGui`. An unresolvable path disables recording and logs.
+  Pending deltas flush about two seconds after the first unflushed use, and once
+  more after `MainLoop` in `Run`. A reset toast is shown at startup, or from a
+  background flush.
+- Upstream seams: the `*PopupHandler` type assertion in `NewGui`, the
+  `ConfirmIf` line, and `Gui.PopupHandler`'s hook installation. Excluded uses:
+  empty IDs, `app.command-palette`, `navigation.*` or Tag `navigation`, and
+  non-fork views.
+
 ### Selected-branch operations (item 7 complete)
 
 - `helpers/captured_branch_delete*.go` now replaces the local/remote branch

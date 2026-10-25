@@ -29,7 +29,8 @@ func (self *OptionsMenuAction) Call() error {
 					}
 					tooltip += self.c.Tr.KeybindingsTooltip + strings.Join(keyLabels, ", ")
 				}
-				return commandPaletteMenuItem(binding, section, tooltip, self.c.IGuiCommon.CallKeybindingHandler)
+				// Fork: palette items record a palette use, not a shortcut use (see fork_command_usage.go).
+				return commandPaletteMenuItem(binding, section, tooltip, self.c.IGuiCommon.CallPaletteKeybindingHandler)
 			})...)
 	}
 

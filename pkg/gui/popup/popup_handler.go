@@ -23,6 +23,8 @@ type PopupHandler struct {
 	toastFn                          func(message string, kind types.ToastKind)
 	getPromptInputFn                 func() string
 	inDemo                           func() bool
+	// Fork: claims the command use running when a popup opens (see fork_usage_hook.go).
+	usageHookFn func() (commit func(), drop func(), ok bool)
 }
 
 var _ types.IPopupHandler = &PopupHandler{}
@@ -56,7 +58,7 @@ func NewPopupHandler(
 }
 
 func (self *PopupHandler) Menu(opts types.CreateMenuOptions) error {
-	return self.createMenuFn(opts)
+	return self.createMenuFn(self.forkMenuUsage(opts)) // Fork: see fork_usage_hook.go
 }
 
 func (self *PopupHandler) Toast(message string) {
@@ -108,6 +110,7 @@ func (self *PopupHandler) Alert(title string, message string) {
 }
 
 func (self *PopupHandler) Confirm(opts types.ConfirmOpts) {
+	opts = self.forkConfirmUsage(opts) // Fork: see fork_usage_hook.go
 	self.createPopupPanelFn(context.Background(), types.CreatePopupPanelOpts{
 		Title:         opts.Title,
 		Prompt:        opts.Prompt,
@@ -118,6 +121,7 @@ func (self *PopupHandler) Confirm(opts types.ConfirmOpts) {
 
 func (self *PopupHandler) ConfirmIf(condition bool, opts types.ConfirmOpts) error {
 	if condition {
+		opts = self.forkConfirmUsage(opts) // Fork: see fork_usage_hook.go
 		self.createPopupPanelFn(context.Background(), types.CreatePopupPanelOpts{
 			Title:         opts.Title,
 			Prompt:        opts.Prompt,
@@ -131,6 +135,7 @@ func (self *PopupHandler) ConfirmIf(condition bool, opts types.ConfirmOpts) erro
 }
 
 func (self *PopupHandler) Prompt(opts types.PromptOpts) {
+	opts = self.forkPromptUsage(opts) // Fork: see fork_usage_hook.go
 	self.createPopupPanelFn(context.Background(), types.CreatePopupPanelOpts{
 		Title:                  opts.Title,
 		Prompt:                 opts.InitialContent,

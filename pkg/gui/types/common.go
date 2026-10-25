@@ -151,6 +151,8 @@ type IGuiCommon interface {
 
 	KeybindingsOpts() KeybindingsOpts
 	CallKeybindingHandler(binding *Binding) error
+	// Fork: invokes a binding chosen from the command palette (records a palette use).
+	CallPaletteKeybindingHandler(binding *Binding) error
 
 	ResetKeybindings()
 

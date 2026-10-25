@@ -491,7 +491,14 @@ func (gui *Gui) SetMouseKeybinding(binding *gocui.ViewMouseBinding) {
 	gui.g.SetViewClickBinding(binding)
 }
 
+// Fork: shortcuts and prefix-menu leaves call this, so their uses subtract from
+// the command's usage count (see fork_command_usage.go).
 func (gui *Gui) callKeybindingHandler(binding *types.Binding) error {
+	return gui.callKeybindingHandlerWithUsage(binding, forkShortcutUsageDelta)
+}
+
+// Fork: delta is the command-usage change recorded if the handler is accepted.
+func (gui *Gui) callKeybindingHandlerWithUsage(binding *types.Binding, delta int) error {
 	if binding.CommandActive != nil && !binding.CommandActive() {
 		return nil
 	}
@@ -518,5 +525,10 @@ func (gui *Gui) callKeybindingHandler(binding *types.Binding) error {
 		}
 	}
 
-	return binding.Handler()
+	// Fork: the use stays pending while the handler runs, and is committed
+	// unless a popup it opens claims it (see forkUsageTracker).
+	pending := gui.forkUsage.begin(binding, delta)
+	err := binding.Handler()
+	gui.forkUsage.end(pending)
+	return err
 }
