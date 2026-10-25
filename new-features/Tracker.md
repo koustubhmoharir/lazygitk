@@ -50,7 +50,10 @@ custom commands. Frequency persistence and sorting remain item 9.
    shared-route overrides, legacy fields and catalogue defaults in that order.
    Numbered jumps retain positional keys and have independent stable target IDs.
    The stable-ID path configuration parser/schema is connected through
-   the projection and dispatcher; verify final override/operation scenarios.
+   the projection and dispatcher; `ui/fork_command_binding_overrides` covers
+   ID paths over explicit legacy fields, empty-path removal and single-key
+   displacement. Every catalogue ID resolves to a live handler (static or
+   dynamic `CommandIDFunc`).
 5. Verify the connected visible two-/three-key menu flow and its
    captured origin/repository and selection checks
    (including the implemented conflict-file/content/hunk snapshots). Keep prefixes free of mutations and hidden timing state;

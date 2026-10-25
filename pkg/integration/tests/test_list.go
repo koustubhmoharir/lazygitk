@@ -687,6 +687,7 @@ var tests = []*components.IntegrationTest{
 	ui.EmptyMenu,
 	ui.FilteringScrollsSelectionIntoView,
 	ui.FindBaseCommitForFixupScrollsIntoView,
+	ui.ForkCommandBindingOverrides,
 	ui.ForkDefaultBranchPlacementCheckout,
 	ui.ForkDefaultCherryPick,
 	ui.ForkDefaultHistoryOperations,
