@@ -37,23 +37,6 @@ custom commands. Frequency persistence and sorting remain item 9.
 
 ## Remaining tasks for item 8
 
-2. Review [keymap-allocation.md](keymap-allocation.md) against each actual
-   handler, context and legacy configuration field against the enabled defaults.
-   The TortoiseGit guide and concrete verb/prefix table are recorded; the table
-   names every instantiated operation ID and the known dynamic variants.
-   The fork-owned path catalogue is present, including distinct previous/next
-   hunk, file and conflict paths. Implementation is authorized. Incorporate
-   the latest user table, including Files-only commit Enter, Escape cancellation, combine `g c`, scoped Space, tree
-   arrow registration (directional tree handlers are implemented), `d w`/`d p`/`d c`, `s h`/`s m`/`s s`/`s c`, `n b` and
-   `c y`/`c x`/`c p`. Keep Pull in a deliberate menu path. Verify the implemented source-field projection against the remaining handlers
-   and aliases in the enabled profile. Stable-ID paths override explicitly configured
-   shared-route overrides, legacy fields and catalogue defaults in that order.
-   Numbered jumps retain positional keys and have independent stable target IDs.
-   The stable-ID path configuration parser/schema is connected through
-   the projection and dispatcher; `ui/fork_command_binding_overrides` covers
-   ID paths over explicit legacy fields, empty-path removal and single-key
-   displacement. Every catalogue ID resolves to a live handler (static or
-   dynamic `CommandIDFunc`).
 5. Verify the connected visible two-/three-key menu flow and its
    captured origin/repository and selection checks
    (including the implemented conflict-file/content/hunk snapshots). Keep prefixes free of mutations and hidden timing state;

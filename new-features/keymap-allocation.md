@@ -298,11 +298,13 @@ confirmed by the user; `g h u` also unstages. Destructive unstaged discard
 always confirms. No core command gets a
 Ctrl default; conventional text-editing controls retain their input roles.
 
-## Remaining review
+## Handler and override review
 
-Check each proposed leaf against the actual handler/legacy configuration field
-and all live contexts before enabling it. The table is not yet a validated
-runtime catalog. Preserve explicit field overrides using the loader's recorded
+Every catalogue ID resolves to a live static or dynamic (`CommandIDFunc`)
+handler. Every legacy `keybinding` field maps to a command ID, except native
+editor word controls, positional `jumpToBlock`, gocui search-match keys
+(`nextMatch`/`prevMatch`) and the discard menu's `confirmDiscard` accelerator.
+Preserve explicit field overrides using the loader's recorded
 presence, including disabled fields and deprecated aliases. If explicit overrides
 create a collision after case folding, present the conflicting action choices
 instead of silently choosing by registration order. Prefix origin, availability
