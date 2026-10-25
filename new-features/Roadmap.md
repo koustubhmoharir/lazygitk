@@ -65,6 +65,7 @@ tasks with the next item's plan in the same completion commit.
 | 7 | Operate on selected branches without checkout | Complete | 4; explicit target design | Large |
 | 8 | Consistent default shortcuts and inactive-key behavior | Complete | 2–7's action inventory | Large |
 | 9 | Frequency-ordered command palette | Complete | 2; works before or after 8 | Medium |
+| 10 | Separate configuration and state from upstream lazygit | Planned | None | Small |
 
 ## Fork implementation principles
 
@@ -748,6 +749,33 @@ restart persistence, deterministic ties, locale/keymap changes, custom commands,
 filtering, disabled items, multiple processes, corrupt/unwritable state, and
 stable selection/order while open.
 
+## 10. Separate configuration and state from upstream lazygit
+
+Planned. lazygitk must install side by side with upstream lazygit without
+either reading or writing the other's files. User decisions:
+
+- Global config and state use a `lazygitk` directory wherever upstream uses
+  `lazygit`: `<XDG_CONFIG_HOME>/lazygitk/` (searched in the XDG config dirs as
+  upstream does, so `%APPDATA%` still works on Windows) and
+  `<XDG_STATE_HOME>/lazygitk/` for `state.yml`, `command_usage.json` and the
+  pull-request cache.
+- Upstream's `lazygit/` and legacy `jesseduffield/lazygit/` directories are
+  never read. Nothing is copied or migrated; a fresh `config.yml` is created on
+  first start, as upstream does.
+- Repo-level config uses only `<repo>/.git/lazygitk.yml` and `.lazygitk.yml`
+  in parent directories. Existing `lazygit.yml` files no longer apply.
+- `CONFIG_DIR`, `--use-config-dir` and `LG_CONFIG_FILE` keep their names and
+  behavior; the integration harness depends on them.
+- The temp directory stays `lazygit-<uid>`: every process uses its own
+  subdirectory, so sharing it is harmless.
+- `scripts/build_dist.sh` names release binaries `lazygitk`.
+
+Acceptance: with XDG variables pointing at temporary directories, config and
+state paths resolve under `lazygitk/`; an existing `lazygit/config.yml` or
+`jesseduffield/lazygit/config.yml` is ignored; `CONFIG_DIR` still wins;
+per-repo scenarios load `lazygitk.yml` files; `--print-config-dir` reports
+the `lazygitk` directory; user docs describe the new locations.
+
 ## Verification and repository workflow
 
 During implementation use narrow package tests and named integration scenarios
@@ -782,8 +810,8 @@ they do not validate a completed UI or implementation.
 ## Next design review artifact
 
 The earlier questions are answered under “Agreed direction” and the relevant
-milestones. All numbered milestones are complete; new work starts by adding a
-reviewed milestone here.
+milestones. Item 10 is current; new work after it starts by adding a reviewed
+milestone here.
 
 This remains an extensible backlog: add further features with target semantics,
 repository evidence, dependencies, and acceptance tests. No application feature

@@ -1,7 +1,15 @@
 # Current work
 
-All roadmap items (1–9) are complete. There is no current item. Add and review
-a new milestone in [Roadmap.md](Roadmap.md) before planning tasks here.
+Item 10: separate configuration and state from upstream lazygit. Scope and
+decisions are in [Roadmap.md](Roadmap.md#10-separate-configuration-and-state-from-upstream-lazygit).
+
+- Resolve global config and state paths under `lazygitk/` in
+  `pkg/config/app_config.go`, without the upstream or legacy lookups, and
+  cover them with unit tests.
+- Load per-repo `lazygitk.yml` files in `pkg/gui/gui.go`, and move the
+  per-repo integration scenarios to them.
+- Update `docs-master/Config.md` and `docs-master/Fork_Features.md`, record
+  the integration points in the merge guide, and mark the item complete.
 
 ## How this tracker works
 
