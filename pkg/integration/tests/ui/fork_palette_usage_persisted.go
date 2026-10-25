@@ -54,8 +54,8 @@ var ForkPaletteUsagePersisted = NewIntegrationTest(NewIntegrationTestArgs{
 		// The negative count sinks the copy command below the never-used command that
 		// was declared after it. Without the persisted file it would be the first row.
 		openPalette().
-			Content(MatchesRegexp("(?s)Reset copied \\(cherry-picked\\) commits selection.*Copy abbreviated commit hash to clipboard")).
-			TopLines(DoesNotContain("Copy abbreviated commit hash to clipboard")).
+			Content(MatchesRegexp("(?s)Reset copied \\(cherry-picked\\) commits selection.*Copy abbreviated commit hash")).
+			TopLines(DoesNotContain("Copy abbreviated commit hash")).
 			Cancel()
 	},
 })

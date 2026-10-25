@@ -48,7 +48,7 @@ var ForkPaletteUsageCorrupt = NewIntegrationTest(NewIntegrationTestArgs{
 		// command in Commits comes first, and the Navigation section stays at the bottom.
 		t.Views().Commits().Focus().Press(keys.Universal.OptionMenu)
 		t.ExpectPopup().Menu().Title(Equals("Keybindings")).
-			TopLines(Contains("Copy abbreviated commit hash to clipboard")).
+			TopLines(Contains("Copy abbreviated commit hash")).
 			Content(Contains("─── Navigation")).
 			Cancel()
 	},
