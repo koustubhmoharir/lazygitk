@@ -45,7 +45,7 @@ func buildDefaultPaths() map[string][][]gocui.Key {
 	add("branch.reset.hard", "s h")
 	add("branch.reset.mixed", "s m")
 	add("branch.reset.soft", "s s")
-	add("branch.switch-selected branch.checkout remote-branch.checkout tag.checkout commit.checkout-menu", "s c")
+	add("branch.checkout remote-branch.checkout tag.checkout commit.checkout-menu", "s c")
 	add("branch.place-at-selected-commit", "n b")
 	add("commit.create", "enter")
 	add("file.ignore-menu", "i")
