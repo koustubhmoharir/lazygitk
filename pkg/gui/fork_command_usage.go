@@ -9,6 +9,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commandusage"
 	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils"
 )
 
 // Fork: command usage counts (roadmap item 9). A shortcut or prefix-menu leaf
@@ -163,7 +164,7 @@ func (gui *Gui) recordForkUsage(id string, delta int) {
 	gui.forkUsageFlushMu.Lock()
 	defer gui.forkUsageFlushMu.Unlock()
 	if gui.forkUsageFlushTimer == nil {
-		gui.forkUsageFlushTimer = time.AfterFunc(forkUsageFlushDelay, gui.flushForkUsageInBackground)
+		gui.forkUsageFlushTimer = time.AfterFunc(forkUsageFlushDelay, utils.SafeFunc(gui.flushForkUsageInBackground))
 	}
 }
 
