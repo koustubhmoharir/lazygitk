@@ -6,7 +6,7 @@ import (
 )
 
 var ForkDefaultCherryPick = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "Real default c y, c x, c p cherry-pick marks survive subview exit, paste from marked source, and Files no-op",
+	Description: "Real default c y, c x, c p: marks survive subview exit, paste from the marked source clears them, and Files c p is then a no-op",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -140,23 +140,17 @@ var ForkDefaultCherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 		commits.TopLines(Contains("p3"))
 		t.Shell().RunCommand([]string{"git", "log", "--format=%s", "--output=actual-log"})
 		t.FileSystem().FileContent("actual-log", Equals("p3\np1\nbase\n"))
-		// Observed after paste: the copied-commit indicator is gone (as cherry_pick.go expects).
-		t.Views().Information().Content(DoesNotContain("commits copied"))
+		// The paste clears the marks, so Files c p has nothing to review.
+		t.Views().Information().Content(DoesNotContain("copied"))
 		pastedHead := t.Git().GetCommitHash("HEAD")
-
-		// Retained pasted commits are intended: Files c p offers the re-paste
-		// review again, which must list p1 before p3 and then be cancelled.
 		t.Views().Files().Focus()
 		cherry(t.Views().Files(), "p")
-		t.ExpectPopup().Confirmation().
-			Title(Equals("Cherry-pick")).
-			Content(reviewContent.Contains("master")).
-			Cancel()
-		if got := t.Git().GetCommitHash("HEAD"); got != pastedHead {
-			t.Fail("Cancelling the re-paste review moved master to " + got)
-		}
 		t.Views().Menu().IsInvisible()
 		t.Views().Confirmation().IsInvisible()
 		t.Views().Prompt().IsInvisible()
+		t.Views().Files().IsFocused()
+		if got := t.Git().GetCommitHash("HEAD"); got != pastedHead {
+			t.Fail("Files c p after the paste moved master to " + got)
+		}
 	},
 })

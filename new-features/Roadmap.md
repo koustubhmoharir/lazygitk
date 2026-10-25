@@ -556,8 +556,8 @@ Implementation notes that refine the design below:
 
 - Escape clears cherry-pick marks in the history pane that holds them. In a
   subview, Escape first returns to the parent pane and keeps the marks so they
-  can be pasted elsewhere. A successful paste keeps upstream's hidden buffer;
-  a later `c p` presents it in the explicit review rather than pasting silently.
+  can be pasted elsewhere. A successful paste clears the marks (the user
+  rejected upstream's hidden re-paste buffer); a paused paste keeps them.
 - Enter commits in Files, so the default `v` inspection opens a conflicted
   file's resolution view or dialog there. An explicitly configured focus-diff
   key keeps upstream's focus-only behavior.

@@ -222,8 +222,11 @@ func (flow *forkCherryPickFlow) apply(plan git_commands.CherryPickPlan) error {
 				if err := flow.checkRepository(); err != nil {
 					return err
 				}
+				// Fork: clear the marks after they are pasted, rather than keeping
+				// upstream's hidden re-paste buffer (DidPaste) that Escape cannot
+				// reach. Only the captured buffer is cleared, never newer marks.
 				if slices.Equal(flow.marked, forkCherryCommitIDs(flow.c.Modes().CherryPicking.CherryPickedCommits)) {
-					flow.c.Modes().CherryPicking.DidPaste = true
+					return flow.c.Helpers().CherryPick.Reset()
 				}
 				return nil
 			})

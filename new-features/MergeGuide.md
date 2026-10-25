@@ -159,9 +159,10 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   empty-commit and paused-rebase handling to the existing
   `MergeAndRebase.CheckMergeOrRebaseWithRefreshOptions`; do not replace it with
   a normal commit operation or forbid otherwise valid native operation states.
-- Successful marked paste retains the upstream buffer and sets `DidPaste` to
-  hide it, only if it is still the captured buffer. Selected paste does not
-  hide unrelated marks. Preserve the old reset/refresh/continuation semantics.
+- Successful marked paste clears the marks through `CherryPickHelper.Reset`,
+  only if they are still the captured buffer; it no longer sets upstream's
+  `DidPaste` hidden re-paste buffer, which Escape could not clear. Selected
+  paste does not touch unrelated marks. Preserve the old reset/refresh/continuation semantics.
 - Integration fixtures explicitly choose marked source and assert the actual
   full destination and ordered commits. Paused-rebase review uses detached
   HEAD, and raw commit subjects must not include rendered author prefixes.

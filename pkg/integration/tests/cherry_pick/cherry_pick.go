@@ -87,7 +87,8 @@ var CherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("base"),
 			)
 
-		// Even though the cherry-picking mode has been reset, it's still possible to paste the copied commits again:
+		// Fork: a successful marked paste clears the marks instead of keeping a
+		// hidden re-paste buffer, so pasting on master reviews only the selection.
 		t.Views().Branches().
 			Focus().
 			NavigateToLine(Contains("master")).
@@ -98,20 +99,13 @@ var CherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 			Lines(
 				Contains("base").IsSelected(),
 			).
-			Press(keys.Commits.PasteCommits).
-			Tap(func() {
-				t.Common().ChooseMarkedCherryPickSource()
-				t.Common().ConfirmCherryPickList("refs/heads/master", baseOID,
-					CherryPickReviewRow(1, threeOID, "three"),
-					CherryPickReviewRow(2, fourOID, "four"),
-				)
-			}).
-			Tap(func() {
-				t.Views().Information().Content(DoesNotContain("commits copied"))
-			}).
+			Press(keys.Commits.PasteCommits)
+		t.ExpectPopup().Confirmation().
+			Title(Equals("Cherry-pick")).
+			Content(Contains(baseOID).DoesNotContain(threeOID).DoesNotContain(fourOID)).
+			Cancel()
+		t.Views().Commits().
 			Lines(
-				Contains("four"),
-				Contains("three"),
 				Contains("base").IsSelected(),
 			)
 	},
