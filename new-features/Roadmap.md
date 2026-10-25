@@ -954,6 +954,14 @@ decisions:
   Other theme fields keep upstream's defaults. The marked-base background is
   not in the user's config (their key was ignored); Surface1 replaces
   upstream's yellow, which clashes with a Peach foreground.
+  Implementation follows upstream's existing layering: `gui.darkTheme` /
+  `gui.lightTheme` over `gui.theme` over background-dependent defaults. The
+  palette is a fork layer of those defaults, and the fork removes these
+  fields' static values from `GetDefaultConfig` so that the palette applies.
+- The focused pane draws a heavy frame (`━ ┃ ┏ ┓ ┗ ┛`) in the active border
+  colour; unfocused panes keep the configured `gui.border` style. If the user
+  sets `gui.border`, unfocused panes use it and the focused pane still uses
+  heavy runes, except `hidden`, which hides every frame as before.
 - When `git.diffRenderers` is not configured, the default list is delta
   (`delta --{{colorScheme}} --paging=never --tabs=4`, colour always) followed
   by git's own diff, so `|` cycles between them.
