@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Builds portable, optimized lazygit binaries into dist/<os>_<arch>/.
+# Builds portable, optimized lazygitk binaries into dist/<os>_<arch>/.
 # Usage: scripts/build_dist.sh [os/arch ...]
 #   e.g. scripts/build_dist.sh linux/arm64 darwin/arm64
 # With no arguments, builds linux/amd64 and windows/amd64. Builds use a
@@ -47,9 +47,9 @@ ldflags="-s -w -X main.version=$version -X main.commit=$commit -X main.date=$bui
 for target in "$@"; do
   goos=${target%%/*}
   goarch=${target#*/}
-  binary=lazygit
+  binary=lazygitk
   if [ "$goos" = windows ]; then
-    binary=lazygit.exe
+    binary=lazygitk.exe
   fi
   out="dist/${goos}_${goarch}/${binary}"
 

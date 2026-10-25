@@ -1,6 +1,6 @@
 #Requires -Version 7.0
 
-# Builds portable, optimized lazygit binaries into dist/<os>_<arch>/ when run
+# Builds portable, optimized lazygitk binaries into dist/<os>_<arch>/ when run
 # natively on Windows (PowerShell 7+). Use scripts/build_dist.sh elsewhere.
 # Usage: scripts/build_dist.ps1 [-Targets os/arch,...]
 #   e.g. scripts/build_dist.ps1 -Targets windows/amd64,windows/arm64
@@ -60,7 +60,7 @@ try {
 
     foreach ($target in $Targets) {
         $goos, $goarch = $target -split '/', 2
-        $binary = if ($goos -eq 'windows') { 'lazygit.exe' } else { 'lazygit' }
+        $binary = if ($goos -eq 'windows') { 'lazygitk.exe' } else { 'lazygitk' }
         $out = Join-Path (Join-Path 'dist' "${goos}_${goarch}") $binary
 
         New-Item -ItemType Directory -Path (Split-Path -Parent $out) -Force | Out-Null
