@@ -53,11 +53,7 @@ custom commands. Frequency persistence and sorting remain item 9.
    the projection and dispatcher; verify final override/operation scenarios.
 4. Extend the captured operation flows required by the
    requested bindings: Files-only commit Enter,
-   full-refresh/re-render F5 without fetch,
    explanatory rebase/merge confirmation,
-   unified selected branch/commit checkout and ref-only branch placement
-   (`n b`/`s c` from Commits/Branches/Remote branches pass with the enabled
-   profile; tag `s c` remains to verify there),
    Escape mark clearing and final default-profile verification of the integrated
    exact-list marked/selected cherry-pick review (focused and terminal checks
    preserve upstream paused-rebase support and post-pick buffer behavior),
