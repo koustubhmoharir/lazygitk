@@ -1,7 +1,17 @@
 # Current work
 
-All roadmap items (1–12) are complete. There is no current item. Add and review
-a new milestone in [Roadmap.md](Roadmap.md) before planning tasks here.
+Item 13: fixed keybindings, key configuration ignored. Scope and decisions are
+in [Roadmap.md](Roadmap.md#13-fixed-keybindings-key-configuration-is-ignored).
+
+- Config loading: drop `keybinding`, `commandBindings` and custom-command
+  `key` values unless the harness switch is on, and record what was ignored
+  per file; unit tests.
+- Startup notice for ignored settings; integration scenario with the switch
+  off.
+- Harness: set the switch for every scenario by default, with a per-test
+  opt-out.
+- Docs (`Fork_Keybindings.md`, `Config.md`, custom command docs), item 8
+  wording, merge guide; mark the item complete.
 
 ## How this tracker works
 

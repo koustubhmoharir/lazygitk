@@ -68,6 +68,7 @@ tasks with the next item's plan in the same completion commit.
 | 10 | Separate configuration and state from upstream lazygit | Complete | None | Small |
 | 11 | Push without a redundant review | Complete | 7 | Small |
 | 12 | One flat copy menu with consistent keys | Complete | 2, 8 | Medium |
+| 13 | Fixed keybindings: key configuration is ignored | Planned | 8, 12 | Medium |
 
 ## Fork implementation principles
 
@@ -852,6 +853,36 @@ the palette; copied text matches the existing menu actions; refs copy their
 resolved commit; generated keybinding docs and the keymap snapshot show the
 table; no `y` default conflicts within a panel.
 
+## 13. Fixed keybindings: key configuration is ignored
+
+Planned. This is a personal fork, so keybindings are not configurable: the
+fork's defaults always apply. Upstream's `keybinding` field names overlap and
+fold onto each other in the fork's case-insensitive routes (for example
+explicit `p` pull and `P` push become one key), and they leak into panels
+where upstream never used them. If the fork is ever distributed more widely,
+a separate, non-conflicting set of setting names should be designed instead
+of reviving these. User decisions:
+
+- Ignore the `keybinding` section, `commandBindings`, and every custom
+  command's `key`, in global and per-repo config files. Custom commands stay
+  runnable from `?`.
+- When a loaded config file contains any of these, show a startup notice
+  naming the ignored settings and the file, so copied upstream settings do
+  not silently do nothing.
+- The integration harness keeps honouring key configuration through an
+  internal switch, so upstream's scenarios (which drive keys from the legacy
+  fields) keep running unchanged. A scenario can turn the switch off to test
+  the user-facing behaviour. Users have no way to turn it on.
+- Item 8's override precedence (`commandBindings` over explicit legacy
+  fields over defaults) now applies only inside the harness.
+
+Acceptance: with the switch off, a config that sets `keybinding` fields,
+`commandBindings` and custom-command keys runs with the fork defaults, the
+custom commands appear in `?` without shortcuts, and the startup notice lists
+what was ignored; a config without them shows no notice; with the switch on,
+the existing suite passes unchanged; docs no longer describe key overrides as
+a user feature.
+
 ## Verification and repository workflow
 
 During implementation use narrow package tests and named integration scenarios
@@ -886,7 +917,7 @@ they do not validate a completed UI or implementation.
 ## Next design review artifact
 
 The earlier questions are answered under “Agreed direction” and the relevant
-milestones. All numbered milestones are complete; new work after them starts by adding
+milestones. Item 13 is current; new work after them starts by adding
 a reviewed milestone here.
 
 This remains an extensible backlog: add further features with target semantics,
