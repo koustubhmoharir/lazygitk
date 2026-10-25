@@ -1,51 +1,36 @@
 # Current work
 
-Roadmap item: [8. Consistent default keys and no-op behavior](Roadmap.md#8-consistent-default-keys-and-no-op-behavior).
-Status: the default registration audit and source-reviewed mode matrix are
-recorded in [keymap/README.md](keymap/README.md),
-[keymap-mode-matrix.md](keymap-mode-matrix.md) and the linked dispatch/default
-audits. The user has approved implementation of the agreed keymap; the earlier
-review pause is lifted. [keymap-allocation.md](keymap-allocation.md) records the
-accepted table, with source/override projection and topology details to resolve
-as implementation proceeds. Modal text fields must support Ctrl+Left/Right word
-movement; these are editor controls, not core command bindings.
-The latest user table reserves `d` for diff, `s` for reset/switch, `c` for
-cherry-pick and `u` for undo/redo. Enter commits only while Files is focused;
-it is a no-op in other normal panes. Dialogs/search/editors retain normal Enter.
-`v` inspection, `h`/`l` pane switching, Tab/Shift+Tab tab switching and F3/Shift+F3
-search navigation are approved. Escape exits marking mode and clears all
-cherry-pick marks; remove the separate `c a` shortcut. `g c` combines selected
-commits at their first selected ancestor, replacing squash/fixup, with editable
-first subject and all full messages in ancestor-first order (confirmed).
-Space stages only in Files and inspects elsewhere. In the staged built-in diff,
-`x` only unstages and does not confirm (user clarified); destructive unstaged
-discard still always confirms. Left/Right navigate the
-Files tree; number keys remain available for pane switching.
+Roadmap item: [9. Frequency-ordered `?` palette](Roadmap.md#9-frequency-ordered--palette).
+Status: item 8 is complete (full short suite, lint and all 723 integration
+scenarios pass); this item has not started. Scope and validation
+are in the roadmap. Counts are global per user, keyed by stable command IDs,
+lifetime frequency, local only, with declaration order as the tie-breaker and
+the displayed order frozen while the palette is open.
 
-The independent full-graph default uses `git.log.showWholeGraph: true` before
-user config; explicit false overrides remain supported. Final keybindings and
-combine implementation are now authorized.
+## Remaining tasks for item 9
 
-Scope: one command meaning per default key/path across panes. ASCII command
-letters are case-insensitive; inapplicable actions consume their key without
-side effects or global fallback. Reserve Ctrl defaults for custom commands,
-while preserving normal text entry and terminal Enter/Tab byte aliases. Use
-visible accelerator menus for two-/three-letter paths. Keep working-tree and
-previous-version diff separate as `d w` / `d p`, add pasted-hash comparison
-on `d c`; Pull has no single-letter shortcut. Preserve explicit overrides and
-custom commands. Frequency persistence and sorting remain item 9.
-
-## Remaining tasks for item 8
-
-7. Verify the default key × pane/mode matrix: case parity, no core Ctrl defaults,
-   unique paths, disabled no-ops, no parent/global fallback, prefix cancellation
-   and captured targets, editors/filtering, custom commands/overrides and actual
-   side effects. Run generation, formatting, builds, focused/full short tests,
-   affected terminal scenarios and lint. The full integration suite (715
-   scenarios) and full short suite pass with the explicit legacy compatibility
-   fixture; rerun both after the remaining tasks. When item 8 acceptance passes, complete
-   its roadmap description and replace this tracker with item 9's task plan in
-   that same commit.
+1. Design the accepted-action recording seam and present it before
+   implementing. Identify the single point where a direct key, prefix-menu leaf
+   and palette execution of the same command converge, so each accepted action
+   counts once under its leaf ID. Exclude typing, navigation repeats, opening
+   `?`, prefix group menus, disabled/inapplicable actions and canceled
+   confirmations; decide how flows with a confirmation or review record only on
+   acceptance. Define the stable-ID policy for custom commands. Consult
+   TortoiseGit for any comparable usage-ordered UI.
+2. Design persistence and present the choice of app-state facility versus a
+   dedicated state file: write frequency, batching, flush on normal exit, atomic
+   writes, a lock or merge strategy across concurrent lazygit processes, and
+   tolerance of corrupt or unwritable state. Store only IDs and counts.
+3. Implement recording and persistence with unit tests for direct/menu/palette
+   parity, aliases, cancellations, failures after acceptance, restart
+   persistence, multiple processes and corrupt/unwritable state.
+4. Sort the palette by count with deterministic ties, keeping Local/Global/
+   Navigation as annotations or filters, context relevance, filtering and
+   disabled items; keep order and selection stable while open. Add reset-usage
+   and restore-static-ordering controls, with docs and merge-guide updates.
+5. Verify with focused and terminal scenarios, generation, formatting, builds,
+   full short and integration suites and lint. When item 9 acceptance passes,
+   complete its roadmap description and update this tracker in that commit.
 
 ## How this tracker works
 

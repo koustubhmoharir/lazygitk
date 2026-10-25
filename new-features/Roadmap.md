@@ -63,8 +63,8 @@ tasks with the next item's plan in the same completion commit.
 | 5 | Checkout selected commit under a branch name | Complete | 4's shared prompts/validation | Medium |
 | 6 | Rebase current branch onto a selected commit | Complete | 2 | Small–medium |
 | 7 | Operate on selected branches without checkout | Complete | 4; explicit target design | Large |
-| 8 | Consistent default shortcuts and inactive-key behavior | Current | 2–7's action inventory | Large |
-| 9 | Frequency-ordered command palette | Pending | 2; works before or after 8 | Medium |
+| 8 | Consistent default shortcuts and inactive-key behavior | Complete | 2–7's action inventory | Large |
+| 9 | Frequency-ordered command palette | Current | 2; works before or after 8 | Medium |
 
 ## Fork implementation principles
 
@@ -546,9 +546,26 @@ stacks. Assert current HEAD/index/worktree and unrelated refs remain unchanged.
 
 ## 8. Consistent default keys and no-op behavior
 
-The user has authorized implementation of the agreed binding table, lifting
-the earlier review pause. Modal editor fields must support Ctrl+Left/Right word
-movement on all platforms; these are input controls, not core Ctrl commands.
+Complete. The agreed table in [keymap-allocation.md](keymap-allocation.md) is
+the enabled default profile, documented with a migration table in
+`docs-master/keybindings/Fork_Keybindings.md`. Modal editor fields support
+Ctrl+Left/Right word movement on all platforms; these are input controls, not
+core Ctrl commands. The only Ctrl defaults are modal editor controls.
+
+Implementation notes that refine the design below:
+
+- Escape clears cherry-pick marks in the history pane that holds them. In a
+  subview, Escape first returns to the parent pane and keeps the marks so they
+  can be pasted elsewhere. A successful paste keeps upstream's hidden buffer;
+  a later `c p` presents it in the explicit review rather than pasting silently.
+- Enter commits in Files, so the default `v` inspection opens a conflicted
+  file's resolution view or dialog there. An explicitly configured focus-diff
+  key keeps upstream's focus-only behavior.
+- Hints, tips and messages name the effective command path for a command ID in
+  the relevant pane, never an upstream legacy key field.
+- Explicit legacy fields and stable-ID `commandBindings` override defaults in
+  the documented order; real-default and override scenarios under
+  `pkg/integration/tests/ui/fork_*` cover the profile.
 
 Use milestone 2's complete inventory to produce and review a verb-to-key table
 before changing defaults. All alphabetic commands are case-insensitive: `p`
@@ -630,8 +647,8 @@ proposed review offers a marked/selected source choice when both exist.
 `:` enters a command, and `y` opens copy choices. Escape is the general exit/cancel
 mechanism; leaving cherry-pick marking clears every mark and replaces a separate
 `c a` unmark-all command. Preserve normal modal/prefix cancellation and never
-interpret Escape as silent Git abort or working-file discard. Remaining navigation and less
-common operation paths stay proposed until final review.
+interpret Escape as silent Git abort or working-file discard. Navigation and less
+common operation paths follow the implemented allocation table.
 
 `g c` replaces the normal squash/fixup commands with **Combine selected
 commits**. The replacement sits at the first selected commit, defined by Git
@@ -745,11 +762,9 @@ they do not validate a completed UI or implementation.
 ## Next design review artifact
 
 The earlier questions are answered under “Agreed direction” and the relevant
-milestones. Before milestone 8, produce the complete case-insensitive key and
-menu-path table, including Space semantics, migration from uppercase/Ctrl
-defaults, and the separate `d w`/`d p`/`d c` diff actions. The user has requested
-review of the final binding table before implementation/activation; continue
-planning without treating the draft as approved.
+milestones. Milestone 8's reviewed key and menu-path table is implemented. The
+next review covers milestone 9's recording seam and persistence choices, as
+listed in the tracker.
 
 This remains an extensible backlog: add further features with target semantics,
 repository evidence, dependencies, and acceptance tests. No application feature
