@@ -32,11 +32,6 @@ var Push = NewIntegrationTest(NewIntegrationTestArgs{
 			Select(Contains("Push this branch")).
 			Confirm()
 
-		t.ExpectPopup().Confirmation().
-			Title(Equals("Review branch push")).
-			Content(Contains(`source "master"`).Contains(`destination "refs/heads/master"`)).
-			Confirm()
-
 		assertSuccessfullyPushed(t)
 	},
 })

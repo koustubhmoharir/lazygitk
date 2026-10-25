@@ -31,13 +31,8 @@ var PushStackedBranchesCurrentWithoutUpstream = NewIntegrationTest(NewIntegratio
 		t.ExpectPopup().Menu().Title(Equals("Push selected branch"))
 		t.Views().Menu().Content(DoesNotContain("Push all").DoesNotContain("stacked below"))
 		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).Select(MatchesRegexp("^Choose remote")).Confirm()
-		t.ExpectPopup().Prompt().Title(Equals("Remote name")).Type("origin").Confirm()
-		review := t.ExpectPopup().Confirmation().Title(Equals("Review branch push")).
-			Content(Contains(`source "branch4"`).Contains(sourceOID).
-				Contains(`remote "origin"`).Contains(`destination "refs/heads/branch4"`).
-				Contains("Set upstream for selected local branch: false"))
 		t.Shell().RunShellCommand("! git --git-dir=../origin show-ref --verify --quiet refs/heads/branch4 && test \"$(git --git-dir=../origin rev-parse refs/heads/branch1)\" = \"" + remoteBranch1OID + "\" && test \"$(git --git-dir=../origin rev-parse refs/heads/branch2)\" = \"" + remoteBranch2OID + "\" && test \"$(git --git-dir=../origin rev-parse refs/heads/branch3)\" = \"" + remoteBranch3OID + "\"")
-		review.Confirm()
+		t.ExpectPopup().Prompt().Title(Equals("Remote name")).Type("origin").Confirm()
 
 		// There is deliberately no saved upstream, so status cannot acquire a
 		// tracking checkmark. Wait for the newly pushed destination's history.

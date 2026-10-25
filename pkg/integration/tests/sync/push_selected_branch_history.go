@@ -31,12 +31,8 @@ var PushSelectedBranchHistory = NewIntegrationTest(NewIntegrationTestArgs{
 			Select(Contains("Push this branch")).
 			Confirm()
 		t.ExpectPopup().Prompt().Title(Equals("Remote name")).Type("origin").Confirm()
-		t.ExpectPopup().Confirmation().
-			Title(Equals("Review branch push")).
-			Content(Contains(`source "topic"`).Contains(topicOID[:7]).Contains(`destination "refs/heads/topic"`)).
-			Confirm()
-
-		// Confirm waits for GUI idle before reading the actual remote ref.
+		// Without a second confirmation, the remote-ref check below waits for the
+		// push to finish.
 		t.Shell().RunShellCommand("git --git-dir=../origin rev-parse --verify refs/heads/topic > .git/assert-push-selected-branch-history-topic")
 		t.FileSystem().FileContent(".git/assert-push-selected-branch-history-topic", Equals(topicOID+"\n"))
 		t.Views().SubCommits().

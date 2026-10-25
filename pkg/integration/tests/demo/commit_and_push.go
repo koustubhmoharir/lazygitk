@@ -51,8 +51,7 @@ var CommitAndPush = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Press(keys.Universal.Push)
-		sourceOID := t.Git().GetCommitHash("refs/heads/feature/demo")
-		t.ReviewBranchPush("feature/demo", "origin", "feature/demo", sourceOID, false).Confirm()
+		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).Select(Contains("Push this branch")).Confirm()
 		t.Views().Status().EventuallyContent(Contains("✓"))
 	},
 })

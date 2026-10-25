@@ -172,7 +172,7 @@ func menuItem(t *testing.T, menu types.CreateMenuOptions, id string) *types.Menu
 	return nil
 }
 
-func TestBranchSyncPushSelectedBranchReviewAndExecution(t *testing.T) {
+func TestBranchSyncPushSelectedBranchExecutesWithoutConfirmation(t *testing.T) {
 	f := newBranchSyncPushFixture(t)
 	source := branchSyncSource{name: "topic", selected: true}
 	if err := f.sync.pushBranchSource(source); err != nil {
@@ -205,11 +205,10 @@ func TestBranchSyncPushSelectedBranchReviewAndExecution(t *testing.T) {
 	if err := f.ui.runUI(t); err != nil {
 		t.Fatal(err)
 	}
-	if len(f.ui.confirms) != 1 || !strings.Contains(f.ui.confirms[0].Prompt, "topic") || !strings.Contains(f.ui.confirms[0].Prompt, f.sourceOID[:7]) {
-		t.Fatalf("missing source/ref review: %+v", f.ui.confirms)
-	}
-	if err := f.ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
+	// The menu summary is the review for an ordinary push, so execution is
+	// queued directly after preparation without a confirmation.
+	if len(f.ui.confirms) != 0 {
+		t.Fatalf("ordinary push asked for a second confirmation: %+v", f.ui.confirms)
 	}
 	if err := f.ui.runWorker(t); err != nil {
 		t.Fatal(err)
@@ -222,44 +221,65 @@ func TestBranchSyncPushSelectedBranchReviewAndExecution(t *testing.T) {
 	}
 }
 
-func TestBranchSyncPushStalePlanRequiresFreshReview(t *testing.T) {
+func TestBranchSyncPushMovedBranchReopensMenu(t *testing.T) {
 	f := newBranchSyncPushFixture(t)
 	f.open(t, branchSyncSource{name: "topic", selected: true})
+	oldTip := branchSyncPushGit(t, f.root, "rev-parse", "refs/heads/topic^")
+	// The branch moves after the menu captured sourceOID. Choosing the push
+	// must not send the captured OID; it reopens the menu with fresh details.
+	branchSyncPushGit(t, f.root, "update-ref", "refs/heads/topic", oldTip, f.sourceOID)
 	if err := menuItem(t, f.ui.menus[0], "branch.push-selected.execute").OnPress(); err != nil {
 		t.Fatal(err)
 	}
-	if err := f.ui.runWorker(t); err != nil {
-		t.Fatal(err)
+	for range 2 {
+		if err := f.ui.runWorker(t); err != nil {
+			t.Fatal(err)
+		}
+		if err := f.ui.runUI(t); err != nil {
+			t.Fatal(err)
+		}
 	}
-	if err := f.ui.runUI(t); err != nil {
-		t.Fatal(err)
+	if len(f.ui.confirms) != 0 {
+		t.Fatal("moved branch produced a confirmation instead of reopening the menu")
 	}
-	oldReview := f.ui.confirms[0]
-	oldTip := branchSyncPushGit(t, f.root, "rev-parse", "refs/heads/topic^")
-	branchSyncPushGit(t, f.root, "update-ref", "refs/heads/topic", oldTip, f.sourceOID)
-	if err := oldReview.HandleConfirm(); err != nil {
-		t.Fatal(err)
+	if len(f.ui.menus) != 2 {
+		t.Fatalf("expected the push menu to reopen, got %d menus", len(f.ui.menus))
 	}
-	if err := f.ui.runWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := f.ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := f.ui.runWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := f.ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
-	if len(f.ui.confirms) != 1 {
-		t.Fatal("stale plan was automatically executed instead of requiring fresh review")
-	}
-	if !strings.Contains(f.ui.menus[len(f.ui.menus)-1].Prompt, oldTip[:7]) {
-		t.Fatalf("fresh menu omitted changed tip: %q", f.ui.menus[len(f.ui.menus)-1].Prompt)
+	if !strings.Contains(f.ui.menus[1].Prompt, oldTip[:7]) {
+		t.Fatalf("fresh menu omitted changed tip: %q", f.ui.menus[1].Prompt)
 	}
 	if _, err := exec.Command("git", "-C", f.remote, "show-ref", "--verify", "--quiet", "refs/heads/topic").Output(); err == nil {
-		t.Fatal("stale plan contacted remote")
+		t.Fatal("moved branch contacted remote")
+	}
+}
+
+func TestBranchSyncPushReplacesTracking(t *testing.T) {
+	for _, tc := range []struct {
+		name        string
+		setUp       bool
+		config      [][]string
+		wantReplace bool
+	}{
+		{name: "no set-upstream", setUp: false, config: [][]string{{"config", "branch.topic.remote", "oldremote"}, {"config", "branch.topic.merge", "refs/heads/old-one"}}},
+		{name: "no previous tracking", setUp: true},
+		{name: "same remote and single same merge ref", setUp: true, config: [][]string{{"config", "branch.topic.remote", "origin"}, {"config", "branch.topic.merge", "refs/heads/topic"}}},
+		{name: "different remote", setUp: true, wantReplace: true, config: [][]string{{"config", "branch.topic.remote", "oldremote"}, {"config", "branch.topic.merge", "refs/heads/topic"}}},
+		{name: "different merge ref", setUp: true, wantReplace: true, config: [][]string{{"config", "branch.topic.remote", "origin"}, {"config", "branch.topic.merge", "refs/heads/old-one"}}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newBranchSyncPushFixture(t)
+			for _, args := range tc.config {
+				branchSyncPushGit(t, f.root, args...)
+			}
+			opts := git_commands.BranchPushOptions{Remote: "origin", DestinationRef: "refs/heads/topic", SetUpstream: tc.setUp, Submodules: git_commands.BranchPushNoSubmoduleRecursion}
+			plan, err := f.git.Sync.PrepareBranchPush("topic", f.sourceOID, opts)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := branchPushReplacesTracking(plan); got != tc.wantReplace {
+				t.Fatalf("branchPushReplacesTracking() = %t, want %t", got, tc.wantReplace)
+			}
+		})
 	}
 }
 
@@ -323,6 +343,7 @@ func TestBranchSyncPushMissingRemoteCancelAndOrdinaryEditAfterForceCancel(t *tes
 	if err := menuItem(t, forceReview, "branch.push-selected.force-cancel").OnPress(); err != nil {
 		t.Fatal(err)
 	}
+	menusBeforeEdit := len(f.ui.menus)
 	if err := menuItem(t, initial, "branch.push-selected.remote").OnPress(); err != nil {
 		t.Fatal(err)
 	}
@@ -335,8 +356,16 @@ func TestBranchSyncPushMissingRemoteCancelAndOrdinaryEditAfterForceCancel(t *tes
 	if err := f.ui.runUI(t); err != nil {
 		t.Fatal(err)
 	}
-	if len(f.ui.confirms) != 1 || strings.Contains(strings.ToLower(f.ui.confirms[0].Title), "force") {
-		t.Fatalf("ordinary remote edit inherited force: %+v", f.ui.confirms)
+	// An ordinary push goes straight to execution, so it must not show a
+	// confirmation or a force menu.
+	if len(f.ui.confirms) != 0 {
+		t.Fatalf("ordinary remote edit asked for a confirmation: %+v", f.ui.confirms)
+	}
+	if len(f.ui.menus) != menusBeforeEdit {
+		t.Fatal("ordinary remote edit reopened a menu, such as a force menu")
+	}
+	if err := f.ui.runWorker(t); err != nil {
+		t.Fatal(err)
 	}
 }
 
@@ -366,8 +395,14 @@ func TestBranchSyncPushRemoteURLNeverAppearsAsRemoteName(t *testing.T) {
 	if err := f.ui.runUI(t); err != nil {
 		t.Fatal(err)
 	}
-	if len(f.ui.confirms) != 1 || strings.Contains(f.ui.confirms[0].Prompt, "secret") || !strings.Contains(f.ui.confirms[0].Prompt, "origin") {
-		t.Fatalf("selected named remote review is unsafe or incomplete: %+v", f.ui.confirms)
+	if len(f.ui.confirms) != 0 {
+		t.Fatalf("ordinary push to the named remote asked for a confirmation: %+v", f.ui.confirms)
+	}
+	if err := f.ui.runWorker(t); err != nil {
+		t.Fatal(err)
+	}
+	if got := branchSyncPushGit(t, f.remote, "rev-parse", "refs/heads/topic"); got != f.sourceOID {
+		t.Fatalf("named remote got %s, want selected branch tip %s", got, f.sourceOID)
 	}
 }
 
@@ -383,13 +418,11 @@ func TestBranchSyncPushGlobalCurrentBranchRechecksAtExecution(t *testing.T) {
 	if err := f.ui.runUI(t); err != nil {
 		t.Fatal(err)
 	}
-	if len(f.ui.confirms) != 1 {
-		t.Fatal("expected review")
+	if len(f.ui.confirms) != 0 {
+		t.Fatal("ordinary push asked for a confirmation")
 	}
+	// Execution is queued without a review, so HEAD changes after queuing.
 	branchSyncPushGit(t, f.root, "checkout", "-q", "topic")
-	if err := f.ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
-	}
 	if err := f.ui.runWorker(t); err != nil {
 		t.Fatal(err)
 	}
@@ -672,18 +705,13 @@ func TestBranchSyncPushAmbiguousUpstreamCancelAndFallback(t *testing.T) {
 				if err := f.ui.runUI(t); err != nil {
 					t.Fatal(err)
 				}
-				review := f.ui.confirms[len(f.ui.confirms)-1]
-				if !strings.Contains(review.Prompt, "Set upstream for selected local branch: false") || !strings.Contains(review.Prompt, "refs/heads/topic") || !strings.Contains(review.Prompt, "origin") {
-					t.Fatalf("fallback did not require a full new tracking-disabled review: %q", review.Prompt)
+				// Dropping set-upstream makes this an ordinary push: no confirmation,
+				// and execution is queued directly with tracking left unchanged.
+				if len(f.ui.confirms) != (map[bool]int{false: 0, true: 1}[phase == "execute"]) {
+					t.Fatalf("fallback asked for a confirmation: %+v", f.ui.confirms)
 				}
 				assertBranchSyncConfigUnchanged(t, configPath, before)
 				assertBranchSyncRemoteTip(t, f, "")
-				if len(f.ui.workers) != 0 {
-					t.Fatal("fallback review automatically scheduled execution")
-				}
-				if err := review.HandleConfirm(); err != nil {
-					t.Fatal(err)
-				}
 				if err := f.ui.runWorker(t); err != nil {
 					t.Fatal(err)
 				}

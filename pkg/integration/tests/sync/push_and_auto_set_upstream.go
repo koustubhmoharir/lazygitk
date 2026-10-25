@@ -33,11 +33,6 @@ var PushAndAutoSetUpstream = NewIntegrationTest(NewIntegrationTestArgs{
 		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).
 			Select(MatchesRegexp("^Choose remote")).Confirm()
 		t.ExpectPopup().Prompt().Title(Equals("Remote name")).Type("origin").Confirm()
-		t.ExpectPopup().Confirmation().Title(Equals("Review branch push")).
-			Content(Contains(`source "master"`).Contains(sourceOID).
-				Contains(`remote "origin"`).Contains(`destination "refs/heads/master"`).
-				Contains("Set upstream for selected local branch: false")).Confirm()
-
 		// Push completion refreshes the remote branch history; wait for that
 		// visible result before checking the bare remote and saved config.
 		t.Views().Remotes().Focus().Lines(Contains("origin")).PressEnter()

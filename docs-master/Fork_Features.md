@@ -266,3 +266,12 @@ Nothing is migrated: copy settings from your lazygit `config.yml` yourself if
 you want them. `scripts/build_dist.sh` (or `just dist`) builds portable
 `lazygitk` binaries into `dist/`, and `scripts/build_dist.ps1` does the same
 natively on Windows with PowerShell 7.
+
+## Push
+
+The push menu shows the source commit, remote, destination and options, and
+**Push this branch** pushes directly from it, also after typing a remote or
+destination. A separate review appears only when setting upstream would
+replace different existing tracking, and for force-with-lease. If the branch
+moved after the menu opened, the menu reopens with fresh details instead of
+pushing.

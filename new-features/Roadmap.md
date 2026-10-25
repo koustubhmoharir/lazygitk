@@ -66,7 +66,7 @@ tasks with the next item's plan in the same completion commit.
 | 8 | Consistent default shortcuts and inactive-key behavior | Complete | 2–7's action inventory | Large |
 | 9 | Frequency-ordered command palette | Complete | 2; works before or after 8 | Medium |
 | 10 | Separate configuration and state from upstream lazygit | Complete | None | Small |
-| 11 | Push without a redundant review | Planned | 7 | Small |
+| 11 | Push without a redundant review | Complete | 7 | Small |
 | 12 | One flat copy menu with consistent keys | Planned | 2, 8 | Medium |
 
 ## Fork implementation principles
@@ -525,7 +525,8 @@ upstream-setting, status, and refresh all use the same explicit branch.
 Push destinations are independent of saved upstream settings. Upstream setup
 is a separate, default-off choice. If native setup cannot safely replace
 ambiguous or inherited settings, refuse that change before pushing and offer
-Cancel or a newly reviewed push without changing tracking. Never repair those
+Cancel or a push without changing tracking (see item 11 for when a push shows
+a separate review). Never repair those
 settings silently. Updating a remote-tracking cache ref after a successful
 push is distinct from changing the local branch's saved upstream relationship.
 Push is limited to the selected branch for now: do not offer a multi-branch
@@ -780,7 +781,9 @@ the `lazygitk` directory; user docs describe the new locations.
 
 ## 11. Push without a redundant review
 
-Planned. The push menu already shows source, commit, remote, destination,
+Complete. The "Push without tracking" choice after an ambiguous-upstream
+refusal also pushes directly, since that menu names the source and
+destination. The push menu already shows source, commit, remote, destination,
 upstream and submodule settings, so choosing **Push this branch** pushes after
 the usual preparation, without a second "Review branch push" confirmation.
 TortoiseGit's push dialog likewise pushes directly from its options. User
@@ -876,7 +879,7 @@ they do not validate a completed UI or implementation.
 ## Next design review artifact
 
 The earlier questions are answered under “Agreed direction” and the relevant
-milestones. Items 11 and 12 are planned; new work after them starts by adding
+milestones. Item 12 is current; new work after them starts by adding
 a reviewed milestone here.
 
 This remains an extensible backlog: add further features with target semantics,

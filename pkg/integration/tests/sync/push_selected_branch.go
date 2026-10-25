@@ -38,12 +38,8 @@ var PushSelectedBranch = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.ExpectPopup().Prompt().Title(Equals("Remote name")).Type("origin").Confirm()
 
-		t.ExpectPopup().Confirmation().
-			Title(Equals("Review branch push")).
-			Content(Contains(`source "topic"`).Contains(topicOID[:7]).Contains(`destination "refs/heads/topic"`)).
-			Confirm()
-
-		// Confirm waits for GUI idle, including the push worker and its refresh.
+		// The menu summary is the review for an ordinary push, so there is no
+		// second confirmation. The assertions below wait for the push to finish.
 		t.Shell().RunShellCommand("git --git-dir=../origin rev-parse --verify refs/heads/topic > .git/assert-push-selected-branch-topic")
 		t.FileSystem().FileContent(".git/assert-push-selected-branch-topic", Equals(topicOID+"\n"))
 		t.Shell().RunShellCommand("git --git-dir=../origin rev-parse --verify refs/heads/master > .git/assert-push-selected-branch-master")

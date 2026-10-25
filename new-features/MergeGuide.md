@@ -887,8 +887,13 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   Preserve synchronous repository-scoped busy flags, worker cleanup/refresh,
   callback repository checks, immutable approved plans and Cancel-first lease,
   multi-URL and upstream-refusal menus. A tracking-disabled fallback must
-  reprepare and review the captured source/options, never execute immediately
-  or turn a force-with-lease request into an ordinary/unleased push. Explicit
+  reprepare the captured source/options, never reuse the refused plan or turn a
+  force-with-lease request into an ordinary/unleased push. Since roadmap 11,
+  `review()` executes an ordinary prepared plan directly (the push menu summary
+  and fallback menu are the review); it still confirms force-with-lease,
+  stacked collection, and set-upstream that replaces different tracking
+  (`branchPushReplacesTracking`). Re-check that rule if upstream changes push
+  preparation. Explicit
   lease prompts retain their captured options/OID across later callbacks.
   This preparation adds English fallback strings; default shortcut policy is
   unchanged. Regenerate the command inventory/key docs with final binding

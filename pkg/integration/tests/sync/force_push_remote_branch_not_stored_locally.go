@@ -72,9 +72,8 @@ var ForcePushRemoteBranchNotStoredLocally = NewIntegrationTest(NewIntegrationTes
 			)
 
 		// Pushing this works without needing to force push
-		newOID := t.Git().GetCommitHash("HEAD")
 		t.Views().Files().IsFocused().Press(keys.Universal.Push)
-		t.ReviewBranchPush("master", "some-remote", "master", newOID, false).Confirm()
+		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).Select(Contains("Push this branch")).Confirm()
 		t.Views().Remotes().Focus().NavigateToLine(Contains("some-remote")).PressEnter()
 
 		t.Views().RemoteBranches().IsFocused().Lines(

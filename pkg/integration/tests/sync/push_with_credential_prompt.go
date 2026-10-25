@@ -26,14 +26,13 @@ var PushWithCredentialPrompt = NewIntegrationTest(NewIntegrationTestArgs{
 		shell.CopyHelpFile("pre-push", ".git/hooks/pre-push")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
-		sourceOID := t.Git().GetCommitHash("refs/heads/master")
 		t.Shell().RunShellCommand("cp .git/config .git/credential-push-config-before && git rev-parse HEAD > .git/credential-push-head-before && git write-tree > .git/credential-push-index-before && git diff --binary HEAD > .git/credential-push-worktree-before && git status --porcelain --untracked-files=all > .git/credential-push-status-before")
 		t.Views().Status().Content(Equals("↑1 repo → master"))
 
 		t.Views().Files().
 			IsFocused().
 			Press(keys.Universal.Push)
-		t.ReviewBranchPush("master", "origin", "master", sourceOID, false).Confirm()
+		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).Select(Contains("Push this branch")).Confirm()
 
 		// correct credentials are: username=username, password=password
 
@@ -60,7 +59,7 @@ var PushWithCredentialPrompt = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Press(keys.Universal.Push)
-		t.ReviewBranchPush("master", "origin", "master", sourceOID, false).Confirm()
+		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).Select(Contains("Push this branch")).Confirm()
 
 		t.ExpectPopup().Prompt().
 			Title(Equals("Username")).

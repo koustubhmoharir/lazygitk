@@ -66,13 +66,11 @@ var PushSelectedBranchPreserveTracking = NewIntegrationTest(NewIntegrationTestAr
 		openPushFlow()
 		fallback := t.ExpectPopup().Menu().
 			Title(Equals("Upstream settings need attention"))
-		fallback.Select(Contains("Push without changing tracking")).Confirm()
-		review := t.ExpectPopup().Confirmation().
-			Title(Equals("Review branch push")).
-			Content(Contains(`source "topic"`).Contains(topicOID[:7]).Contains(`destination "refs/heads/topic"`).Contains("Set upstream for selected local branch: false"))
+		// Dropping set-upstream makes this an ordinary push, so the menu summary
+		// is the review and the push runs without a second confirmation.
 		assertRemoteUnchanged()
 		assertConfigUnchanged()
-		review.Confirm()
+		fallback.Select(Contains("Push without changing tracking")).Confirm()
 
 		t.Shell().RunShellCommand("git --git-dir=../origin rev-parse --verify refs/heads/topic > .git/assert-upstream-preserving-topic")
 		t.FileSystem().FileContent(".git/assert-upstream-preserving-topic", Equals(topicOID+"\n"))

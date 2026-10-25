@@ -6,7 +6,7 @@ import (
 )
 
 var PushSelectedBranchStaleReview = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Refresh branch push review when the selected branch changes while confirmation is open",
+	Description:  "Reopen the push menu with fresh details when the selected branch changes while the menu is open",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig:  func(config *config.AppConfig) {},
@@ -31,28 +31,24 @@ var PushSelectedBranchStaleReview = NewIntegrationTest(NewIntegrationTestArgs{
 		}
 
 		t.Views().Branches().Focus().NavigateToLine(Contains("topic")).Press(keys.Universal.Push)
-		t.ExpectPopup().Menu().
+		menu := t.ExpectPopup().Menu().
 			Title(Equals("Push selected branch")).
-			Select(Contains("Push this branch")).
-			Confirm()
-		t.ExpectPopup().Prompt().Title(Equals("Remote name")).Type("origin").Confirm()
-		staleReview := t.ExpectPopup().Confirmation().
-			Title(Equals("Review branch push")).
 			Content(Contains(oldTopicOID[:7]))
 
+		// The branch moves while the push menu is open. Choosing a push
+		// must prepare against the reviewed OID, so it reopens the menu with
+		// the fresh OID and does not contact the remote.
 		t.Shell().RunCommand([]string{"git", "update-ref", "refs/heads/topic", newTopicOID, oldTopicOID})
-		staleReview.Confirm()
+		menu.Select(Contains("Push this branch")).Confirm()
+		t.ExpectPopup().Prompt().Title(Equals("Remote name")).Type("origin").Confirm()
 
-		freshChoice := t.ExpectPopup().Menu().
-			Title(Equals("Push selected branch"))
-		// A stale confirmation reopens review choices and does not contact the remote.
+		freshMenu := t.ExpectPopup().Menu().
+			Title(Equals("Push selected branch")).
+			Content(Contains(newTopicOID[:7]))
 		assertRemoteUnchanged()
-		freshChoice.Select(Contains("Push this branch")).Confirm()
-		freshReview := t.ExpectPopup().Confirmation().
-			Title(Equals("Review branch push")).
-			Content(Contains(`source "topic"`).Contains(newTopicOID[:7]).Contains(`destination "refs/heads/topic"`))
-		assertRemoteUnchanged()
-		freshReview.Confirm()
+
+		// The remote is now known, so the fresh menu pushes directly.
+		freshMenu.Select(Contains("Push this branch")).Confirm()
 
 		// Confirm waits for the push worker and its refresh to finish.
 		t.Shell().RunShellCommand("git --git-dir=../origin rev-parse --verify refs/heads/topic > .git/assert-push-stale-review-topic")
@@ -61,7 +57,7 @@ var PushSelectedBranchStaleReview = NewIntegrationTest(NewIntegrationTestArgs{
 		t.FileSystem().FileContent(".git/assert-push-stale-review-master", Equals(remoteMasterOID+"\n"))
 		t.Git().CurrentBranchName("master")
 		if got := t.Git().GetCommitHash("HEAD"); got != headOID {
-			t.Fail("Refreshing a stale push review changed HEAD")
+			t.Fail("Refreshing a stale push menu changed HEAD")
 		}
 	},
 })

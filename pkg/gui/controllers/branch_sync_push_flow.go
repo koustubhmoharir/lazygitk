@@ -234,6 +234,13 @@ func (flow *branchSyncPushFlow) review() error {
 			}},
 		}})
 	}
+	// Fork (roadmap 11): for an ordinary push the push menu's summary is the
+	// review, so the "Push this branch" choice pushes without a second
+	// confirmation. A confirmation remains when the stacked-push collection
+	// flow needs it, or when setting upstream would replace different tracking.
+	if flow.acceptPlan == nil && !branchPushReplacesTracking(plan) {
+		return flow.execute(plan)
+	}
 	flow.target.c.Confirm(types.ConfirmOpts{Title: title, Prompt: prompt, HandleConfirm: func() error {
 		if err := flow.target.checkRepository(); err != nil {
 			return err
@@ -241,6 +248,21 @@ func (flow *branchSyncPushFlow) review() error {
 		return flow.execute(plan)
 	}, HandleClose: flow.target.checkRepository})
 	return nil
+}
+
+// branchPushReplacesTracking reports whether setting upstream would replace
+// existing tracking that is not exactly the new remote and destination.
+func branchPushReplacesTracking(plan git_commands.BranchPushPlan) bool {
+	opts := plan.Options()
+	if !opts.SetUpstream {
+		return false
+	}
+	previousMerges := plan.PreviousMergeRefs()
+	if plan.PreviousRemote() == "" && len(previousMerges) == 0 {
+		return false
+	}
+	sameMerge := len(previousMerges) == 1 && previousMerges[0] == opts.DestinationRef
+	return plan.PreviousRemote() != opts.Remote || !sameMerge
 }
 
 func (flow *branchSyncPushFlow) upstreamReplacementSummary(plan git_commands.BranchPushPlan) string {

@@ -51,7 +51,7 @@ var PushStackedBranchesNoForce = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().IsFocused().Press(keys.Universal.Push)
 		t.ExpectPopup().Menu().Title(Equals("Push selected branch"))
 		t.Views().Menu().Content(DoesNotContain("Push all").DoesNotContain("stacked below"))
-		t.ReviewBranchPush("branch3", "origin", "branch3", sourceOID, false).Confirm()
+		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).Select(Contains("Push this branch")).Confirm()
 
 		t.Views().Status().EventuallyContent(Contains("✓ repo → branch3"))
 		t.Shell().RunShellCommand("test \"$(git --git-dir=../origin rev-parse refs/heads/branch3)\" = \"" + sourceOID + "\" && test \"$(git --git-dir=../origin rev-parse refs/heads/branch1)\" = \"" + remoteBranch1OID + "\" && test \"$(git --git-dir=../origin rev-parse refs/heads/branch2)\" = \"" + remoteBranch2OID + "\" && ! git --git-dir=../origin show-ref --verify --quiet refs/heads/local-only")

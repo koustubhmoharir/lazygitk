@@ -1,15 +1,18 @@
 # Current work
 
-Item 11: push without a redundant review. Scope and decisions are in
-[Roadmap.md](Roadmap.md#11-push-without-a-redundant-review).
+Item 12: one flat copy menu with consistent keys. Scope, key table and
+decisions are in [Roadmap.md](Roadmap.md#12-one-flat-copy-menu-with-consistent-keys).
 
-- Skip the ordinary push review in `branch_sync_push_flow.go` unless setting
-  upstream replaces different tracking or the push is force-with-lease; keep
-  the stacked-push flow unchanged.
-- Update the sync push scenarios that expect "Review branch push", and add
-  coverage for the typed-remote path and the tracking-replacement review.
-- Update item 7's wording, the merge guide and fork docs, and mark the item
-  complete.
+- Commit-like panels (commits, reflog, sub-commits): flat `y` bindings for
+  hash, abbreviated hash, subject, message, body, URL, diff, author and tags,
+  with distinct full/abbreviated hash command IDs; the attribute menu loses
+  its default path.
+- Refs (local branches, remote branches, tags): the same commit bindings on
+  the resolved commit, plus `y n` names and `y r` pull request URL.
+- Files, commit files, submodules, diff views and confirmations: `y n`, `y p`,
+  `y f`, `y d`, `y w`, `y y`; the file copy menus lose their default path.
+- Regenerate keybinding docs, the keymap snapshot and inventory; update fork
+  docs and the merge guide, and mark the item complete.
 
 ## How this tracker works
 
