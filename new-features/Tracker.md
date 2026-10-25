@@ -3,8 +3,6 @@
 Item 12: one flat copy menu with consistent keys. Scope, key table and
 decisions are in [Roadmap.md](Roadmap.md#12-one-flat-copy-menu-with-consistent-keys).
 
-- Refs (local branches, remote branches, tags): the same commit bindings on
-  the resolved commit, plus `y n` names and `y r` pull request URL.
 - Files, commit files, submodules, diff views and confirmations: `y n`, `y p`,
   `y f`, `y d`, `y w`, `y y`; the file copy menus lose their default path.
 - Regenerate keybinding docs, the keymap snapshot and inventory; update fork

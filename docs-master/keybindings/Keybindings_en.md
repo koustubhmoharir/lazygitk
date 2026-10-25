@@ -195,6 +195,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Copy branch name to clipboard |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` g y `` | Show git-flow options |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
@@ -310,6 +319,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Copy branch name to clipboard |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | Checkout | Checkout a new local branch based on the selected remote branch, or the remote branch as a detached head. |
 | `` n w `` | New worktree |  |
@@ -438,6 +456,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Copy tag to clipboard |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` s c `` | Checkout | Checkout the selected tag as a detached HEAD. |
 | `` n t `` | New tag | Create new tag from current commit. You'll be prompted to enter a tag name and optional description. |
 | `` n w `` | New worktree |  |

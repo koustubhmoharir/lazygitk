@@ -99,6 +99,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Copiar nome da branch para área de transferência |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` g y `` | Exibir opções do git-flow |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
@@ -128,6 +137,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Copiar nome da branch para área de transferência |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | Verificar | Checar a nova branch baseada na brach remota selecionada, ou a branch remota como HEAD, desanexado |
 | `` n w `` | Nova árvore de trabalho |  |
@@ -219,6 +237,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Copiar etiqueta para área de transferência |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` s c `` | Verificar | Checar a tag selecionada como um HEAD, desanexado |
 | `` n t `` | Nova etiqueta | Crie uma nova etiqueta a partir do commit atual. Você será solicitado a digitar um nome e uma descrição opcional. |
 | `` n w `` | Nova árvore de trabalho |  |

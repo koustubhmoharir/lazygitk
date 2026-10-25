@@ -60,7 +60,12 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   side-context copy binding is `clipboard.copy-abbreviated-commit-hash`
   (it truncates), while reflog keeps `clipboard.copy-commit-hash` (full).
   Keep these IDs distinct when merging upstream copy changes; a view must not
-  bind one command ID twice.
+  bind one command ID twice. Branch, remote-branch and tag panels get the same
+  list through `RefCommitCopyController` (attached in `pkg/gui/controllers.go`),
+  which resolves the selected full ref with `CommitCommands.ResolveRefCommitHash`
+  and `TagsPointingAt` (`git_commands/fork_ref_commit.go`) at press time. It
+  calls the copy methods on a bare `&BasicCommitsController{c: c}`; if upstream
+  makes those methods use the controller's context, give refs their own copier.
 - Portable builds: `scripts/build_dist.sh` and `scripts/build_dist.ps1` are
   fork-owned and name binaries `lazygitk`. The only upstream-file touches are the `dist` recipe in
   `justfile` and `/dist/` in `.gitignore`; keep both when resolving conflicts.

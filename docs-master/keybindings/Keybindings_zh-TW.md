@@ -305,6 +305,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | 複製分支名稱到剪貼簿 |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` g y `` | 顯示 git-flow 選項 |  |
 | `` s h `` | 強制重設 |  |
 | `` s m `` | 混合重設 |  |
@@ -334,6 +343,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | 複製標籤到剪貼簿 |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` s c `` | 檢出 | 檢出選擇的標籤作為分離的HEAD。 |
 | `` n t `` | 建立標籤 | 基於目前提交建立一個新標籤。您將在彈窗中輸入標籤名稱和描述(可選)。 |
 | `` n w `` | 新建工作樹 |  |
@@ -445,6 +463,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | 複製分支名稱到剪貼簿 |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | 檢出 | 基於目前選中的遠端分支檢出一個新的本地分支，或者將遠端分支作分離的HEAD。 |
 | `` n w `` | 新建工作樹 |  |

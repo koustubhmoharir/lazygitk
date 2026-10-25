@@ -14,78 +14,22 @@ import (
 // commit actions; the nested copy-attribute menu keeps its binding for the
 // palette but has no default route.
 func (self *BasicCommitsController) commitCopyBindings() []*types.Binding {
-	bindings := []*types.Binding{
-		{
-			CommandID:         "clipboard.copy-commit-hash",
-			Verb:              "copy",
-			Handler:           self.withItem(self.copyCommitHashToClipboard),
-			GetDisabledReason: self.require(self.singleItemSelected()),
-			Description:       self.c.Tr.CopyCommitHash,
-		},
-		{
-			CommandID:         "clipboard.copy-abbreviated-commit-hash",
-			Verb:              "copy",
-			Handler:           self.withItem(self.copyAbbreviatedCommitHashToClipboard),
-			GetDisabledReason: self.require(self.singleItemSelected()),
-			Description:       self.c.Tr.CopyAbbreviatedCommitHash,
-		},
-		{
-			CommandID:         "clipboard.copy-commit-subject",
-			Verb:              "copy",
-			Handler:           self.withItem(self.copyCommitSubjectToClipboard),
-			GetDisabledReason: self.require(self.singleItemSelected()),
-			Description:       self.c.Tr.CopyCommitSubject,
-		},
-		{
-			CommandID:         "clipboard.copy-commit-message",
-			Verb:              "copy",
-			Handler:           self.withItem(self.copyCommitMessageToClipboard),
-			GetDisabledReason: self.require(self.singleItemSelected()),
-			Description:       self.c.Tr.CopyCommitMessage,
-		},
-		{
-			CommandID: "clipboard.copy-commit-body",
-			Verb:      "copy",
-			// The body is read at press time, not in GetDisabledReason, so
-			// menus do not run git for every render.
-			Handler:           self.withItem(self.copyCommitBodyToClipboard),
-			GetDisabledReason: self.require(self.singleItemSelected()),
-			Description:       self.c.Tr.CopyCommitMessageBody,
-		},
-		{
-			CommandID:         "clipboard.copy-commit-url",
-			Verb:              "copy",
-			Handler:           self.withItem(self.copyCommitURLToClipboard),
-			GetDisabledReason: self.require(self.singleItemSelected()),
-			Description:       self.c.Tr.CopyCommitURL,
-		},
-		{
-			CommandID:         "clipboard.copy-commit-diff",
-			Verb:              "copy",
-			Handler:           self.withItem(self.copyCommitDiffToClipboard),
-			GetDisabledReason: self.require(self.singleItemSelected()),
-			Description:       self.c.Tr.CopyCommitDiff,
-		},
-		{
-			CommandID:         "clipboard.copy-commit-author",
-			Verb:              "copy",
-			Handler:           self.withItem(self.copyAuthorToClipboard),
-			GetDisabledReason: self.require(self.singleItemSelected()),
-			Description:       self.c.Tr.CopyCommitAuthor,
-		},
-		{
-			CommandID: "clipboard.copy-commit-tags",
-			Verb:      "copy",
-			Handler:   self.withItem(self.copyCommitTagsToClipboard),
-			GetDisabledReason: self.require(self.singleItemSelected(func(commit *models.Commit) *types.DisabledReason {
-				if len(commit.Tags) == 0 {
-					return &types.DisabledReason{Text: self.c.Tr.CommitHasNoTags}
-				}
-				return nil
-			})),
-			Description: self.c.Tr.CopyCommitTags,
-		},
+	selectedCommit := func() (*models.Commit, error) {
+		commit := self.getSelectedItem()
+		if commit == nil {
+			return nil, errors.New(self.c.Tr.NoItemSelected)
+		}
+		return commit, nil
 	}
+	bindings := commitCopyBindingList(self.c, self, selectedCommit,
+		self.require(self.singleItemSelected()),
+		self.require(self.singleItemSelected(func(commit *models.Commit) *types.DisabledReason {
+			if len(commit.Tags) == 0 {
+				return &types.DisabledReason{Text: self.c.Tr.CommitHasNoTags}
+			}
+			return nil
+		})),
+	)
 
 	// Fork: keybindings.go already owns some commit-hash actions for these
 	// views; a view must not offer the same command ID twice.
@@ -97,6 +41,108 @@ func (self *BasicCommitsController) commitCopyBindings() []*types.Binding {
 		}
 	}
 	return result
+}
+
+// commitCopyBindingList builds the flat copy menu's commit actions. Commit
+// panels and ref panels share it: getCommit resolves the commit when an action
+// runs, and disabled and tagsDisabled decide when the menu offers the actions.
+//
+// copier supplies the copy methods, which read only copier.c. Ref panels may
+// therefore pass a bare &BasicCommitsController{c: c}; a method that starts to
+// use other fields must not be called that way.
+func commitCopyBindingList(
+	c *ControllerCommon,
+	copier *BasicCommitsController,
+	getCommit func() (*models.Commit, error),
+	disabled func() *types.DisabledReason,
+	tagsDisabled func() *types.DisabledReason,
+) []*types.Binding {
+	handle := func(action func(*models.Commit) error) func() error {
+		return func() error {
+			commit, err := getCommit()
+			if err != nil {
+				return err
+			}
+			return action(commit)
+		}
+	}
+	// Ref panels cannot check tags cheaply, so the tags action checks them at
+	// press time. Commit panels never reach this check with an empty tag list
+	// because tagsDisabled already blocks it.
+	copyTags := func(commit *models.Commit) error {
+		if len(commit.Tags) == 0 {
+			return errors.New(c.Tr.CommitHasNoTags)
+		}
+		return copier.copyCommitTagsToClipboard(commit)
+	}
+
+	return []*types.Binding{
+		{
+			CommandID:         "clipboard.copy-commit-hash",
+			Verb:              "copy",
+			Handler:           handle(copier.copyCommitHashToClipboard),
+			GetDisabledReason: disabled,
+			Description:       c.Tr.CopyCommitHash,
+		},
+		{
+			CommandID:         "clipboard.copy-abbreviated-commit-hash",
+			Verb:              "copy",
+			Handler:           handle(copier.copyAbbreviatedCommitHashToClipboard),
+			GetDisabledReason: disabled,
+			Description:       c.Tr.CopyAbbreviatedCommitHash,
+		},
+		{
+			CommandID:         "clipboard.copy-commit-subject",
+			Verb:              "copy",
+			Handler:           handle(copier.copyCommitSubjectToClipboard),
+			GetDisabledReason: disabled,
+			Description:       c.Tr.CopyCommitSubject,
+		},
+		{
+			CommandID:         "clipboard.copy-commit-message",
+			Verb:              "copy",
+			Handler:           handle(copier.copyCommitMessageToClipboard),
+			GetDisabledReason: disabled,
+			Description:       c.Tr.CopyCommitMessage,
+		},
+		{
+			CommandID: "clipboard.copy-commit-body",
+			Verb:      "copy",
+			// The body is read at press time, not in GetDisabledReason, so
+			// menus do not run git for every render.
+			Handler:           handle(copier.copyCommitBodyToClipboard),
+			GetDisabledReason: disabled,
+			Description:       c.Tr.CopyCommitMessageBody,
+		},
+		{
+			CommandID:         "clipboard.copy-commit-url",
+			Verb:              "copy",
+			Handler:           handle(copier.copyCommitURLToClipboard),
+			GetDisabledReason: disabled,
+			Description:       c.Tr.CopyCommitURL,
+		},
+		{
+			CommandID:         "clipboard.copy-commit-diff",
+			Verb:              "copy",
+			Handler:           handle(copier.copyCommitDiffToClipboard),
+			GetDisabledReason: disabled,
+			Description:       c.Tr.CopyCommitDiff,
+		},
+		{
+			CommandID:         "clipboard.copy-commit-author",
+			Verb:              "copy",
+			Handler:           handle(copier.copyAuthorToClipboard),
+			GetDisabledReason: disabled,
+			Description:       c.Tr.CopyCommitAuthor,
+		},
+		{
+			CommandID:         "clipboard.copy-commit-tags",
+			Verb:              "copy",
+			Handler:           handle(copyTags),
+			GetDisabledReason: tagsDisabled,
+			Description:       c.Tr.CopyCommitTags,
+		},
+	}
 }
 
 // addCommitCopyBindings appends the flat copy actions to the upstream list.

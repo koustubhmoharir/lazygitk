@@ -107,6 +107,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Kopieer branch name naar klembord |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` g y `` | Laat git-flow opties zien |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
@@ -310,6 +319,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Kopieer branch name naar klembord |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | Uitchecken | Geselecteerde remote branch uitchecken als nieuwe locale branch of als detached head. |
 | `` n w `` | New worktree |  |
@@ -438,6 +456,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Copy tag to clipboard |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` s c `` | Uitchecken | Geselecteerde tag uitchecken als detached HEAD. |
 | `` n t `` | Creëer tag | Maak een nieuwe tag die naar de huidige commit wijst. Je wordt gevraagd om een tag naam en optionele beschrijving. |
 | `` n w `` | New worktree |  |

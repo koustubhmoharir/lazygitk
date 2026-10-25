@@ -255,6 +255,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | タグをクリップボードにコピー |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` s c `` | チェックアウト（ブランチの切り替え） | 選択したタグをデタッチドHEADとしてチェックアウトします。 |
 | `` n t `` | 新しいタグを作成 | 現在のコミットから新しいタグを作成します。タグ名とオプションの説明を入力するよう促されます。 |
 | `` n w `` | 新しいワークツリー |  |
@@ -398,6 +407,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | ブランチ名をクリップボードにコピー |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | チェックアウト（ブランチの切り替え） | 選択したリモートブランチに基づいて新しいローカルブランチをチェックアウトするか、リモートブランチをデタッチドヘッドとしてチェックアウトします。 |
 | `` n w `` | 新しいワークツリー |  |
@@ -415,6 +433,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | ブランチ名をクリップボードにコピー |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` g y `` | git-flowオプションを表示 |  |
 | `` s h `` | ハードリセット |  |
 | `` s m `` | ミックスリセット |  |

@@ -195,6 +195,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Kopiuj nazwę gałęzi do schowka |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` g y `` | Pokaż opcje git-flow |  |
 | `` s h `` | Twardy reset |  |
 | `` s m `` | Mieszany reset |  |
@@ -419,6 +428,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Skopiuj tag do schowka |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` s c `` | Przełącz | Przełącz wybrany tag jako odłączoną głowę (detached HEAD). |
 | `` n t `` | Nowy tag | Utwórz nowy tag z bieżącego commita. Zostaniesz poproszony o wprowadzenie nazwy tagu i opcjonalnego opisu. |
 | `` n w `` | Nowe drzewo pracy |  |
@@ -445,6 +463,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Kopiuj nazwę gałęzi do schowka |  |
+| `` y h `` | Copy commit hash |  |
+| `` y i `` | Copy abbreviated commit hash |  |
+| `` y s `` | Copy commit subject |  |
+| `` y m `` | Copy commit message |  |
+| `` y b `` | Copy commit message body |  |
+| `` y u `` | Copy commit URL |  |
+| `` y d `` | Copy commit diff |  |
+| `` y a `` | Copy commit author |  |
+| `` y t `` | Copy commit tags |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | Przełącz | Przełącz na nową lokalną gałąź na podstawie wybranej gałęzi zdalnej. Nowa gałąź będzie śledzić gałąź zdalną. |
 | `` n w `` | Nowe drzewo pracy |  |

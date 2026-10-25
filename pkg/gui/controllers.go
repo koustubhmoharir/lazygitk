@@ -303,6 +303,13 @@ func (gui *Gui) resetHelpersAndControllers() {
 
 	controllers.AttachControllers(gui.State.Contexts.Tags,
 		tagsController,
+		// Fork: the flat `y` copy menu's commit actions for the selected tag's commit.
+		controllers.NewRefCommitCopyController(common, gui.State.Contexts.Tags, func() string {
+			if tag := gui.State.Contexts.Tags.GetSelected(); tag != nil {
+				return tag.FullRefName()
+			}
+			return ""
+		}),
 	)
 
 	controllers.AttachControllers(gui.State.Contexts.Submodules,
@@ -312,6 +319,13 @@ func (gui *Gui) resetHelpersAndControllers() {
 	controllers.AttachControllers(gui.State.Contexts.Branches,
 		branchesController,
 		gitFlowController,
+		// Fork: the flat `y` copy menu's commit actions for the selected branch's commit.
+		controllers.NewRefCommitCopyController(common, gui.State.Contexts.Branches, func() string {
+			if branch := gui.State.Contexts.Branches.GetSelected(); branch != nil {
+				return branch.FullRefName()
+			}
+			return ""
+		}),
 	)
 
 	controllers.AttachControllers(gui.State.Contexts.LocalCommits,
@@ -351,6 +365,13 @@ func (gui *Gui) resetHelpersAndControllers() {
 
 	controllers.AttachControllers(gui.State.Contexts.RemoteBranches,
 		remoteBranchesController,
+		// Fork: the flat `y` copy menu's commit actions for the selected remote branch's commit.
+		controllers.NewRefCommitCopyController(common, gui.State.Contexts.RemoteBranches, func() string {
+			if remoteBranch := gui.State.Contexts.RemoteBranches.GetSelected(); remoteBranch != nil {
+				return remoteBranch.FullRefName()
+			}
+			return ""
+		}),
 	)
 
 	controllers.AttachControllers(gui.State.Contexts.Status,
