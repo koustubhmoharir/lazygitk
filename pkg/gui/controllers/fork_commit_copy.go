@@ -99,6 +99,11 @@ func (self *BasicCommitsController) commitCopyBindings() []*types.Binding {
 	return result
 }
 
+// addCommitCopyBindings appends the flat copy actions to the upstream list.
+func (self *BasicCommitsController) addCommitCopyBindings(bindings []*types.Binding) []*types.Binding {
+	return append(bindings, self.commitCopyBindings()...)
+}
+
 // forkCommitCopyOwnedIDs lists the copy command IDs that keybindings.go binds
 // in each commit view. The copy-hash handlers there are view-specific: the
 // commits and sub-commits handlers truncate, while the reflog handler copies
