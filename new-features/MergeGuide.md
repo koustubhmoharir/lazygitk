@@ -50,6 +50,15 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   `config/side_panels_in_per_repo_config`, `ui/reload_side_panels`).
   `CONFIG_DIR`, `LG_CONFIG_FILE` and the `lazygit-<uid>` temp directory are
   unchanged.
+- Repository switching (roadmap item 14): `repo.switch-menu` routes to `s r`
+  and the global `repo.open-path` binding in `keybindings.go` to `s n`; the
+  logic is `helpers/fork_open_repo_path.go`. Prompts gained an optional
+  `HandleTab` hook: `types.PromptOpts` and `CreatePopupPanelOpts`, passed
+  through `popup_handler.go`, stored on the confirmation context state by
+  `confirmation_helper.go`, and called first by the Tab binding in
+  `prompt_controller.go`, which falls back to upstream's focus-suggestions
+  behaviour when the hook declines. Keep those pass-throughs when upstream
+  changes prompt options.
 - Fixed keybindings (roadmap item 13): `pkg/config/fork_ignore_key_config.go`
   discards the `keybinding` section, `commandBindings` and custom-command keys
   per file in `loadUserConfig` (one capture before the file loop, one discard

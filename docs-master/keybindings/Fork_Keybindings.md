@@ -16,6 +16,7 @@ back one level. Menus use physical Up/Down, Enter and Escape for navigation.
 | `a`, `r`, `m` | Amend; review rebase; review merge |
 | `s h`, `s m`, `s s` | Review hard, mixed, soft reset of the current branch |
 | `s c` | Checkout selected branch/commit, with branch naming and move choices |
+| `s r`, `s n` | Switch to a recent repository; open a repository by path |
 | `n b` | Create/move a named branch at the selection without checkout |
 | Enter | Commit in Files; no action in other normal panes |
 | Space | Toggle staging in Files; inspect elsewhere |

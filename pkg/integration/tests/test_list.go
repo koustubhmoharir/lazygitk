@@ -702,6 +702,7 @@ var tests = []*components.IntegrationTest{
 	ui.ForkDefaultHistoryOperations,
 	ui.ForkDefaultKeymap,
 	ui.ForkDefaultRefresh,
+	ui.ForkOpenRepoByPath,
 	ui.ForkPaletteStaticOrder,
 	ui.ForkPaletteUsageCorrupt,
 	ui.ForkPaletteUsageOrder,

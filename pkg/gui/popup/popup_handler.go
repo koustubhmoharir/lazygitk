@@ -148,6 +148,7 @@ func (self *PopupHandler) Prompt(opts types.PromptOpts) {
 		AllowEmptyInput:        opts.AllowEmptyInput,
 		PreserveWhitespace:     opts.PreserveWhitespace,
 		Mask:                   opts.Mask,
+		HandleTab:              opts.HandleTab, // Fork: see PromptOpts.HandleTab
 	})
 }
 

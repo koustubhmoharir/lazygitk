@@ -1,13 +1,7 @@
 # Current work
 
-Item 14: switch repositories with `s r`, open one by path with `s n`. Scope and
-decisions are in [Roadmap.md](Roadmap.md#14-switch-repositories-with-s-r-and-open-one-by-path-with-s-n).
-
-- `s r` route for `repo.switch-menu`; global `repo.open-path` command with the
-  path prompt, directory suggestions and shell-style Tab completion; unit and
-  integration tests.
-- Regenerate key docs and snapshots, update fork docs and the merge guide,
-  and mark the item complete.
+All roadmap items (1–14) are complete. There is no current item. Add and review
+a new milestone in [Roadmap.md](Roadmap.md) before planning tasks here.
 
 ## How this tracker works
 

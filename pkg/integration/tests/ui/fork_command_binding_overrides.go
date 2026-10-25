@@ -66,10 +66,13 @@ var ForkCommandBindingOverrides = NewIntegrationTest(NewIntegrationTestArgs{
 		// 2. The empty path list removes the s c checkout route but keeps the
 		// action in the command palette; reset continuations are untouched.
 		commits.Press(config.Keybinding{"s"})
-		t.ExpectPopup().Menu().
-			Title(Equals("s")).
-			ContainsLines(Contains("Hard reset"), Contains("Mixed reset"), Contains("Soft reset"))
-		t.Views().Menu().Content(DoesNotContain("Checkout"))
+		t.ExpectPopup().Menu().Title(Equals("s"))
+		t.Views().Menu().Content(
+			Contains("Hard reset").
+				Contains("Mixed reset").
+				Contains("Soft reset").
+				DoesNotContain("Checkout"),
+		)
 		t.Views().Menu().Press(config.Keybinding{"<esc>"})
 		t.Views().Menu().IsInvisible()
 		commits.IsFocused()

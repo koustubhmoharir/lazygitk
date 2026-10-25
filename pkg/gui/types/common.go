@@ -254,6 +254,7 @@ type CreatePopupPanelOpts struct {
 	AllowEditSuggestion bool
 	AllowEmptyInput     bool
 	PreserveWhitespace  bool
+	HandleTab           func() (handled bool, err error) // Fork: see PromptOpts.HandleTab
 }
 
 type ConfirmOpts struct {
@@ -278,6 +279,10 @@ type PromptOpts struct {
 	HandleClose            func() error
 	HandleDeleteSuggestion func(int) error
 	Mask                   bool
+	// Fork: HandleTab runs first when Tab is pressed in the prompt. It returns
+	// handled false to fall back to moving focus into the suggestions (roadmap
+	// item 14, shell-style completion in the repository path prompt).
+	HandleTab func() (handled bool, err error)
 }
 
 type MenuSection struct {

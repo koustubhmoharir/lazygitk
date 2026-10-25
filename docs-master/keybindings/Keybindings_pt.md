@@ -6,7 +6,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` t r r `` | Mudar para um repositório recente |  |
+| `` s r `` | Mudar para um repositório recente |  |
+| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | Rolar janela principal para cima |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | Rolar a janela principal para baixo |  |
 | `` t l c `` | View command log options | View options for the command log e.g. show/hide the command log and focus the command log. |
@@ -422,7 +423,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` t a c `` | Editar arquivo de configuração | Abrir arquivo no editor externo. |
 | `` t a u `` | Verificar atualização |  |
-| `` t r r `` | Mudar para um repositório recente |  |
+| `` s r `` | Mudar para um repositório recente |  |
 | `` t l n `` | Mostrar/ciclo todos os logs de filiais |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
 | `` v, <space> `` | Focar visualização principal |  |

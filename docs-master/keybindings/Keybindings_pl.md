@@ -6,7 +6,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` t r r `` | Przełącz na ostatnie repozytorium |  |
+| `` s r `` | Przełącz na ostatnie repozytorium |  |
+| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | Przewiń główne okno w górę |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | Przewiń główne okno w dół |  |
 | `` t l c `` | Pokaż opcje dziennika poleceń | Pokaż opcje dla dziennika poleceń, np. pokazywanie/ukrywanie dziennika poleceń i skupienie na dzienniku poleceń. |
@@ -378,7 +379,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` t a c `` | Edytuj plik konfiguracyjny | Otwórz plik w zewnętrznym edytorze. |
 | `` t a u `` | Sprawdź aktualizacje |  |
-| `` t r r `` | Przełącz na ostatnie repozytorium |  |
+| `` s r `` | Przełącz na ostatnie repozytorium |  |
 | `` t l n `` | Show/cycle all branch logs |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
 | `` v, <space> `` | Focus main view |  |

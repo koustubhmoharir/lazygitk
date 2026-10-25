@@ -69,7 +69,7 @@ tasks with the next item's plan in the same completion commit.
 | 11 | Push without a redundant review | Complete | 7 | Small |
 | 12 | One flat copy menu with consistent keys | Complete | 2, 8 | Medium |
 | 13 | Fixed keybindings: key configuration is ignored | Complete | 8, 12 | Medium |
-| 14 | Switch repositories with `s r` and open one by path with `s n` | Planned | 8 | Small–medium |
+| 14 | Switch repositories with `s r` and open one by path with `s n` | Complete | 8 | Small–medium |
 
 ## Fork implementation principles
 
@@ -894,7 +894,8 @@ a user feature.
 
 ## 14. Switch repositories with `s r` and open one by path with `s n`
 
-Planned. With lazygitk kept open in one terminal tab, a freshly cloned
+Complete. Errors are shown as error toasts and the prompt reopens with the
+typed text. Choosing a suggestion with Enter opens that directory directly. With lazygitk kept open in one terminal tab, a freshly cloned
 repository could only be opened by restarting it. User decisions:
 
 - `s r` opens the recent-repositories menu (global), replacing `t r r`.
@@ -956,7 +957,7 @@ they do not validate a completed UI or implementation.
 ## Next design review artifact
 
 The earlier questions are answered under “Agreed direction” and the relevant
-milestones. Item 14 is current; new work after them starts by adding
+milestones. All numbered milestones are complete; new work after them starts by adding
 a reviewed milestone here.
 
 This remains an extensible backlog: add further features with target semantics,

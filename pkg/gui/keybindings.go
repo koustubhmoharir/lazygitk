@@ -90,6 +90,14 @@ func (gui *Gui) GetInitialKeybindings() ([]*types.Binding, []*gocui.ViewMouseBin
 			Description: gui.c.Tr.SwitchRepo,
 		},
 		{
+			// Fork: `s n` opens a repository by path (see fork_open_repo_path.go).
+			ViewName:    "",
+			CommandID:   "repo.open-path",
+			Verb:        "switch-repository",
+			Handler:     opts.Guards.NoPopupPanel(gui.helpers.Repos.OpenRepoPathPrompt),
+			Description: gui.c.Tr.OpenRepoByPath,
+		},
+		{
 			ViewName:    "",
 			Keys:        opts.GetKeys(opts.Config.Universal.ScrollUpMain),
 			CommandID:   "navigation.main.scroll-up",

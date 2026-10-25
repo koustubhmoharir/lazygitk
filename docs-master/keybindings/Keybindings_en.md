@@ -6,7 +6,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` t r r `` | Switch to a recent repo |  |
+| `` s r `` | Switch to a recent repo |  |
+| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | Scroll up main window |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | Scroll down main window |  |
 | `` t l c `` | View command log options | View options for the command log e.g. show/hide the command log and focus the command log. |
@@ -406,7 +407,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` t a c `` | Edit config file | Open file in external editor. |
 | `` t a u `` | Check for update |  |
-| `` t r r `` | Switch to a recent repo |  |
+| `` s r `` | Switch to a recent repo |  |
 | `` t l n `` | Show/cycle all branch logs |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
 | `` v, <space> `` | Focus main view |  |

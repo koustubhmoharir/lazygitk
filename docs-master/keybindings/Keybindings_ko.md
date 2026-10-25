@@ -6,7 +6,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` t r r `` | 최근에 사용한 저장소로 전환 |  |
+| `` s r `` | 최근에 사용한 저장소로 전환 |  |
+| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | 메인 패널을 위로 스크롤 |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | 메인 패널을 아래로로 스크롤 |  |
 | `` t l c `` | 명령어 로그 메뉴 열기 | View options for the command log e.g. show/hide the command log and focus the command log. |
@@ -283,7 +284,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` t a c `` | 설정 파일 수정 | Open file in external editor. |
 | `` t a u `` | 업데이트 확인 |  |
-| `` t r r `` | 최근에 사용한 저장소로 전환 |  |
+| `` s r `` | 최근에 사용한 저장소로 전환 |  |
 | `` t l n `` | Show/cycle all branch logs |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
 | `` v, <space> `` | Focus main view |  |

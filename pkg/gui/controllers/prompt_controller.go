@@ -45,6 +45,14 @@ func (self *PromptController) GetKeybindings(opts types.KeybindingsOpts) []*type
 		{
 			Keys: opts.GetKeys(opts.Config.Universal.TogglePanel),
 			Handler: func() error {
+				// Fork: a prompt may complete its input on Tab (see
+				// types.PromptOpts.HandleTab); otherwise Tab moves to suggestions.
+				if hook := self.context().State.HandleTab; hook != nil {
+					handled, err := hook()
+					if err != nil || handled {
+						return err
+					}
+				}
 				if len(self.c.Contexts().Suggestions.State.Suggestions) > 0 {
 					self.switchToSuggestions()
 				}

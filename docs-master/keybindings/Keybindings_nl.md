@@ -6,7 +6,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` t r r `` | Wissel naar een recente repo |  |
+| `` s r `` | Wissel naar een recente repo |  |
+| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | Scroll naar beneden vanaf hoofdpaneel |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | Scroll naar beneden vanaf hoofdpaneel |  |
 | `` t l c `` | Commandolog opties weergeven | Bekijk commandolog opties, bijv. commandolog tonen/verbergen en focus. |
@@ -406,7 +407,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` t a c `` | Verander config bestand | Open bestand in externe editor. |
 | `` t a u `` | Check voor updates |  |
-| `` t r r `` | Wissel naar een recente repo |  |
+| `` s r `` | Wissel naar een recente repo |  |
 | `` t l n `` | Show/cycle all branch logs |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
 | `` v, <space> `` | Focus main view |  |

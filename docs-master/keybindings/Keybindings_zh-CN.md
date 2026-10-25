@@ -6,7 +6,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` t r r `` | 切换到最近的仓库 |  |
+| `` s r `` | 切换到最近的仓库 |  |
+| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | 向上滚动主面板 |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | 向下滚动主面板 |  |
 | `` t l c `` | 打开命令日志菜单 | 查看命令日志的选项，例如显示/隐藏命令日志以及聚焦命令日志 |
@@ -414,7 +415,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` t a c `` | 编辑配置文件 | 使用外部编辑器打开文件 |
 | `` t a u `` | 检查更新 |  |
-| `` t r r `` | 切换到最近的仓库 |  |
+| `` s r `` | 切换到最近的仓库 |  |
 | `` t l n `` | 显示/循环所有分支日志 |  |
 | `` t l p `` | 显示/循环所有分支日志（反向） |  |
 | `` v, <space> `` | 聚焦主视图 |  |

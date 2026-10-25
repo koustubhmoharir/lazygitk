@@ -6,7 +6,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` t r r `` | Переключиться на последний репозиторий |  |
+| `` s r `` | Переключиться на последний репозиторий |  |
+| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | Прокрутить вверх главную панель |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | Прокрутить вниз главную панель |  |
 | `` t l c `` | Открыть меню журнала команд | View options for the command log e.g. show/hide the command log and focus the command log. |
@@ -379,7 +380,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` t a c `` | Редактировать файл конфигурации | Open file in external editor. |
 | `` t a u `` | Проверить обновления |  |
-| `` t r r `` | Переключиться на последний репозиторий |  |
+| `` s r `` | Переключиться на последний репозиторий |  |
 | `` t l n `` | Show/cycle all branch logs |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
 | `` v, <space> `` | Focus main view |  |

@@ -1279,6 +1279,10 @@ type TranslationSet struct {
 	CommandPaletteScopeGlobal                string
 	ResetCommandUsageCounts                  string
 	ResetCommandUsageCountsPrompt            string
+	OpenRepoByPath                           string
+	RepoPathPrompt                           string
+	ErrRepoPathNotDirectory                  string
+	ErrRepoPathNotGitRepo                    string
 	QuickStartInteractiveRebase              string
 	QuickStartInteractiveRebaseTooltip       string
 	CannotQuickStartInteractiveRebase        string
@@ -2763,6 +2767,10 @@ func EnglishTranslationSet() *TranslationSet {
 		CommandPaletteScopeGlobal:                "global",
 		ResetCommandUsageCounts:                  "Reset command usage counts",
 		ResetCommandUsageCountsPrompt:            "Reset all command usage counts? The ? palette returns to its default order until commands are used again.",
+		OpenRepoByPath:                           "Open repository by path",
+		RepoPathPrompt:                           "Repository path",
+		ErrRepoPathNotDirectory:                  "Not a directory: {{.path}}",
+		ErrRepoPathNotGitRepo:                    "Not a Git repository: {{.path}}",
 		NoCopiedCommits:                          "No copied commits",
 		QuickStartInteractiveRebase:              "Start interactive rebase",
 		QuickStartInteractiveRebaseTooltip:       "Start an interactive rebase for the commits on your branch. This will include all commits from the HEAD commit down to the first merge commit or main branch commit.\nIf you would instead like to start an interactive rebase from the selected commit, press `{{.editKey}}`.",

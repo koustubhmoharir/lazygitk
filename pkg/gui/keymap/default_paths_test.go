@@ -6,6 +6,8 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
+	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDefaultPathsUserRoutes(t *testing.T) {
@@ -148,4 +150,47 @@ func TestDefaultPathsPaletteOnlyCommandsHaveNoPath(t *testing.T) {
 	if paths, ok := DefaultPaths("app.reset-command-usage"); ok || paths != nil {
 		t.Fatalf("palette-only command returned (%v, %t), want (nil, false)", paths, ok)
 	}
+}
+
+// Fork: roadmap item 14. Repository switching is under s, and no other default
+// route uses s r or s n.
+func TestDefaultPathsRepositorySwitchingRoutes(t *testing.T) {
+	for id, want := range map[string]string{"repo.switch-menu": "s r", "repo.open-path": "s n"} {
+		paths, ok := DefaultPaths(id)
+		if !ok || len(paths) != 1 || pathString(paths[0]) != want {
+			t.Errorf("DefaultPaths(%q) = (%v, %t), want exactly %q", id, paths, ok, want)
+		}
+	}
+	for id, paths := range defaultPaths {
+		if id == "repo.switch-menu" || id == "repo.open-path" {
+			continue
+		}
+		for _, path := range paths {
+			if got := pathString(path); got == "s r" || got == "s n" {
+				t.Errorf("%s also uses %q", id, got)
+			}
+		}
+	}
+	for _, id := range []string{"repo.switch-menu", "repo.open-path"} {
+		if paths, _ := DefaultPaths(id); len(paths) > 0 && !strings.HasPrefix(pathString(paths[0]), "s ") {
+			t.Errorf("%s is not under s", id)
+		}
+	}
+	// The t r prefix keeps its worktree and submodule children.
+	if _, ok := DefaultPaths("worktree.switch"); !ok {
+		t.Error("worktree.switch lost its t r w route")
+	}
+}
+
+// Fork: the global s prefix merges with the local s h/s m/s s/s c routes.
+func TestBuildCommandTreeMergesRepositorySwitchingWithLocalSPrefix(t *testing.T) {
+	global := &types.Binding{CommandPaths: [][]gocui.Key{{key('s'), key('r')}, {key('s'), key('n')}}}
+	local := &types.Binding{ViewName: "branches", CommandPaths: [][]gocui.Key{{key('s'), key('h')}, {key('s'), key('c')}}}
+	root := BuildCommandTree([]*types.Binding{global, local}, "branches")
+
+	s := childTree(t, root, key('s'))
+	assert.Equal(t, []*types.Binding{global}, childTree(t, s, key('r')).Bindings)
+	assert.Equal(t, []*types.Binding{global}, childTree(t, s, key('n')).Bindings)
+	assert.Equal(t, []*types.Binding{local}, childTree(t, s, key('h')).Bindings)
+	assert.Equal(t, []*types.Binding{local}, childTree(t, s, key('c')).Bindings)
 }

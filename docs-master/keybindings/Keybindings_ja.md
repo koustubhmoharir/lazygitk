@@ -6,7 +6,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` t r r `` | 最近のリポジトリをチェックアウト |  |
+| `` s r `` | 最近のリポジトリをチェックアウト |  |
+| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | メインウィンドウを上にスクロール |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | メインウィンドウを下にスクロール |  |
 | `` t l c `` | コマンドログオプションを表示 | コマンドログのオプションを表示します（例：コマンドログの表示/非表示、コマンドログへのフォーカスなど）。 |
@@ -221,7 +222,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` t a c `` | 設定ファイルを編集 | 外部エディタでファイルを開きます。 |
 | `` t a u `` | 更新を確認 |  |
-| `` t r r `` | 最近のリポジトリをチェックアウト |  |
+| `` s r `` | 最近のリポジトリをチェックアウト |  |
 | `` t l n `` | ブランチログの表示モードを順に切り替え |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
 | `` v, <space> `` | メインビューにフォーカス |  |

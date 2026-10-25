@@ -14,6 +14,8 @@ type ConfirmationContext struct {
 type ConfirmationContextState struct {
 	OnConfirm func() error
 	OnClose   func() error
+	// Fork: HandleTab is the prompt's Tab hook (see types.PromptOpts.HandleTab).
+	HandleTab func() (bool, error)
 }
 
 var _ types.Context = (*ConfirmationContext)(nil)

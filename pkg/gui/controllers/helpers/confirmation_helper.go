@@ -285,6 +285,7 @@ func (self *ConfirmationHelper) setPromptKeyBindings(cancel goContext.CancelFunc
 
 	self.c.Contexts().Prompt.State.OnConfirm = onConfirm
 	self.c.Contexts().Prompt.State.OnClose = onClose
+	self.c.Contexts().Prompt.State.HandleTab = opts.HandleTab // Fork: see types.PromptOpts.HandleTab
 	self.c.Contexts().Suggestions.State.OnConfirm = onSuggestionConfirm
 	self.c.Contexts().Suggestions.State.OnClose = onClose
 	self.c.Contexts().Suggestions.State.OnDeleteSuggestion = onDeleteSuggestion
@@ -300,6 +301,7 @@ func (self *ConfirmationHelper) clearPromptViewKeyBindings() {
 	noop := func() error { return nil }
 	self.c.Contexts().Prompt.State.OnConfirm = noop
 	self.c.Contexts().Prompt.State.OnClose = noop
+	self.c.Contexts().Prompt.State.HandleTab = nil // Fork: see types.PromptOpts.HandleTab
 	self.c.Contexts().Suggestions.State.OnConfirm = noop
 	self.c.Contexts().Suggestions.State.OnClose = noop
 	self.c.Contexts().Suggestions.State.OnDeleteSuggestion = noop

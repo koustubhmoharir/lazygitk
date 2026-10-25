@@ -6,7 +6,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` t r r `` | 切換到最近使用的版本庫 |  |
+| `` s r `` | 切換到最近使用的版本庫 |  |
+| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | 向上捲動主面板 |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | 向下捲動主面板 |  |
 | `` t l c `` | 開啟命令記錄選單 | 檢視命令日誌的選項，例如顯示/隱藏命令日誌以及聚焦命令日誌。 |
@@ -434,7 +435,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` t a c `` | 編輯設定檔案 | 使用外部編輯器開啟 |
 | `` t a u `` | 檢查更新 |  |
-| `` t r r `` | 切換到最近使用的版本庫 |  |
+| `` s r `` | 切換到最近使用的版本庫 |  |
 | `` t l n `` | 顯示/迴圈所有分支日誌 |  |
 | `` t l p `` | 顯示/迴圈所有分支日誌（反向） |  |
 | `` v, <space> `` | 聚焦主檢視 |  |

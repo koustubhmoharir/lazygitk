@@ -275,3 +275,13 @@ destination. A separate review appears only when setting upstream would
 replace different existing tracking, and for force-with-lease. If the branch
 moved after the menu opened, the menu reopens with fresh details instead of
 pushing.
+
+## Switching repositories
+
+`s r` opens the recent-repositories menu. `s n` opens a repository by path:
+the prompt starts at the current repository's parent directory, the matching
+subdirectories are listed under the input as you type, and Tab completes the
+common part of their names (adding a separator when only one matches). When
+nothing more can be completed, Tab moves into the list. `~` and paths relative
+to the current repository work. A path that is not a directory or not inside a
+Git repository shows an error and reopens the prompt with your text.
