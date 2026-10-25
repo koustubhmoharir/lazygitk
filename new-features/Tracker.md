@@ -1,10 +1,7 @@
 # Current work
 
-Item 12: one flat copy menu with consistent keys. Scope, key table and
-decisions are in [Roadmap.md](Roadmap.md#12-one-flat-copy-menu-with-consistent-keys).
-
-- Regenerate keybinding docs, the keymap snapshot and inventory; update fork
-  docs and the merge guide, and mark the item complete.
+All roadmap items (1–12) are complete. There is no current item. Add and review
+a new milestone in [Roadmap.md](Roadmap.md) before planning tasks here.
 
 ## How this tracker works
 

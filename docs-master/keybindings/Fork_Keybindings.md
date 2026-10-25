@@ -24,7 +24,7 @@ back one level. Menus use physical Up/Down, Enter and Escape for navigation.
 | `c y`, `c x`, `c p` | Mark, unmark, review cherry-pick |
 | `g c` | Review and combine selected commits; edit the combined message |
 | `u u`, `u r` | Undo, redo |
-| `y` | Copy menu |
+| `y` | Copy menu: `y` then a letter for what to copy (see below) |
 | `g l` | Deliberately open pull |
 | `/`, F3, Shift+F3 | Search, next result, previous result |
 | `h`, `l`, numbers | Previous/next pane, numbered pane |
@@ -107,3 +107,22 @@ that have no default shortcut in this fork, including squash/fixup.
 
 The history graph includes all refs by default. Set
 `git.log.showWholeGraph: false` to restrict it explicitly.
+
+## Copy keys
+
+`y` opens one copy menu, and each second key means the same thing in every
+panel that offers it. Commit keys work in Commits, Reflog and Sub-commits, and
+on the commit a selected branch, remote branch or tag points at.
+
+| Keys | Copies |
+| --- | --- |
+| `y n` | Name (branch, tag, submodule, file) |
+| `y p`, `y f` | Relative, absolute file path |
+| `y c` | File content at the commit (commit files) |
+| `y h`, `y i` | Full, abbreviated commit hash |
+| `y s`, `y m`, `y b` | Commit subject, full message, message body |
+| `y u`, `y a`, `y t` | Commit URL, author, tags |
+| `y d` | Diff of the selection: commit, file, or selected diff lines |
+| `y w` | Diff of all working-tree files (Files) |
+| `y r` | Pull request URL (local branches) |
+| `y y` | Confirmation popup text |

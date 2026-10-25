@@ -67,7 +67,7 @@ tasks with the next item's plan in the same completion commit.
 | 9 | Frequency-ordered command palette | Complete | 2; works before or after 8 | Medium |
 | 10 | Separate configuration and state from upstream lazygit | Complete | None | Small |
 | 11 | Push without a redundant review | Complete | 7 | Small |
-| 12 | One flat copy menu with consistent keys | Planned | 2, 8 | Medium |
+| 12 | One flat copy menu with consistent keys | Complete | 2, 8 | Medium |
 
 ## Fork implementation principles
 
@@ -810,7 +810,13 @@ after the menu opened reopens the menu and does not push.
 
 ## 12. One flat copy menu with consistent keys
 
-Planned. `y` opens one flat copy menu. The nested copy menus lose their `y c`
+Complete. Implementation notes: commit files also gained `y c` for the file's
+content at that commit. On branches and tags the tags action checks for tags
+when pressed, since the ref's commit is resolved then. The reflog's existing
+copy binding is the full hash; commits and sub-commits keep theirs as the
+abbreviated hash. The agreed plan:
+
+`y` opens one flat copy menu. The nested copy menus lose their `y c`
 default (they stay reachable from `?`), and each second key means the same
 thing in every panel. No default uses Shift. Anything that points at a commit
 offers the commit options: commits, reflog, sub-commits, local branches,
@@ -880,7 +886,7 @@ they do not validate a completed UI or implementation.
 ## Next design review artifact
 
 The earlier questions are answered under “Agreed direction” and the relevant
-milestones. Item 12 is current; new work after them starts by adding
+milestones. All numbered milestones are complete; new work after them starts by adding
 a reviewed milestone here.
 
 This remains an extensible backlog: add further features with target semantics,

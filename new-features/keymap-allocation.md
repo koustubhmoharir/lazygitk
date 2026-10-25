@@ -113,9 +113,27 @@ line-staging actions can remain independently discoverable in `?`.
 | `g u b` | Bulk submodule operations | `submodule.bulk-menu` |
 | `g z u` | Review reset against upstream | `branch.reset-upstream-menu` |
 | `g z w` | Review whole-working-tree discard/reset | `worktree.discard-menu` |
-| `y i` | Copy selected object's identifier | `clipboard.copy-file-path`, `clipboard.copy-branch-name`, `clipboard.copy-tag-name`, `clipboard.copy-commit-hash`, `clipboard.copy-submodule-name` |
-| `y c` | Copy selected content/attributes, with format choices where offered | `file.copy-menu`, `history-file.copy-menu`, `commit.copy-attribute-menu`, `clipboard.copy-diff-selection`, `clipboard.copy-confirmation` |
-| `y u` | Copy selected branch's pull-request URL | `branch.copy-pull-request-url` |
+| `y n` | Copy the selected object's name | `clipboard.copy-branch-name`, `clipboard.copy-tag-name`, `clipboard.copy-submodule-name`, `clipboard.copy-file-name` |
+| `y p` | Copy relative path | `clipboard.copy-file-path` |
+| `y f` | Copy absolute path | `clipboard.copy-absolute-file-path` |
+| `y c` | Copy file content at the commit | `clipboard.copy-history-file-content` |
+| `y h` | Copy full commit hash | `clipboard.copy-commit-hash` |
+| `y i` | Copy abbreviated commit hash | `clipboard.copy-abbreviated-commit-hash` |
+| `y s` | Copy commit subject | `clipboard.copy-commit-subject` |
+| `y m` | Copy commit message | `clipboard.copy-commit-message` |
+| `y b` | Copy commit message body | `clipboard.copy-commit-body` |
+| `y u` | Copy commit URL | `clipboard.copy-commit-url` |
+| `y a` | Copy commit author | `clipboard.copy-commit-author` |
+| `y t` | Copy tags on the commit | `clipboard.copy-commit-tags` |
+| `y d` | Copy the selection's diff | `clipboard.copy-commit-diff`, `clipboard.copy-working-file-diff`, `clipboard.copy-history-file-diff`, `clipboard.copy-diff-selection` |
+| `y w` | Copy all working-tree files' diff | `clipboard.copy-working-tree-diff` |
+| `y r` | Copy selected branch's pull-request URL | `branch.copy-pull-request-url` |
+| `y y` | Copy confirmation text | `clipboard.copy-confirmation` |
+
+The commit rows apply in commits, reflog and sub-commits, and to the commit a
+selected local branch, remote branch or tag points at. The nested copy menus
+(`file.copy-menu`, `history-file.copy-menu`, `commit.copy-attribute-menu`)
+have no default route; they remain in the palette.
 
 ## View and navigation choices
 
