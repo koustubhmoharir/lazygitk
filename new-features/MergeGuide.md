@@ -512,8 +512,9 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   (`fork_files_inspect.go`)
   via `SwitchToFocusedMainViewController.WithInspect` (attached in `controllers.go`).
   Upstream's focus-only action would leave the default Files inspection key `v`
-  unable to reach conflict resolution, since Enter commits there. Mouse clicks keep
-  the upstream focus-only path. Re-check this seam on upstream merges.
+  unable to reach conflict resolution, since Enter commits there. Mouse clicks and
+  an explicitly configured focus-diff key keep the upstream focus-only path, and
+  the resolve hint then names `file.enter`'s key. Re-check this seam on upstream merges.
 - Fork: `MergeConflictsController.withRenderAndFocus` also queues
   `MergeConflictsHelper.Render`. Closing a prefix menu re-focuses the merge view,
   whose focus handler queues a render of the pre-action content; without a newer
