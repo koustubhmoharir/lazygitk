@@ -37,6 +37,9 @@ stage or unstage all files. In the staged built-in diff, `x` retains upstream's
 immediate unstage behavior, with no confirmation. Text inputs keep normal
 typing and editing controls, including Ctrl+Left/Right word movement. Ctrl
 shortcuts are available for custom commands rather than default core actions.
+The only Ctrl defaults are modal editor controls: the commit description
+submits with Ctrl+S or Ctrl+Enter (Cmd+Enter on macOS), Ctrl+O opens the commit
+editor menu, and Ctrl+O copies a confirmation's text.
 
 Combine supports linear history, including nonadjacent selected commits while
 preserving intervening commits. It refuses merge crossings. The first selected
