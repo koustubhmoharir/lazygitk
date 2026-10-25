@@ -254,5 +254,15 @@ retrying or rolling back earlier deletions. Credential prompts remain usable.
 
 Equivalent invocation paths share an entry with combined shortcut hints.
 Different actions are not merged just because their translated labels match.
-Actions with no shortcut remain executable through `?`. Usage-based ordering
-is a later roadmap milestone, not yet enabled.
+Actions with no shortcut remain executable through `?`. The palette is
+ordered by usage; `gui.commandPaletteOrder: static` restores fixed sections.
+
+## Side-by-side installation
+
+lazygitk uses its own `lazygitk` config and state directories and its own
+per-repo files (`.git/lazygitk.yml`, `.lazygitk.yml`), so it can be installed
+next to upstream lazygit without either one reading the other's settings.
+Nothing is migrated: copy settings from your lazygit `config.yml` yourself if
+you want them. `scripts/build_dist.sh` (or `just dist`) builds portable
+`lazygitk` binaries into `dist/`, and `scripts/build_dist.ps1` does the same
+natively on Windows with PowerShell 7.

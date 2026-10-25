@@ -807,19 +807,15 @@ func findConfigFile(filename string) (exists bool, path string) {
 		return true, filepath.Join(envConfigDir, filename)
 	}
 
-	// look for jesseduffield/lazygit/filename in XDG_CONFIG_HOME and XDG_CONFIG_DIRS
-	legacyConfigPath, err := xdg.SearchConfigFile(filepath.Join("jesseduffield", "lazygit", filename))
-	if err == nil {
-		return true, legacyConfigPath
-	}
-
-	// look for lazygit/filename in XDG_CONFIG_HOME and XDG_CONFIG_DIRS
-	configFilepath, err := xdg.SearchConfigFile(filepath.Join("lazygit", filename))
+	// Fork: look only for lazygitk/filename in XDG_CONFIG_HOME and
+	// XDG_CONFIG_DIRS. This replaces upstream's lazygit/ and legacy
+	// jesseduffield/lazygit/ lookups so the fork never shares files with upstream.
+	configFilepath, err := xdg.SearchConfigFile(filepath.Join(AppDirName, filename))
 	if err == nil {
 		return true, configFilepath
 	}
 
-	return false, filepath.Join(xdg.ConfigHome, "lazygit", filename)
+	return false, filepath.Join(xdg.ConfigHome, AppDirName, filename)
 }
 
 var ConfigFilename = "config.yml"
@@ -832,8 +828,8 @@ func stateFilePath(filename string) (string, error) {
 		return legacyStateFile, nil
 	}
 
-	// looks for XDG_STATE_HOME/lazygit/filename
-	return xdg.StateFile(filepath.Join("lazygit", filename))
+	// looks for XDG_STATE_HOME/lazygitk/filename
+	return xdg.StateFile(filepath.Join(AppDirName, filename))
 }
 
 // SaveAppState marshalls the AppState struct and writes it to the disk

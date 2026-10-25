@@ -13,7 +13,7 @@ var ReloadSidePanels = NewIntegrationTest(NewIntegrationTestArgs{
 	SetupRepo: func(shell *Shell) {
 		shell.CreateNCommits(2)
 		// Start with worktrees promoted to its own panel.
-		shell.CreateFile(".git/lazygit.yml", `
+		shell.CreateFile(".git/lazygitk.yml", `
 gui:
   sidePanels:
     - [status]
@@ -31,7 +31,7 @@ gui:
 
 		// Demote worktrees back into the files panel, then refocus the window to
 		// trigger a live reload of the changed config.
-		t.Shell().UpdateFile(".git/lazygit.yml", `
+		t.Shell().UpdateFile(".git/lazygitk.yml", `
 gui:
   sidePanels:
     - [status]

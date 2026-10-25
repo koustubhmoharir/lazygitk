@@ -18,7 +18,7 @@ var SidePanelsInPerRepoConfig = NewIntegrationTest(NewIntegrationTestArgs{
 	SetupRepo: func(shell *Shell) {
 		shell.CloneNonBare("other")
 		// The other repo swaps the branches and commits panels.
-		shell.CreateFile("../other/.git/lazygit.yml", `
+		shell.CreateFile("../other/.git/lazygitk.yml", `
 gui:
   sidePanels:
     - [status]

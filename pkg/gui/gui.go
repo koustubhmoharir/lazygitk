@@ -505,8 +505,10 @@ func (gui *Gui) getPerRepoConfigFiles() []*config.ConfigFile {
 	repoConfigFiles := []*config.ConfigFile{
 		// TODO: add filepath.Join(gui.git.RepoPaths.RepoPath(), ".lazygit.yml"),
 		// with trust prompt
+		// Fork: these replace upstream's lazygit.yml and .lazygit.yml so the
+		// fork does not read upstream's per-repo config files.
 		{
-			Path:   filepath.Join(gui.git.RepoPaths.RepoGitDirPath(), "lazygit.yml"),
+			Path:   filepath.Join(gui.git.RepoPaths.RepoGitDirPath(), config.RepoConfigFileName),
 			Policy: config.ConfigFilePolicySkipIfMissing,
 		},
 	}
@@ -515,7 +517,7 @@ func (gui *Gui) getPerRepoConfigFiles() []*config.ConfigFile {
 	dir := filepath.Dir(prevDir)
 	for dir != prevDir {
 		repoConfigFiles = utils.Prepend(repoConfigFiles, &config.ConfigFile{
-			Path:   filepath.Join(dir, ".lazygit.yml"),
+			Path:   filepath.Join(dir, "."+config.RepoConfigFileName),
 			Policy: config.ConfigFilePolicySkipIfMissing,
 		})
 		prevDir = dir

@@ -39,8 +39,19 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
 - Treat root `AGENTS.md` as fork-owned. Review upstream guidance changes for
   relevant technical constraints and incorporate them deliberately while
   retaining this fork's concise workflow and usability principles.
+- Separate config and state (roadmap item 10): `pkg/config/fork_config_dir.go`
+  owns the `lazygitk` directory and per-repo file names. Integration points:
+  `findConfigFile` and `stateFilePath` in `pkg/config/app_config.go` (upstream's
+  `lazygit/` and legacy `jesseduffield/lazygit/` lookups are deliberately
+  removed) and `getPerRepoConfigFiles` in `pkg/gui/gui.go`. When merging, keep
+  any new upstream config/state path logic on `AppDirName`, and re-point new
+  upstream per-repo scenarios that write `lazygit.yml` at `lazygitk.yml`
+  (currently `config/custom_commands_in_per_repo_config`,
+  `config/side_panels_in_per_repo_config`, `ui/reload_side_panels`).
+  `CONFIG_DIR`, `LG_CONFIG_FILE` and the `lazygit-<uid>` temp directory are
+  unchanged.
 - Portable builds: `scripts/build_dist.sh` and `scripts/build_dist.ps1` are
-  fork-owned. The only upstream-file touches are the `dist` recipe in
+  fork-owned and name binaries `lazygitk`. The only upstream-file touches are the `dist` recipe in
   `justfile` and `/dist/` in `.gitignore`; keep both when resolving conflicts.
   The scripts set `buildSource=forkDist`, so upstream's self-updater (which
   needs `buildBinary`) never replaces a fork build with upstream lazygit.

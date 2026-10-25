@@ -30,7 +30,7 @@ var CustomCommandsInPerRepoConfig = NewIntegrationTest(NewIntegrationTestArgs{
 	},
 	SetupRepo: func(shell *Shell) {
 		shell.CloneNonBare("other")
-		shell.CreateFile("../other/.git/lazygit.yml", `
+		shell.CreateFile("../other/.git/lazygitk.yml", `
 customCommands:
   - key: Y
     context: global

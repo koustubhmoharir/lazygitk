@@ -1,22 +1,22 @@
 # User Config
 
+lazygitk keeps its files apart from upstream lazygit, so both can be installed
+side by side. It never reads upstream's `lazygit` directories, and it copies
+nothing from them.
+
 Default path for the global config file:
 
-- Linux: `~/.config/lazygit/config.yml`
-- MacOS: `~/Library/Application\ Support/lazygit/config.yml`
-- Windows: `%LOCALAPPDATA%\lazygit\config.yml` (default location, but it will also be found in `%APPDATA%\lazygit\config.yml`
+- Linux: `~/.config/lazygitk/config.yml`
+- MacOS: `~/Library/Application\ Support/lazygitk/config.yml`
+- Windows: `%LOCALAPPDATA%\lazygitk\config.yml` (default location, but it will also be found in `%APPDATA%\lazygitk\config.yml`)
 
-For old installations (slightly embarrassing: I didn't realise at the time that you didn't need to supply a vendor name to the path so I just used my name):
-
-- Linux: `~/.config/jesseduffield/lazygit/config.yml`
-- MacOS: `~/Library/Application\ Support/jesseduffield/lazygit/config.yml`
-- Windows: `%APPDATA%\jesseduffield\lazygit\config.yml`
+State files (`state.yml` and `command_usage.json`) live in `~/.local/state/lazygitk/` on Linux and beside `config.yml` elsewhere. Run `lazygitk --print-config-dir` to see the directory in use. Setting `CONFIG_DIR` (or passing `--use-config-dir`) moves both config and state; `LG_CONFIG_FILE` names config files directly.
 
 If you want to change the config directory:
 
 - MacOS: `export XDG_CONFIG_HOME="$HOME/.config"`
 
-In addition to the global config file you can create repo-specific config files in `<repo>/.git/lazygit.yml`. Settings in these files override settings in the global config file. In addition, files called `.lazygit.yml` in any of the parent directories of a repo will also be loaded; this can be useful if you have settings that you want to apply to a group of repositories.
+In addition to the global config file you can create repo-specific config files in `<repo>/.git/lazygitk.yml`. Settings in these files override settings in the global config file. In addition, files called `.lazygitk.yml` in any of the parent directories of a repo will also be loaded; this can be useful if you have settings that you want to apply to a group of repositories. Upstream's `lazygit.yml` and `.lazygit.yml` files are not read.
 
 JSON schema is available for `config.yml` so that IntelliSense in Visual Studio Code (completion and error checking) is automatically enabled when the [YAML Red Hat][yaml] extension is installed. However, note that automatic schema detection only works if your config file is in one of the standard paths mentioned above. If you override the path to the file, you can still make IntelliSense work by adding
 
