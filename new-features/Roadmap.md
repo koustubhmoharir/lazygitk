@@ -1079,6 +1079,26 @@ Acceptance: `f` in Files, Branches, Commits, Stash, Status and a focused diff
 fetches the repository; `f` in Remotes fetches only the selected remote; the
 palette lists one repository fetch; generated key docs show `f` as global.
 
+## 20. Push a new branch to the only remote without prompting
+
+A branch with no push remote or upstream (`%(push:remotename)` is empty)
+opened the remote prompt when the user chose **Push this branch**, even when
+the repository has a single remote. User decision:
+
+- When Git reports no push remote and exactly one remote is configured, the
+  push menu starts with that remote. The menu summary names it, and
+  **Push this branch** pushes without a prompt. **Choose remote** still lets
+  the user type another one.
+- With no remotes or several, the prompt is unchanged. A push remote that
+  Git reports as a URL keeps its "named remote required" prompt: the user
+  configured that URL, so the fork does not substitute a remote for it.
+- The remote list is read with the branch's sync information, so the default
+  reflects the repository at the time the flow opens, not a stale model.
+
+Acceptance: in a repository with one remote, pushing a new branch reaches that
+remote with one menu choice and no prompt; with two remotes the prompt still
+opens; force-with-lease on a new branch uses the single remote too.
+
 ## Verification and repository workflow
 
 During implementation use narrow package tests and named integration scenarios
