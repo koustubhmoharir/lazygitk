@@ -640,6 +640,7 @@ var tests = []*components.IntegrationTest{
 	sync.ForcePushMultipleUpstream,
 	sync.ForcePushRemoteBranchNotStoredLocally,
 	sync.ForcePushTriangular,
+	sync.ForkFetchFromAnyPane,
 	sync.Pull,
 	sync.PullAndSetUpstream,
 	sync.PullCurrentBranchReview,

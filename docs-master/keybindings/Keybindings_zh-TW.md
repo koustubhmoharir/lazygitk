@@ -18,6 +18,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d + `` | 增加差異檢視中顯示變更周圍上下文的大小 | 增加差異檢視中變更周圍顯示的上下文量。<br><br>預設值可在設定檔中透過鍵 'git.diffContextSize' 更改。 |
 | `` t d - `` | 減小差異檢視中顯示變更周圍上下文的大小 | 減少差異檢視中變更周圍顯示的上下文量。<br><br>預設值可在設定檔中透過鍵 'git.diffContextSize' 更改。 |
 | `` c p `` | 揀選 (Cherry-pick) |  |
+| `` f `` | 擷取 | 同步遠端異動 |
 | `` : `` | 執行 Shell 命令 | 調出可輸入shell命令執行的提示符。 |
 | `` g h o `` | 檢視自訂補丁選項 |  |
 | `` g o `` | 查看合併/變基選項 | 檢視目前合併或變基的中止、繼續、跳過選項。 |
@@ -389,7 +390,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g z w `` | 重設 | 檢視工作樹的重置選項（例如：清除工作樹）。 |
 | `` t t t `` | 顯示檔案樹狀視圖 | 在平面佈局和樹佈局之間切換檔案檢視。平面佈局在單個列表中顯示所有檔案路徑，樹佈局按目錄分組檔案。<br><br>可以在設定檔中使用 'gui.showFileTree' 鍵更改預設設定。 |
 | `` t d e `` | 開啟外部差異工具 (git difftool) |  |
-| `` f `` | 擷取 | 同步遠端異動 |
 | `` t t c `` | 摺疊全部檔案 | 摺疊檔案樹中的全部目錄 |
 | `` t t e `` | 展開全部檔案 | 展開檔案樹中的全部目錄 |
 | `` y n `` | Copy file name |  |

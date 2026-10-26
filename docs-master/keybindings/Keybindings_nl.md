@@ -18,6 +18,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d + `` | Increase diff context size | Increase the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
 | `` t d - `` | Decrease diff context size | Decrease the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
 | `` c p `` | Cherry-Pick |  |
+| `` f `` | Fetch | Fetch changes from remote. |
 | `` : `` | Voer shellcommando uit | Bring up a prompt where you can enter a shell command to execute. |
 | `` g h o `` | Bekijk aangepaste patch opties |  |
 | `` g o `` | Bekijk merge/rebase opties | Toon abort/continue/skip opties voor huidige merge/rebase. |
@@ -87,7 +88,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g z w `` | Resetten | View reset options for working tree (e.g. nuking the working tree). |
 | `` t t t `` | Toggle bestandsboom weergave | Toggle file view between flat and tree layout. Flat layout shows all file paths in a single list, tree layout groups files by directory.<br><br>The default can be changed in the config file with the key 'gui.showFileTree'. |
 | `` t d e `` | Open externe diff applicatie (git difftool) |  |
-| `` f `` | Fetch | Fetch changes from remote. |
 | `` t t c `` | Collapse all files | Collapse all directories in the files tree |
 | `` t t e `` | Vouw alle bestanden uit | Vouw alle mappen in de bestandsstructuur uit |
 | `` y n `` | Copy file name |  |

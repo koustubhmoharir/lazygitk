@@ -1,12 +1,12 @@
 # Current work
 
-Item 19: `f` fetches from every pane.
-Scope and decisions are in [Roadmap.md](Roadmap.md#19-f-fetches-from-every-pane).
+Item 20: push a new branch to the only remote without prompting.
+Scope and decisions are in [Roadmap.md](Roadmap.md#20-push-a-new-branch-to-the-only-remote-without-prompting).
 
-- Global fork binding for `repo.fetch` replacing the Files-only one, with
-  Remotes keeping `remote.fetch`; unit tests.
-- Integration scenario for the acceptance cases under real defaults.
-- Docs, generated key docs, merge guide; mark the item complete.
+- Read the remote list with the branch sync information and default the push
+  flow's remote when Git reports none and exactly one exists; unit tests.
+- Integration scenarios for one and two remotes, and force-with-lease.
+- Docs, merge guide if a seam changes; mark the item complete.
 
 ## How this tracker works
 

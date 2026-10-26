@@ -18,6 +18,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d + `` | 扩大差异视图中显示的上下文范围 | 增加差异视图中变更周围显示的上下文量。<br><br>默认值可在配置文件中通过键 'git.diffContextSize' 更改。 |
 | `` t d - `` | 缩小差异视图中显示的上下文范围 | 减少差异视图中变更周围显示的上下文量。<br><br>默认值可在配置文件中通过键 'git.diffContextSize' 更改。 |
 | `` c p `` | 拣选(Cherry-Pick) |  |
+| `` f `` | 抓取 | 从远程获取变更 |
 | `` : `` | 执行 Shell 命令 | 调出可输入shell命令执行的提示符。 |
 | `` g h o `` | 查看自定义补丁选项 |  |
 | `` g o `` | 查看合并/变基选项 | 查看当前合并或变基的中止、继续、跳过选项 |
@@ -262,7 +263,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g z w `` | 重置 | 查看工作树的重置选项（例如：清除工作树）。 |
 | `` t t t `` | 切换文件树视图 | 在平面布局和树布局之间切换文件视图。平面布局在单个列表中显示所有文件路径，树布局按目录分组文件。<br><br>可以在配置文件中使用 'gui.showFileTree' 键更改默认设置。 |
 | `` t d e `` | 使用外部差异比较工具(git difftool) |  |
-| `` f `` | 抓取 | 从远程获取变更 |
 | `` t t c `` | 折叠全部文件 | 折叠文件树中的全部目录 |
 | `` t t e `` | 展开全部文件 | 展开文件树中的全部目录 |
 | `` y n `` | Copy file name |  |

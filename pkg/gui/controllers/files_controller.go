@@ -238,14 +238,7 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 			OpensMenu:         true,
 			DisplayOnScreen:   true,
 		},
-		{
-			Keys:        opts.GetKeys(opts.Config.Files.Fetch),
-			CommandID:   "repo.fetch",
-			Verb:        "fetch",
-			Handler:     self.fetch,
-			Description: self.c.Tr.Fetch,
-			Tooltip:     self.c.Tr.FetchTooltip,
-		},
+		// Fork: repo.fetch is a global binding (fork_fetch.go), roadmap item 19.
 		{
 			Keys:              opts.GetKeys(opts.Config.Files.CollapseAll),
 			CommandID:         "ui.file-tree.collapse-all",
@@ -1772,20 +1765,6 @@ func (self *FilesController) handleStashSave(stashFunc func(message string) erro
 
 func (self *FilesController) onClickMain(opts gocui.ViewMouseBindingOpts) error {
 	return self.enterFile(opts.Y)
-}
-
-func (self *FilesController) fetch() error {
-	fetchGeneration := self.c.State().GetRepoGeneration()
-	return self.c.WithWaitingStatus(self.c.Tr.FetchingStatus, func(task gocui.Task) error {
-		self.c.LogAction("Fetch")
-		err := self.c.Git().Sync.Fetch(task)
-
-		if err != nil && strings.Contains(err.Error(), "exit status 128") {
-			return errors.New(self.c.Tr.PassUnameWrong)
-		}
-
-		return self.c.Helpers().BranchesHelper.PostFetchRefresh(err, false, fetchGeneration)
-	})
 }
 
 // Couldn't think of a better term than 'normalised'. Alas.

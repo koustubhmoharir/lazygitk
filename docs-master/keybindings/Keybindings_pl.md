@@ -18,6 +18,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d + `` | Zwiększ rozmiar kontekstu w widoku różnic | Increase the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
 | `` t d - `` | Zmniejsz rozmiar kontekstu w widoku różnic | Decrease the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
 | `` c p `` | Cherry-pick |  |
+| `` f `` | Pobierz | Pobierz zmiany ze zdalnego serwera. |
 | `` : `` | Wykonaj polecenie w powłoce | Bring up a prompt where you can enter a shell command to execute. |
 | `` g h o `` | Wyświetl opcje niestandardowej łatki |  |
 | `` g o `` | Pokaż opcje scalania/rebase | Pokaż opcje do przerwania/kontynuowania/pominięcia bieżącego scalania/rebase. |
@@ -314,7 +315,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g z w `` | Reset | Wyświetl opcje resetu dla drzewa roboczego (np. zniszczenie drzewa roboczego). |
 | `` t t t `` | Przełącz widok drzewa plików | Toggle file view between flat and tree layout. Flat layout shows all file paths in a single list, tree layout groups files by directory.<br><br>The default can be changed in the config file with the key 'gui.showFileTree'. |
 | `` t d e `` | Otwórz zewnętrzne narzędzie różnic (git difftool) |  |
-| `` f `` | Pobierz | Pobierz zmiany ze zdalnego serwera. |
 | `` t t c `` | Collapse all files | Collapse all directories in the files tree |
 | `` t t e `` | Expand all files | Expand all directories in the file tree |
 | `` y n `` | Copy file name |  |

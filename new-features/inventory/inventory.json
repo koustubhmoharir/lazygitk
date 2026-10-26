@@ -2453,21 +2453,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 241,
-      "owner": "FilesController.GetKeybindings",
-      "fields": {
-        "CommandID": "\"repo.fetch\"",
-        "Description": "self.c.Tr.Fetch",
-        "Handler": "self.fetch",
-        "Keys": "opts.GetKeys(opts.Config.Files.Fetch)",
-        "Verb": "\"fetch\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "Binding",
-      "file": "pkg/gui/controllers/files_controller.go",
-      "line": 249,
+      "line": 242,
       "owner": "FilesController.GetKeybindings",
       "fields": {
         "CommandID": "\"ui.file-tree.collapse-all\"",
@@ -2482,7 +2468,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 258,
+      "line": 251,
       "owner": "FilesController.GetKeybindings",
       "fields": {
         "CommandID": "\"ui.file-tree.expand-all\"",
@@ -2497,7 +2483,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 990,
+      "line": 983,
       "owner": "FilesController.openFileConflictMenu",
       "fields": {
         "CommandID": "\"conflict.keep-file\"",
@@ -2511,7 +2497,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 999,
+      "line": 992,
       "owner": "FilesController.openFileConflictMenu",
       "fields": {
         "CommandID": "\"conflict.delete-file\"",
@@ -2525,7 +2511,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1064,
+      "line": 1057,
       "owner": "FilesController.openSubmoduleConflictMenu",
       "fields": {
         "CommandID": "\"conflict.submodule.take-current\"",
@@ -2539,7 +2525,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1071,
+      "line": 1064,
       "owner": "FilesController.openSubmoduleConflictMenu",
       "fields": {
         "CommandID": "\"conflict.submodule.take-incoming\"",
@@ -2553,7 +2539,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1234,
+      "line": 1227,
       "owner": "FilesController.ignoreOrExcludeMenu",
       "fields": {
         "CommandID": "\"file.ignore\"",
@@ -2567,7 +2553,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1246,
+      "line": 1239,
       "owner": "FilesController.ignoreOrExcludeMenu",
       "fields": {
         "CommandID": "\"file.exclude\"",
@@ -2581,7 +2567,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1284,
+      "line": 1277,
       "owner": "FilesController.handleAmendCommitPress",
       "fields": {
         "CommandID": "\"menu.cancel\"",
@@ -2595,7 +2581,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1292,
+      "line": 1285,
       "owner": "FilesController.handleAmendCommitPress",
       "fields": {
         "CommandID": "\"operation.continue\"",
@@ -2609,7 +2595,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1300,
+      "line": 1293,
       "owner": "FilesController.handleAmendCommitPress",
       "fields": {
         "CommandID": "\"commit.amend-head\"",
@@ -2623,7 +2609,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1341,
+      "line": 1334,
       "owner": "FilesController.handleStatusFilterPressed",
       "fields": {
         "CommandID": "\"file.filter-staged\"",
@@ -2637,7 +2623,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1351,
+      "line": 1344,
       "owner": "FilesController.handleStatusFilterPressed",
       "fields": {
         "CommandID": "\"file.filter-unstaged\"",
@@ -2651,7 +2637,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1361,
+      "line": 1354,
       "owner": "FilesController.handleStatusFilterPressed",
       "fields": {
         "CommandID": "\"file.filter-tracked\"",
@@ -2665,7 +2651,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1371,
+      "line": 1364,
       "owner": "FilesController.handleStatusFilterPressed",
       "fields": {
         "CommandID": "\"file.filter-untracked\"",
@@ -2679,7 +2665,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1381,
+      "line": 1374,
       "owner": "FilesController.handleStatusFilterPressed",
       "fields": {
         "CommandID": "\"file.clear-status-filter\"",
@@ -2693,7 +2679,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1490,
+      "line": 1483,
       "owner": "FilesController.createStashMenu",
       "fields": {
         "CommandID": "\"stash.create\"",
@@ -2707,7 +2693,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1502,
+      "line": 1495,
       "owner": "FilesController.createStashMenu",
       "fields": {
         "CommandID": "\"stash.create-keep-index\"",
@@ -2721,7 +2707,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1515,
+      "line": 1508,
       "owner": "FilesController.createStashMenu",
       "fields": {
         "CommandID": "\"stash.create-include-untracked\"",
@@ -2735,7 +2721,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1524,
+      "line": 1517,
       "owner": "FilesController.createStashMenu",
       "fields": {
         "CommandID": "\"stash.create-staged\"",
@@ -2749,7 +2735,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1537,
+      "line": 1530,
       "owner": "FilesController.createStashMenu",
       "fields": {
         "CommandID": "\"stash.create-unstaged\"",
@@ -2763,7 +2749,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1589,
+      "line": 1582,
       "owner": "FilesController.copyMenuItems",
       "fields": {
         "CommandID": "\"clipboard.copy-file-name\"",
@@ -2778,7 +2764,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1603,
+      "line": 1596,
       "owner": "FilesController.copyMenuItems",
       "fields": {
         "CommandID": "\"clipboard.copy-file-path\"",
@@ -2793,7 +2779,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1617,
+      "line": 1610,
       "owner": "FilesController.copyMenuItems",
       "fields": {
         "CommandID": "\"clipboard.copy-absolute-file-path\"",
@@ -2808,7 +2794,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1635,
+      "line": 1628,
       "owner": "FilesController.copyMenuItems",
       "fields": {
         "CommandID": "\"clipboard.copy-working-file-diff\"",
@@ -2823,7 +2809,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1663,
+      "line": 1656,
       "owner": "FilesController.copyMenuItems",
       "fields": {
         "CommandID": "\"clipboard.copy-working-tree-diff\"",
@@ -2838,7 +2824,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1986,
+      "line": 1965,
       "owner": "FilesController.remove",
       "fields": {
         "CommandID": "\"submodule.stash-and-reset\"",
@@ -2852,7 +2838,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 2006,
+      "line": 1985,
       "owner": "FilesController.remove",
       "fields": {
         "CommandID": "\"file.discard-all-changes\"",
@@ -2866,7 +2852,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 2036,
+      "line": 2015,
       "owner": "FilesController.remove",
       "fields": {
         "CommandID": "\"file.discard-unstaged-changes\"",
@@ -3243,6 +3229,20 @@
     },
     {
       "kind": "Binding",
+      "file": "pkg/gui/controllers/fork_fetch.go",
+      "line": 15,
+      "owner": "forkFetchBinding",
+      "fields": {
+        "CommandID": "\"repo.fetch\"",
+        "Description": "c.Tr.Fetch",
+        "Handler": "func() error { return forkFetch(c) }",
+        "Keys": "opts.GetKeys(opts.Config.Files.Fetch)",
+        "Verb": "\"fetch\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "Binding",
       "file": "pkg/gui/controllers/fork_menu_item_bindings.go",
       "line": 24,
       "owner": "flatMenuItemBindings",
@@ -3343,7 +3343,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 31,
+      "line": 33,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"app.shell-command\"",
@@ -3358,7 +3358,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 40,
+      "line": 42,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"patch.options-menu\"",
@@ -3373,7 +3373,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 48,
+      "line": 50,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.merge-rebase-menu\"",
@@ -3389,7 +3389,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 58,
+      "line": 60,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"app.refresh\"",
@@ -3403,7 +3403,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 66,
+      "line": 68,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"ui.screen.next-mode\"",
@@ -3417,7 +3417,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 73,
+      "line": 75,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"ui.screen.previous-mode\"",
@@ -3431,7 +3431,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 80,
+      "line": 82,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.renderer.next\"",
@@ -3446,7 +3446,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 89,
+      "line": 91,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.renderer.previous\"",
@@ -3461,7 +3461,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 98,
+      "line": 100,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.jump-to-file-menu\"",
@@ -3476,7 +3476,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 108,
+      "line": 110,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"app.cancel\"",
@@ -3492,7 +3492,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 118,
+      "line": 120,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"app.command-palette\"",
@@ -3510,7 +3510,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 130,
+      "line": 132,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"filter.options-menu\"",
@@ -3526,7 +3526,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 140,
+      "line": 142,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.options-menu\"",
@@ -3541,7 +3541,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 149,
+      "line": 151,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"app.quit\"",
@@ -3555,7 +3555,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 156,
+      "line": 158,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"app.quit-without-cd\"",
@@ -3568,7 +3568,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 162,
+      "line": 164,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"app.suspend\"",
@@ -3583,7 +3583,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 177,
+      "line": 179,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.toggle-whitespace\"",
@@ -3597,7 +3597,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 185,
+      "line": 187,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"config.edit-menu\"",
@@ -10838,7 +10838,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 391,
+      "line": 384,
       "owner": "FilesController.nestedRepositoryDescription",
       "fields": {
         "key": "file.IsWorktree"
@@ -10847,7 +10847,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 393,
+      "line": 386,
       "owner": "FilesController.nestedRepositoryDescription",
       "fields": {
         "key": "file.DirectoryKind == models.RemovedSubmodule"
@@ -10856,7 +10856,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 948,
+      "line": 941,
       "owner": "FilesController.canStageAll",
       "fields": {
         "key": "stageAllVisibleFiles"
@@ -10865,7 +10865,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 950,
+      "line": 943,
       "owner": "FilesController.canStageAll",
       "fields": {
         "key": "stageAllTrackedFiles"
@@ -10874,7 +10874,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1010,
+      "line": 1003,
       "owner": "FilesController.openFileConflictMenu",
       "fields": {
         "key": "\"DD\""
@@ -10883,7 +10883,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1014,
+      "line": 1007,
       "owner": "FilesController.openFileConflictMenu",
       "fields": {
         "key": "\"DU\""
@@ -10892,7 +10892,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1014,
+      "line": 1007,
       "owner": "FilesController.openFileConflictMenu",
       "fields": {
         "key": "\"UD\""
@@ -10901,7 +10901,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1018,
+      "line": 1011,
       "owner": "FilesController.openFileConflictMenu",
       "fields": {
         "key": "\"UA\""
@@ -10910,7 +10910,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1018,
+      "line": 1011,
       "owner": "FilesController.openFileConflictMenu",
       "fields": {
         "key": "\"AU\""
@@ -10919,7 +10919,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1130,
+      "line": 1123,
       "owner": "FilesController.toggleStagedAllWithLock",
       "fields": {
         "key": "stageAllVisibleFiles"
@@ -10928,7 +10928,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1137,
+      "line": 1130,
       "owner": "FilesController.toggleStagedAllWithLock",
       "fields": {
         "key": "stageAllTrackedFiles"
@@ -10937,7 +10937,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1397,
+      "line": 1390,
       "owner": "FilesController.filteringLabel",
       "fields": {
         "key": "filetree.DisplayAll"
@@ -10946,7 +10946,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1399,
+      "line": 1392,
       "owner": "FilesController.filteringLabel",
       "fields": {
         "key": "filetree.DisplayStaged"
@@ -10955,7 +10955,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1401,
+      "line": 1394,
       "owner": "FilesController.filteringLabel",
       "fields": {
         "key": "filetree.DisplayUnstaged"
@@ -10964,7 +10964,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1403,
+      "line": 1396,
       "owner": "FilesController.filteringLabel",
       "fields": {
         "key": "filetree.DisplayTracked"
@@ -10973,7 +10973,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1405,
+      "line": 1398,
       "owner": "FilesController.filteringLabel",
       "fields": {
         "key": "filetree.DisplayUntracked"
@@ -10982,7 +10982,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1407,
+      "line": 1400,
       "owner": "FilesController.filteringLabel",
       "fields": {
         "key": "filetree.DisplayConflicted"

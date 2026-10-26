@@ -18,6 +18,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d + `` | Increase diff context size | Increase the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
 | `` t d - `` | Decrease diff context size | Decrease the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
 | `` c p `` | cherry-pick |  |
+| `` f `` | Buscar | Buscar alterações do controle remoto. |
 | `` : `` | Executar comando da shell | Traga um prompt onde você pode digitar um comando shell para executar. |
 | `` g h o `` | Ver opções de patch personalizadas |  |
 | `` g o `` | Ver opções de mesclar/rebase | Ver opções para abortar/continuar/pular o merge/rebase atual. |
@@ -87,7 +88,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g z w `` | Restaurar | Opções de redefinição de exibição para árvore de trabalho (por exemplo, nukando a árvore de trabalho). |
 | `` t t t `` | Alternar exibição de árvore de arquivo | Toggle file view between flat and tree layout. Flat layout shows all file paths in a single list, tree layout groups files by directory.<br><br>The default can be changed in the config file with the key 'gui.showFileTree'. |
 | `` t d e `` | Abrir ferramenta de diff externa (git difftool) |  |
-| `` f `` | Buscar | Buscar alterações do controle remoto. |
 | `` t t c `` | Recolher todos os arquivos | Recolher todos os diretórios na árvore de arquivos |
 | `` t t e `` | Expandir todos os arquivos | Expandir todos os diretórios na árvore do arquivo |
 | `` y n `` | Copy file name |  |

@@ -18,6 +18,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d + `` | 差分コンテキストサイズを増やす | Increase the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
 | `` t d - `` | 差分コンテキストサイズを減らす | Decrease the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
 | `` c p `` | チェリーピック |  |
+| `` f `` | フェッチ | リモートから変更をフェッチします。 |
 | `` : `` | シェルコマンドを実行 | 実行するシェルコマンドを入力するプロンプトを表示します。 |
 | `` g h o `` | カスタムパッチオプションを表示 |  |
 | `` g o `` | マージ/リベースオプションを表示 | 現在のマージ/リベースを中止/継続/スキップするオプションを表示します。 |
@@ -301,7 +302,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g z w `` | リセット | 作業ツリーのリセットオプション（例：作業ツリーの完全破棄）を表示します。 |
 | `` t t t `` | ファイルツリービューを切り替え | ファイル表示をフラット表示とツリー表示で切り替えます。フラット表示はすべてのファイルパスを一覧で表示し、ツリー表示はディレクトリごとにファイルをグループ化します。<br><br>デフォルトは設定ファイル内の 'gui.showFileTree' キーで変更できます。 |
 | `` t d e `` | 外部差分ツールを開く（git difftool） |  |
-| `` f `` | フェッチ | リモートから変更をフェッチします。 |
 | `` t t c `` | すべてのファイルを折りたたむ | ファイルツリー内のすべてのディレクトリを折りたたみます |
 | `` t t e `` | すべてのファイルを展開 | ファイルツリー内のすべてのディレクトリを展開します |
 | `` y n `` | Copy file name |  |

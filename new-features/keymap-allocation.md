@@ -26,7 +26,7 @@ diff. Dialogs, search and editors retain normal Enter/input behavior.
 | `d s` | Files only: diff selected working file/directory with the index (staged version) | `diff.working-file.staged`; no sticky diff mode |
 | `d c` | Diff selected historical commit/file, or Files working file/directory, with a commit whose partial/full hash the user pastes (Files: pasted commit is the left side) | New hash-input comparison actions; capture selection before prompting; `diff.working-file.selected-commit` in Files |
 | `p` | Push selected tag/local branch, or labeled current branch | `tag.push`, `branch.push-current`, `branch.push-selected` |
-| `f` | Fetch selected remote, or explicitly repository-wide | `remote.fetch`, `repo.fetch` |
+| `f` | Fetch the repository from every pane (all remotes); in Remotes, fetch the selected remote | `repo.fetch` (global), `remote.fetch` (Remotes) |
 | F2 | Rename/reword selected object where supported | `branch.rename`, `stash.rename`, `commit.reword` |
 | `e` | Edit selected content | `file.edit`, `file.edit-line`, `commit.edit`, `remote.edit-url`, `submodule.edit-url` |
 | `o` | Open selected object externally | `file.open`, `worktree.open-editor`, `commit.open-browser` |

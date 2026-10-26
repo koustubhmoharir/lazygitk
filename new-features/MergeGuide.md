@@ -1901,6 +1901,20 @@ that all headless categories or the minimum-Git/cross-platform matrix ran.
   These are Linux/Git 2.51.1 checks, not a new full-suite, minimum-Git or
   cross-platform/ref-storage matrix.
 
+### Global repository fetch (item 19)
+
+- `controllers/fork_fetch.go` provides `forkFetchBinding`, the global
+  `repo.fetch` route on `f`, registered in `GlobalController.GetKeybindings`
+  beside the other fork globals. Its handler is the upstream Files fetch body,
+  moved unchanged, so refresh, waiting status and error messages are the same.
+- Integration point in upstream: `FilesController.GetKeybindings` no longer
+  declares `repo.fetch`, and `FilesController.fetch` is removed. Re-apply that
+  removal on upstream merges, or `repo.fetch` is registered twice.
+- Remotes keeps `f` for `remote.fetch` as a view-local binding, which wins over
+  the global route. Projection and key-label checks cover this in
+  `fork_fetch_test.go`; the default `f` routes are `remote.fetch repo.fetch`.
+- Verified with `sync/fork_fetch_from_any_pane`.
+
 ## Reviewing an upstream merge
 
 1. Record the upstream commit being integrated and review changes around all

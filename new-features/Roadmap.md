@@ -1068,6 +1068,8 @@ worktree; `t r` does nothing; generated key docs list the new routes.
 
 ## 19. `f` fetches from every pane
 
+Complete. Scenario `sync/fork_fetch_from_any_pane` covers the acceptance cases.
+
 Repository-wide fetch (`repo.fetch`) was bound only in Files, so `f` did
 nothing in most panes even though `p` pushes from any pane. User decision:
 

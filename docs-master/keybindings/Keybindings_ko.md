@@ -18,6 +18,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d + `` | Diff 보기의 변경 사항 주위에 표시되는 컨텍스트의 크기를 늘리기 | Increase the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
 | `` t d - `` | Diff 보기의 변경 사항 주위에 표시되는 컨텍스트 크기 줄이기 | Decrease the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
 | `` c p `` | 체리픽 |  |
+| `` f `` | Fetch | Fetch changes from remote. |
 | `` : `` | Execute shell command | Bring up a prompt where you can enter a shell command to execute. |
 | `` g h o `` | 커스텀 Patch 옵션 보기 |  |
 | `` g o `` | View merge/rebase options | View options to abort/continue/skip the current merge/rebase. |
@@ -473,7 +474,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g z w `` | 초기화 | View reset options for working tree (e.g. nuking the working tree). |
 | `` t t t `` | 파일 트리뷰로 전환 | Toggle file view between flat and tree layout. Flat layout shows all file paths in a single list, tree layout groups files by directory.<br><br>The default can be changed in the config file with the key 'gui.showFileTree'. |
 | `` t d e `` | Open external diff tool (git difftool) |  |
-| `` f `` | Fetch | Fetch changes from remote. |
 | `` t t c `` | Collapse all files | Collapse all directories in the files tree |
 | `` t t e `` | Expand all files | Expand all directories in the file tree |
 | `` y n `` | Copy file name |  |

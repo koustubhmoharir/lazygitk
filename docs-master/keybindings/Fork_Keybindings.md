@@ -9,7 +9,8 @@ back one level. Menus use physical Up/Down, Enter and Escape for navigation.
 | Keys | Action |
 | --- | --- |
 | `d w`, `d p`, `d c` | Compare selected history with the working tree, previous commit, or a pasted commit hash |
-| `p`, `f` | Push the labeled selected/current branch or fetch |
+| `p` | Push the labeled selected/current branch |
+| `f` | Fetch all remotes from any pane; in Remotes, fetch the selected remote |
 | F2, `e`, `o` | Rename/reword, edit, open |
 | F5 | Reload all repository state and redraw; no fetch |
 | Delete, `x` | Delete/drop; discard with confirmation |

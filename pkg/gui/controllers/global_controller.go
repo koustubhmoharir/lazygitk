@@ -28,6 +28,8 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 		forkCherryPickBinding(self.c),
 		// Fork: palette-only; clears the command usage counts after confirmation.
 		forkResetCommandUsageBinding(self.c),
+		// Fork: f fetches all remotes from any pane; Remotes keeps f for remote.fetch.
+		forkFetchBinding(self.c, opts),
 		{
 			CommandID:   "app.shell-command",
 			Verb:        "run-shell-command",
