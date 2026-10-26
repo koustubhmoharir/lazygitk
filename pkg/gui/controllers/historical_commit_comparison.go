@@ -20,10 +20,39 @@ type historicalCommitComparisonTarget struct {
 }
 
 func (target *historicalCommitComparisonTarget) checkRepository() error {
-	if target.c.Git() != target.git || target.c.State().GetRepoGeneration() != target.generation {
-		return errors.New(target.c.Tr.BranchSyncRepositoryChanged)
+	return checkHistoricalRepository(target.c, target.git, target.generation)
+}
+
+// checkHistoricalRepository refuses to act when the repository has been
+// switched since the comparison was captured against git and generation.
+func checkHistoricalRepository(c *ControllerCommon, git *commands.GitCommand, generation int) error {
+	if c.Git() != git || c.State().GetRepoGeneration() != generation {
+		return errors.New(c.Tr.BranchSyncRepositoryChanged)
 	}
 	return nil
+}
+
+// promptPastedHistoricalCommit opens the pasted-hash prompt shared by the
+// commit and working-file comparisons. The repository captured by git and
+// generation is checked on close and on confirm. confirm receives only a hash
+// that resolved to a commit (partial, full, unambiguous; see
+// ResolveHistoricalComparisonCommit).
+func promptPastedHistoricalCommit(c *ControllerCommon, git *commands.GitCommand, generation int, title string, confirm func(git_commands.HistoricalDiffCommit) error) {
+	c.Prompt(types.PromptOpts{
+		Title:          title,
+		InitialContent: "", PreserveWhitespace: true,
+		HandleClose: func() error { return checkHistoricalRepository(c, git, generation) },
+		HandleConfirm: func(input string) error {
+			if err := checkHistoricalRepository(c, git, generation); err != nil {
+				return err
+			}
+			commit, err := git.Diff.ResolveHistoricalComparisonCommit(input)
+			if err != nil {
+				return err
+			}
+			return confirm(commit)
+		},
+	})
 }
 
 func newHistoricalCommitComparisonTarget(c *ControllerCommon, oid string, paths []string, directory bool) (*historicalCommitComparisonTarget, error) {
@@ -44,18 +73,9 @@ func newHistoricalCommitComparisonTarget(c *ControllerCommon, oid string, paths 
 }
 
 func (target *historicalCommitComparisonTarget) prompt() {
-	target.c.Prompt(types.PromptOpts{
-		Title:          fmt.Sprintf(target.c.Tr.HistoricalDiffCommitPrompt, target.selected),
-		InitialContent: "", PreserveWhitespace: true,
-		HandleClose: target.checkRepository,
-		HandleConfirm: func(input string) error {
-			if err := target.checkRepository(); err != nil {
-				return err
-			}
-			right, err := target.git.Diff.ResolveHistoricalComparisonCommit(input)
-			if err != nil {
-				return err
-			}
+	promptPastedHistoricalCommit(target.c, target.git, target.generation,
+		fmt.Sprintf(target.c.Tr.HistoricalDiffCommitPrompt, target.selected),
+		func(right git_commands.HistoricalDiffCommit) error {
 			cmd, err := target.git.Diff.HistoricalCommitComparisonCmdObj(target.left, right, target.paths, target.directory)
 			if err != nil {
 				return err
@@ -65,8 +85,7 @@ func (target *historicalCommitComparisonTarget) prompt() {
 				target.c.Refresh(types.RefreshOptions{})
 			}
 			return runErr
-		},
-	})
+		})
 }
 
 func (self *BasicCommitsController) promptHistoricalCommitComparison() error {

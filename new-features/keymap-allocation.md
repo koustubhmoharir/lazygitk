@@ -21,9 +21,10 @@ diff. Dialogs, search and editors retain normal Enter/input behavior.
 
 | Path | Meaning | Action identities / integration |
 | --- | --- | --- |
-| `d w` | Diff selected historical commit/file with working tree | `diff.commit.worktree`, `diff.history-file.worktree` |
+| `d w` | Diff selected historical commit/file, or Files working file/directory, with working tree (Files: against HEAD) | `diff.commit.worktree`, `diff.history-file.worktree`, `diff.working-file.head` |
 | `d p` | Diff selected historical commit/file with previous commit | `diff.commit.previous`, `diff.history-file.previous` |
-| `d c` | Diff selected historical commit/file with a commit whose partial/full hash the user pastes | New hash-input comparison actions; capture selection before prompting |
+| `d s` | Files only: diff selected working file/directory with the index (staged version) | `diff.working-file.staged`; no sticky diff mode |
+| `d c` | Diff selected historical commit/file, or Files working file/directory, with a commit whose partial/full hash the user pastes (Files: pasted commit is the left side) | New hash-input comparison actions; capture selection before prompting; `diff.working-file.selected-commit` in Files |
 | `p` | Push selected tag/local branch, or labeled current branch | `tag.push`, `branch.push-current`, `branch.push-selected` |
 | `f` | Fetch selected remote, or explicitly repository-wide | `remote.fetch`, `repo.fetch` |
 | F2 | Rename/reword selected object where supported | `branch.rename`, `stash.rename`, `commit.reword` |

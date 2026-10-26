@@ -94,6 +94,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y f `` | Copy absolute path |  |
 | `` y d `` | Copy file diff |  |
 | `` y w `` | Copy all files diff |  |
+| `` d w `` | Diff with HEAD |  |
+| `` d s `` | Diff with staged version |  |
+| `` d c `` | Diff with commit… |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
 | `` v `` | Focus main view |  |

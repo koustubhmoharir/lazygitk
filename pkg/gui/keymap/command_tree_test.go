@@ -80,6 +80,22 @@ func TestBuildCommandTreeOrdersDiffPrefixByDeclaration(t *testing.T) {
 	assert.Equal(t, []string{"w", "p", "c"}, childLabels(childTree(t, root, key('d'))))
 }
 
+func TestBuildCommandTreeOrdersFilesDiffPrefixByDeclaration(t *testing.T) {
+	// Listed out of declaration order on purpose; the menu follows the keymap.
+	ids := []string{"diff.working-file.selected-commit", "diff.working-file.staged", "diff.working-file.head"}
+	bindings := make([]*types.Binding, 0, len(ids))
+	for _, id := range ids {
+		paths, ok := DefaultPaths(id)
+		if !ok {
+			t.Fatalf("missing default paths for %s", id)
+		}
+		bindings = append(bindings, &types.Binding{CommandID: id, CommandPaths: paths})
+	}
+	root := BuildCommandTree(bindings, "files")
+
+	assert.Equal(t, []string{"w", "s", "c"}, childLabels(childTree(t, root, key('d'))))
+}
+
 func TestBuildCommandTreeOrdersTPrefixByDeclaration(t *testing.T) {
 	ids := []string{
 		"diff.commit.external", "diff.history-file.working-file", "diff.options-menu", "diff.toggle-whitespace", "diff.renderer.next", "diff.context.increase",

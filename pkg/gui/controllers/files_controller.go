@@ -267,6 +267,8 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 	}
 	// Fork: the flat y copy menu's file actions (see fork_files_copy.go).
 	bindings = self.addFlatCopyBindings(bindings)
+	// Fork: d w / d s / d c compare the selected working file or directory (see working_file_diff_actions.go).
+	bindings = append(bindings, self.workingFileDiffBindings()...)
 	return append(bindings, treeNavigationBindings(
 		self.c.Tr.CollapseTreeNode,
 		self.c.Tr.ExpandTreeNode,

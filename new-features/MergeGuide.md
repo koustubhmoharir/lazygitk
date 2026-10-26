@@ -367,6 +367,21 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   normal `d c` profile is activated.
 
 
+### Files working-file diffs (item 17)
+
+- `controllers/working_file_diff_actions.go` owns Files `d w`, `d s` and `d c`.
+  Its single integration point is `FilesController.GetKeybindings`, marked
+  `// Fork:`. Routes are declared in `keymap/default_paths.go`; `d s` sits
+  between `d p` and `d c` so Files lists `w`, `s`, `c`.
+- `d c` shares `promptPastedHistoricalCommit` with Commits in
+  `historical_commit_comparison.go`. The Commits flow and its prompt text are
+  unchanged.
+- `d w` resolves HEAD with `DiffCommands.ResolveHeadDiffCommit`, then reuses
+  `runHistoricalRevisionDiff`. The unborn-HEAD reason reads the model's current
+  branch, so rendering runs no Git command.
+- `d s` calls the plain `OpenDiffToolCmdObj` with no commit endpoints and never
+  reads sticky diff mode. Keep that independence on merge.
+
 ### Captured command menus and disabled defaults
 
 - `gui/fork_prefix_menu.go` owns visible prefix frames with one-use acceptance

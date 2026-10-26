@@ -997,6 +997,14 @@ type TranslationSet struct {
 	HistoricalDiffMissingWorkingFile      string
 	HistoricalDiffDeletedFile             string
 	HistoricalDiffStickyTool              string
+	DiffWorkingFileWithHead               string
+	DiffWorkingFileWithStaged             string
+	DiffWorkingFileWithCommit             string
+	WorkingFileCommitPrompt               string
+	WorkingFileUntracked                  string
+	WorkingFileNoUnstagedChanges          string
+	WorkingFileUnbornHead                 string
+	WorkingFileNoPathsMatchFilter         string
 	SwapDiff                              string
 	ViewDiffingOptions                    string
 	ViewDiffingOptionsTooltip             string
@@ -2492,6 +2500,14 @@ func EnglishTranslationSet() *TranslationSet {
 		HistoricalDiffMissingWorkingFile: "The working file is missing. Use Diff with working file… to choose another file.",
 		HistoricalDiffDeletedFile:        "This file was deleted in the selected commit; there is no historical blob to compare.",
 		HistoricalDiffStickyTool:         "Diff using current comparison mode",
+		DiffWorkingFileWithHead:          "Diff with HEAD",
+		DiffWorkingFileWithStaged:        "Diff with staged version",
+		DiffWorkingFileWithCommit:        "Diff with commit…",
+		WorkingFileCommitPrompt:          "Compare commit hash (left) with working file (right)",
+		WorkingFileUntracked:             "untracked file: Git has no base version to compare",
+		WorkingFileNoUnstagedChanges:     "no unstaged changes",
+		WorkingFileUnbornHead:            "HEAD has no commit yet",
+		WorkingFileNoPathsMatchFilter:    "no files in this directory match the current filter",
 		SwapDiff:                         "Reverse diff direction",
 		ViewDiffingOptions:               "View diffing options",
 		ViewDiffingOptionsTooltip:        "View options relating to diffing two refs e.g. diffing against selected ref, entering ref to diff against, and reversing the diff direction.",

@@ -59,6 +59,17 @@ keybinding:
     diffWithWorkingFile: []
 ```
 
+### Working-file diffs in Files
+
+In the Files panel, `d w` compares the selected working file or directory with
+HEAD, `d s` with the index (staged version), and `d c` with a commit whose hash
+you paste. The base is on the left and the working file on the right. A
+directory runs as a directory diff and, as in Git, leaves untracked files out.
+An untracked file has no base version, so all three are disabled for it, and
+`d s` is disabled for a file with no unstaged changes. A staged rename includes
+its old path for `d w` and `d c`. These actions ignore sticky diff mode. Files
+has no `d p`.
+
 ## Create or move a branch without checkout
 
 Select one commit in local history, another branch's history, or reflog. Open

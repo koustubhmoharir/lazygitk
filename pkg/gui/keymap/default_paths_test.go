@@ -17,6 +17,9 @@ func TestDefaultPathsUserRoutes(t *testing.T) {
 	}{
 		{"diff.commit.selected-commit", "d c"},
 		{"diff.history-file.selected-commit", "d c"},
+		{"diff.working-file.head", "d w"},
+		{"diff.working-file.staged", "d s"},
+		{"diff.working-file.selected-commit", "d c"},
 		{"branch.reset.hard", "s h"},
 		{"branch.reset.mixed", "s m"},
 		{"branch.reset.soft", "s s"},

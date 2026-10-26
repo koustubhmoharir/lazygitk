@@ -62,6 +62,16 @@ func (self *DiffCommands) ResolveHistoricalDiffCommit(oid string) (HistoricalDif
 	return result, nil
 }
 
+// ResolveHeadDiffCommit resolves HEAD to a full commit object ID for a
+// working-tree comparison. An unborn HEAD has no commit and fails here.
+func (self *DiffCommands) ResolveHeadDiffCommit() (HistoricalDiffCommit, error) {
+	output, err := self.cmd.New(NewGitCmd("rev-parse").Arg("--verify", "--quiet", "--end-of-options", "HEAD^{commit}").ToArgv()).SetWd(self.repoPaths.WorktreePath()).RunWithOutput()
+	if err != nil {
+		return HistoricalDiffCommit{}, fmt.Errorf("HEAD does not name a commit: %w", err)
+	}
+	return self.ResolveHistoricalDiffCommit(strings.TrimSpace(output))
+}
+
 // HistoricalRevisionDiffCmdObj builds a difftool command for the selected
 // commit against its first parent or the working tree, scoped to literal paths.
 func (self *DiffCommands) HistoricalRevisionDiffCmdObj(commit HistoricalDiffCommit, previous bool, paths []string, directory bool) (*oscommands.CmdObj, error) {

@@ -37,9 +37,10 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	}
 
 	// Core actions and context-specific aliases.
-	add("diff.commit.worktree diff.history-file.worktree", "d w")
+	add("diff.commit.worktree diff.history-file.worktree diff.working-file.head", "d w")
 	add("diff.commit.previous diff.history-file.previous", "d p")
-	add("diff.commit.selected-commit diff.history-file.selected-commit", "d c")
+	add("diff.working-file.staged", "d s")
+	add("diff.commit.selected-commit diff.history-file.selected-commit diff.working-file.selected-commit", "d c")
 	add("tag.push branch.push-current branch.push-selected", "p")
 	add("remote.fetch repo.fetch", "f")
 	add("branch.rename stash.rename commit.reword", "f2")
