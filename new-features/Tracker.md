@@ -1,7 +1,13 @@
 # Current work
 
-All roadmap items (1–17) are complete. There is no current item. Add and review
-a new milestone in [Roadmap.md](Roadmap.md) before planning tasks here.
+Item 18: `v` enters submodules; worktree switching moves to `s w`.
+Scope and decisions are in [Roadmap.md](Roadmap.md#18-v-enters-submodules-worktree-switching-moves-to-s-w).
+
+- Keymap and handlers: `submodule.enter` joins the `v`/Space inspection route
+  for Submodules, Files `v` enters a submodule entry, `worktree.switch` moves
+  to `s w`; unit tests.
+- Integration scenarios for the acceptance cases under real defaults.
+- Docs, generated key docs, merge guide; mark the item complete.
 
 ## How this tracker works
 

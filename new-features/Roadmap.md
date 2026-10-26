@@ -1045,6 +1045,25 @@ endpoints for a file and a directory; untracked selections are disabled with a
 reason; the `d` and `t` menus follow declaration order; generated key docs list
 the new routes.
 
+## 18. `v` enters submodules; worktree switching moves to `s w`
+
+Entering the selected submodule needed `t r s`, while `v` only focused the
+submodule's details, and a submodule entry in Files could not be entered at
+all. User decisions:
+
+- `v` and Space in Submodules enter the selected submodule, like the other
+  panes' drill-down; Escape returns to the parent repository. `t r s` is
+  removed; the palette still lists the command.
+- `v` on a submodule entry in Files enters the submodule. Other Files entries
+  keep focus-diff and conflict resolution.
+- Worktree switching moves from `t r w` to `s w`, beside `s c`, `s r` and
+  `s n`, so the `t r` group disappears. Switching worktrees is not inspection:
+  `v` in Worktrees keeps focusing the details.
+
+Acceptance: `v` and Space in Submodules enter the submodule and Escape returns;
+`v` on a submodule entry in Files enters it; `s w` switches to the selected
+worktree; `t r` does nothing; generated key docs list the new routes.
+
 ## Verification and repository workflow
 
 During implementation use narrow package tests and named integration scenarios
