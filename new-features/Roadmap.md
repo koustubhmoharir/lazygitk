@@ -1064,6 +1064,21 @@ Acceptance: `v` and Space in Submodules enter the submodule and Escape returns;
 `v` on a submodule entry in Files enters it; `s w` switches to the selected
 worktree; `t r` does nothing; generated key docs list the new routes.
 
+## 19. `f` fetches from every pane
+
+Repository-wide fetch (`repo.fetch`) was bound only in Files, so `f` did
+nothing in most panes even though `p` pushes from any pane. User decision:
+
+- `f` fetches all remotes from every normal pane, through a global binding like
+  push. In Remotes, `f` keeps fetching the selected remote (`remote.fetch`),
+  since a shortcut acts on the selected object where one applies.
+- Fetch keeps its current behavior: no branch forwarding, and the same
+  refresh, waiting status and error messages.
+
+Acceptance: `f` in Files, Branches, Commits, Stash, Status and a focused diff
+fetches the repository; `f` in Remotes fetches only the selected remote; the
+palette lists one repository fetch; generated key docs show `f` as global.
+
 ## Verification and repository workflow
 
 During implementation use narrow package tests and named integration scenarios
