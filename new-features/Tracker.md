@@ -1,7 +1,16 @@
 # Current work
 
-All roadmap items (1–15) are complete. There is no current item. Add and review
-a new milestone in [Roadmap.md](Roadmap.md) before planning tasks here.
+Item 16: prompt-free fast-forward from local tracking refs.
+Scope and decisions are in [Roadmap.md](Roadmap.md#16-prompt-free-fast-forward-from-local-tracking-refs).
+
+- Git layer: read a branch's upstream ref without fetching, classify it, and
+  build the in-process ff-only merge, reusing the captured-plan and
+  ignored-file checks; unit tests.
+- Controller: the new `g f` flow, removal of the menu route and the unused
+  `fastForwardOnly` paths, tooltip and strings; unit tests.
+- Integration scenarios: rewrite the existing fast-forward scenarios and add
+  the acceptance cases.
+- Docs, merge guide; mark the item complete.
 
 ## How this tracker works
 

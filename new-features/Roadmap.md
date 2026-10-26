@@ -979,6 +979,39 @@ diffs render through delta and `|` reaches git's diff; without delta, git's
 diff is used and the notice appears once; docs list the defaults and the
 renamed keys.
 
+## 16. Prompt-free fast-forward from local tracking refs
+
+`g f` (`branch.fast-forward-selected`) replaces item 7's fetch-and-review
+route. The user fetches, reviews what came in, then fast-forwards; the
+fast-forward must not fetch again or ask for a second review. User decisions:
+
+- Each selected branch moves to its configured upstream exactly as it is
+  locally (`%(upstream)`: a remote-tracking ref, or `refs/heads/<b>` for a
+  local upstream). No fetch and no network access.
+
+| Case | Behaviour |
+| --- | --- |
+| Equal to its upstream, or ahead | Ignored silently |
+| Behind, not checked out here | Guarded ref update, no prompt |
+| Behind, checked out here | In-process `git merge --ff-only --no-overwrite-ignore <oid>`, no prompt and no subprocess return prompt; untouched tracked changes are kept |
+| Untracked or modified files would be overwritten | Git refuses; its error is the only message and nothing moves |
+| Ignored files would be overwritten | The existing approval menu (Cancel / overwrite) is the only prompt |
+| Diverged, no upstream, missing tracking ref, or occupied by another worktree | Skipped and listed with its reason in one alert at the end |
+| Success | No message; panes refresh |
+
+- With several branches selected, off-branch refs move first and the
+  checked-out branch last; each branch succeeds or fails independently.
+- The fast-forward menu, fetch review, update review and batch approval leave
+  `g f`, along with its remote/upstream/tracking-ref choices. Pull keeps them,
+  including fetch-first review and its fast-forward-only choice.
+
+Acceptance: after a fetch, `g f` on a behind branch (checked out or not, with
+or without untracked files out of the way) moves it with no popup; a remote
+newer than its tracking ref is not fetched; an untracked file in the way
+leaves the branch unmoved and shows Git's error; an ignored file in the way
+opens the approval menu; a mixed multi-selection moves the behind branches,
+stays silent about up-to-date ones and summarizes the rest.
+
 ## Verification and repository workflow
 
 During implementation use narrow package tests and named integration scenarios
