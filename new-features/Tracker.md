@@ -3,10 +3,8 @@
 Item 16: prompt-free fast-forward from local tracking refs.
 Scope and decisions are in [Roadmap.md](Roadmap.md#16-prompt-free-fast-forward-from-local-tracking-refs).
 
-- Git layer: read a branch's upstream ref without fetching, classify it, and
-  build the in-process ff-only merge, reusing the captured-plan and
-  ignored-file checks; unit tests.
-- Controller: the new `g f` flow, removal of the menu route and the unused
+- Controller: the new `g f` flow over `InspectUpstreamFastForward`, running
+  the captured ff-only integration in-process, removal of the menu route and the unused
   `fastForwardOnly` paths, tooltip and strings; unit tests.
 - Integration scenarios: rewrite the existing fast-forward scenarios and add
   the acceptance cases.
