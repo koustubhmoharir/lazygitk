@@ -41,6 +41,8 @@ func TestDefaultPathsUserRoutes(t *testing.T) {
 		{"clipboard.copy-file-path", "y p"},
 		{"branch.copy-pull-request-url", "y r"},
 		{"clipboard.copy-confirmation", "y y"},
+		{"ui.screen.next-mode", "="},
+		{"ui.screen.previous-mode", "-"},
 	}
 	for _, test := range tests {
 		t.Run(test.id, func(t *testing.T) {
@@ -52,6 +54,14 @@ func TestDefaultPathsUserRoutes(t *testing.T) {
 				t.Errorf("path = %q, want %q", got, test.want)
 			}
 		})
+	}
+}
+
+// "+" is the shifted "=" on common layouts, so it also cycles to the next mode.
+func TestDefaultPathsScreenModeNextHasPlusAlias(t *testing.T) {
+	paths, ok := DefaultPaths("ui.screen.next-mode")
+	if !ok || len(paths) != 2 || pathString(paths[1]) != "+" {
+		t.Fatalf("DefaultPaths(ui.screen.next-mode) = (%v, %t), want second path \"+\"", paths, ok)
 	}
 }
 

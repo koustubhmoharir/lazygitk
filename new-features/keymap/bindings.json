@@ -1812,33 +1812,26 @@
           "description": "Next screen mode (normal/half/fullscreen)",
           "view": "",
           "tag": "",
-          "defaultKeys": null,
-          "rawKeys": null,
-          "defaultCommandPaths": [
-            "t s n"
+          "defaultKeys": [
+            "=",
+            "+"
           ],
-          "rawCommandPaths": [
-            [
-              {
-                "name": 256,
-                "str": "t",
-                "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "s",
-                "mod": 0,
-                "label": "s"
-              },
-              {
-                "name": 256,
-                "str": "n",
-                "mod": 0,
-                "label": "n"
-              }
-            ]
+          "rawKeys": [
+            {
+              "name": 256,
+              "str": "=",
+              "mod": 0,
+              "label": "="
+            },
+            {
+              "name": 256,
+              "str": "+",
+              "mod": 0,
+              "label": "+"
+            }
           ],
+          "defaultCommandPaths": null,
+          "rawCommandPaths": null,
           "hasDynamicID": false,
           "hasDynamicVerb": false,
           "hasDynamicDescription": false,
@@ -1855,33 +1848,19 @@
           "description": "Prev screen mode",
           "view": "",
           "tag": "",
-          "defaultKeys": null,
-          "rawKeys": null,
-          "defaultCommandPaths": [
-            "t s p"
+          "defaultKeys": [
+            "-"
           ],
-          "rawCommandPaths": [
-            [
-              {
-                "name": 256,
-                "str": "t",
-                "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "s",
-                "mod": 0,
-                "label": "s"
-              },
-              {
-                "name": 256,
-                "str": "p",
-                "mod": 0,
-                "label": "p"
-              }
-            ]
+          "rawKeys": [
+            {
+              "name": 256,
+              "str": "-",
+              "mod": 0,
+              "label": "-"
+            }
           ],
+          "defaultCommandPaths": null,
+          "rawCommandPaths": null,
           "hasDynamicID": false,
           "hasDynamicVerb": false,
           "hasDynamicDescription": false,
@@ -40605,33 +40584,26 @@
           "description": "Next screen mode (normal/half/fullscreen)",
           "view": "",
           "tag": "",
-          "defaultKeys": null,
-          "rawKeys": null,
-          "defaultCommandPaths": [
-            "t s n"
+          "defaultKeys": [
+            "=",
+            "+"
           ],
-          "rawCommandPaths": [
-            [
-              {
-                "name": 256,
-                "str": "t",
-                "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "s",
-                "mod": 0,
-                "label": "s"
-              },
-              {
-                "name": 256,
-                "str": "n",
-                "mod": 0,
-                "label": "n"
-              }
-            ]
+          "rawKeys": [
+            {
+              "name": 256,
+              "str": "=",
+              "mod": 0,
+              "label": "="
+            },
+            {
+              "name": 256,
+              "str": "+",
+              "mod": 0,
+              "label": "+"
+            }
           ],
+          "defaultCommandPaths": null,
+          "rawCommandPaths": null,
           "hasDynamicID": false,
           "hasDynamicVerb": false,
           "hasDynamicDescription": false,
@@ -40648,33 +40620,19 @@
           "description": "Prev screen mode",
           "view": "",
           "tag": "",
-          "defaultKeys": null,
-          "rawKeys": null,
-          "defaultCommandPaths": [
-            "t s p"
+          "defaultKeys": [
+            "-"
           ],
-          "rawCommandPaths": [
-            [
-              {
-                "name": 256,
-                "str": "t",
-                "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "s",
-                "mod": 0,
-                "label": "s"
-              },
-              {
-                "name": 256,
-                "str": "p",
-                "mod": 0,
-                "label": "p"
-              }
-            ]
+          "rawKeys": [
+            {
+              "name": 256,
+              "str": "-",
+              "mod": 0,
+              "label": "-"
+            }
           ],
+          "defaultCommandPaths": null,
+          "rawCommandPaths": null,
           "hasDynamicID": false,
           "hasDynamicVerb": false,
           "hasDynamicDescription": false,
@@ -79398,33 +79356,26 @@
           "description": "Next screen mode (normal/half/fullscreen)",
           "view": "",
           "tag": "",
-          "defaultKeys": null,
-          "rawKeys": null,
-          "defaultCommandPaths": [
-            "t s n"
+          "defaultKeys": [
+            "=",
+            "+"
           ],
-          "rawCommandPaths": [
-            [
-              {
-                "name": 256,
-                "str": "t",
-                "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "s",
-                "mod": 0,
-                "label": "s"
-              },
-              {
-                "name": 256,
-                "str": "n",
-                "mod": 0,
-                "label": "n"
-              }
-            ]
+          "rawKeys": [
+            {
+              "name": 256,
+              "str": "=",
+              "mod": 0,
+              "label": "="
+            },
+            {
+              "name": 256,
+              "str": "+",
+              "mod": 0,
+              "label": "+"
+            }
           ],
+          "defaultCommandPaths": null,
+          "rawCommandPaths": null,
           "hasDynamicID": false,
           "hasDynamicVerb": false,
           "hasDynamicDescription": false,
@@ -79441,33 +79392,19 @@
           "description": "Prev screen mode",
           "view": "",
           "tag": "",
-          "defaultKeys": null,
-          "rawKeys": null,
-          "defaultCommandPaths": [
-            "t s p"
+          "defaultKeys": [
+            "-"
           ],
-          "rawCommandPaths": [
-            [
-              {
-                "name": 256,
-                "str": "t",
-                "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "s",
-                "mod": 0,
-                "label": "s"
-              },
-              {
-                "name": 256,
-                "str": "p",
-                "mod": 0,
-                "label": "p"
-              }
-            ]
+          "rawKeys": [
+            {
+              "name": 256,
+              "str": "-",
+              "mod": 0,
+              "label": "-"
+            }
           ],
+          "defaultCommandPaths": null,
+          "rawCommandPaths": null,
           "hasDynamicID": false,
           "hasDynamicVerb": false,
           "hasDynamicDescription": false,

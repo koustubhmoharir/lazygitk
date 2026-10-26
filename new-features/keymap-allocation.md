@@ -167,7 +167,6 @@ focus its details rather than toggle staging or unexpectedly collapse the tree.
 | `t l c` | Command log options | `command-log.options-menu` |
 | `t l f` | Focus command log | `navigation.focus-command-log` |
 | `t l s` | Select current branch's history | `commit.select-current-branch-history` |
-| `t s n` / `t s p` | Next / previous screen mode | `ui.screen.next-mode`, `ui.screen.previous-mode` |
 | `t s o` | Branch sort order | `branch.sort-menu`, `remote-branch.sort-menu` |
 | `t a c` | Edit configuration | `config.edit-menu` |
 | `t a u` | Check for updates | `app.check-update` |
@@ -181,6 +180,10 @@ focus its details rather than toggle staging or unexpectedly collapse the tree.
 | `t n j` | Jump to diff file menu | `diff.jump-to-file-menu` |
 | `t h s` | Toggle line/hunk selection | `selection.diff.toggle-hunk` |
 | `t h r` | Toggle sticky range selection | `selection.diff.toggle-range`, `selection.list.toggle-range` |
+
+Screen mode uses single keys: `=` (or `+`, its shifted form) cycles to the next
+mode (`ui.screen.next-mode`) and `-` to the previous one
+(`ui.screen.previous-mode`).
 
 Physical navigation uses the focused view's list/content. Up/Down and `k`/`j`
 mean previous/next item (a line, list row or conflict hunk). Shift+Up/Down extend
