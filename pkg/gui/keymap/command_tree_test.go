@@ -99,7 +99,7 @@ func TestBuildCommandTreeOrdersFilesDiffPrefixByDeclaration(t *testing.T) {
 func TestBuildCommandTreeOrdersTPrefixByDeclaration(t *testing.T) {
 	ids := []string{
 		"diff.commit.external", "diff.history-file.working-file", "diff.options-menu", "diff.toggle-whitespace", "diff.renderer.next", "diff.context.increase",
-		"worktree.switch", "submodule.enter", "filter.open", "file.filter-menu", "ui.file-tree.toggle", "branch.sort-menu",
+		"filter.open", "file.filter-menu", "ui.file-tree.toggle", "branch.sort-menu",
 		"navigation.diff.next-hunk", "selection.diff.toggle-hunk",
 	}
 	bindings := make([]*types.Binding, 0, len(ids))
@@ -112,9 +112,9 @@ func TestBuildCommandTreeOrdersTPrefixByDeclaration(t *testing.T) {
 	}
 	root := BuildCommandTree(bindings, "")
 
-	// Each group keeps the rank of its first declaration: t r, t d, t f, t t, t s, t n, t h.
+	// Each group keeps the rank of its first declaration: t d, t f, t t, t s, t n, t h.
 	tPrefix := childTree(t, root, key('t'))
-	assert.Equal(t, []string{"r", "d", "f", "t", "s", "n", "h"}, childLabels(tPrefix))
+	assert.Equal(t, []string{"d", "f", "t", "s", "n", "h"}, childLabels(tPrefix))
 	assert.Equal(t, []string{"e", "f", "c", "w", "n", "+"}, childLabels(childTree(t, tPrefix, key('d'))))
 }
 

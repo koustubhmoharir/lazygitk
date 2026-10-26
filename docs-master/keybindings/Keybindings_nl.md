@@ -453,7 +453,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Kopieer submodule naam naar klembord |  |
-| `` t r s `` | Enter | Enter submodule |
+| `` v, <space> `` | Enter | Enter submodule |
 | `` <delete> `` | Verwijderen | Remove the selected submodule and its corresponding directory. |
 | `` g u s `` | Update | Update selected submodule. |
 | `` n s `` | Voeg nieuwe submodule toe |  |
@@ -491,7 +491,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` n w `` | New worktree |  |
-| `` t r w `` | Switch | Switch to the selected worktree. |
+| `` s w `` | Switch | Switch to the selected worktree. |
 | `` o `` | Openen in editor |  |
 | `` <delete> `` | Verwijderen | Remove the selected worktree. This will both delete the worktree's directory, as well as metadata about the worktree in the .git directory. |
 | `` t f t `` | Filter the current view by text |  |

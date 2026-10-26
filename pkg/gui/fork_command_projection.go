@@ -191,7 +191,7 @@ func forkMouseKey(key gocui.Key) bool {
 
 func forkInspectionCommand(id string) bool {
 	switch id {
-	case "file.enter", "remote.view-branches", "navigation.open-commits", "navigation.open-diff-files", "navigation.open-history-file-diff", "navigation.focus-diff":
+	case "file.enter", "remote.view-branches", "navigation.open-commits", "navigation.open-diff-files", "navigation.open-history-file-diff", "navigation.focus-diff", "submodule.enter":
 		return true
 	}
 	return false
@@ -207,9 +207,13 @@ func forkPreferredInspector(view string) string {
 		return "remote.view-branches"
 	case "commitFiles":
 		return "navigation.open-history-file-diff"
+	case "submodules":
+		return "submodule.enter"
 	}
-	// Unlike file.enter, this never enters a submodule repository or toggles
-	// a directory: it focuses the read-only details already rendered there.
+	// Unlike file.enter, this never toggles a directory: it focuses the
+	// read-only details already rendered there. Files keeps this route for
+	// its non-submodule entries; FilesController.InspectSelected enters a
+	// submodule entry itself. Worktrees keeps focusing details.
 	return "navigation.focus-diff"
 }
 

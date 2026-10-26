@@ -16,11 +16,11 @@ back one level. Menus use physical Up/Down, Enter and Escape for navigation.
 | `a`, `r`, `m` | Amend; review rebase; review merge |
 | `s h`, `s m`, `s s` | Review hard, mixed, soft reset of the current branch |
 | `s c` | Checkout selected branch/commit, with branch naming and move choices |
-| `s r`, `s n` | Switch to a recent repository; open a repository by path |
+| `s r`, `s n`, `s w` | Switch to a recent repository; open a repository by path; switch to the selected worktree |
 | `n b` | Create/move a named branch at the selection without checkout |
 | Enter | Commit in Files; no action in other normal panes |
 | Space | Toggle staging in Files; inspect elsewhere |
-| `v` | Inspect details |
+| `v` | Inspect details; enter the selected submodule in Submodules and Files |
 | `i` | Ignore a working path |
 | `c y`, `c x`, `c p` | Mark, unmark, review cherry-pick |
 | `g c` | Review and combine selected commits; edit the combined message |
@@ -84,6 +84,8 @@ Coming from upstream lazygit, these are the main differences:
 | Separate squash/fixup shortcuts | `g c` combine |
 | Toggle cherry-pick marking | `c y` mark / `c x` unmark; Escape in a history pane clears marks (leaving a subview keeps them) |
 | Enter to resolve a conflicted file | `v` opens its resolution view or dialog |
+| Enter or Space to enter a submodule | `v` or Space in Submodules; `v` on a submodule entry in Files |
+| Enter or Space to switch worktree | `s w` |
 | Space / `b` / `z` in the merge view | `g h p` pick hunk / `g h b` pick both / `u u` undo |
 
 The history graph includes all refs by default. Set

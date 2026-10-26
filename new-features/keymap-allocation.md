@@ -140,17 +140,20 @@ have no default route; they remain in the palette.
 
 Inspection means branch → commits, commit → changed files, historical file →
 diff, or focusing selected read-only details. It never applies a stash, checks
-out a ref or switches worktrees. Space performs this outside Files. The user approved `v` for inspection in all
-normal panes, including Files, so inspecting a
-working file does not compete with staging. Directory inspection in Files must
+out a ref or switches worktrees. Space performs this outside Files. The user
+approved `v` for inspection in all normal panes, including Files, so inspecting
+a working file does not compete with staging. Entering a submodule is the one
+drill-down inspection key: `v` and Space in Submodules, and `v` on a submodule
+entry in Files, enter it, and Escape returns to the parent repository. Directory inspection in Files must
 focus its details rather than toggle staging or unexpectedly collapse the tree.
 
 | Path | Meaning | Existing command IDs |
 | --- | --- | --- |
-| `v`, Space outside Files | Inspect selected details | `file.enter` (split directory behavior), `remote.view-branches`, `navigation.open-commits`, `navigation.open-diff-files`, `navigation.open-history-file-diff`, `navigation.focus-diff` |
-| `t r r` | Open recent repositories | `repo.switch-menu` |
-| `t r w` | Switch to selected worktree | `worktree.switch` |
-| `t r s` | Enter selected submodule repository | `submodule.enter` |
+| `v`, Space outside Files | Inspect selected details; in Submodules, enter the selected submodule | `file.enter` (split directory behavior), `remote.view-branches`, `navigation.open-commits`, `navigation.open-diff-files`, `navigation.open-history-file-diff`, `navigation.focus-diff`, `submodule.enter` (Submodules only) |
+| `v` in Files on a submodule entry | Enter the selected submodule | `navigation.focus-diff` handler (`FilesController.InspectSelected`) |
+| `s r` | Open recent repositories | `repo.switch-menu` |
+| `s n` | Open a repository by path | `repo.open-path` |
+| `s w` | Switch to selected worktree | `worktree.switch` |
 | `t d e` | External diff using explicitly configured comparison mode | `diff.commit.external`, `diff.history-file.external`, `diff.ref.external`, `diff.working-file.external` |
 | `t d f` | Compare historical file with explicitly chosen working file | `diff.history-file.working-file` |
 | `t d c` | Comparison mode options | `diff.options-menu` |

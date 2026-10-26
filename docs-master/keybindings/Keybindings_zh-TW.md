@@ -156,7 +156,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | 複製子模組名稱到剪貼簿 |  |
-| `` t r s `` | 進入 | 進入子模組 |
+| `` v, <space> `` | 進入 | 進入子模組 |
 | `` <delete> `` | 刪除 | 刪除選定的子模組及其相應的目錄。 |
 | `` g u s `` | 更新 | 更新子模組 |
 | `` n s `` | 新增子模組 |  |
@@ -171,7 +171,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` n w `` | 新建工作樹 |  |
-| `` t r w `` | 切換 | 切換到選中的工作樹。 |
+| `` s w `` | 切換 | 切換到選中的工作樹。 |
 | `` o `` | 在編輯器中開啟 |  |
 | `` <delete> `` | 刪除 | 刪除選定的工作樹。這將刪除工作樹的目錄以及 .git 目錄中有關工作樹的後設資料。 |
 | `` t f t `` | 搜尋 |  |

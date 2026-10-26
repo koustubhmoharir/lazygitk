@@ -135,12 +135,11 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("submodule.bulk-menu", "g u b")
 	add("branch.reset-upstream-menu", "g z u")
 	add("worktree.discard-menu", "g z w")
-	add("remote.view-branches navigation.open-commits navigation.open-diff-files navigation.open-history-file-diff navigation.focus-diff file.enter", "v")
-	// Fork: repository switching lives under s (roadmap item 14).
+	add("remote.view-branches navigation.open-commits navigation.open-diff-files navigation.open-history-file-diff navigation.focus-diff file.enter submodule.enter", "v")
+	// Fork: repository and worktree switching live under s (roadmap items 14 and 18).
 	add("repo.switch-menu", "s r")
 	add("repo.open-path", "s n")
-	add("worktree.switch", "t r w")
-	add("submodule.enter", "t r s")
+	add("worktree.switch", "s w")
 	add("diff.commit.external diff.history-file.external diff.ref.external diff.working-file.external", "t d e")
 	add("diff.history-file.working-file", "t d f")
 	add("diff.options-menu", "t d c")
@@ -182,7 +181,7 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 
 	// Space outside Files shares the inspection route; the main controller
 	// projects the contextual route to the appropriate command.
-	for _, id := range []string{"file.enter", "remote.view-branches", "navigation.open-commits", "navigation.open-diff-files", "navigation.open-history-file-diff", "navigation.focus-diff"} {
+	for _, id := range []string{"file.enter", "remote.view-branches", "navigation.open-commits", "navigation.open-diff-files", "navigation.open-history-file-diff", "navigation.focus-diff", "submodule.enter"} {
 		add(id, "space")
 	}
 

@@ -76,7 +76,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` n w `` | New worktree |  |
-| `` t r w `` | Switch | Switch to the selected worktree. |
+| `` s w `` | Switch | Switch to the selected worktree. |
 | `` o `` | Open in editor |  |
 | `` <delete> `` | Remove | Remove the selected worktree. This will both delete the worktree's directory, as well as metadata about the worktree in the .git directory. |
 | `` t f t `` | Filter the current view by text |  |
@@ -329,7 +329,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Скопировать название подмодуля в буфер обмена |  |
-| `` t r s `` | Enter | Ввести подмодуль |
+| `` v, <space> `` | Enter | Ввести подмодуль |
 | `` <delete> `` | Remove | Remove the selected submodule and its corresponding directory. |
 | `` g u s `` | Update | Обновить подмодуль |
 | `` n s `` | Добавить новый подмодуль |  |

@@ -147,7 +147,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` n w `` | Nowe drzewo pracy |  |
-| `` t r w `` | Przełącz | Przełącz do wybranego drzewa pracy. |
+| `` s w `` | Przełącz | Przełącz do wybranego drzewa pracy. |
 | `` o `` | Otwórz w edytorze |  |
 | `` <delete> `` | Usuń | Usuń wybrane drzewo pracy. To usunie zarówno katalog drzewa pracy, jak i metadane o drzewie pracy w katalogu .git. |
 | `` t f t `` | Filtruj bieżący widok po tekście |  |
@@ -425,7 +425,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Kopiuj nazwę submodułu do schowka |  |
-| `` t r s `` | Wejdź | Wejdź do submodułu. Po wejściu do submodułu możesz nacisnąć `<esc>`, aby wrócić do repozytorium nadrzędnego. |
+| `` v, <space> `` | Wejdź | Wejdź do submodułu. Po wejściu do submodułu możesz nacisnąć `<esc>`, aby wrócić do repozytorium nadrzędnego. |
 | `` <delete> `` | Usuń | Usuń wybrany submoduł i odpowiadający mu katalog. |
 | `` g u s `` | Aktualizuj | Aktualizuj wybrany submoduł. |
 | `` n s `` | Nowy submoduł |  |

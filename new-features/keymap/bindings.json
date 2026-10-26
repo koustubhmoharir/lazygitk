@@ -3234,33 +3234,26 @@
           "description": "Enter",
           "view": "submodules",
           "tag": "",
-          "defaultKeys": null,
-          "rawKeys": null,
-          "defaultCommandPaths": [
-            "t r s"
+          "defaultKeys": [
+            "v",
+            "\u003cspace\u003e"
           ],
-          "rawCommandPaths": [
-            [
-              {
-                "name": 256,
-                "str": "t",
-                "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "r",
-                "mod": 0,
-                "label": "r"
-              },
-              {
-                "name": 256,
-                "str": "s",
-                "mod": 0,
-                "label": "s"
-              }
-            ]
+          "rawKeys": [
+            {
+              "name": 256,
+              "str": "v",
+              "mod": 0,
+              "label": "v"
+            },
+            {
+              "name": 256,
+              "str": " ",
+              "mod": 0,
+              "label": "\u003cspace\u003e"
+            }
           ],
+          "defaultCommandPaths": null,
+          "rawCommandPaths": null,
           "hasDynamicID": false,
           "hasDynamicVerb": false,
           "hasDynamicDescription": false,
@@ -3277,33 +3270,26 @@
           "description": "",
           "view": "submodules",
           "tag": "",
-          "defaultKeys": null,
-          "rawKeys": null,
-          "defaultCommandPaths": [
-            "t r s"
+          "defaultKeys": [
+            "v",
+            "\u003cspace\u003e"
           ],
-          "rawCommandPaths": [
-            [
-              {
-                "name": 256,
-                "str": "t",
-                "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "r",
-                "mod": 0,
-                "label": "r"
-              },
-              {
-                "name": 256,
-                "str": "s",
-                "mod": 0,
-                "label": "s"
-              }
-            ]
+          "rawKeys": [
+            {
+              "name": 256,
+              "str": "v",
+              "mod": 0,
+              "label": "v"
+            },
+            {
+              "name": 256,
+              "str": " ",
+              "mod": 0,
+              "label": "\u003cspace\u003e"
+            }
           ],
+          "defaultCommandPaths": null,
+          "rawCommandPaths": null,
           "hasDynamicID": false,
           "hasDynamicVerb": false,
           "hasDynamicDescription": false,
@@ -4075,21 +4061,15 @@
           "defaultKeys": null,
           "rawKeys": null,
           "defaultCommandPaths": [
-            "t r w"
+            "s w"
           ],
           "rawCommandPaths": [
             [
               {
                 "name": 256,
-                "str": "t",
+                "str": "s",
                 "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "r",
-                "mod": 0,
-                "label": "r"
+                "label": "s"
               },
               {
                 "name": 256,
@@ -4118,21 +4098,15 @@
           "defaultKeys": null,
           "rawKeys": null,
           "defaultCommandPaths": [
-            "t r w"
+            "s w"
           ],
           "rawCommandPaths": [
             [
               {
                 "name": 256,
-                "str": "t",
+                "str": "s",
                 "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "r",
-                "mod": 0,
-                "label": "r"
+                "label": "s"
               },
               {
                 "name": 256,
@@ -38857,21 +38831,39 @@
           "path": [
             {
               "name": 256,
-              "str": "t",
+              "str": " ",
               "mod": 0,
-              "label": "t"
-            },
+              "label": "\u003cspace\u003e"
+            }
+          ],
+          "class": "same-id-same-verb-alias",
+          "origins": [
+            "submodules",
+            "submodules"
+          ],
+          "ids": [
+            "submodule.enter",
+            "submodule.enter"
+          ],
+          "verbs": [
+            "enter-repository",
+            "enter-repository"
+          ],
+          "declarations": [
+            94,
+            95
+          ]
+        },
+        {
+          "platform": "linux",
+          "scopeKind": "view",
+          "scope": "submodules",
+          "path": [
             {
               "name": 256,
-              "str": "r",
+              "str": "v",
               "mod": 0,
-              "label": "r"
-            },
-            {
-              "name": 256,
-              "str": "s",
-              "mod": 0,
-              "label": "s"
+              "label": "v"
             }
           ],
           "class": "same-id-same-verb-alias",
@@ -38899,15 +38891,9 @@
           "path": [
             {
               "name": 256,
-              "str": "t",
+              "str": "s",
               "mod": 0,
-              "label": "t"
-            },
-            {
-              "name": 256,
-              "str": "r",
-              "mod": 0,
-              "label": "r"
+              "label": "s"
             },
             {
               "name": 256,
@@ -42183,33 +42169,26 @@
           "description": "Enter",
           "view": "submodules",
           "tag": "",
-          "defaultKeys": null,
-          "rawKeys": null,
-          "defaultCommandPaths": [
-            "t r s"
+          "defaultKeys": [
+            "v",
+            "\u003cspace\u003e"
           ],
-          "rawCommandPaths": [
-            [
-              {
-                "name": 256,
-                "str": "t",
-                "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "r",
-                "mod": 0,
-                "label": "r"
-              },
-              {
-                "name": 256,
-                "str": "s",
-                "mod": 0,
-                "label": "s"
-              }
-            ]
+          "rawKeys": [
+            {
+              "name": 256,
+              "str": "v",
+              "mod": 0,
+              "label": "v"
+            },
+            {
+              "name": 256,
+              "str": " ",
+              "mod": 0,
+              "label": "\u003cspace\u003e"
+            }
           ],
+          "defaultCommandPaths": null,
+          "rawCommandPaths": null,
           "hasDynamicID": false,
           "hasDynamicVerb": false,
           "hasDynamicDescription": false,
@@ -42226,33 +42205,26 @@
           "description": "",
           "view": "submodules",
           "tag": "",
-          "defaultKeys": null,
-          "rawKeys": null,
-          "defaultCommandPaths": [
-            "t r s"
+          "defaultKeys": [
+            "v",
+            "\u003cspace\u003e"
           ],
-          "rawCommandPaths": [
-            [
-              {
-                "name": 256,
-                "str": "t",
-                "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "r",
-                "mod": 0,
-                "label": "r"
-              },
-              {
-                "name": 256,
-                "str": "s",
-                "mod": 0,
-                "label": "s"
-              }
-            ]
+          "rawKeys": [
+            {
+              "name": 256,
+              "str": "v",
+              "mod": 0,
+              "label": "v"
+            },
+            {
+              "name": 256,
+              "str": " ",
+              "mod": 0,
+              "label": "\u003cspace\u003e"
+            }
           ],
+          "defaultCommandPaths": null,
+          "rawCommandPaths": null,
           "hasDynamicID": false,
           "hasDynamicVerb": false,
           "hasDynamicDescription": false,
@@ -43024,21 +42996,15 @@
           "defaultKeys": null,
           "rawKeys": null,
           "defaultCommandPaths": [
-            "t r w"
+            "s w"
           ],
           "rawCommandPaths": [
             [
               {
                 "name": 256,
-                "str": "t",
+                "str": "s",
                 "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "r",
-                "mod": 0,
-                "label": "r"
+                "label": "s"
               },
               {
                 "name": 256,
@@ -43067,21 +43033,15 @@
           "defaultKeys": null,
           "rawKeys": null,
           "defaultCommandPaths": [
-            "t r w"
+            "s w"
           ],
           "rawCommandPaths": [
             [
               {
                 "name": 256,
-                "str": "t",
+                "str": "s",
                 "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "r",
-                "mod": 0,
-                "label": "r"
+                "label": "s"
               },
               {
                 "name": 256,
@@ -77806,21 +77766,39 @@
           "path": [
             {
               "name": 256,
-              "str": "t",
+              "str": " ",
               "mod": 0,
-              "label": "t"
-            },
+              "label": "\u003cspace\u003e"
+            }
+          ],
+          "class": "same-id-same-verb-alias",
+          "origins": [
+            "submodules",
+            "submodules"
+          ],
+          "ids": [
+            "submodule.enter",
+            "submodule.enter"
+          ],
+          "verbs": [
+            "enter-repository",
+            "enter-repository"
+          ],
+          "declarations": [
+            94,
+            95
+          ]
+        },
+        {
+          "platform": "darwin",
+          "scopeKind": "view",
+          "scope": "submodules",
+          "path": [
             {
               "name": 256,
-              "str": "r",
+              "str": "v",
               "mod": 0,
-              "label": "r"
-            },
-            {
-              "name": 256,
-              "str": "s",
-              "mod": 0,
-              "label": "s"
+              "label": "v"
             }
           ],
           "class": "same-id-same-verb-alias",
@@ -77848,15 +77826,9 @@
           "path": [
             {
               "name": 256,
-              "str": "t",
+              "str": "s",
               "mod": 0,
-              "label": "t"
-            },
-            {
-              "name": 256,
-              "str": "r",
-              "mod": 0,
-              "label": "r"
+              "label": "s"
             },
             {
               "name": 256,
@@ -81132,33 +81104,26 @@
           "description": "Enter",
           "view": "submodules",
           "tag": "",
-          "defaultKeys": null,
-          "rawKeys": null,
-          "defaultCommandPaths": [
-            "t r s"
+          "defaultKeys": [
+            "v",
+            "\u003cspace\u003e"
           ],
-          "rawCommandPaths": [
-            [
-              {
-                "name": 256,
-                "str": "t",
-                "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "r",
-                "mod": 0,
-                "label": "r"
-              },
-              {
-                "name": 256,
-                "str": "s",
-                "mod": 0,
-                "label": "s"
-              }
-            ]
+          "rawKeys": [
+            {
+              "name": 256,
+              "str": "v",
+              "mod": 0,
+              "label": "v"
+            },
+            {
+              "name": 256,
+              "str": " ",
+              "mod": 0,
+              "label": "\u003cspace\u003e"
+            }
           ],
+          "defaultCommandPaths": null,
+          "rawCommandPaths": null,
           "hasDynamicID": false,
           "hasDynamicVerb": false,
           "hasDynamicDescription": false,
@@ -81175,33 +81140,26 @@
           "description": "",
           "view": "submodules",
           "tag": "",
-          "defaultKeys": null,
-          "rawKeys": null,
-          "defaultCommandPaths": [
-            "t r s"
+          "defaultKeys": [
+            "v",
+            "\u003cspace\u003e"
           ],
-          "rawCommandPaths": [
-            [
-              {
-                "name": 256,
-                "str": "t",
-                "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "r",
-                "mod": 0,
-                "label": "r"
-              },
-              {
-                "name": 256,
-                "str": "s",
-                "mod": 0,
-                "label": "s"
-              }
-            ]
+          "rawKeys": [
+            {
+              "name": 256,
+              "str": "v",
+              "mod": 0,
+              "label": "v"
+            },
+            {
+              "name": 256,
+              "str": " ",
+              "mod": 0,
+              "label": "\u003cspace\u003e"
+            }
           ],
+          "defaultCommandPaths": null,
+          "rawCommandPaths": null,
           "hasDynamicID": false,
           "hasDynamicVerb": false,
           "hasDynamicDescription": false,
@@ -81973,21 +81931,15 @@
           "defaultKeys": null,
           "rawKeys": null,
           "defaultCommandPaths": [
-            "t r w"
+            "s w"
           ],
           "rawCommandPaths": [
             [
               {
                 "name": 256,
-                "str": "t",
+                "str": "s",
                 "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "r",
-                "mod": 0,
-                "label": "r"
+                "label": "s"
               },
               {
                 "name": 256,
@@ -82016,21 +81968,15 @@
           "defaultKeys": null,
           "rawKeys": null,
           "defaultCommandPaths": [
-            "t r w"
+            "s w"
           ],
           "rawCommandPaths": [
             [
               {
                 "name": 256,
-                "str": "t",
+                "str": "s",
                 "mod": 0,
-                "label": "t"
-              },
-              {
-                "name": 256,
-                "str": "r",
-                "mod": 0,
-                "label": "r"
+                "label": "s"
               },
               {
                 "name": 256,
@@ -116755,21 +116701,39 @@
           "path": [
             {
               "name": 256,
-              "str": "t",
+              "str": " ",
               "mod": 0,
-              "label": "t"
-            },
+              "label": "\u003cspace\u003e"
+            }
+          ],
+          "class": "same-id-same-verb-alias",
+          "origins": [
+            "submodules",
+            "submodules"
+          ],
+          "ids": [
+            "submodule.enter",
+            "submodule.enter"
+          ],
+          "verbs": [
+            "enter-repository",
+            "enter-repository"
+          ],
+          "declarations": [
+            94,
+            95
+          ]
+        },
+        {
+          "platform": "windows",
+          "scopeKind": "view",
+          "scope": "submodules",
+          "path": [
             {
               "name": 256,
-              "str": "r",
+              "str": "v",
               "mod": 0,
-              "label": "r"
-            },
-            {
-              "name": 256,
-              "str": "s",
-              "mod": 0,
-              "label": "s"
+              "label": "v"
             }
           ],
           "class": "same-id-same-verb-alias",
@@ -116797,15 +116761,9 @@
           "path": [
             {
               "name": 256,
-              "str": "t",
+              "str": "s",
               "mod": 0,
-              "label": "t"
-            },
-            {
-              "name": 256,
-              "str": "r",
-              "mod": 0,
-              "label": "r"
+              "label": "s"
             },
             {
               "name": 256,

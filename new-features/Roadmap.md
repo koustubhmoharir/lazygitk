@@ -1047,6 +1047,8 @@ the new routes.
 
 ## 18. `v` enters submodules; worktree switching moves to `s w`
 
+Complete. Scenario `ui/fork_default_enter_keys` covers the acceptance cases.
+
 Entering the selected submodule needed `t r s`, while `v` only focused the
 submodule's details, and a submodule entry in Files could not be entered at
 all. User decisions:

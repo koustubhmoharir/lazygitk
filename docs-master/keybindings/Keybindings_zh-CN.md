@@ -102,7 +102,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | 复制子模块名称到剪贴板 |  |
-| `` t r s `` | 进入 | 输入子模块 |
+| `` v, <space> `` | 进入 | 输入子模块 |
 | `` <delete> `` | 删除 | 删除选定的子模块及其相应的目录 |
 | `` g u s `` | 更新 | 更新子模块 |
 | `` n s `` | 添加新的子模块 |  |
@@ -117,7 +117,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` n w `` | 新建工作树 |  |
-| `` t r w `` | 切换 | 切换到选中的工作树 |
+| `` s w `` | 切换 | 切换到选中的工作树 |
 | `` o `` | 在编辑器中编写 |  |
 | `` <delete> `` | 删除 | 删除选定的工作树。这将删除工作树的目录以及 .git 目录中有关工作树的元数据。 |
 | `` t f t `` | 通过文本过滤当前视图 |  |

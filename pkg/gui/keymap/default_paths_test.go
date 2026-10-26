@@ -189,9 +189,29 @@ func TestDefaultPathsRepositorySwitchingRoutes(t *testing.T) {
 			t.Errorf("%s is not under s", id)
 		}
 	}
-	// The t r prefix keeps its worktree and submodule children.
-	if _, ok := DefaultPaths("worktree.switch"); !ok {
-		t.Error("worktree.switch lost its t r w route")
+}
+
+// Fork: roadmap item 18. Worktree switching moves to s w, and submodule entry
+// is inspection (v and Space), so no default route remains under t r.
+func TestDefaultPathsSubmoduleEnterAndWorktreeSwitchRoutes(t *testing.T) {
+	for id, want := range map[string]string{"worktree.switch": "s w", "submodule.enter": "v"} {
+		paths, ok := DefaultPaths(id)
+		if !ok || len(paths) == 0 || pathString(paths[0]) != want {
+			t.Errorf("DefaultPaths(%q) = (%v, %t), want first path %q", id, paths, ok, want)
+		}
+	}
+	paths, _ := DefaultPaths("submodule.enter")
+	got := make([]string, 0, len(paths))
+	for _, path := range paths {
+		got = append(got, pathString(path))
+	}
+	assert.Equal(t, []string{"v", "space"}, got)
+	for id, paths := range defaultPaths {
+		for _, path := range paths {
+			if label := pathString(path); label == "t r" || strings.HasPrefix(label, "t r ") {
+				t.Errorf("%s still uses %q", id, label)
+			}
+		}
 	}
 }
 

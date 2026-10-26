@@ -469,7 +469,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Copiar o nome do submódulo para área de transferência |  |
-| `` t r s `` | Enter | Enter submodule. After entering the submodule, you can press `<esc>` to escape back to the parent repo. |
+| `` v, <space> `` | Enter | Enter submodule. After entering the submodule, you can press `<esc>` to escape back to the parent repo. |
 | `` <delete> `` | Remover | Remova o submódulo selecionado e o diretório correspondente. |
 | `` g u s `` | Atualizar | Atualizar submódulo selecionado. |
 | `` n s `` | Novo submódulo |  |
@@ -491,7 +491,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` n w `` | Nova árvore de trabalho |  |
-| `` t r w `` | Switch | Mudar para a árvore de trabalho selecionada. |
+| `` s w `` | Switch | Mudar para a árvore de trabalho selecionada. |
 | `` o `` | Abrir no editor |  |
 | `` <delete> `` | Remover | Remove the selected worktree. This will both delete the worktree's directory, as well as metadata about the worktree in the .git directory. |
 | `` t f t `` | Filtrar a visualização atual por texto |  |

@@ -181,7 +181,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` n w `` | New worktree |  |
-| `` t r w `` | Switch | Switch to the selected worktree. |
+| `` s w `` | Switch | Switch to the selected worktree. |
 | `` o `` | Open in editor |  |
 | `` <delete> `` | Remove | Remove the selected worktree. This will both delete the worktree's directory, as well as metadata about the worktree in the .git directory. |
 | `` t f t `` | Filter the current view by text |  |
@@ -294,7 +294,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | 서브모듈 이름을 클립보드에 복사 |  |
-| `` t r s `` | Enter | 서브모듈 열기 |
+| `` v, <space> `` | Enter | 서브모듈 열기 |
 | `` <delete> `` | Remove | Remove the selected submodule and its corresponding directory. |
 | `` g u s `` | Update | 서브모듈 업데이트 |
 | `` n s `` | 새로운 서브모듈 추가 |  |

@@ -125,6 +125,23 @@ func TestForkProjectionContextControlsAndExplicitCommandOverride(t *testing.T) {
 	assert.False(t, bindings[5].DefaultCommand)
 }
 
+// Fork: roadmap item 18. Submodules enter on v and Space, Worktrees keeps v for
+// focusing details, and worktree switching is s w.
+func TestForkSubmoduleEnterAndWorktreeSwitchRoutes(t *testing.T) {
+	gui := newForkKeymapTestGui(t)
+	bindings, err := gui.projectForkBindings([]*types.Binding{
+		{CommandID: "submodule.enter", ViewName: "submodules"},
+		{CommandID: "navigation.focus-diff", ViewName: "worktrees"},
+		{CommandID: "worktree.switch", ViewName: "worktrees"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, []string{"v", "<space>"}, bindings[0].KeyLabels())
+	assert.Equal(t, []string{"v", "<space>"}, bindings[1].KeyLabels())
+	assert.Equal(t, []string{"s w"}, bindings[2].KeyLabels())
+}
+
 func TestForkRefreshAliasSharesGlobalIdentityAndOverrides(t *testing.T) {
 	gui := newForkKeymapTestGui(t)
 	for _, paths := range []config.CommandBindingPaths{nil, {{"<f6>"}}} {

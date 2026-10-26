@@ -1,12 +1,11 @@
 # Current work
 
-Item 18: `v` enters submodules; worktree switching moves to `s w`.
-Scope and decisions are in [Roadmap.md](Roadmap.md#18-v-enters-submodules-worktree-switching-moves-to-s-w).
+Item 19: `f` fetches from every pane.
+Scope and decisions are in [Roadmap.md](Roadmap.md#19-f-fetches-from-every-pane).
 
-- Keymap and handlers: `submodule.enter` joins the `v`/Space inspection route
-  for Submodules, Files `v` enters a submodule entry, `worktree.switch` moves
-  to `s w`; unit tests.
-- Integration scenarios for the acceptance cases under real defaults.
+- Global fork binding for `repo.fetch` replacing the Files-only one, with
+  Remotes keeping `remote.fetch`; unit tests.
+- Integration scenario for the acceptance cases under real defaults.
 - Docs, generated key docs, merge guide; mark the item complete.
 
 ## How this tracker works
