@@ -1,7 +1,9 @@
 package keymap
 
 import (
+	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
@@ -80,7 +82,7 @@ func BuildCommandTree(bindings []*types.Binding, view string) *CommandTree {
 	}
 
 	pruneCommandTreeOwners(root, view)
-	sortCommandTree(root)
+	sortCommandTree(root, nil)
 	return root
 }
 
@@ -123,11 +125,40 @@ func nodeForKey(node *CommandTree, key gocui.Key) *CommandTree {
 	return child
 }
 
-func sortCommandTree(tree *CommandTree) {
+// sortCommandTree orders each node's children in default declaration order.
+// Keys that no default declares follow, alphabetically by label.
+func sortCommandTree(tree *CommandTree, prefix []gocui.Key) {
+	rank := func(key gocui.Key) (int, bool) {
+		declared, ok := defaultPathRanks[commandPathID(extendCommandPath(prefix, key))]
+		return declared, ok
+	}
 	sort.SliceStable(tree.Children, func(i, j int) bool {
-		return config.LabelForKey(tree.Children[i].Key) < config.LabelForKey(tree.Children[j].Key)
+		a, b := tree.Children[i], tree.Children[j]
+		rankA, declaredA := rank(a.Key)
+		rankB, declaredB := rank(b.Key)
+		if declaredA != declaredB {
+			return declaredA
+		}
+		if declaredA && rankA != rankB {
+			return rankA < rankB
+		}
+		return config.LabelForKey(a.Key) < config.LabelForKey(b.Key)
 	})
 	for i := range tree.Children {
-		sortCommandTree(tree.Children[i].Tree)
+		sortCommandTree(tree.Children[i].Tree, extendCommandPath(prefix, tree.Children[i].Key))
 	}
+}
+
+// extendCommandPath returns a new path, never sharing prefix's backing array.
+func extendCommandPath(prefix []gocui.Key, key gocui.Key) []gocui.Key {
+	return append(prefix[:len(prefix):len(prefix)], key)
+}
+
+// commandPathID identifies a normalized key path for defaultPathRanks.
+func commandPathID(path []gocui.Key) string {
+	var b strings.Builder
+	for _, key := range path {
+		fmt.Fprintf(&b, "%d/%d/%q;", key.KeyName(), key.Mod(), key.Str())
+	}
+	return b.String()
 }

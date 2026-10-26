@@ -41,18 +41,84 @@ func TestBuildCommandTreeRetainsSameViewCandidateOrder(t *testing.T) {
 	assert.Equal(t, []*types.Binding{first, second}, childTree(t, root, key('x')).Bindings)
 }
 
-func TestBuildCommandTreeCaseFoldsAndSortsChildrenByLabel(t *testing.T) {
-	upper := &types.Binding{Keys: []gocui.Key{gocui.NewKeyRune('X')}}
-	lower := &types.Binding{Keys: []gocui.Key{key('x')}}
-	a := &types.Binding{Keys: []gocui.Key{key('a')}}
-	root := BuildCommandTree([]*types.Binding{upper, lower, a}, "files")
+// j and k are not declared by defaults, so these children sort by label.
+func TestBuildCommandTreeCaseFoldsAndSortsUndeclaredChildrenByLabel(t *testing.T) {
+	upper := &types.Binding{Keys: []gocui.Key{gocui.NewKeyRune('K')}}
+	lower := &types.Binding{Keys: []gocui.Key{key('k')}}
+	j := &types.Binding{Keys: []gocui.Key{key('j')}}
+	root := BuildCommandTree([]*types.Binding{upper, lower, j}, "files")
 
 	if len(root.Children) != 2 {
 		t.Fatalf("expected 2 root children, got %d", len(root.Children))
 	}
-	assert.Equal(t, "a", config.LabelForKey(root.Children[0].Key))
-	assert.Equal(t, "x", config.LabelForKey(root.Children[1].Key))
+	assert.Equal(t, "j", config.LabelForKey(root.Children[0].Key))
+	assert.Equal(t, "k", config.LabelForKey(root.Children[1].Key))
 	assert.Equal(t, []*types.Binding{upper, lower}, root.Children[1].Tree.Bindings)
+}
+
+// childLabels returns the child labels of tree in order.
+func childLabels(tree *CommandTree) []string {
+	labels := make([]string, 0, len(tree.Children))
+	for _, edge := range tree.Children {
+		labels = append(labels, config.LabelForKey(edge.Key))
+	}
+	return labels
+}
+
+func TestBuildCommandTreeOrdersDiffPrefixByDeclaration(t *testing.T) {
+	ids := []string{"diff.commit.worktree", "diff.commit.previous", "diff.commit.selected-commit"}
+	bindings := make([]*types.Binding, 0, len(ids))
+	for _, id := range ids {
+		paths, ok := DefaultPaths(id)
+		if !ok {
+			t.Fatalf("missing default paths for %s", id)
+		}
+		bindings = append(bindings, &types.Binding{CommandID: id, CommandPaths: paths})
+	}
+	root := BuildCommandTree(bindings, "commits")
+
+	assert.Equal(t, []string{"w", "p", "c"}, childLabels(childTree(t, root, key('d'))))
+}
+
+func TestBuildCommandTreeOrdersTPrefixByDeclaration(t *testing.T) {
+	ids := []string{
+		"diff.commit.external", "diff.history-file.working-file", "diff.options-menu", "diff.toggle-whitespace", "diff.renderer.next", "diff.context.increase",
+		"worktree.switch", "submodule.enter", "filter.open", "file.filter-menu", "ui.file-tree.toggle", "branch.sort-menu",
+		"navigation.diff.next-hunk", "selection.diff.toggle-hunk",
+	}
+	bindings := make([]*types.Binding, 0, len(ids))
+	for _, id := range ids {
+		paths, ok := DefaultPaths(id)
+		if !ok {
+			t.Fatalf("missing default paths for %s", id)
+		}
+		bindings = append(bindings, &types.Binding{CommandID: id, CommandPaths: paths})
+	}
+	root := BuildCommandTree(bindings, "")
+
+	// Each group keeps the rank of its first declaration: t r, t d, t f, t t, t s, t n, t h.
+	tPrefix := childTree(t, root, key('t'))
+	assert.Equal(t, []string{"r", "d", "f", "t", "s", "n", "h"}, childLabels(tPrefix))
+	assert.Equal(t, []string{"e", "f", "c", "w", "n", "+"}, childLabels(childTree(t, tPrefix, key('d'))))
+}
+
+func TestBuildCommandTreeOrdersUserOnlyRoutesAfterDeclaredOnes(t *testing.T) {
+	defaults := &types.Binding{CommandID: "diff.commit.worktree", CommandPaths: mustDefaultPaths(t, "diff.commit.worktree")}
+	userZ := &types.Binding{CommandID: "user-z", CommandPaths: [][]gocui.Key{{key('d'), key('z')}}}
+	userA := &types.Binding{CommandID: "user-a", CommandPaths: [][]gocui.Key{{key('d'), key('a')}}}
+	userK := &types.Binding{CommandID: "user-k", CommandPaths: [][]gocui.Key{{key('d'), key('k')}}}
+	root := BuildCommandTree([]*types.Binding{userZ, defaults, userA, userK}, "")
+
+	assert.Equal(t, []string{"w", "a", "k", "z"}, childLabels(childTree(t, root, key('d'))))
+}
+
+func mustDefaultPaths(t *testing.T, id string) [][]gocui.Key {
+	t.Helper()
+	paths, ok := DefaultPaths(id)
+	if !ok {
+		t.Fatalf("missing default paths for %s", id)
+	}
+	return paths
 }
 
 func TestBuildCommandTreePreservesCtrlAndFullPathsAreNotContinuations(t *testing.T) {

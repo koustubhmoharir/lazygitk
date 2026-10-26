@@ -3,8 +3,6 @@
 Item 17: working-file diffs on `d` and prefix menus in keymap order.
 Scope and decisions are in [Roadmap.md](Roadmap.md#17-working-file-diffs-on-d-and-prefix-menus-in-keymap-order).
 
-- Prefix menus: order children by default-keymap declaration, then
-  user-only keys alphabetically; unit tests.
 - Files `d w` / `d s` / `d c`: bindings, routes, disabled reasons, i18n;
   unit and integration tests with a fake difftool.
 - Docs, generated key docs, merge guide; mark the item complete.

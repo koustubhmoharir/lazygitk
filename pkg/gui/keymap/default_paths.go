@@ -9,10 +9,13 @@ import (
 
 // defaultPaths contains fork-owned normal-command routes. Paths are compiled
 // once from config labels and normalized for command-key matching.
-var defaultPaths = buildDefaultPaths()
+// defaultPathRanks orders every path prefix by its first declaration in
+// defaultPaths, keyed by commandPathID.
+var defaultPaths, defaultPathRanks = buildDefaultPaths()
 
-func buildDefaultPaths() map[string][][]gocui.Key {
+func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	paths := map[string][][]gocui.Key{}
+	ranks := map[string]int{}
 	add := func(ids, labels string) {
 		path := make([]gocui.Key, 0, strings.Count(labels, " ")+1)
 		for _, label := range strings.Fields(labels) {
@@ -21,6 +24,12 @@ func buildDefaultPaths() map[string][][]gocui.Key {
 				panic("invalid internal default key label: " + label)
 			}
 			path = append(path, gocui.NormalizeCommandKey(key))
+		}
+		for i := range path {
+			id := commandPathID(path[:i+1])
+			if _, known := ranks[id]; !known {
+				ranks[id] = len(ranks)
+			}
 		}
 		for _, id := range strings.Fields(ids) {
 			paths[id] = append(paths[id], append([]gocui.Key(nil), path...))
@@ -184,7 +193,7 @@ func buildDefaultPaths() map[string][][]gocui.Key {
 		}
 	}
 
-	return paths
+	return paths, ranks
 }
 
 // DefaultPaths returns cloned default normal-command paths for a known ID.
