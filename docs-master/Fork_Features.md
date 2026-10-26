@@ -282,10 +282,14 @@ natively on Windows with PowerShell 7.
 
 The push menu shows the source commit, remote, destination and options, and
 **Push this branch** pushes directly from it, also after typing a remote or
-destination. A separate review appears only when setting upstream would
-replace different existing tracking, and for force-with-lease. If the branch
-moved after the menu opened, the menu reopens with fresh details instead of
-pushing.
+destination. A branch with no push remote starts with the repository's remote
+when it has exactly one, so **Push this branch** and force-with-lease need no
+prompt; **Choose remote** still lets you type another. With no remote or
+several, the remote prompt opens empty, and a push remote configured as a URL
+always opens its "named remote required" prompt. A separate review appears
+only when setting upstream would replace different existing tracking, and for
+force-with-lease. If the branch moved after the menu opened, the menu reopens
+with fresh details instead of pushing.
 
 ## Fast-forward
 

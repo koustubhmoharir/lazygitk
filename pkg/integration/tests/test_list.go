@@ -641,6 +641,8 @@ var tests = []*components.IntegrationTest{
 	sync.ForcePushRemoteBranchNotStoredLocally,
 	sync.ForcePushTriangular,
 	sync.ForkFetchFromAnyPane,
+	sync.ForkPushNewBranchSingleRemote,
+	sync.ForkPushNewBranchTwoRemotes,
 	sync.Pull,
 	sync.PullAndSetUpstream,
 	sync.PullCurrentBranchReview,

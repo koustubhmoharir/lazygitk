@@ -1045,3 +1045,57 @@ func TestBranchSyncPushTrackingReplacementEscapeReturnsToMenu(t *testing.T) {
 		t.Fatal("Escape on the review pushed the branch")
 	}
 }
+
+func TestBranchSyncPushDefaultsToSoleRemote(t *testing.T) {
+	for _, tc := range []struct {
+		name       string
+		pushRemote string
+		extra      string
+		wantPrompt bool
+		wantTitle  string
+	}{
+		{name: "one remote without push remote", wantPrompt: false},
+		{name: "several remotes without push remote", extra: "upstream", wantPrompt: true},
+		{name: "URL push remote with one remote", pushRemote: "https://example.invalid/push.git", wantPrompt: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newBranchSyncPushFixture(t)
+			if tc.pushRemote == "" {
+				branchSyncPushGit(t, f.root, "config", "--unset", "branch.topic.pushRemote")
+			} else {
+				branchSyncPushGit(t, f.root, "config", "branch.topic.pushRemote", tc.pushRemote)
+			}
+			if tc.extra != "" {
+				branchSyncPushGit(t, f.root, "remote", "add", tc.extra, f.remote)
+			}
+			f.open(t, branchSyncSource{name: "topic", selected: true})
+			if err := menuItem(t, f.ui.menus[0], "branch.push-selected.execute").OnPress(); err != nil {
+				t.Fatal(err)
+			}
+			if got := len(f.ui.prompts) > 0; got != tc.wantPrompt {
+				t.Fatalf("remote prompt opened = %t, want %t", got, tc.wantPrompt)
+			}
+			if !tc.wantPrompt {
+				return
+			}
+			if got := f.ui.prompts[0].InitialContent; got != "" {
+				t.Fatalf("prompt was prefilled with %q, want empty", got)
+			}
+		})
+	}
+}
+
+func TestBranchSyncPushSoleRemotePrefillsChooseRemote(t *testing.T) {
+	f := newBranchSyncPushFixture(t)
+	branchSyncPushGit(t, f.root, "config", "--unset", "branch.topic.pushRemote")
+	f.open(t, branchSyncSource{name: "topic", selected: true})
+	if !strings.Contains(f.ui.menus[0].Prompt, "origin") {
+		t.Fatalf("menu summary does not name the sole remote: %q", f.ui.menus[0].Prompt)
+	}
+	if err := menuItem(t, f.ui.menus[0], "branch.push-selected.remote").OnPress(); err != nil {
+		t.Fatal(err)
+	}
+	if len(f.ui.prompts) != 1 || f.ui.prompts[0].InitialContent != "origin" {
+		t.Fatalf("Choose remote did not open a prompt prefilled with origin: %+v", f.ui.prompts)
+	}
+}

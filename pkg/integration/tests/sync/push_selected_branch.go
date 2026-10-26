@@ -31,12 +31,12 @@ var PushSelectedBranch = NewIntegrationTest(NewIntegrationTestArgs{
 			NavigateToLine(Contains("topic")).
 			Press(keys.Universal.Push)
 
+		// The menu names the sole remote, so Push this branch needs no prompt.
 		t.ExpectPopup().Menu().
 			Title(Equals("Push selected branch")).
+			Content(Contains("Remote: \"origin\"")).
 			Select(Contains("Push this branch")).
 			Confirm()
-
-		t.ExpectPopup().Prompt().Title(Equals("Remote name")).Type("origin").Confirm()
 
 		// The menu summary is the review for an ordinary push, so there is no
 		// second confirmation. The assertions below wait for the push to finish.

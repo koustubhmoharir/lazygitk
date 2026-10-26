@@ -32,7 +32,7 @@ var PushAndAutoSetUpstream = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).
 			Select(MatchesRegexp("^Choose remote")).Confirm()
-		t.ExpectPopup().Prompt().Title(Equals("Remote name")).Type("origin").Confirm()
+		t.ExpectPopup().Prompt().Title(Equals("Remote name")).InitialText(Equals("origin")).Confirm()
 		// Push completion refreshes the remote branch history; wait for that
 		// visible result before checking the bare remote and saved config.
 		t.Views().Remotes().Focus().Lines(Contains("origin")).PressEnter()

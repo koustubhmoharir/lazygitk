@@ -31,7 +31,7 @@ var PushAndSetUpstream = NewIntegrationTest(NewIntegrationTestArgs{
 			Select(Contains("Toggle set upstream for selected local branch")).Confirm()
 		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).
 			Select(MatchesRegexp("^Choose remote")).Confirm()
-		t.ExpectPopup().Prompt().Title(Equals("Remote name")).Type("origin").Confirm()
+		t.ExpectPopup().Prompt().Title(Equals("Remote name")).InitialText(Equals("origin")).Confirm()
 
 		t.Views().Status().EventuallyContent(Contains("✓ repo → master"))
 		t.Shell().RunShellCommand("git --git-dir=../origin rev-parse --verify refs/heads/master > .git/assert-push-upstream-remote")

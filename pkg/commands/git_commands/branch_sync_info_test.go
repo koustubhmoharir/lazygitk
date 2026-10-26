@@ -213,3 +213,28 @@ func mustRead(t *testing.T, path string) []byte {
 	}
 	return data
 }
+
+func TestBranchSyncInfoSoleRemote(t *testing.T) {
+	root, _ := branchSyncTestRepo(t)
+	gitTest(t, root, "branch", "selected")
+
+	info, err := branchSyncTestCommands(t, root).InspectBranchSync("selected")
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Empty(t, info.SoleRemote, "no remote configured")
+
+	gitTest(t, root, "remote", "add", "origin", "https://example.invalid/origin.git")
+	info, err = branchSyncTestCommands(t, root).InspectBranchSync("selected")
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, "origin", info.SoleRemote)
+
+	gitTest(t, root, "remote", "add", "upstream", "https://example.invalid/upstream.git")
+	info, err = branchSyncTestCommands(t, root).InspectBranchSync("selected")
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Empty(t, info.SoleRemote, "several remotes configured")
+}

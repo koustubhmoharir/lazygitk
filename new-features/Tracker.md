@@ -1,12 +1,14 @@
 # Current work
 
-Item 20: push a new branch to the only remote without prompting.
-Scope and decisions are in [Roadmap.md](Roadmap.md#20-push-a-new-branch-to-the-only-remote-without-prompting).
+Item 21: copy to the clipboard with OSC 52.
+Scope and decisions are in [Roadmap.md](Roadmap.md#21-copy-to-the-clipboard-with-osc-52).
 
-- Read the remote list with the branch sync information and default the push
-  flow's remote when Git reports none and exactly one exists; unit tests.
-- Integration scenarios for one and two remotes, and force-with-lease.
-- Docs, merge guide if a seam changes; mark the item complete.
+- Probe how tcell emits OSC 52 (terminal detection, tmux) and decide whether
+  to use `Screen.SetClipboard` or write the sequence directly.
+- Route `CopyToClipboard` through OSC 52 unless `os.copyToClipboardCmd` is
+  set; unit tests.
+- Integration check of the emitted sequence, docs, merge guide; mark the item
+  complete.
 
 ## How this tracker works
 

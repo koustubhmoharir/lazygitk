@@ -1085,6 +1085,9 @@ palette lists one repository fetch; generated key docs show `f` as global.
 
 ## 20. Push a new branch to the only remote without prompting
 
+Complete. Stacked pushes build their options with the same constructor and
+share the default. Force-with-lease is covered by a unit test, not a scenario.
+
 A branch with no push remote or upstream (`%(push:remotename)` is empty)
 opened the remote prompt when the user chose **Push this branch**, even when
 the repository has a single remote. User decision:

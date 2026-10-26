@@ -27,7 +27,11 @@ type BranchSyncInfo struct {
 	UpstreamTrackingRef string
 	PushRemote          string
 	PushRef             string
-	Reservation         BranchSyncReservation
+	// SoleRemote is the only configured remote, as git remote reports it in
+	// the same snapshot as the branch metadata above. It is empty when zero or
+	// several remotes are configured. A string keeps the struct comparable.
+	SoleRemote  string
+	Reservation BranchSyncReservation
 }
 
 // InspectBranchSync reads sync metadata for a literal local branch name.
@@ -69,6 +73,13 @@ func (self *SyncCommands) InspectBranchSync(name string) (BranchSyncInfo, error)
 	if info.OID != state.oid {
 		return BranchSyncInfo{}, fmt.Errorf("branch %q changed while being inspected; retry inspection", name)
 	}
+	remotes, err := self.remoteNames()
+	if err != nil {
+		return BranchSyncInfo{}, err
+	}
+	if len(remotes) == 1 {
+		info.SoleRemote = remotes[0]
+	}
 	info.Name = name
 	info.HeadRef, info.HeadOID = headRef, headOID
 	occupation, err := branches.branchOccupancy(fullRef, true)
@@ -79,6 +90,17 @@ func (self *SyncCommands) InspectBranchSync(name string) (BranchSyncInfo, error)
 		info.Reservation = BranchSyncReservation{GitDir: occupation.GitDir, Current: occupation.Current, Kind: occupation.Kind}
 	}
 	return info, nil
+}
+
+// remoteNames lists configured remote names. Git forbids whitespace in remote
+// names, so splitting on whitespace is exact.
+func (self *SyncCommands) remoteNames() ([]string, error) {
+	stdout, err := self.cmd.New(NewGitCmd("remote").ToArgv()).
+		SetWd(self.repoPaths.WorktreePath()).DontLog().RunWithOutput()
+	if err != nil {
+		return nil, err
+	}
+	return strings.Fields(stdout), nil
 }
 
 func parseBranchSyncInfoRows(stdout, exactRef string) (BranchSyncInfo, error) {

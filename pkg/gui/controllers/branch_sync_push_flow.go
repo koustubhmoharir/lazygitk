@@ -38,6 +38,11 @@ func newBranchSyncPushFlow(target *branchSyncTarget, info git_commands.BranchSyn
 	flow.opts = git_commands.BranchPushOptions{Remote: info.PushRemote, DestinationRef: info.PushRef, RequireCurrent: !target.source.selected, Submodules: git_commands.BranchPushNoSubmoduleRecursion}
 	if looksLikeBranchSyncRemoteURL(flow.opts.Remote) {
 		flow.opts.Remote = ""
+	} else if flow.opts.Remote == "" && info.SoleRemote != "" {
+		// Fork (roadmap 20): with no push remote and a single configured remote,
+		// start with that remote so Push this branch needs no prompt. The menu
+		// summary names it, and Choose remote still opens the prompt.
+		flow.opts.Remote = info.SoleRemote
 	}
 	if !strings.HasPrefix(flow.opts.DestinationRef, "refs/heads/") || flow.opts.DestinationRef == "refs/heads/" {
 		flow.opts.DestinationRef = "refs/heads/" + info.Name

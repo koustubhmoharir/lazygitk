@@ -40,14 +40,13 @@ var PushSelectedBranchStaleReview = NewIntegrationTest(NewIntegrationTestArgs{
 		// the fresh OID and does not contact the remote.
 		t.Shell().RunCommand([]string{"git", "update-ref", "refs/heads/topic", newTopicOID, oldTopicOID})
 		menu.Select(Contains("Push this branch")).Confirm()
-		t.ExpectPopup().Prompt().Title(Equals("Remote name")).Type("origin").Confirm()
 
 		freshMenu := t.ExpectPopup().Menu().
 			Title(Equals("Push selected branch")).
 			Content(Contains(newTopicOID[:7]))
 		assertRemoteUnchanged()
 
-		// The remote is now known, so the fresh menu pushes directly.
+		// The fresh menu already names origin, so it pushes directly.
 		freshMenu.Select(Contains("Push this branch")).Confirm()
 
 		// Confirm waits for the push worker and its refresh to finish.
