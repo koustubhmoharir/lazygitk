@@ -1101,6 +1101,25 @@ Acceptance: in a repository with one remote, pushing a new branch reaches that
 remote with one menu choice and no prompt; with two remotes the prompt still
 opens; force-with-lease on a new branch uses the single remote too.
 
+## 21. Copy to the clipboard with OSC 52
+
+Copy actions failed when no clipboard tool (xclip, xsel, wl-copy and the like)
+was found, which is the usual case in containers and over SSH. User decisions:
+
+- Copying always writes the text with the OSC 52 terminal sequence, so it
+  reaches the clipboard of the terminal the user is looking at. No local tool
+  is consulted, even when one exists.
+- An explicitly configured `os.copyToClipboardCmd` still takes precedence.
+- OSC 52 cannot report whether the terminal accepted the text, so the copy
+  succeeds from lazygit's side. A terminal without OSC 52 support (for
+  example VTE-based ones) silently drops it; the docs say so.
+- Reading the clipboard (pasting into the commit message) is unchanged.
+
+Acceptance: every `y` copy action emits one OSC 52 sequence with the base64
+text and shows no "no clipboard tool" error when no tool is installed; a
+configured `os.copyToClipboardCmd` runs instead; the sequence is emitted
+correctly inside tmux with `set-clipboard on`.
+
 ## Verification and repository workflow
 
 During implementation use narrow package tests and named integration scenarios
