@@ -34,9 +34,10 @@ var ForkDefaultKeymap = NewIntegrationTest(NewIntegrationTestArgs{
 			Press(config.Keybinding{"<right>"}).SelectedLine(Contains("a.txt")).
 			Press(config.Keybinding{"<left>"}).SelectedLine(Contains("dir")).
 			Press(config.Keybinding{"<left>"}).Press(config.Keybinding{"<left>"})
-		// Inapplicable history keys consume both cases without opening a dialog or
-		// falling through to the former Files action.
-		files.Press(config.Keybinding{"d"}).Press(config.Keybinding{"D"}).Press(config.Keybinding{"R"}).IsFocused()
+		// An inapplicable key consumes both cases without opening a dialog or
+		// falling through to the former Files action. (d has Files routes since
+		// item 17, so it is no longer inapplicable here.)
+		files.Press(config.Keybinding{"r"}).Press(config.Keybinding{"R"}).IsFocused()
 		t.Views().Menu().IsInvisible()
 		t.Views().Confirmation().IsInvisible()
 		files.Press(config.Keybinding{"<space>"}).PressEnter()
