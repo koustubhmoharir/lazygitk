@@ -1012,6 +1012,32 @@ leaves the branch unmoved and shows Git's error; an ignored file in the way
 opens the approval menu; a mixed multi-selection moves the behind branches,
 stays silent about up-to-date ones and summarizes the rest.
 
+## 17. Working-file diffs on `d` and prefix menus in keymap order
+
+The `d` diff routes existed only in commit and historical-file lists, and prefix
+menus listed their keys alphabetically (`d`: `c`, `p`, `w`). User decisions:
+
+- In Files, three external-difftool comparisons take the selected file, or the
+  selected directory as a directory diff, with the left side as the base:
+
+| Path | Left (base) | Right | Command ID |
+| --- | --- | --- | --- |
+| `d w` | HEAD | working file | `diff.working-file.head` |
+| `d s` | index (staged) | working file | `diff.working-file.staged` |
+| `d c` | pasted commit hash | working file | `diff.working-file.selected-commit` |
+
+  There is no `d p` in Files. An untracked file disables all three with a
+  reason; directories follow Git and leave untracked files out. A staged
+  rename includes its old path for `d w` and `d c`. `t d e` is unchanged.
+- Prefix menus list entries in the order the default keymap declares them
+  (`d` in Commits: `w`, `p`, `c`; in Files: `w`, `s`, `c`). Keys that exist only
+  in user configuration follow, alphabetically.
+
+Acceptance: each Files comparison launches the difftool with the agreed
+endpoints for a file and a directory; untracked selections are disabled with a
+reason; the `d` and `t` menus follow declaration order; generated key docs list
+the new routes.
+
 ## Verification and repository workflow
 
 During implementation use narrow package tests and named integration scenarios
