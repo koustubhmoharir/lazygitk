@@ -981,6 +981,9 @@ renamed keys.
 
 ## 16. Prompt-free fast-forward from local tracking refs
 
+Complete. Off-branch moves and the checked-out branch run under per-branch
+busy marks, as other sync actions do.
+
 `g f` (`branch.fast-forward-selected`) replaces item 7's fetch-and-review
 route. The user fetches, reviews what came in, then fast-forwards; the
 fast-forward must not fetch again or ask for a second review. User decisions:

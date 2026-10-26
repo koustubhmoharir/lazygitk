@@ -1,14 +1,13 @@
 # Current work
 
-Item 16: prompt-free fast-forward from local tracking refs.
-Scope and decisions are in [Roadmap.md](Roadmap.md#16-prompt-free-fast-forward-from-local-tracking-refs).
+Item 17: working-file diffs on `d` and prefix menus in keymap order.
+Scope and decisions are in [Roadmap.md](Roadmap.md#17-working-file-diffs-on-d-and-prefix-menus-in-keymap-order).
 
-- Controller: the new `g f` flow over `InspectUpstreamFastForward`, running
-  the captured ff-only integration in-process, removal of the menu route and the unused
-  `fastForwardOnly` paths, tooltip and strings; unit tests.
-- Integration scenarios: rewrite the existing fast-forward scenarios and add
-  the acceptance cases.
-- Docs, merge guide; mark the item complete.
+- Prefix menus: order children by default-keymap declaration, then
+  user-only keys alphabetically; unit tests.
+- Files `d w` / `d s` / `d c`: bindings, routes, disabled reasons, i18n;
+  unit and integration tests with a fake difftool.
+- Docs, generated key docs, merge guide; mark the item complete.
 
 ## How this tracker works
 
