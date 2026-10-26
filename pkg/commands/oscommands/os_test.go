@@ -217,3 +217,76 @@ func TestOSCommandAppendLineToFile(t *testing.T) {
 		_ = os.RemoveAll(s.path)
 	}
 }
+
+// Fork: copies use the configured command when there is one, and otherwise
+// the injected terminal clipboard writer (roadmap item 21).
+func TestCopyToClipboardFork(t *testing.T) {
+	type scenario struct {
+		name   string
+		cmd    string
+		writer bool
+		// nil when no command should run
+		runner  func(t *testing.T) *FakeCmdObjRunner
+		text    string
+		wantErr string
+		// the text the writer receives; nil when it must not be called
+		wantWrites []string
+	}
+
+	scenarios := []scenario{
+		{
+			name:   "configured command runs and the writer is not used",
+			cmd:    "printf '%s' {{text}} > clipboard",
+			writer: true,
+			runner: func(t *testing.T) *FakeCmdObjRunner {
+				t.Helper()
+				return NewFakeRunner(t).
+					ExpectArgs([]string{"bash", "-c", `printf '%s' "hello" > clipboard`}, "", nil)
+			},
+			text: "hello",
+		},
+		{
+			name:       "without a command the writer gets the exact text",
+			writer:     true,
+			text:       "line one\nline two ✓",
+			wantWrites: []string{"line one\nline two ✓"},
+		},
+		{
+			name:    "without a command and without a writer an error is returned",
+			text:    "hello",
+			wantErr: "no terminal clipboard writer is configured",
+		},
+	}
+
+	for _, s := range scenarios {
+		t.Run(s.name, func(t *testing.T) {
+			c := NewDummyOSCommand()
+			c.Platform.OS = "darwin"
+			c.UserConfig().OS.CopyToClipboardCmd = s.cmd
+			var runner *FakeCmdObjRunner
+			if s.runner != nil {
+				runner = s.runner(t)
+				c.Cmd = NewDummyCmdObjBuilder(runner)
+			}
+
+			var writes []string
+			if s.writer {
+				c.SetClipboardWriter(func(text string) error {
+					writes = append(writes, text)
+					return nil
+				})
+			}
+
+			err := c.CopyToClipboard(s.text)
+			if s.wantErr != "" {
+				assert.ErrorContains(t, err, s.wantErr)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, s.wantWrites, writes)
+			if runner != nil {
+				runner.CheckForMissingCalls()
+			}
+		})
+	}
+}

@@ -26,6 +26,10 @@ type OSCommand struct {
 	isDirEmptyFn func(string) (bool, error)
 	removeDirFn  func(string) error
 
+	// Fork: writes text to the terminal clipboard with OSC 52. Injected with
+	// SetClipboardWriter because this package must not import gocui.
+	writeClipboardFn func(string) error
+
 	Cmd *CmdObjBuilder
 
 	tempDir string
@@ -256,7 +260,20 @@ func (c *OSCommand) CopyToClipboard(str string) error {
 		return c.Cmd.NewShell(cmdStr, c.UserConfig().OS.ShellFunctionsFile).Run()
 	}
 
-	return clipboard.WriteAll(str)
+	// Fork: the default is OSC 52 through the terminal instead of upstream's
+	// atotto/clipboard tool lookup, which fails in containers and over SSH.
+	// See roadmap item 21 and SetClipboardWriter.
+	if c.writeClipboardFn == nil {
+		return errors.New("no terminal clipboard writer is configured")
+	}
+	return c.writeClipboardFn(str)
+}
+
+// Fork: SetClipboardWriter sets the function that CopyToClipboard uses when
+// os.copyToClipboardCmd is not configured. The GUI passes a function that
+// writes an OSC 52 sequence through the terminal screen (fork_clipboard.go).
+func (c *OSCommand) SetClipboardWriter(writeFn func(string) error) {
+	c.writeClipboardFn = writeFn
 }
 
 func (c *OSCommand) PasteFromClipboard() (string, error) {

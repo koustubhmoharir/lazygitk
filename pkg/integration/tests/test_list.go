@@ -705,6 +705,7 @@ var tests = []*components.IntegrationTest{
 	ui.ForkCommandBindingOverrides,
 	ui.ForkCopyCommitKeys,
 	ui.ForkCopyFileKeys,
+	ui.ForkCopyOsc52,
 	ui.ForkCopyRefCommitKeys,
 	ui.ForkDefaultBranchPlacementCheckout,
 	ui.ForkDefaultCherryPick,

@@ -1,14 +1,7 @@
 # Current work
 
-Item 21: copy to the clipboard with OSC 52.
-Scope and decisions are in [Roadmap.md](Roadmap.md#21-copy-to-the-clipboard-with-osc-52).
-
-- Probe how tcell emits OSC 52 (terminal detection, tmux) and decide whether
-  to use `Screen.SetClipboard` or write the sequence directly.
-- Route `CopyToClipboard` through OSC 52 unless `os.copyToClipboardCmd` is
-  set; unit tests.
-- Integration check of the emitted sequence, docs, merge guide; mark the item
-  complete.
+All roadmap items (1–21) are complete. There is no current item. Add and review
+a new milestone in [Roadmap.md](Roadmap.md) before planning tasks here.
 
 ## How this tracker works
 

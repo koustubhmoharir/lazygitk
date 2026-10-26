@@ -1108,6 +1108,10 @@ opens; force-with-lease on a new branch uses the single remote too.
 
 ## 21. Copy to the clipboard with OSC 52
 
+Complete. tcell's `SetClipboard` emits OSC 52 for every terminal type, under
+the screen lock. Scenario `ui/fork_copy_osc52` reads the simulated terminal's
+clipboard through a harness-only accessor.
+
 Copy actions failed when no clipboard tool (xclip, xsel, wl-copy and the like)
 was found, which is the usual case in containers and over SSH. User decisions:
 

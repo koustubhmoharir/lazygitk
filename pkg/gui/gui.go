@@ -894,6 +894,9 @@ func NewGui(
 	osCommand := oscommands.NewOSCommand(cmn, configurer, oscommands.GetPlatform(), guiIO)
 
 	gui.os = osCommand
+	// Fork: copies go through OSC 52 on the terminal screen instead of
+	// upstream's clipboard tool lookup (fork_clipboard.go).
+	osCommand.SetClipboardWriter(writeClipboardOSC52)
 
 	// storing this stuff on the gui for now to ease refactoring
 	// TODO: reset these controllers upon changing repos due to state changing

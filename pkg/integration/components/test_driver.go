@@ -212,6 +212,18 @@ func (self *TestDriver) ExpectToast(matcher *TextMatcher) *TestDriver {
 	return self
 }
 
+// Fork: asserts the text that the last OSC 52 copy wrote to the simulated
+// terminal clipboard (roadmap item 21).
+func (self *TestDriver) ExpectClipboard(matcher *TextMatcher) *TestDriver {
+	self.matchString(matcher, "Unexpected clipboard text",
+		func() string {
+			return self.gui.ClipboardText()
+		},
+	)
+
+	return self
+}
+
 func (self *TestDriver) ExpectSearch() *SearchDriver {
 	self.inSearch()
 

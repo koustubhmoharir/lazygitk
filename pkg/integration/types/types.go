@@ -82,4 +82,7 @@ type GuiDriver interface {
 	// operation by running git directly (rather than through the UI) still get
 	// the "continue?" prompt when its conflicts are resolved.
 	PretendMergeOrRebaseStartedInLazygit()
+	// Fork: the text that the last OSC 52 copy wrote to the simulated terminal
+	// clipboard, or "" outside the simulation (roadmap item 21).
+	ClipboardText() string
 }

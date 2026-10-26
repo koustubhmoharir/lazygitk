@@ -114,6 +114,22 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   copied text and disabled reasons stay identical. Building those items must
   stay free of git calls and safe with no selection; re-check after upstream
   changes to the copy menus.
+- Clipboard copy (roadmap item 21): `OSCommand.CopyToClipboard` in
+  `pkg/commands/oscommands/os.go` runs `os.copyToClipboardCmd` when it is set
+  and otherwise calls the writer injected with `SetClipboardWriter`, so the
+  upstream `atotto/clipboard` tool lookup for copies is removed (paste still
+  uses it). The writer is `writeClipboardOSC52` in `pkg/gui/fork_clipboard.go`,
+  which calls tcell's `SetClipboard` on `gocui.Screen`; `gui.go` wires it
+  right after `gui.os = osCommand`. Keep the writer injected so
+  `OSCommand` never imports gocui. Unit coverage is `TestCopyToClipboardFork`
+  in `oscommands/os_test.go`. Re-check the copy path after upstream changes to
+  `CopyToClipboard` or to tcell's clipboard handling.
+  The harness reads the simulated terminal clipboard through
+  `gocui.MockClipboardText` (`pkg/gocui/fork_mock_clipboard.go`, returns ""
+  outside the simulation), `GuiDriver.ClipboardText` and
+  `TestDriver.ExpectClipboard`. Scenario: `ui/fork_copy_osc52`. Keep the
+  accessor harness-only when merging upstream's gocui or integration
+  components.
 - Portable builds: `scripts/build_dist.sh` and `scripts/build_dist.ps1` are
   fork-owned and name binaries `lazygitk`. The only upstream-file touches are the `dist` recipe in
   `justfile` and `/dist/` in `.gitignore`; keep both when resolving conflicts.

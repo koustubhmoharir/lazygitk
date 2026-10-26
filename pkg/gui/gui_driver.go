@@ -291,3 +291,8 @@ func (self *GuiDriver) NextToast() *string {
 func (self *GuiDriver) Headless() bool {
 	return self.headless
 }
+
+// Fork: reads the simulated terminal clipboard for copy scenarios (roadmap item 21).
+func (self *GuiDriver) ClipboardText() string {
+	return gocui.MockClipboardText()
+}

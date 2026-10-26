@@ -315,6 +315,18 @@ to the current repository work. A path that is not a directory or not inside a
 Git repository shows an error and reopens the prompt with your text.
 
 
+## Clipboard
+
+Copy actions write the text with the OSC 52 terminal sequence, so it reaches
+the clipboard of the terminal you are looking at. No clipboard tool such as
+`xclip` or `wl-copy` is needed, which matters in containers and over SSH. A
+copy succeeds from lazygitk's side even when the terminal ignores the sequence,
+because OSC 52 cannot report whether it was accepted. Terminals without OSC 52
+support, such as VTE-based ones, drop it silently. In tmux, set
+`set-clipboard on` so tmux passes the sequence on. An explicit
+`os.copyToClipboardCmd` still takes precedence over OSC 52. Pasting into the
+commit message is unchanged.
+
 ## Colors and diffs
 
 The default theme is Catppuccin: Mocha on a dark terminal background, Latte on
