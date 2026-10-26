@@ -1,11 +1,7 @@
 # Current work
 
-Item 17: working-file diffs on `d` and prefix menus in keymap order.
-Scope and decisions are in [Roadmap.md](Roadmap.md#17-working-file-diffs-on-d-and-prefix-menus-in-keymap-order).
-
-- Files `d w` / `d s` / `d c`: bindings, routes, disabled reasons, i18n;
-  unit and integration tests with a fake difftool.
-- Docs, generated key docs, merge guide; mark the item complete.
+All roadmap items (1–17) are complete. There is no current item. Add and review
+a new milestone in [Roadmap.md](Roadmap.md) before planning tasks here.
 
 ## How this tracker works
 

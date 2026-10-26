@@ -1017,6 +1017,10 @@ stays silent about up-to-date ones and summarizes the rest.
 
 ## 17. Working-file diffs on `d` and prefix menus in keymap order
 
+Complete. `d s` is declared between `d p` and `d c` so that both panes get
+their agreed order. A filter that leaves a directory with no matching paths
+disables the comparison rather than diffing the whole repository.
+
 The `d` diff routes existed only in commit and historical-file lists, and prefix
 menus listed their keys alphabetically (`d`: `c`, `p`, `w`). User decisions:
 
