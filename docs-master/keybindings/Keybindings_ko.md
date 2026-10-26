@@ -22,8 +22,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g h o `` | 커스텀 Patch 옵션 보기 |  |
 | `` g o `` | View merge/rebase options | View options to abort/continue/skip the current merge/rebase. |
 | `` <f5> `` | 새로고침 | Refresh the git state (i.e. run `git status`, `git branch`, etc in background to update the contents of panels). This does not run `git fetch`. |
-| `` t s n `` | 다음 스크린 모드 (normal/half/fullscreen) |  |
-| `` t s p `` | 이전 스크린 모드 |  |
+| `` =, + `` | 다음 스크린 모드 (normal/half/fullscreen) |  |
+| `` - `` | 이전 스크린 모드 |  |
 | `` t d n `` | Cycle diff renderers | Choose the next renderer in the list of configured diff renderers. |
 | `` t d p `` | Cycle diff renderers (reverse) | Choose the previous renderer in the list of configured diff renderers. |
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
@@ -269,7 +269,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <delete> `` | 삭제 | View delete options for local/remote branch. |
 | `` r `` | Rebase current onto selected branch… | Rebase the checked-out branch onto the selected branch. |
 | `` m `` | Merge selected branch into current… | View options for merging the selected item into the current branch (regular merge, squash merge) |
-| `` g f `` | Fast-forward selected branches… | Review an upstream fetch and a forward-only update of the captured selected branches. Divergent or rewritten history is never reset; tips occupied by another worktree are not moved. A selected checked-out branch uses native fast-forward integration with explicit review. Multiple selections require final batch approval. Saved upstream settings stay unchanged. |
+| `` g f `` | Fast-forward selected branches | Move each selected branch to its upstream as it exists locally, without fetching. A branch behind its upstream fast-forwards with no prompt; a checked-out branch uses a fast-forward-only merge that keeps your uncommitted changes. You are asked only before overwriting ignored files. Diverged branches, branches without an upstream or with a missing tracking ref, and branches another worktree occupies are listed in one alert at the end. |
 | `` n t `` | 태그를 생성 |  |
 | `` t s o `` | Sort order |  |
 | `` <f2> `` | 브랜치 이름 변경 |  |

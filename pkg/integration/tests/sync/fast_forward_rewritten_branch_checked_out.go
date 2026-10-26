@@ -6,7 +6,7 @@ import (
 )
 
 var FastForwardRewrittenBranchCheckedOut = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Refuse fast-forwarding the checked out branch after its upstream was rewritten",
+	Description:  "Refuse to fast-forward the checked out branch when its upstream was rewritten",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig:  func(config *config.AppConfig) {},
@@ -34,15 +34,8 @@ var FastForwardRewrittenBranchCheckedOut = NewIntegrationTest(NewIntegrationTest
 				Contains("master"),
 			).
 			Press(keys.Branches.FastForward)
-		options := t.ExpectPopup().Menu().Title(Equals("Review selected branch fast-forward"))
-		t.Views().Menu().Content(Contains("Checked-out branch \"feature\""))
-		t.Views().Menu().Content(Contains("Fast-forward only"))
-		t.Views().Menu().Content(Contains("Fetch upstream for review"))
-		options.Select(Contains("Fetch upstream for review")).Confirm()
-		t.ConfirmFastForwardFetch("feature", "origin", "feature")
 
-		t.ExpectPopup().Alert().Title(Equals("Error")).
-			Content(Contains("fast-forward").Contains("divergent")).Confirm()
+		t.ExpectPopup().Alert().Title(Equals("Not fast-forwarded")).Content(Contains("feature: ").Contains("has diverged")).Confirm()
 
 		if t.Git().GetCommitHash("refs/heads/feature") != localOID || t.Git().GetCommitHash("HEAD") != headOID || t.Git().GetCommitHash("refs/heads/master") != masterOID {
 			t.Fail("Refusing divergent current-branch fast-forward changed branch refs or HEAD")

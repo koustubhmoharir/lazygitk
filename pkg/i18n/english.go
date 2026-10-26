@@ -146,10 +146,13 @@ type TranslationSet struct {
 	BranchSyncStackUpdateCurrentLabel     string
 	BranchSyncStackUpdateNoopLabel        string
 	BranchSyncStackUpdateChoice           string
-	BranchSyncFastForwardMenu             string
-	BranchSyncFastForwardSummary          string
 	BranchSyncFastForwardSelected         string
 	BranchSyncFastForwardTooltip          string
+	BranchSyncFastForwardSkippedTitle     string
+	BranchSyncFastForwardNoUpstream       string
+	BranchSyncFastForwardMissingRef       string
+	BranchSyncFastForwardDiverged         string
+	BranchSyncFastForwardIgnoredPrompt    string
 
 	NotEnoughSpace                        string
 	DiffTitle                             string
@@ -1633,10 +1636,13 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchSyncStackUpdateCurrentLabel:     "%q: integrate %s into %s",
 		BranchSyncStackUpdateNoopLabel:        "%q: keep %s (already contains %s)",
 		BranchSyncStackUpdateChoice:           "Review updates for this branch and branches stacked below…",
-		BranchSyncFastForwardMenu:             "Review selected branch fast-forward",
-		BranchSyncFastForwardSummary:          "Fast-forward only, not the configured pull method. No divergent reset, rebase, autostash or update of another worktree.\n\n",
-		BranchSyncFastForwardSelected:         "Fast-forward selected branches…",
-		BranchSyncFastForwardTooltip:          "Review an upstream fetch and a forward-only update of the captured selected branches. Divergent or rewritten history is never reset; tips occupied by another worktree are not moved. A selected checked-out branch uses native fast-forward integration with explicit review. Multiple selections require final batch approval. Saved upstream settings stay unchanged.",
+		BranchSyncFastForwardSelected:         "Fast-forward selected branches",
+		BranchSyncFastForwardTooltip:          "Move each selected branch to its upstream as it exists locally, without fetching. A branch behind its upstream fast-forwards with no prompt; a checked-out branch uses a fast-forward-only merge that keeps your uncommitted changes. You are asked only before overwriting ignored files. Diverged branches, branches without an upstream or with a missing tracking ref, and branches another worktree occupies are listed in one alert at the end.",
+		BranchSyncFastForwardSkippedTitle:     "Not fast-forwarded",
+		BranchSyncFastForwardNoUpstream:       "no upstream",
+		BranchSyncFastForwardMissingRef:       "%s does not exist locally; fetch first",
+		BranchSyncFastForwardDiverged:         "has diverged from %s",
+		BranchSyncFastForwardIgnoredPrompt:    "Fast-forward checked-out branch %q from %s to %s.",
 
 		NotEnoughSpace:                       "Not enough space to render panels",
 		DiffTitle:                            "Diff",

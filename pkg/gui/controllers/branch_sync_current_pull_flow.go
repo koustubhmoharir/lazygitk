@@ -78,9 +78,6 @@ func (flow *branchSyncUpdateFlow) chooseIntegration(review git_commands.CurrentP
 	if err := flow.currentModeValid(); err != nil {
 		return err
 	}
-	if flow.fastForwardOnly {
-		return flow.prepareIntegration(review, targetOID, git_commands.PullIntegrationFastForwardOnly)
-	}
 	return flow.target.c.WithWaitingStatus(flow.target.c.Tr.BranchSyncInspecting, func(gocui.Task) error {
 		defaultPlan, defaultErr := flow.target.git.Sync.PrepareCurrentPullIntegration(review, targetOID, git_commands.PullIntegrationDefault)
 		if errors.Is(defaultErr, git_commands.ErrBranchSyncChanged) {
@@ -221,16 +218,28 @@ func (flow *branchSyncUpdateFlow) reviewIgnoredIntegration(plan git_commands.Cur
 	if err := flow.currentModeValid(); err != nil {
 		return err
 	}
-	paths := plan.IgnoredFiles()
-	if len(paths) == 0 {
+	if len(plan.IgnoredFiles()) == 0 {
 		return flow.executeIntegration(plan)
 	}
-	items := []*types.MenuItem{{CommandID: "branch.pull-current.cancel-ignored-risk", Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: flow.target.checkRepository}, {CommandID: "branch.pull-current.approve-ignored-risk", Verb: "integrate", Label: flow.target.c.Tr.BranchSyncIntegrationApproveIgnored, OnPress: func() error { return flow.executeIntegration(plan.WithIgnoredFilesApproved()) }}}
-	for _, path := range paths {
-		quoted := fmt.Sprintf("%q", path)
-		items = append(items, &types.MenuItem{CommandID: "branch.pull-current.inspect-ignored-path", Verb: "inspect", Label: quoted, Tooltip: quoted, OpensMenu: true, OnPress: func() error { return flow.reviewIgnoredIntegration(plan) }})
+	return flow.target.reviewIgnoredApproval(plan, flow.integrationReviewPrompt(plan), flow.executeIntegration, flow.target.checkRepository)
+}
+
+// reviewIgnoredApproval is the Cancel / approve menu for ignored files that Git
+// may overwrite. Pull and `g f` share it: approve receives the plan marked as
+// approved, and cancel (also the menu's Escape) decides what the caller does
+// next. Inspection entries reopen this same menu.
+func (target *branchSyncTarget) reviewIgnoredApproval(plan git_commands.CurrentPullIntegrationPlan, reviewPrompt string, approve func(git_commands.CurrentPullIntegrationPlan) error, cancel func() error) error {
+	if err := target.checkRepository(); err != nil {
+		return err
 	}
-	return flow.target.c.Menu(types.CreateMenuOptions{Title: flow.target.c.Tr.BranchSyncIntegrationIgnoredTitle, Prompt: flow.integrationReviewPrompt(plan) + flow.target.c.Tr.BranchSyncIntegrationIgnoredPrompt, HideCancel: true, Items: items, OnCancel: flow.target.checkRepository})
+	items := []*types.MenuItem{{CommandID: "branch.pull-current.cancel-ignored-risk", Verb: "cancel", Label: target.c.Tr.Cancel, OnPress: cancel}, {CommandID: "branch.pull-current.approve-ignored-risk", Verb: "integrate", Label: target.c.Tr.BranchSyncIntegrationApproveIgnored, OnPress: func() error { return approve(plan.WithIgnoredFilesApproved()) }}}
+	for _, path := range plan.IgnoredFiles() {
+		quoted := fmt.Sprintf("%q", path)
+		items = append(items, &types.MenuItem{CommandID: "branch.pull-current.inspect-ignored-path", Verb: "inspect", Label: quoted, Tooltip: quoted, OpensMenu: true, OnPress: func() error {
+			return target.reviewIgnoredApproval(plan, reviewPrompt, approve, cancel)
+		}})
+	}
+	return target.c.Menu(types.CreateMenuOptions{Title: target.c.Tr.BranchSyncIntegrationIgnoredTitle, Prompt: reviewPrompt + target.c.Tr.BranchSyncIntegrationIgnoredPrompt, HideCancel: true, Items: items, OnCancel: cancel})
 }
 
 func (flow *branchSyncUpdateFlow) integrationMethodLabel(plan git_commands.CurrentPullIntegrationPlan) string {

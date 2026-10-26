@@ -965,8 +965,8 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   unchanged. Regenerate the command inventory/key docs with final binding
   integration, not as evidence that an unused menu is already accessible.
 - `branch_sync_update_flow.go` is the off-branch update dialog, reached through
-  the captured default Pull route. The selected Fast-forward action also
-  uses the captured route described below. Fetch and ref-only
+  the captured default Pull route. The selected Fast-forward action no longer
+  uses it (item 16, below). Fetch and ref-only
   advancement have separate reviews. Local `.` upstreams read exact local
   branch refs without contacting a transport. Keep custom storage explicit,
   preserve one-off options through stale-source review, and never use a
@@ -1053,15 +1053,18 @@ ones. Verification is Linux/Git 2.51.1, not a minimum-Git or cross-platform matr
   `Unwrap`; `runReviewedIntegrationReporting` adds context without changing
   ordinary one-branch execution when its reporter is nil. Never automatically
   repeat a consumed batch or retry/roll back a native partial result.
-- `BranchesController.fastForward` now delegates copied literal selection names
+- `BranchesController.fastForward` delegates copied literal selection names
   to `branch_sync_fast_forward_flow.go`, replacing cached-status gates and the
-  upstream helper's rewritten-history/occupied-worktree updates. Inspect fresh
-  native inputs, use a simple one-branch flow or explicit multi-selection batch,
-  and set one `fastForwardOnly` policy flag. A selected current branch uses
-  explicit native fast-forward even when pull is configured to rebase. It must
-  not inherit autostash or offer other integration methods. Fork translation
-  fields replace the old tooltip that promised divergent resets; shortcut
-  policy and the existing command ID remain unchanged.
+  upstream helper's rewritten-history/occupied-worktree updates. Since item 16
+  it neither fetches nor reviews: `InspectUpstreamFastForward` classifies each
+  branch against its local `%(upstream)` ref; off-branch refs move through the
+  guarded `ApplyBranchFastForward`, and the checked-out branch last through the
+  captured ff-only `CurrentPullIntegrationCommand`, run in process (not the
+  terminal executor, which would add a return prompt). The ignored-file menu,
+  shared with pull through `reviewIgnoredApproval`, is the only prompt; other
+  failures are collected into one alert. It must not inherit autostash, offer
+  other integration methods, or reset diverged history. The pull and stack
+  flows no longer carry a fast-forward-only mode.
 - Verification for the reviewed stack-update/Fast-forward route: all 15 existing
   affected terminal scenarios pass, including rewritten history, dirty files,
   disabled reflogs, multi-selection and occupied/rebasing linked worktrees.

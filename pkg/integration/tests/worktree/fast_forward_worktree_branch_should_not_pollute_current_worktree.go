@@ -6,7 +6,7 @@ import (
 )
 
 var FastForwardWorktreeBranchShouldNotPolluteCurrentWorktree = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Refuse to fast-forward an occupied linked-worktree branch without changing either worktree",
+	Description:  "Fast-forward the checked out branch without a prompt and refuse an occupied linked-worktree branch without changing either worktree",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig:  func(config *config.AppConfig) {},
@@ -30,12 +30,9 @@ var FastForwardWorktreeBranchShouldNotPolluteCurrentWorktree = NewIntegrationTes
 		oldMybranch := t.Git().GetCommitHash("mybranch")
 		mybranchTarget := t.Git().GetCommitHash("refs/remotes/origin/mybranch")
 		t.Views().Branches().Focus().NavigateToLine(Contains("mybranch")).Press(keys.Branches.FastForward)
-		t.ExpectPopup().Menu().Title(Equals("Review selected branch fast-forward")).Select(Contains("Fetch upstream for review")).Confirm()
-		t.ConfirmFastForwardFetch("mybranch", "origin", "mybranch")
-		t.ExpectFastForwardReview("mybranch", oldMybranch, mybranchTarget, true).Confirm()
 		t.Views().Branches().ContainsLines(Contains("mybranch").Contains("✓").IsSelected())
 		if got := t.Git().GetCommitHash("mybranch"); got != mybranchTarget || t.Git().GetCommitHash("HEAD") != mybranchTarget {
-			t.Fail("current-branch fast-forward did not advance mybranch")
+			t.Fail("current-branch fast-forward did not advance mybranch from " + oldMybranch)
 		}
 		mainHead := t.Git().GetCommitHash("HEAD")
 		t.FileSystem().FileContent("README.md", Equals("hello world"))
@@ -44,11 +41,9 @@ var FastForwardWorktreeBranchShouldNotPolluteCurrentWorktree = NewIntegrationTes
 		oldBranch := t.Git().GetCommitHash("newbranch")
 		newbranchTarget := t.Git().GetCommitHash("refs/remotes/origin/newbranch")
 		t.Views().Branches().Focus().NavigateToLine(Contains("newbranch")).Press(keys.Branches.FastForward)
-		t.ExpectPopup().Menu().Title(Equals("Review selected branch fast-forward")).Select(Contains("Fetch upstream for review")).Confirm()
-		t.ConfirmFastForwardFetch("newbranch", "origin", "newbranch")
-		t.ExpectPopup().Alert().Title(Equals("Error")).Content(Contains("branch \"newbranch\" is reserved by another worktree").Contains("cannot be moved here")).Confirm()
+		t.ExpectPopup().Alert().Title(Equals("Not fast-forwarded")).Content(Contains("newbranch: ").Contains("branch \"newbranch\" is reserved by another worktree").Contains("cannot be moved here")).Confirm()
 		if got := t.Git().GetCommitHash("refs/remotes/origin/newbranch"); got != newbranchTarget {
-			t.Fail("approved fetch did not update newbranch's tracking ref to the reviewed tip")
+			t.Fail("fast-forward changed newbranch's tracking ref")
 		}
 		if got := t.Git().GetCommitHash("newbranch"); got != oldBranch {
 			t.Fail("occupied branch moved after refusal")

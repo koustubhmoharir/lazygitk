@@ -6,7 +6,7 @@ import (
 )
 
 var FastForwardBehindBranchCheckedOut = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Fast-forward the checked out branch when it is behind its upstream branch",
+	Description:  "Fast-forward the checked out branch without a prompt when it is behind its upstream branch",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig:  func(config *config.AppConfig) {},
@@ -26,7 +26,6 @@ var FastForwardBehindBranchCheckedOut = NewIntegrationTest(NewIntegrationTestArg
 		shell.UpdateFile("file", "changed")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
-		sourceOID := t.Git().GetCommitHash("master")
 		targetOID := t.Git().GetCommitHash("refs/remotes/origin/master")
 		stagedBlobOID := t.Git().GetCommitHash(":file")
 		t.Views().Commits().
@@ -41,17 +40,17 @@ var FastForwardBehindBranchCheckedOut = NewIntegrationTest(NewIntegrationTestArg
 			).
 			Press(keys.Branches.FastForward)
 
-		t.ReviewFastForwardFetch("master", "origin", "master")
-		review := t.ExpectFastForwardReview("master", sourceOID, targetOID, true)
-		if got := t.Git().GetCommitHash("refs/heads/master"); got != sourceOID {
-			t.Fail("branch moved before approval: " + got)
-		}
-		review.Confirm()
-
+		// The checked out branch moves without a review popup.
 		t.Views().Branches().
 			Lines(
 				Contains("master ✓").IsSelected(),
 			)
+		if got := t.Git().GetCommitHash("refs/heads/master"); got != targetOID {
+			t.Fail("fast-forward did not move master to its upstream: " + got)
+		}
+		if got := t.Git().GetCommitHash("HEAD"); got != targetOID {
+			t.Fail("fast-forward did not move HEAD with master: " + got)
+		}
 
 		t.Views().Commits().
 			Lines(

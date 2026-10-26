@@ -16,7 +16,6 @@ import (
 func executionStackBatch(t *testing.T, method git_commands.PullIntegrationMethod) (*branchSyncPushFixture, *branchSyncCurrentPullUI, *branchStackUpdateFlow) {
 	t.Helper()
 	f, ui, batch := stackUpdateFixture(t, []string{"lower"}, true)
-	batch.fastForwardOnly = true
 	base := batch.members[0].OID
 	target := branchSyncPushGit(t, f.root, "rev-parse", "refs/heads/topic")
 	if target == base {

@@ -6,7 +6,7 @@ import (
 )
 
 var FastForwardRewrittenBranchWithoutReflogs = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Refuse rewritten upstream history without reflogs after explicitly reviewing the fetch",
+	Description:  "Refuse to fast-forward a diverged branch when its upstream was rewritten in a repo without reflogs",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig:  func(config *config.AppConfig) {},
@@ -26,18 +26,7 @@ var FastForwardRewrittenBranchWithoutReflogs = NewIntegrationTest(NewIntegration
 			Lines(Contains("master").IsSelected(), Contains("feature ↓2↑2")).
 			SelectNextItem().
 			Press(keys.Branches.FastForward)
-		options := t.ExpectPopup().Menu().Title(Equals("Review selected branch fast-forward"))
-		t.Views().Menu().Content(Contains("Local branch \"feature\""))
-		t.Views().Menu().Content(Contains("Fast-forward only"))
-		t.Views().Menu().Content(Contains("Fetch upstream for review"))
-		options.Select(Contains("Fetch upstream for review")).Confirm()
-		t.ConfirmFastForwardFetch("feature", "origin", "feature")
-		diverged := t.ExpectPopup().Menu().Title(Equals("Review branch fast-forward"))
-		t.Views().Menu().Content(Contains("local branch \"feature\" has diverged"))
-		t.Views().Menu().Content(MatchesRegexp(`No\s+local\s+branch\s+was\s+moved`))
-		t.Views().Menu().Content(Contains("will not reset"))
-		t.Views().Menu().Content(Contains("Cancel"))
-		diverged.Cancel()
+		t.ExpectPopup().Alert().Title(Equals("Not fast-forwarded")).Content(Contains("feature: ").Contains("has diverged")).Confirm()
 
 		t.Views().Branches().
 			Lines(

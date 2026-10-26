@@ -28,11 +28,9 @@ var FastForwardBranchBeingRebasedInWorktree = NewIntegrationTest(NewIntegrationT
 		other := t.Git().GetCommitHash("other")
 		t.Shell().RunShellCommand("cp .git/index .git/fast-forward-rebase-main-index && cp \"$(git -C ../linked-worktree rev-parse --path-format=absolute --git-path index)\" .git/fast-forward-rebase-linked-index && cp file .git/fast-forward-rebase-main-file && cp ../linked-worktree/file .git/fast-forward-rebase-linked-file")
 		t.Views().Branches().Focus().NavigateToLine(Contains("master")).Press(keys.Branches.FastForward)
-		t.ExpectPopup().Menu().Title(Equals("Review selected branch fast-forward")).Select(Contains("Fetch upstream for review")).Confirm()
-		t.ConfirmFastForwardFetch("master", "origin", "master")
-		t.ExpectPopup().Alert().Title(Equals("Error")).Content(Contains("branch \"master\" is reserved by another worktree").Contains("cannot be moved here")).Confirm()
+		t.ExpectPopup().Alert().Title(Equals("Not fast-forwarded")).Content(Contains("master: ").Contains("branch \"master\" is reserved by another worktree").Contains("cannot be moved here")).Confirm()
 		if got := t.Git().GetCommitHash("refs/remotes/origin/master"); got != target {
-			t.Fail("approved fetch did not update master's tracking ref to the reviewed tip")
+			t.Fail("fast-forward changed master's tracking ref")
 		}
 		if got := t.Git().GetCommitHash("master"); got != oldMaster {
 			t.Fail("master moved after refusal during its linked-worktree rebase")

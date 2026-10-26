@@ -240,57 +240,6 @@ func TestBranchSyncUpdateCollectionIgnoredApprovalAndFingerprint(t *testing.T) {
 	}
 }
 
-func TestBranchSyncUpdateCollectionFastForwardOnlySkipsMethodMenu(t *testing.T) {
-	f, _ := newBranchSyncCurrentPullFixture(t)
-	branchSyncPushGit(t, f.root, "config", "branch.main.rebase", "true")
-	source := branchSyncPushGit(t, f.root, "rev-parse", "HEAD")
-	targetOID := branchSyncPushGit(t, f.root, "rev-parse", "refs/heads/topic")
-	review, err := f.git.Sync.PrepareCurrentPullReview("main", source, "")
-	if err != nil {
-		t.Fatal(err)
-	}
-	flow := &branchSyncUpdateFlow{target: newBranchSyncTarget(f.sync.c, branchSyncSource{name: "main"}), currentMode: true, fastForwardOnly: true, collector: &branchSyncUpdateCollector{acceptCurrent: func(git_commands.CurrentPullIntegrationPlan) error { return nil }}}
-	if err := flow.chooseIntegration(review, targetOID); err != nil {
-		t.Fatal(err)
-	}
-	if len(f.ui.menus) != 0 {
-		t.Fatal("fast-forward-only offered integration method menu")
-	}
-	if err := f.ui.runWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := f.ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
-	if len(f.ui.confirms) != 1 || !strings.Contains(f.ui.confirms[0].Prompt, f.sync.c.Tr.BranchSyncIntegrationFFOnly) {
-		t.Fatalf("missing explicit ff-only review: %+v", f.ui.confirms)
-	}
-}
-
-func TestBranchSyncUpdateCollectionFastForwardOnlyDivergenceHasNoChoices(t *testing.T) {
-	f, _ := newBranchSyncCurrentPullFixture(t)
-	branchSyncCurrentPullDivergeLocally(t, f)
-	branchSyncPushGit(t, f.root, "checkout", "-q", "topic")
-	branchSyncPushGit(t, f.root, "commit", "--allow-empty", "-m", "incoming divergent")
-	targetOID := branchSyncPushGit(t, f.root, "rev-parse", "HEAD")
-	branchSyncPushGit(t, f.root, "checkout", "-q", "main")
-	source := branchSyncPushGit(t, f.root, "rev-parse", "HEAD")
-	review, err := f.git.Sync.PrepareCurrentPullReview("main", source, "")
-	if err != nil {
-		t.Fatal(err)
-	}
-	flow := &branchSyncUpdateFlow{target: newBranchSyncTarget(f.sync.c, branchSyncSource{name: "main"}), currentMode: true, fastForwardOnly: true, collector: &branchSyncUpdateCollector{acceptCurrent: func(git_commands.CurrentPullIntegrationPlan) error { return nil }}}
-	if err := flow.chooseIntegration(review, targetOID); err != nil {
-		t.Fatal(err)
-	}
-	if err := f.ui.runWorker(t); !errors.Is(err, git_commands.ErrBranchSyncDiverged) {
-		t.Fatalf("got %v", err)
-	}
-	if len(f.ui.menus) != 0 || len(f.ui.confirms) != 0 {
-		t.Fatal("divergence offered alternate integration or approval")
-	}
-}
-
 func TestBranchSyncUpdateCollectionNoopCancelFirstContinueCollects(t *testing.T) {
 	f := newBranchSyncPushFixture(t)
 	linked := filepath.Join(t.TempDir(), "occupied-topic")

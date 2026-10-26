@@ -26,7 +26,6 @@ var FastForwardBehindBranch = NewIntegrationTest(NewIntegrationTestArgs{
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
 		headOID := t.Git().GetCommitHash("HEAD")
 		t.Shell().RunShellCommand("cp .git/index .git/ff-review-index")
-		sourceOID := t.Git().GetCommitHash("feature")
 		targetOID := t.Git().GetCommitHash("refs/remotes/origin/feature")
 		t.Views().Branches().
 			Focus().
@@ -37,13 +36,7 @@ var FastForwardBehindBranch = NewIntegrationTest(NewIntegrationTestArgs{
 			SelectNextItem().
 			Press(keys.Branches.FastForward)
 
-		t.ReviewFastForwardFetch("feature", "origin", "feature")
-		review := t.ExpectFastForwardReview("feature", sourceOID, targetOID, false)
-		if got := t.Git().GetCommitHash("refs/heads/feature"); got != sourceOID {
-			t.Fail("branch moved before approval: " + got)
-		}
-		review.Confirm()
-
+		// The branch moves straight away, without a review popup.
 		t.Views().Branches().
 			Lines(
 				Contains("master"),
@@ -51,6 +44,9 @@ var FastForwardBehindBranch = NewIntegrationTest(NewIntegrationTestArgs{
 			).
 			PressEnter()
 
+		if got := t.Git().GetCommitHash("refs/heads/feature"); got != targetOID {
+			t.Fail("fast-forward did not move feature to its upstream: " + got)
+		}
 		t.Views().SubCommits().
 			IsFocused().
 			Lines(

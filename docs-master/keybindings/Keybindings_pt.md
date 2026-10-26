@@ -22,8 +22,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g h o `` | Ver opções de patch personalizadas |  |
 | `` g o `` | Ver opções de mesclar/rebase | Ver opções para abortar/continuar/pular o merge/rebase atual. |
 | `` <f5> `` | Atualizar | Atualize o estado do git (ou seja, execute `git status`, `git branch`, etc em segundo plano para atualizar o conteúdo de painéis). Isso não executa `git fetch`. |
-| `` t s n `` | Modo de tela seguinte (normal/metade/tela cheia) |  |
-| `` t s p `` | Modo de tela anterior |  |
+| `` =, + `` | Modo de tela seguinte (normal/metade/tela cheia) |  |
+| `` - `` | Modo de tela anterior |  |
 | `` t d n `` | Cycle diff renderers | Choose the next renderer in the list of configured diff renderers. |
 | `` t d p `` | Cycle diff renderers (reverse) | Choose the previous renderer in the list of configured diff renderers. |
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
@@ -128,7 +128,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <delete> `` | Apagar | Ver opções de exclusão para a branch local/remoto. |
 | `` r `` | Rebase current onto selected branch… | Refazer a branch checada na branch selecionada |
 | `` m `` | Merge selected branch into current… | Ver opções para mesclar o item selecionado no branch atual (mesclar regularmente, mesclar squash) |
-| `` g f `` | Fast-forward selected branches… | Review an upstream fetch and a forward-only update of the captured selected branches. Divergent or rewritten history is never reset; tips occupied by another worktree are not moved. A selected checked-out branch uses native fast-forward integration with explicit review. Multiple selections require final batch approval. Saved upstream settings stay unchanged. |
+| `` g f `` | Fast-forward selected branches | Move each selected branch to its upstream as it exists locally, without fetching. A branch behind its upstream fast-forwards with no prompt; a checked-out branch uses a fast-forward-only merge that keeps your uncommitted changes. You are asked only before overwriting ignored files. Diverged branches, branches without an upstream or with a missing tracking ref, and branches another worktree occupies are listed in one alert at the end. |
 | `` n t `` | Nova etiqueta |  |
 | `` t s o `` | Sort order |  |
 | `` <f2> `` | Renomear branch |  |

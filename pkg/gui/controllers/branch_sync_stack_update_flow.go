@@ -73,11 +73,10 @@ func (plan reviewedBranchUpdate) check(target *branchSyncTarget) error {
 }
 
 type branchStackUpdateFlow struct {
-	target          *branchSyncTarget
-	members         []git_commands.BranchStackMember
-	plans           []reviewedBranchUpdate
-	fastForwardOnly bool
-	started         bool
+	target  *branchSyncTarget
+	members []git_commands.BranchStackMember
+	plans   []reviewedBranchUpdate
+	started bool
 }
 
 func (batch *branchStackUpdateFlow) reviewNext() error {
@@ -105,7 +104,6 @@ func (batch *branchStackUpdateFlow) reviewNext() error {
 		}
 		flow := &branchSyncUpdateFlow{
 			target: target, info: info, options: branchSyncUpdateDefaults(info), currentMode: info.HeadRef == info.FullRef,
-			fastForwardOnly: batch.fastForwardOnly,
 		}
 		flow.collector = &branchSyncUpdateCollector{
 			context: fmt.Sprintf(target.c.Tr.BranchSyncStackUpdateContext, index+1, len(batch.members)),

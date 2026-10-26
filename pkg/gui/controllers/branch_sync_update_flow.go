@@ -19,10 +19,9 @@ type branchSyncUpdateFlow struct {
 	update  *git_commands.BranchFastForwardPlan
 	// currentMode is fixed when the inspected target is routed. In particular,
 	// a later HEAD change must never promote an off-branch flow to current pull.
-	currentMode     bool
-	collector       *branchSyncUpdateCollector
-	stackChoice     func() error
-	fastForwardOnly bool
+	currentMode bool
+	collector   *branchSyncUpdateCollector
+	stackChoice func() error
 }
 
 // updateBranchSource is an additive controller entry point for direct callers
@@ -73,9 +72,6 @@ func (flow *branchSyncUpdateFlow) menu() error {
 	if flow.currentMode {
 		title = tr.BranchSyncPullCurrent
 	}
-	if flow.fastForwardOnly {
-		title = tr.BranchSyncFastForwardMenu
-	}
 	return flow.target.c.Menu(types.CreateMenuOptions{Title: title, Prompt: flow.summary(), Items: items, OnCancel: flow.target.checkRepository})
 }
 
@@ -91,11 +87,7 @@ func (flow *branchSyncUpdateFlow) summary() string {
 	if flow.currentMode {
 		format = flow.target.c.Tr.BranchSyncCurrentPullSummary
 	}
-	prefix := flow.collectionContext()
-	if flow.fastForwardOnly {
-		prefix += flow.target.c.Tr.BranchSyncFastForwardSummary
-	}
-	return prefix + fmt.Sprintf(format, flow.info.Name, utils.ShortHash(flow.info.OID), flow.options.Remote, flow.options.RemoteRef, flow.options.TrackingRef)
+	return flow.collectionContext() + fmt.Sprintf(format, flow.info.Name, utils.ShortHash(flow.info.OID), flow.options.Remote, flow.options.RemoteRef, flow.options.TrackingRef)
 }
 
 // Fork: Escape on a prompt or review opened from this flow's menu steps back to

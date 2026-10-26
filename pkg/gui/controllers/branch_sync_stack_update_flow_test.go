@@ -120,18 +120,7 @@ func collectStackUpdate(t *testing.T, f *branchSyncPushFixture, ui *branchSyncCu
 			t.Fatal(err)
 		}
 		if batch.members[len(batch.plans)].Name == "main" {
-			menu := f.ui.menus[len(f.ui.menus)-1]
-			if menu.Title != f.sync.c.Tr.BranchSyncFastForwardMenu || !strings.Contains(menu.Prompt, f.sync.c.Tr.BranchSyncFastForwardSummary) {
-				t.Fatalf("current review omitted fast-forward-only semantics: title=%q prompt=%q", menu.Title, menu.Prompt)
-			}
-			if len(f.ui.confirms) == 0 {
-				if err := f.ui.runWorker(t); err != nil {
-					t.Fatal(err)
-				}
-				if err := f.ui.runUI(t); err != nil {
-					t.Fatal(err)
-				}
-			}
+			stackUpdateChooseCurrentFFOnly(t, f)
 		}
 		if len(f.ui.confirms) == 0 {
 			t.Fatal("local update did not create ordinary review")
@@ -151,6 +140,36 @@ func collectStackUpdate(t *testing.T, f *branchSyncPushFixture, ui *branchSyncCu
 	}
 	if ui.subprocessCalls != 0 || len(ui.blockingWorkers) != 0 {
 		t.Fatal("collecting update reviews launched worktree integration or a mutation worker")
+	}
+}
+
+// The current member reaches the integration choices after its local update
+// review. Selecting fast-forward only keeps these batch tests on that route.
+func stackUpdateChooseCurrentFFOnly(t *testing.T, f *branchSyncPushFixture) {
+	t.Helper()
+	stackUpdateDrain(t, f)
+	menu := f.ui.menus[len(f.ui.menus)-1]
+	if menu.Title != f.sync.c.Tr.BranchSyncIntegrationMenu {
+		t.Fatalf("current review did not offer integration choices: title=%q", menu.Title)
+	}
+	if err := menuItem(t, menu, "branch.pull-current.ff-only").OnPress(); err != nil {
+		t.Fatal(err)
+	}
+	stackUpdateDrain(t, f)
+}
+
+func stackUpdateDrain(t *testing.T, f *branchSyncPushFixture) {
+	t.Helper()
+	for len(f.ui.workers) > 0 || len(f.ui.ui) > 0 {
+		if len(f.ui.workers) > 0 {
+			if err := f.ui.runWorker(t); err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		if err := f.ui.runUI(t); err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
@@ -231,7 +250,6 @@ func TestBranchSyncStackUpdateSelectedOffBranchBatchReviewAndExecution(t *testin
 
 func TestBranchSyncStackUpdateCurrentBranchRunsAfterOffBranchRefPhase(t *testing.T) {
 	f, ui, batch := stackUpdateFixture(t, []string{"lower"}, true)
-	batch.fastForwardOnly = true
 	collectStackUpdate(t, f, ui, batch)
 	if batch.plans[0].current == nil || batch.plans[1].forward == nil {
 		t.Fatalf("review order not current then off: %+v", batch.plans)
@@ -370,7 +388,6 @@ func TestBranchSyncStackUpdateNativeLockFailureKeepsPriorProgress(t *testing.T) 
 
 func TestBranchSyncStackUpdateCurrentNativeValidationReportsEarlierProgress(t *testing.T) {
 	f, ui, batch := stackUpdateFixture(t, []string{"lower"}, true)
-	batch.fastForwardOnly = true
 	collectStackUpdate(t, f, ui, batch)
 	if err := stackUpdateApprove(t, f); err != nil {
 		t.Fatal(err)

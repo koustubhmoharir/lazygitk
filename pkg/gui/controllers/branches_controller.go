@@ -180,10 +180,10 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			Handler:           self.withItems(self.fastForward),
 			GetDisabledReason: self.require(self.itemRangeSelected(self.branchesAreReal)),
 			Description:       self.c.Tr.BranchSyncFastForwardSelected,
-			// Fork: the upstream tooltip promises rewritten-history resets;
-			// the captured route permits only explicitly reviewed fast-forward.
-			Tooltip:   self.c.Tr.BranchSyncFastForwardTooltip,
-			OpensMenu: true,
+			// Fork: prompt-free fast-forward to each branch's local upstream ref
+			// (roadmap item 16). No fetch, no review menu and no reset of diverged
+			// history.
+			Tooltip: self.c.Tr.BranchSyncFastForwardTooltip,
 		},
 		{
 			CommandID:         "tag.create-at-selection",
@@ -481,8 +481,9 @@ func (self *BranchesController) rebase(branch *models.Branch) error {
 }
 
 func (self *BranchesController) fastForward(branches []*models.Branch) error {
-	// Fork: replace cached-tip forwarding (including rewritten-upstream resets
-	// and occupied-worktree updates) with captured, reviewed fast-forward plans.
+	// Fork: replaces cached-tip forwarding and the fetch-review route with
+	// captured fast-forwards to local upstream refs; see
+	// branch_sync_fast_forward_flow.go.
 	names := lo.Map(branches, func(branch *models.Branch, _ int) string { return branch.Name })
 	return self.fastForwardCapturedBranches(names)
 }

@@ -276,6 +276,19 @@ replace different existing tracking, and for force-with-lease. If the branch
 moved after the menu opened, the menu reopens with fresh details instead of
 pushing.
 
+## Fast-forward
+
+`g f` moves each selected branch to its upstream as it is in your repository
+now; it never fetches. Fetch first, review what came in, then press `g f`.
+A branch that is behind moves without a prompt; the checked-out branch uses a
+fast-forward-only merge that keeps uncommitted changes the incoming commits do
+not touch. Branches already up to date are left alone silently. If Git would
+overwrite untracked or modified files, it refuses and its message is shown;
+if ignored files would be overwritten, a menu asks before going ahead.
+Diverged branches, branches without an upstream or whose tracking ref was
+never fetched, and branches checked out in another worktree are listed in one
+alert at the end.
+
 ## Switching repositories
 
 `s r` opens the recent-repositories menu. `s n` opens a repository by path:

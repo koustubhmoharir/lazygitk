@@ -22,8 +22,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g h o `` | 檢視自訂補丁選項 |  |
 | `` g o `` | 查看合併/變基選項 | 檢視目前合併或變基的中止、繼續、跳過選項。 |
 | `` <f5> `` | 重新整理 | 重新整理Git狀態（即在背景執行`git status`、`git branch`等命令以更新面板內容）。此操作不會執行`git fetch`。 |
-| `` t s n `` | 下一個螢幕模式（常規/半螢幕/全螢幕） |  |
-| `` t s p `` | 上一個螢幕模式 |  |
+| `` =, + `` | 下一個螢幕模式（常規/半螢幕/全螢幕） |  |
+| `` - `` | 上一個螢幕模式 |  |
 | `` t d n `` | 切換差異渲染器 | 選擇已設定的差異渲染器清單中的下一個渲染器。 |
 | `` t d p `` | 切換差異渲染器（反向） | 選擇已設定的差異渲染器清單中的上一個渲染器。 |
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
@@ -334,7 +334,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <delete> `` | 刪除 | 檢視本地/遠端分支的刪除選項。 |
 | `` r `` | Rebase current onto selected branch… | 將檢出的分支變基到所選的分支上。 |
 | `` m `` | Merge selected branch into current… | 檢視將選中項合併到目前分支的選項(正常合併，壓縮合並) |
-| `` g f `` | Fast-forward selected branches… | Review an upstream fetch and a forward-only update of the captured selected branches. Divergent or rewritten history is never reset; tips occupied by another worktree are not moved. A selected checked-out branch uses native fast-forward integration with explicit review. Multiple selections require final batch approval. Saved upstream settings stay unchanged. |
+| `` g f `` | Fast-forward selected branches | Move each selected branch to its upstream as it exists locally, without fetching. A branch behind its upstream fast-forwards with no prompt; a checked-out branch uses a fast-forward-only merge that keeps your uncommitted changes. You are asked only before overwriting ignored files. Diverged branches, branches without an upstream or with a missing tracking ref, and branches another worktree occupies are listed in one alert at the end. |
 | `` n t `` | 建立標籤 |  |
 | `` t s o `` | 排序規則 |  |
 | `` <f2> `` | 重新命名分支 |  |

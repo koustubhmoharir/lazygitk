@@ -22,8 +22,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g h o `` | 查看自定义补丁选项 |  |
 | `` g o `` | 查看合并/变基选项 | 查看当前合并或变基的中止、继续、跳过选项 |
 | `` <f5> `` | 刷新 | 刷新Git状态（即在后台运行`git status`、`git branch`等命令以更新面板内容）。此操作不会执行`git fetch`。 |
-| `` t s n `` | 下一屏模式(正常/半屏/全屏) |  |
-| `` t s p `` | 上一屏模式 |  |
+| `` =, + `` | 下一屏模式(正常/半屏/全屏) |  |
+| `` - `` | 上一屏模式 |  |
 | `` t d n `` | Cycle diff renderers | Choose the next renderer in the list of configured diff renderers. |
 | `` t d p `` | Cycle diff renderers (reverse) | Choose the previous renderer in the list of configured diff renderers. |
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
@@ -303,7 +303,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <delete> `` | 删除 | 查看本地/远程分支的删除选项 |
 | `` r `` | Rebase current onto selected branch… | 将检出的分支变基到所选的分支上。 |
 | `` m `` | Merge selected branch into current… | 查看将选中项合并到当前分支的选项(正常合并，压缩合并) |
-| `` g f `` | Fast-forward selected branches… | Review an upstream fetch and a forward-only update of the captured selected branches. Divergent or rewritten history is never reset; tips occupied by another worktree are not moved. A selected checked-out branch uses native fast-forward integration with explicit review. Multiple selections require final batch approval. Saved upstream settings stay unchanged. |
+| `` g f `` | Fast-forward selected branches | Move each selected branch to its upstream as it exists locally, without fetching. A branch behind its upstream fast-forwards with no prompt; a checked-out branch uses a fast-forward-only merge that keeps your uncommitted changes. You are asked only before overwriting ignored files. Diverged branches, branches without an upstream or with a missing tracking ref, and branches another worktree occupies are listed in one alert at the end. |
 | `` n t `` | 创建标签 |  |
 | `` t s o `` | 排序 |  |
 | `` <f2> `` | 重命名分支 |  |

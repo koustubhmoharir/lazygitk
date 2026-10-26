@@ -22,8 +22,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g h o `` | カスタムパッチオプションを表示 |  |
 | `` g o `` | マージ/リベースオプションを表示 | 現在のマージ/リベースを中止/継続/スキップするオプションを表示します。 |
 | `` <f5> `` | 更新 | Gitの状態を更新します（`git status`、`git branch`などをバックグラウンドで実行してパネルの内容を更新します）。これは`git fetch`を実行しません。 |
-| `` t s n `` | 次の画面モード（通常/半分/全画面） |  |
-| `` t s p `` | 前の画面モード |  |
+| `` =, + `` | 次の画面モード（通常/半分/全画面） |  |
+| `` - `` | 前の画面モード |  |
 | `` t d n `` | Cycle diff renderers | Choose the next renderer in the list of configured diff renderers. |
 | `` t d p `` | Cycle diff renderers (reverse) | Choose the previous renderer in the list of configured diff renderers. |
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
@@ -466,7 +466,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <delete> `` | 削除 | ローカル/リモートブランチの削除オプションを表示します。 |
 | `` r `` | Rebase current onto selected branch… | チェックアウトしたブランチを選択したブランチ上にリベースします。 |
 | `` m `` | Merge selected branch into current… | 選択した項目を現在のブランチにマージするためのオプションを表示します（通常のマージ、スカッシュマージ） |
-| `` g f `` | Fast-forward selected branches… | Review an upstream fetch and a forward-only update of the captured selected branches. Divergent or rewritten history is never reset; tips occupied by another worktree are not moved. A selected checked-out branch uses native fast-forward integration with explicit review. Multiple selections require final batch approval. Saved upstream settings stay unchanged. |
+| `` g f `` | Fast-forward selected branches | Move each selected branch to its upstream as it exists locally, without fetching. A branch behind its upstream fast-forwards with no prompt; a checked-out branch uses a fast-forward-only merge that keeps your uncommitted changes. You are asked only before overwriting ignored files. Diverged branches, branches without an upstream or with a missing tracking ref, and branches another worktree occupies are listed in one alert at the end. |
 | `` n t `` | 新しいタグを作成 |  |
 | `` t s o `` | 並び順 |  |
 | `` <f2> `` | ブランチ名を変更 |  |
