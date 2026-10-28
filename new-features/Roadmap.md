@@ -1148,24 +1148,47 @@ repeatedly, found several that deserve shorter routes. User decisions:
   nothing, so a move cannot happen by accident.
 - `/` opens the text filter in panes that have no search (Files, Branches,
   Remote branches, Remotes, Tags, Stash, Worktrees, Submodules, Commit files,
-  Reflog). Panes with search keep `/` for search. `t f t` stays.
+  Reflog). Panes with search keep `/` for search. `t f t` is removed.
 - `s p` switches to the previous branch (`git checkout -`) from any pane. Its
   menu label names that branch, read from the already loaded reflog; with no
   previous checkout it says so and does nothing.
 - `s b` checks out a branch by typing its name, in Branches, where the action
   lives.
-- `0` focuses the main view from every side pane. In Files it only focuses,
-  unlike `v`, which can enter a submodule or open conflict resolution.
+- `0` focuses the main view in the panes where upstream offered it (Status,
+  Files, Branches, Remote branches, Tags, Commits, Reflog, Sub-commits,
+  Commit files, Stash). In Files it only focuses, unlike `v`, which can enter
+  a submodule or open conflict resolution; `v` there is labelled "Inspect
+  file".
 - Stash apply moves from `g a` to `g s a`, beside `g s s`, `g s o` and `g s p`.
 - `v` and Space in Worktrees show the commits of the worktree's checked-out
   branch, or of its HEAD when detached or mid-rebase, in the existing
   read-only commit view. Nothing switches; `s w` still switches worktrees.
 
-Acceptance: each route above runs its action under the real defaults; `,`
+Acceptance: each route above runs its action under the real defaults; `t f t`
+does nothing; `,`
 and `.` do not move commits; `/` searches in Commits and filters in Branches;
 `s p` names the previous branch and switches to it; `v` in Worktrees opens the
 branch's commits without changing the current worktree; generated key docs
 list the new routes.
+
+## 23. Terminal title names the repository being viewed
+
+lazygitk never set the terminal title, so it kept whatever the shell set at
+launch, usually the launch directory. User decisions:
+
+- The title is the top-level directory of the repository or worktree being
+  viewed, even when lazygitk was launched from a subdirectory; inside a
+  submodule it is the submodule's directory. The home directory is shown as
+  `~`.
+- It is set at startup and on every repository change: `s r`, `s n`,
+  entering or leaving a submodule, and `s w` worktree switches.
+- The terminal's title stack is saved at startup and restored on exit, so
+  the shell's own title returns where the terminal supports it. Elsewhere
+  the last repository path stays until the shell sets a title.
+
+Acceptance: the title is the repository path at startup and after each kind
+of repository change; it uses `~` for the home directory; exiting restores
+the saved title.
 
 ## Verification and repository workflow
 
