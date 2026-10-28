@@ -43,6 +43,8 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 	return self.addSelectedResetBindings([]*types.Binding{
 		// Fork: add keyless ref-only placement from the captured selected branch.
 		self.branchPlacementBinding(),
+		// Fork: w b shows the branch with its upstream (see fork_branch_scope_filter.go).
+		self.branchScopeFilterBinding(),
 		{
 			CommandID: "branch.checkout",
 			Verb:      "checkout",

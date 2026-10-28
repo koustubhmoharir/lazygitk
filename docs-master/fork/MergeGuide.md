@@ -121,7 +121,7 @@ re-apply it if upstream changes that code.
   `gui.os = osCommand`). Paste still uses `atotto/clipboard`. Keep the writer
   injected so `oscommands` never imports gocui.
 - `git_commands/commit_loader.go`: `GetCommitsOptions` carries the commit
-  scope (`ScopeHashes`, `ScopeDescendants`). `GetCommits` loads a scoped list
+  scope (`ScopeHashes`, `ScopeDescendants`, `ScopeBranch`). `GetCommits` loads a scoped list
   with `loadCommitScope` and skips rebase todos for it; `getLogCmd` takes its
   revisions, order, `--all` and limit from `commitScopeLog`
   (`fork_commit_scope.go`). New `git log` arguments that depend on the ref or
@@ -193,6 +193,8 @@ re-apply it if upstream changes that code.
   reviewed cherry-pick; fixup and amend creation preflight their placement;
   `GetKeybindings` appends the commit scope filters
   (`fork_commit_scope_filters.go`).
+- `controllers/branches_controller.go`: `GetKeybindings` adds `w b`
+  (`fork_branch_scope_filter.go`).
 - `controllers/commits_files_controller.go`: tree navigation, flat copy and
   historical diffs; copy menu items are shared with the flat bindings.
 - `controllers/sync_controller.go` (replacement): push and pull act on the
@@ -245,7 +247,7 @@ re-apply it if upstream changes that code.
 Upstream changes to these menus should be ported into the captured flows, not
 restored.
 
-Commit scope filters (`w a`, `w d`) are a third kind of filtering mode:
+Commit scope filters (`w a`, `w d`, `w b`) are a third kind of filtering mode:
 
 - `modes/filtering/filtering.go`: a `commitScope` field
   (`fork_commit_scope.go`); `Active()` counts it so that upstream's

@@ -97,6 +97,11 @@ type TranslationSet struct {
 	ShowingCommitAncestorsMany            string
 	ShowingCommitDescendantsOne           string
 	ShowingCommitDescendantsMany          string
+	FilterBranchAndUpstream               string
+	CommitScopeNoBranch                   string
+	CommitScopeSelectBranch               string
+	ShowingBranchWithUpstream             string
+	ShowingBranchNoUpstream               string
 	BranchSyncCurrentPullSummary          string
 	BranchSyncIntegrationMenu             string
 	BranchSyncIntegrationSummary          string
@@ -1607,6 +1612,11 @@ func EnglishTranslationSet() *TranslationSet {
 		ShowingCommitAncestorsMany:            "Showing ancestors of %d selected commits",
 		ShowingCommitDescendantsOne:           "Showing descendants of %d selected commit",
 		ShowingCommitDescendantsMany:          "Showing descendants of %d selected commits",
+		FilterBranchAndUpstream:               "Show branch and its upstream",
+		CommitScopeNoBranch:                   "No local branch points at this commit.",
+		CommitScopeSelectBranch:               "Select a local branch to show it with its upstream.",
+		ShowingBranchWithUpstream:             "Showing %s and %s",
+		ShowingBranchNoUpstream:               "Showing %s (no tracking branch)",
 		BranchSyncCurrentPullSummary:          "Checked-out branch %q at %s\nUpstream remote: %q\nUpstream branch: %q\nLocal tracking storage: %q\n\nFetch first, then review the exact incoming commit and integration method before changing files. Saved upstream settings will not change.",
 		BranchSyncIntegrationMenu:             "Integrate reviewed incoming commit",
 		BranchSyncIntegrationSummary:          "Checked-out branch %q at %s\nReviewed incoming commit: %s\n\nChoose an integration method. The default uses Git configuration; explicit choices replace the corresponding defaults. No second network pull or autostash will run.",

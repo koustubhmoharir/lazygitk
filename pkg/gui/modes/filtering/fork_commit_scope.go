@@ -2,22 +2,27 @@ package filtering
 
 import "slices"
 
-// Fork: a commit scope shows the commits in Hashes together with their ancestors,
-// or, when Descendants is set, together with their descendants. It is a third kind
+// Fork: a commit scope shows a set of commits and their history. It is a third kind
 // of filtering mode next to path and author: setting one replaces the others.
+//
+// Hashes with Descendants unset show the commits in Hashes together with their
+// ancestors; with Descendants set, together with their descendants. Branch, when
+// set, shows that local branch and its upstream with their ancestors. It is stored
+// by name, so that the scope follows the branch when it moves or is fetched.
 type CommitScope struct {
 	Hashes      []string
 	Descendants bool
+	Branch      string
 }
 
-// Active reports whether a scope is set. A scope always has at least one hash.
+// Active reports whether a scope is set. A scope has either hashes or a branch.
 func (s CommitScope) Active() bool {
-	return len(s.Hashes) > 0
+	return len(s.Hashes) > 0 || s.Branch != ""
 }
 
 // SetCommitScope sets the scope. The mode keeps its own copy of the hashes.
 func (m *Filtering) SetCommitScope(scope CommitScope) {
-	m.commitScope = CommitScope{Hashes: slices.Clone(scope.Hashes), Descendants: scope.Descendants}
+	m.commitScope = CommitScope{Hashes: slices.Clone(scope.Hashes), Descendants: scope.Descendants, Branch: scope.Branch}
 }
 
 // GetCommitScope returns the scope, which is empty when none is set.

@@ -70,9 +70,11 @@ type GetCommitsOptions struct {
 	HashPool                *utils.StringPool
 	// Fork: commit scope filter (see fork_commit_scope.go). When ScopeHashes is
 	// non-empty, the list shows those commits with their ancestors, or with their
-	// descendants when ScopeDescendants is set.
+	// descendants when ScopeDescendants is set. When ScopeBranch is set, the list
+	// shows that local branch and its upstream with their ancestors.
 	ScopeHashes      []string
 	ScopeDescendants bool
+	ScopeBranch      string
 }
 
 // GetCommits obtains the commits of the current branch

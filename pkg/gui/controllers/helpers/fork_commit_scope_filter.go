@@ -13,10 +13,10 @@ import (
 // they are applied and cleared the same way otherwise (see ModeHelper).
 
 // SetCommitScopeFilter applies scope in place of any path, author or scope filter.
-// The cursor stays on the commit it is on, and Commits is focused.
-func (self *ModeHelper) SetCommitScopeFilter(scope filtering.CommitScope) error {
-	cursorHash := self.c.Contexts().LocalCommits.GetSelectedCommitHash()
-
+// cursorHash is the commit the cursor is on, which stays selected, and Commits is
+// focused. Commits passes its own selection; Branches passes the branch's tip,
+// because its own selection is not a commit.
+func (self *ModeHelper) SetCommitScopeFilter(scope filtering.CommitScope, cursorHash string) error {
 	return self.changeFilteringWithLayout(
 		func() {
 			// As for path filters, the scope replaces whatever filter was set.
@@ -52,6 +52,8 @@ func (self *ModeHelper) commitScopeInfoLabel() string {
 
 	var text string
 	switch {
+	case scope.Branch != "":
+		text = self.branchScopeInfoText(scope.Branch)
 	case scope.Descendants && count == 1:
 		text = fmt.Sprintf(self.c.Tr.ShowingCommitDescendantsOne, count)
 	case scope.Descendants:
@@ -62,4 +64,16 @@ func (self *ModeHelper) commitScopeInfoLabel() string {
 		text = fmt.Sprintf(self.c.Tr.ShowingCommitAncestorsMany, count)
 	}
 	return self.withResetButton(text, style.FgRed)
+}
+
+// branchScopeInfoText names the branch and its upstream, as the model knows them
+// when the label is drawn. The loader uses the same upstream, so a gone upstream
+// counts as none.
+func (self *ModeHelper) branchScopeInfoText(name string) string {
+	for _, branch := range self.c.Model().Branches {
+		if branch.Name == name && branch.IsTrackingRemote() && !branch.UpstreamGone {
+			return fmt.Sprintf(self.c.Tr.ShowingBranchWithUpstream, name, branch.ShortUpstreamRefName())
+		}
+	}
+	return fmt.Sprintf(self.c.Tr.ShowingBranchNoUpstream, name)
 }

@@ -182,6 +182,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p v `` | 在浏览器中打开拉取请求 |  |
 | `` w a `` | Show selected commits and their ancestors |  |
 | `` w d `` | Show selected commits and their descendants |  |
+| `` w b `` | Show branch and its upstream |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |
@@ -306,6 +307,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s m `` | 混合重置 |  |
 | `` s s `` | 软重置 |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
+| `` w b `` | Show branch and its upstream |  |
 | `` s c `` | 检出 | 检出选中的项目 |
 | `` g m n `` | 移动提交至新分支 | 创建一个新分支，并将当前分支未推送的提交移动到该分支。如果您打算开始新工作但忘记先创建新分支，这会很有用。<br><br>请注意，此操作忽略选择，新分支总是从主分支创建或堆叠在当前分支之上（您可以选择哪种方式）。 |
 | `` n w `` | 新建工作树 |  |

@@ -2,6 +2,7 @@ package git_commands
 
 import (
 	"slices"
+	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/utils"
@@ -9,15 +10,17 @@ import (
 
 // Fork: the commit scope filter shows the selected commits with their ancestors,
 // or with their descendants (commits reachable from any ref that have a selected
-// commit as an ancestor).
+// commit as an ancestor). A branch scope shows a local branch and its upstream
+// with their ancestors.
 //
 // Integration points: GetCommits loads a scoped list with loadCommitScope instead
 // of loadCommits, and getLogCmd takes its revisions, order, --all and limit from
-// commitScopeLog. Upstream lists never set ScopeHashes, so they keep their path.
+// commitScopeLog. Upstream lists never set ScopeHashes or ScopeBranch, so they keep
+// their path.
 
 // hasCommitScope reports whether the list is limited to a commit scope.
 func (opts GetCommitsOptions) hasCommitScope() bool {
-	return len(opts.ScopeHashes) > 0
+	return len(opts.ScopeHashes) > 0 || opts.ScopeBranch != ""
 }
 
 // commitScopeLogArgs holds the parts of the git log arguments that a commit
@@ -56,6 +59,9 @@ func commitScopeLog(opts GetCommitsOptions, refSpec string, configuredOrder stri
 // dropped first, so that a vanished commit cannot make the descendants search
 // read the whole history, and an ancestors log cannot fail on it.
 func (self *CommitLoader) loadCommitScope(opts GetCommitsOptions, parseLine func(string) (*models.Commit, bool)) ([]*models.Commit, error) {
+	if opts.ScopeBranch != "" {
+		return self.loadBranchScope(opts, parseLine)
+	}
 	hashes, err := self.existingCommitScopeHashes(opts.ScopeHashes)
 	if err != nil {
 		return nil, err
@@ -94,6 +100,38 @@ func (self *CommitLoader) loadCommitScope(opts GetCommitsOptions, parseLine func
 		return nil, err
 	}
 	return keepCommitDescendants(commits, selected), nil
+}
+
+// loadBranchScope loads the commits of a branch scope: the local branch and its
+// upstream, with their ancestors, in the normal order and limit. The branch is
+// resolved on every load, so commits fetched into the upstream appear. A branch
+// that no longer exists gives an empty list.
+//
+// The resolved refs are passed on as the revisions of an ancestors scope, which
+// takes ref names as readily as hashes.
+func (self *CommitLoader) loadBranchScope(opts GetCommitsOptions, parseLine func(string) (*models.Commit, bool)) ([]*models.Commit, error) {
+	branchRef := "refs/heads/" + opts.ScopeBranch
+	if err := self.cmd.New(NewGitCmd("rev-parse").Arg("--verify", "--quiet", branchRef).ToArgv()).DontLog().Run(); err != nil {
+		// The branch is gone (or the lookup failed, which the log below would
+		// report too), so there is nothing to show.
+		return []*models.Commit{}, nil
+	}
+
+	revisions := []string{branchRef}
+	// The upstream is optional: rev-parse --quiet exits non-zero when there is none,
+	// or when it does not resolve. Either way the branch alone is shown. The
+	// @{upstream} suffix takes the short branch name; the full ref name does not work.
+	if upstream, err := self.cmd.New(NewGitCmd("rev-parse").Arg("--verify", "--quiet", "--symbolic-full-name", opts.ScopeBranch+"@{upstream}").ToArgv()).DontLog().RunWithOutput(); err == nil {
+		if upstream = strings.TrimSpace(upstream); upstream != "" {
+			revisions = append(revisions, upstream)
+		}
+	}
+
+	scoped := opts
+	scoped.ScopeBranch = ""
+	scoped.ScopeHashes = revisions
+	scoped.ScopeDescendants = false
+	return loadCommits(self.getLogCmd(scoped), "", parseLine)
 }
 
 // existingCommitScopeHashes returns the hashes that name a commit in the

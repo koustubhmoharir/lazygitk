@@ -165,6 +165,7 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	// Fork: commit scope filters, declared before the menu entries so they list first.
 	add("filter.commit-ancestors", "w a")
 	add("filter.commit-descendants", "w d")
+	add("filter.branch-and-upstream", "w b")
 	add("file.filter-menu", "w s")
 	add("filter.options-menu", "w o")
 	add("ui.file-tree.toggle", "t t t")

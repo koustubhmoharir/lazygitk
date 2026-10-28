@@ -129,6 +129,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s m `` | Mixed reset |  |
 | `` s s `` | Soft reset |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
+| `` w b `` | Show branch and its upstream |  |
 | `` s c `` | Uitchecken | Geselecteerd item uitchecken. |
 | `` g m n `` | Verplaats commits naar nieuwe branch | Maak een nieuwe branch en verplaats niet-gepushte commits van de huidige branch hier naar toe. Gebruik dit in het geval dat je deze commits eigenlijk op een nieuwe branch had willen maken.<br><br>Let op dat de selectie genegeerd wordt. De nieuwe branch komt ofwel bovenop de main branch, of bovenop de huidige branch (je kan kiezen). |
 | `` n w `` | New worktree |  |
@@ -209,6 +210,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p v `` | Open pull request in browser |  |
 | `` w a `` | Show selected commits and their ancestors |  |
 | `` w d `` | Show selected commits and their descendants |  |
+| `` w b `` | Show branch and its upstream |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |

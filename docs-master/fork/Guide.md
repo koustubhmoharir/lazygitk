@@ -165,6 +165,7 @@ Commits only:
 | `g p v` | Open the pull request |
 | `t l o` | Log options |
 | `w a`, `w d` | Show only the selected commits and their ancestors, or their descendants |
+| `w b` | Show only the branch at this commit, its tracking branch and their history (a menu asks which branch when several are here) |
 | `w o` | Filter the log by path or author |
 
 ### Commit files
@@ -196,7 +197,7 @@ Commits only:
 | `t d e` | External diff tool |
 | `y n` and the commit copy keys | Copy the name, or details of the commit it points at |
 
-Branches also: F2 rename; `g f` fast-forward the
+Branches also: `w b` show only the branch, its tracking branch and their history, in Commits; F2 rename; `g f` fast-forward the
 selected branches; `g t` upstream options; `n t` new tag; `g p c`, `g p o`,
 `g p v` create pull request, its options, open it; `y r` copy its URL; `g m n`
 move commits to a new branch; `g y` git-flow; `t s o` sort order. Remote
@@ -225,7 +226,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 | `y` copy | `n` name, `p` path, `f` absolute path, `c` file content, `h` hash, `i` short hash, `s` subject, `m` message, `b` body, `u` URL, `a` author, `t` tags, `d` diff, `w` all files' diff, `r` pull request URL, `y` confirmation text |
 | `g` Git | `c` combine, `l` pull, `f` fast-forward, `t` upstream, `i` interactive rebase, `b` bisect, `o` merge/rebase options, `y` git-flow; `v f`/`v c` restore file, revert commit; `r p`/`r b` pick, rebase base; `m n` move commits to new branch; `e c`/`e n`/`e r`/`e a`/`e h` editor commit, commit without hooks, editor reword, commit attributes, edit hunk; `p c`/`p o`/`p v` pull request; `s s`/`s o`/`s a`/`s p` stash, stash options, apply, pop; `h s`/`h u`/`h t`/`h a`/`h o` stage, unstage, patch toggle, patch all, patch options; `h c`/`h p`/`h b` conflict options, pick hunk, pick both; `u s`/`u i`/`u b` submodule update, init, bulk; `z u`/`z w` upstream reset, working-tree reset |
 | `t` view and tools | `d` diff display: `e` external diff, `f` diff with a chosen file, `c` comparison options, `w` whitespace, `n`/`p` renderer, `+`/`-` context, `>`/`<` rename threshold; `t` tree: `t` toggle, `c` collapse all, `e` expand all; `l` log: `n`/`p` all-branch logs, `o` log options, `c` command log options, `s` select branch commits; `s o` sort order; `a` app: `c` config, `u` check update, `s` suspend, `q` quit without changing directory, `g` game; `n`/`p` next/previous: `h` hunk, `f` file, `c` conflict, `d` diff pane, `j` jump to file; `h s`/`h r` hunk selection, range selection |
-| `w` filters | `a` ancestors, `d` descendants of the selected commits (Commits); `s` file status (Files), `o` log filter by path or author (Commits) |
+| `w` filters | `a` ancestors, `d` descendants of the selected commits (Commits); `b` branch and its tracking branch (Commits, Branches); `s` file status (Files), `o` log filter by path or author (Commits) |
 
 ## How behaviour differs from upstream
 
@@ -280,6 +281,12 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   still drawn, the status bar names the filter, and the cursor stays on its
   commit. A filter replaces any other log filter, survives refreshes, and is
   removed by Escape (the cursor stays on its commit), or by choosing another.
+- `w b` shows only a local branch, its tracking branch and every ancestor of
+  either, so their shared history and both sides of a divergence are visible.
+  It is offered on a local branch in Branches (Commits opens on its tip) and
+  on a commit in Commits that local branches point at. A branch without a
+  tracking branch is shown alone, and the status bar says so. The branch names
+  are looked up again on every refresh, so fetched commits appear.
 - While the log is filtered, commands that rewrite history offer to leave the
   filter first, as upstream's path filter does. Unlike the path filter, these
   filters do not change the screen mode.
