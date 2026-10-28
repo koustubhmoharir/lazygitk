@@ -5,13 +5,16 @@ import (
 	"regexp"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/i18n"
 	"github.com/jesseduffield/lazygit/pkg/utils"
 )
 
 // Fork: branch.checkout-previous is a global binding so s p switches to the
-// previous branch from any pane (roadmap item 22). Upstream declared it in
-// BranchesController; the handler is the same RefsHelper.CheckoutPreviousRef.
+// previous checkout from any pane (roadmap item 22). Upstream declared it in
+// BranchesController. The handler uses the safe checkout paths, never upstream's
+// CheckoutPreviousRef, which offers an autostash.
 func forkCheckoutPreviousBinding(c *ControllerCommon, opts types.KeybindingsOpts) *types.Binding {
 	return &types.Binding{
 		CommandID: "branch.checkout-previous",
@@ -19,7 +22,7 @@ func forkCheckoutPreviousBinding(c *ControllerCommon, opts types.KeybindingsOpts
 		Keys:      opts.GetKeys(opts.Config.Branches.CheckoutPreviousBranch),
 		Handler: func() error {
 			c.LogAction(c.Tr.Actions.CheckoutBranch)
-			return c.Helpers().Refs.CheckoutPreviousRef()
+			return c.Helpers().Refs.CheckoutPreviousFlat()
 		},
 		DescriptionFunc: func() string {
 			if previous := forkPreviousCheckout(c.Model().ReflogCommits); previous != "" {
@@ -28,12 +31,22 @@ func forkCheckoutPreviousBinding(c *ControllerCommon, opts types.KeybindingsOpts
 			return c.Tr.CheckoutPreviousBranch
 		},
 		GetDisabledReason: func() *types.DisabledReason {
-			if forkPreviousCheckout(c.Model().ReflogCommits) == "" {
-				return &types.DisabledReason{Text: c.Tr.NoPreviousBranch}
-			}
-			return nil
+			statusFocused := c.Context().Current().GetKey() == context.STATUS_CONTEXT_KEY
+			return forkCheckoutPreviousDisabledReason(c.Tr, statusFocused, forkPreviousCheckout(c.Model().ReflogCommits))
 		},
 	}
+}
+
+// forkCheckoutPreviousDisabledReason hides s p in Status, where s is for
+// repositories, and otherwise reports a missing previous checkout.
+func forkCheckoutPreviousDisabledReason(tr *i18n.TranslationSet, statusFocused bool, previous string) *types.DisabledReason {
+	if statusFocused {
+		return &types.DisabledReason{Text: tr.NoApplicableCommandsInThisContext, Inapplicable: true}
+	}
+	if previous == "" {
+		return &types.DisabledReason{Text: tr.NoPreviousBranch}
+	}
+	return nil
 }
 
 var (

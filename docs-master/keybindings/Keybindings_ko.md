@@ -6,8 +6,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` s r `` | 최근에 사용한 저장소로 전환 |  |
-| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | 메인 패널을 위로 스크롤 |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | 메인 패널을 아래로로 스크롤 |  |
 | `` t l c `` | 명령어 로그 메뉴 열기 | View options for the command log e.g. show/hide the command log and focus the command log. |
@@ -79,6 +77,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y h `` | Copy commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
 | `` s s `` | Soft reset |  |
@@ -153,6 +152,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y i `` | Copy abbreviated commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
 | `` s s `` | Soft reset |  |
@@ -259,6 +259,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` g y `` | Git-flow 옵션 보기 |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
@@ -271,7 +272,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p o `` | 풀 리퀘스트 생성 옵션 |  |
 | `` g p v `` | Open pull request in browser |  |
 | `` y r `` | 풀 리퀘스트 URL을 클립보드에 복사 |  |
-| `` s b `` | 이름으로 체크아웃 | Checkout by name. In the input box you can enter '-' to switch to the previous branch. |
 | `` <delete> `` | 삭제 | View delete options for local/remote branch. |
 | `` r `` | Rebase current onto selected branch… | Rebase the checked-out branch onto the selected branch. |
 | `` m `` | Merge selected branch into current… | View options for merging the selected item into the current branch (regular merge, squash merge) |
@@ -289,6 +289,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
+| `` s n `` | Open repository by path |  |
 | `` t a c `` | 설정 파일 수정 | Open file in external editor. |
 | `` t a u `` | 업데이트 확인 |  |
 | `` s r `` | 최근에 사용한 저장소로 전환 |  |
@@ -337,6 +338,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | 체크아웃 | Checkout a new local branch based on the selected remote branch, or the remote branch as a detached head. |
 | `` n w `` | New worktree |  |
@@ -374,6 +376,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p v `` | Open pull request in browser |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
 | `` s s `` | Soft reset |  |
@@ -451,6 +454,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s c `` | 체크아웃 | Checkout the selected tag as a detached HEAD. |
 | `` n t `` | 태그를 생성 | Create new tag from current commit. You'll be prompted to enter a tag name and optional description. |
 | `` n w `` | New worktree |  |

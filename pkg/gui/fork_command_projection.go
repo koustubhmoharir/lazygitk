@@ -140,9 +140,16 @@ func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string) erro
 			binding.DescriptionFunc, binding.ShortDescriptionFunc, binding.TooltipFunc = nil, nil, nil
 			binding.DisplayOnScreen = false
 		}
-		if handler := gui.forkSelectedCheckoutHandler(binding.CommandID); handler != nil {
+		if handler := gui.forkSelectedCheckoutHandler(binding.CommandID, binding.ViewName); handler != nil {
 			binding.Handler = handler
-			binding.OpensMenu = true
+			// Only the name prompts of commits and tags open a popup; direct
+			// checkouts of a branch or remote branch run without one.
+			binding.OpensMenu = binding.CommandID == "tag.checkout" || binding.CommandID == "commit.checkout-menu"
+		}
+		if binding.CommandID == "repo.switch-menu" && binding.ViewName == "" {
+			// Fork: in Status, s is for repositories. The global recent-repos
+			// binding adds no route; Status's own binding keeps s r.
+			paths = nil
 		}
 		// User-approved exception: x in the staged diff keeps upstream's
 		// immediate unstage operation, alongside the explicit unstage path.

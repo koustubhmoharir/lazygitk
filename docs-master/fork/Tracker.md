@@ -28,8 +28,6 @@ it has no `r`, `n`; generated key docs and the user guide match.
 
 Tasks:
 
-- Rewire `s c`, `s d`, `s b`, `s p` and the Status-only `s r`/`s n`; unit
-  tests.
 - Integration scenarios for the acceptance cases.
 - User guide, merge guide, generated docs; close this section.
 

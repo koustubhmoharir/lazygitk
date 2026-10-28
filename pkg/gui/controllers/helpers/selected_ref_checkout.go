@@ -47,7 +47,7 @@ func (self *RefsHelper) CreateSelectedRefCheckoutMenu(ref models.Ref) error {
 						if err := valid(); err != nil {
 							return err
 						}
-						return flow.prepare(localName, false)
+						return flow.prepare(localName)
 					},
 				})
 			}

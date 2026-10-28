@@ -6,8 +6,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` s r `` | Wissel naar een recente repo |  |
-| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | Scroll naar beneden vanaf hoofdpaneel |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | Scroll naar beneden vanaf hoofdpaneel |  |
 | `` t l c `` | Commandolog opties weergeven | Bekijk commandolog opties, bijv. commandolog tonen/verbergen en focus. |
@@ -125,6 +123,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` g y `` | Laat git-flow opties zien |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
@@ -137,7 +136,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p o `` | Bekijk opties voor pull-aanvraag |  |
 | `` g p v `` | Open pull request in browser |  |
 | `` y r `` | Kopieer de URL van het pull-verzoek naar het klembord |  |
-| `` s b `` | Uitchecken bij naam | Checkout by name. In the input box you can enter '-' to switch to the previous branch. |
 | `` <delete> `` | Verwijderen | View delete options for local/remote branch. |
 | `` r `` | Rebase current onto selected branch… | Rebase de uitgecheckte branch bovenop de geselecteerde branch. |
 | `` m `` | Merge selected branch into current… | View options for merging the selected item into the current branch (regular merge, squash merge) |
@@ -211,6 +209,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p v `` | Open pull request in browser |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
 | `` s s `` | Soft reset |  |
@@ -306,6 +305,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y h `` | Copy commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
 | `` s s `` | Soft reset |  |
@@ -346,6 +346,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | Uitchecken | Geselecteerde remote branch uitchecken als nieuwe locale branch of als detached head. |
 | `` n w `` | New worktree |  |
@@ -416,6 +417,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
+| `` s n `` | Open repository by path |  |
 | `` t a c `` | Verander config bestand | Open bestand in externe editor. |
 | `` t a u `` | Check voor updates |  |
 | `` s r `` | Wissel naar een recente repo |  |
@@ -430,6 +432,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y i `` | Copy abbreviated commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
 | `` s s `` | Soft reset |  |
@@ -486,6 +489,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s c `` | Uitchecken | Geselecteerde tag uitchecken als detached HEAD. |
 | `` n t `` | Creëer tag | Maak een nieuwe tag die naar de huidige commit wijst. Je wordt gevraagd om een tag naam en optionele beschrijving. |
 | `` n w `` | New worktree |  |

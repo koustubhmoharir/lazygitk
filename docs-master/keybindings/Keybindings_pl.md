@@ -6,8 +6,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` s r `` | Przełącz na ostatnie repozytorium |  |
-| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | Przewiń główne okno w górę |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | Przewiń główne okno w dół |  |
 | `` t l c `` | Pokaż opcje dziennika poleceń | Pokaż opcje dla dziennika poleceń, np. pokazywanie/ukrywanie dziennika poleceń i skupienie na dzienniku poleceń. |
@@ -89,6 +87,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p v `` | Otwórz żądanie ściągnięcia w przeglądarce |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Twardy reset |  |
 | `` s m `` | Mieszany reset |  |
 | `` s s `` | Miękki reset |  |
@@ -162,6 +161,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y h `` | Copy commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Twardy reset |  |
 | `` s m `` | Mieszany reset |  |
 | `` s s `` | Miękki reset |  |
@@ -209,6 +209,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` g y `` | Pokaż opcje git-flow |  |
 | `` s h `` | Twardy reset |  |
 | `` s m `` | Mieszany reset |  |
@@ -221,7 +222,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p o `` | Zobacz opcje tworzenia pull requesta |  |
 | `` g p v `` | Otwórz żądanie ściągnięcia w przeglądarce |  |
 | `` y r `` | Kopiuj adres URL żądania ściągnięcia do schowka |  |
-| `` s b `` | Przełącz według nazwy | Przełącz według nazwy. W polu wprowadzania możesz wpisać '-' aby przełączyć się na ostatnią gałąź. |
 | `` <delete> `` | Usuń | Wyświetl opcje usuwania lokalnej/odległej gałęzi. |
 | `` r `` | Rebase current onto selected branch… | Przebazuj przełączoną gałąź na wybraną gałąź. |
 | `` m `` | Merge selected branch into current… | Scal wybraną gałąź z aktualnie sprawdzoną gałęzią. |
@@ -388,6 +388,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
+| `` s n `` | Open repository by path |  |
 | `` t a c `` | Edytuj plik konfiguracyjny | Otwórz plik w zewnętrznym edytorze. |
 | `` t a u `` | Sprawdź aktualizacje |  |
 | `` s r `` | Przełącz na ostatnie repozytorium |  |
@@ -402,6 +403,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y i `` | Copy abbreviated commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Twardy reset |  |
 | `` s m `` | Mieszany reset |  |
 | `` s s `` | Miękki reset |  |
@@ -458,6 +460,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s c `` | Przełącz | Przełącz wybrany tag jako odłączoną głowę (detached HEAD). |
 | `` n t `` | Nowy tag | Utwórz nowy tag z bieżącego commita. Zostaniesz poproszony o wprowadzenie nazwy tagu i opcjonalnego opisu. |
 | `` n w `` | Nowe drzewo pracy |  |
@@ -494,6 +497,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | Przełącz | Przełącz na nową lokalną gałąź na podstawie wybranej gałęzi zdalnej. Nowa gałąź będzie śledzić gałąź zdalną. |
 | `` n w `` | Nowe drzewo pracy |  |

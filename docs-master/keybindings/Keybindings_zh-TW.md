@@ -6,8 +6,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` s r `` | 切換到最近使用的版本庫 |  |
-| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | 向上捲動主面板 |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | 向下捲動主面板 |  |
 | `` t l c `` | 開啟命令記錄選單 | 檢視命令日誌的選項，例如顯示/隱藏命令日誌以及聚焦命令日誌。 |
@@ -126,6 +124,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y i `` | Copy abbreviated commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | 強制重設 |  |
 | `` s m `` | 混合重設 |  |
 | `` s s `` | 軟重設（保留變動） |  |
@@ -203,6 +202,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p v `` | 在瀏覽器中開啟拉取請求 |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | 強制重設 |  |
 | `` s m `` | 混合重設 |  |
 | `` s s `` | 軟重設（保留變動） |  |
@@ -286,6 +286,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y h `` | Copy commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | 強制重設 |  |
 | `` s m `` | 混合重設 |  |
 | `` s s `` | 軟重設（保留變動） |  |
@@ -326,6 +327,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` g y `` | 顯示 git-flow 選項 |  |
 | `` s h `` | 強制重設 |  |
 | `` s m `` | 混合重設 |  |
@@ -338,7 +340,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p o `` | 建立拉取請求選項 |  |
 | `` g p v `` | 在瀏覽器中開啟拉取請求 |  |
 | `` y r `` | 複製拉取請求的 URL 到剪貼板 |  |
-| `` s b `` | 根據名稱檢出 | 按名稱檢出。在輸入框中，您可以輸入'-' 來切換到最後一個分支。 |
 | `` <delete> `` | 刪除 | 檢視本地/遠端分支的刪除選項。 |
 | `` r `` | Rebase current onto selected branch… | 將檢出的分支變基到所選的分支上。 |
 | `` m `` | Merge selected branch into current… | 檢視將選中項合併到目前分支的選項(正常合併，壓縮合並) |
@@ -366,6 +367,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s c `` | 檢出 | 檢出選擇的標籤作為分離的HEAD。 |
 | `` n t `` | 建立標籤 | 基於目前提交建立一個新標籤。您將在彈窗中輸入標籤名稱和描述(可選)。 |
 | `` n w `` | 新建工作樹 |  |
@@ -446,6 +448,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
+| `` s n `` | Open repository by path |  |
 | `` t a c `` | 編輯設定檔案 | 使用外部編輯器開啟 |
 | `` t a u `` | 檢查更新 |  |
 | `` s r `` | 切換到最近使用的版本庫 |  |
@@ -494,6 +497,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | 檢出 | 基於目前選中的遠端分支檢出一個新的本地分支，或者將遠端分支作分離的HEAD。 |
 | `` n w `` | 新建工作樹 |  |

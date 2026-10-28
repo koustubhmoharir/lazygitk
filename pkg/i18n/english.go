@@ -15,6 +15,7 @@ type TranslationSet struct {
 	ForkToggleFileStage                  string
 	ForkUnstageSelection                 string
 	ForkRemovePatchSelection             string
+	CheckoutDetached                     string
 	CherryPickChangedNote                string
 	CherryPickSourceTitle                string
 	CherryPickMarkedSource               string
@@ -1519,6 +1520,7 @@ func EnglishTranslationSet() *TranslationSet {
 		ForkToggleFileStage:                   "Toggle staging of selected files",
 		ForkUnstageSelection:                  "Unstage selected changes",
 		ForkRemovePatchSelection:              "Remove selected lines from custom patch",
+		CheckoutDetached:                      "Checkout detached HEAD",
 		CherryPickChangedNote:                 "The destination or ignored-file risks changed. Review the fresh state before proceeding.",
 		CherryPickSourceTitle:                 "Choose commits to cherry-pick",
 		CherryPickMarkedSource:                "Previously marked commits (%d)",

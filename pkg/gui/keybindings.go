@@ -91,7 +91,8 @@ func (gui *Gui) GetInitialKeybindings() ([]*types.Binding, []*gocui.ViewMouseBin
 		},
 		{
 			// Fork: `s n` opens a repository by path (see fork_open_repo_path.go).
-			ViewName:    "",
+			// Only Status uses it: elsewhere `s` switches commits and branches.
+			ViewName:    "status",
 			CommandID:   "repo.open-path",
 			Verb:        "switch-repository",
 			Handler:     opts.Guards.NoPopupPanel(gui.helpers.Repos.OpenRepoPathPrompt),

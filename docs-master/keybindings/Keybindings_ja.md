@@ -6,8 +6,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` s r `` | 最近のリポジトリをチェックアウト |  |
-| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | メインウィンドウを上にスクロール |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | メインウィンドウを下にスクロール |  |
 | `` t l c `` | コマンドログオプションを表示 | コマンドログのオプションを表示します（例：コマンドログの表示/非表示、コマンドログへのフォーカスなど）。 |
@@ -96,6 +94,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p v `` | Open pull request in browser |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | ハードリセット |  |
 | `` s m `` | ミックスリセット |  |
 | `` s s `` | ソフトリセット（変更を保持してステージ） |  |
@@ -166,6 +165,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y i `` | Copy abbreviated commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | ハードリセット |  |
 | `` s m `` | ミックスリセット |  |
 | `` s s `` | ソフトリセット（変更を保持してステージ） |  |
@@ -225,6 +225,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
+| `` s n `` | Open repository by path |  |
 | `` t a c `` | 設定ファイルを編集 | 外部エディタでファイルを開きます。 |
 | `` t a u `` | 更新を確認 |  |
 | `` s r `` | 最近のリポジトリをチェックアウト |  |
@@ -274,6 +275,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s c `` | チェックアウト（ブランチの切り替え） | 選択したタグをデタッチドHEADとしてチェックアウトします。 |
 | `` n t `` | 新しいタグを作成 | 現在のコミットから新しいタグを作成します。タグ名とオプションの説明を入力するよう促されます。 |
 | `` n w `` | 新しいワークツリー |  |
@@ -383,6 +385,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y h `` | Copy commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | ハードリセット |  |
 | `` s m `` | ミックスリセット |  |
 | `` s s `` | ソフトリセット（変更を保持してステージ） |  |
@@ -435,6 +438,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | チェックアウト（ブランチの切り替え） | 選択したリモートブランチに基づいて新しいローカルブランチをチェックアウトするか、リモートブランチをデタッチドヘッドとしてチェックアウトします。 |
 | `` n w `` | 新しいワークツリー |  |
@@ -462,6 +466,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` g y `` | git-flowオプションを表示 |  |
 | `` s h `` | ハードリセット |  |
 | `` s m `` | ミックスリセット |  |
@@ -474,7 +479,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p o `` | プルリクエスト作成オプションを表示 |  |
 | `` g p v `` | Open pull request in browser |  |
 | `` y r `` | プルリクエストURLをクリップボードにコピー |  |
-| `` s b `` | 名前でチェックアウト | 名前でチェックアウトします。入力ボックスに「-」を入力すると、最後のブランチをチェックアウトすることができます。 |
 | `` <delete> `` | 削除 | ローカル/リモートブランチの削除オプションを表示します。 |
 | `` r `` | Rebase current onto selected branch… | チェックアウトしたブランチを選択したブランチ上にリベースします。 |
 | `` m `` | Merge selected branch into current… | 選択した項目を現在のブランチにマージするためのオプションを表示します（通常のマージ、スカッシュマージ） |

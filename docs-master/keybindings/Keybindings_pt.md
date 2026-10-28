@@ -6,8 +6,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` s r `` | Mudar para um repositório recente |  |
-| `` s n `` | Open repository by path |  |
 | `` <alt+up>, <pgup> (fn+up/shift+k) `` | Rolar janela principal para cima |  |
 | `` <alt+down>, <pgdown> (fn+down/shift+j) `` | Rolar a janela principal para baixo |  |
 | `` t l c `` | View command log options | View options for the command log e.g. show/hide the command log and focus the command log. |
@@ -117,6 +115,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` g y `` | Exibir opções do git-flow |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
@@ -129,7 +128,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p o `` | View create pull request options |  |
 | `` g p v `` | Open pull request in browser |  |
 | `` y r `` | Copiar URL do pull request para área de transferência |  |
-| `` s b `` | Checar por nome | Checar por nome. Na caixa de entrada você pode inserir '-' para trocar para a última branch  |
 | `` <delete> `` | Apagar | Ver opções de exclusão para a branch local/remoto. |
 | `` r `` | Rebase current onto selected branch… | Refazer a branch checada na branch selecionada |
 | `` m `` | Merge selected branch into current… | Ver opções para mesclar o item selecionado no branch atual (mesclar regularmente, mesclar squash) |
@@ -157,6 +155,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` s c `` | Verificar | Checar a nova branch baseada na brach remota selecionada, ou a branch remota como HEAD, desanexado |
 | `` n w `` | Nova árvore de trabalho |  |
@@ -223,6 +222,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p v `` | Open pull request in browser |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
 | `` s s `` | Soft reset |  |
@@ -264,6 +264,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s c `` | Verificar | Checar a tag selecionada como um HEAD, desanexado |
 | `` n t `` | Nova etiqueta | Crie uma nova etiqueta a partir do commit atual. Você será solicitado a digitar um nome e uma descrição opcional. |
 | `` n w `` | Nova árvore de trabalho |  |
@@ -350,6 +351,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y h `` | Copy commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
 | `` s s `` | Soft reset |  |
@@ -433,6 +435,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
+| `` s n `` | Open repository by path |  |
 | `` t a c `` | Editar arquivo de configuração | Abrir arquivo no editor externo. |
 | `` t a u `` | Verificar atualização |  |
 | `` s r `` | Mudar para um repositório recente |  |
@@ -447,6 +450,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y i `` | Copy abbreviated commit hash |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
+| `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Hard reset |  |
 | `` s m `` | Mixed reset |  |
 | `` s s `` | Soft reset |  |

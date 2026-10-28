@@ -41,8 +41,7 @@ in the [design principles](Design.md). The generated per-pane reference is
 | `g l` | Pull (deliberately no single key) |
 | F5 | Reload all repository state and redraw every pane; never fetches |
 | `u u`, `u r` | Undo, redo (from the reflog) |
-| `s r`, `s n` | Recent repositories; open a repository by path |
-| `s p` | Switch to the previous branch; the menu names it |
+| `s p` | Switch to the previous branch; the menu names it (not in Status, where `s` is for repositories) |
 | `c p` | Cherry-pick the marked or selected commits, after reviewing the list |
 | `:` | Run a shell command |
 | `=` or `+`, `-` | Next, previous screen mode (normal, half, full) |
@@ -133,7 +132,8 @@ of a stash entry:
 | --- | --- |
 | `v`, Space | Show the commit's files |
 | `d w`, `d p`, `d c` | Difftool against the working tree, the previous commit, or a pasted commit hash |
-| `s c` | Check out the commit, optionally under a branch name |
+| `s c` | Check out the commit on a branch: a name prompt that lists the branches already at the commit first; a new name is created there, and a name that points elsewhere is moved here after a warning |
+| `s d` | Check out the commit as a detached HEAD |
 | `n b` | Create or move a branch here without checking out |
 | `s h`, `s m`, `s s` | Hard, mixed, soft reset of the checked-out branch to this commit |
 | `r` | Rebase the checked-out branch onto this commit |
@@ -181,7 +181,8 @@ Commits only:
 | Keys | Action |
 | --- | --- |
 | `v`, Space | Show the commits |
-| `s c` | Check out (a remote branch offers a local tracking branch) |
+| `s c` | Switch to the branch; for a remote branch, to its local branch, creating it to track the remote one if needed. On a tag, the name prompt as for a commit |
+| `s d` | Check out its commit as a detached HEAD |
 | `n b` | Create or move a branch at its commit without checking out |
 | `r`, `m` | Rebase the checked-out branch onto it; merge it into the checked-out branch |
 | `s h`, `s m`, `s s` | Reset the checked-out branch to it (Branches) |
@@ -190,7 +191,7 @@ Commits only:
 | `t d e` | External diff tool |
 | `y n` and the commit copy keys | Copy the name, or details of the commit it points at |
 
-Branches also: F2 rename; `s b` check out by name; `g f` fast-forward the
+Branches also: F2 rename; `g f` fast-forward the
 selected branches; `g t` upstream options; `n t` new tag; `g p c`, `g p o`,
 `g p v` create pull request, its options, open it; `y r` copy its URL; `g m n`
 move commits to a new branch; `g y` git-flow; `t s o` sort order. Remote
@@ -205,14 +206,14 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 | Stash | `v`/Space files; `g s a` apply; `g s p` pop; Delete drop; F2 rename; `n w` new worktree |
 | Worktrees | `v`/Space its commits; `s w` switch to it; `n w` new; `o` open in editor; Delete remove |
 | Submodules | `v`/Space enter; `n s` new; `e` edit URL; Delete remove; `g u s`, `g u i`, `g u b` update, initialize, bulk options |
-| Status | `v`/Space focus the main view; `t a c` edit config; `t a u` check for updates; `t l n`, `t l p` all-branch logs |
+| Status | `s r` recent repositories; `s n` open a repository by path; `v`/Space focus the main view; `t a c` edit config; `t a u` check for updates; `t l n`, `t l p` all-branch logs |
 
 ### Prefix menus
 
 | Group | Entries |
 | --- | --- |
 | `d` diff | `w` working tree (HEAD in Files), `p` previous commit, `s` staged version (Files), `c` pasted commit |
-| `s` switch and reset | `h` `m` `s` hard, mixed, soft reset; `c` checkout; `r` recent repos; `n` open repo by path; `w` switch worktree; `p` previous branch; `b` checkout by name |
+| `s` switch and reset | `c` check out, `d` detached HEAD, `h` `m` `s` hard, mixed, soft reset, `p` previous branch, `w` switch worktree (Worktrees); in Status only `r` recent repositories and `n` open a repository by path |
 | `n` new | `b` branch here, `t` tag, `w` worktree, `r` remote, `f` fork remote, `s` submodule |
 | `c` cherry-pick | `y` mark, `x` unmark, `p` cherry-pick |
 | `u` undo | `u` undo, `r` redo |
@@ -252,10 +253,12 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   after a warning showing the old and new commits, without touching HEAD, the
   index or files. Branches checked out in any worktree cannot be moved this
   way; use reset for the current branch.
-- `s c` on a commit can check it out under a branch name (new, existing, or
-  the current one), carrying uncommitted changes when Git can. Files that
-  would be overwritten, including ignored ones, block the checkout instead.
-  Nothing is stashed or forced.
+- `s c` checks out without a second menu. A branch is switched to directly. A
+  commit or tag is always checked out on a branch you name in a prompt (new,
+  existing, or the current one), since several branches may point at it; `s d`
+  gives a detached HEAD instead. Every checkout, including `s p`, carries
+  uncommitted changes when Git can. Files that would be overwritten, including
+  ignored ones, block the checkout instead. Nothing is stashed or forced.
 - New branches show the source and a tracking choice (Git's configured
   policy, none, or track the source) before they are created.
 - `s p` switches to the branch checked out before the current one
@@ -323,7 +326,8 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 
 ### Repositories
 
-- `s n` opens a repository by path. The prompt starts at the current
+- In Status, `s r` lists recent repositories and `s n` opens one by path.
+  The `s n` prompt starts at the current
   repository's parent directory, lists matching subdirectories as you type,
   and Tab completes their common prefix. `~` and relative paths work.
 - The terminal title shows the top-level folder of the repository or worktree
@@ -364,7 +368,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 | `d` delete, `R` rename, `r` reword, `c` commit | Delete, F2, F2, Enter in Files |
 | Space to check out a branch | `s c` |
 | `-` previous branch | `s p` |
-| `c` checkout by name | `s b` |
+| `c` checkout by name | "Checkout by name" in `?`; normally select the branch and `s c` |
 | Squash and fixup keys | `g c` combine |
 | Toggle cherry-pick marks | `c y` mark, `c x` unmark, Escape clears |
 | `z` undo, Ctrl+Z redo | `u u`, `u r` |

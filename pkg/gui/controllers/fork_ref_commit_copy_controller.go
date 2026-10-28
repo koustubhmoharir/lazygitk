@@ -43,7 +43,7 @@ func (self *RefCommitCopyController) GetKeybindings(opts types.KeybindingsOpts) 
 	// Refs have no commit-level state to check, so every action is disabled only
 	// when no ref is selected. The tags action is not checked here; it checks at
 	// press time instead.
-	return commitCopyBindingList(
+	bindings := commitCopyBindingList(
 		self.c,
 		// The copy methods read only self.c (see commitCopyBindingList).
 		&BasicCommitsController{c: self.c},
@@ -51,6 +51,16 @@ func (self *RefCommitCopyController) GetKeybindings(opts types.KeybindingsOpts) 
 		self.requireSelectedRef,
 		self.requireSelectedRef,
 	)
+	// Fork: s d detaches HEAD at the selected ref's commit (fork_checkout_detached.go).
+	return append(bindings, checkoutDetachedBinding(self.c, self.requireSelectedRef, self.checkoutDetached))
+}
+
+func (self *RefCommitCopyController) checkoutDetached() error {
+	ref := self.selectedRef()
+	if ref == "" {
+		return errors.New(self.c.Tr.NoItemSelected)
+	}
+	return self.c.Helpers().Refs.CheckoutSelectedRefDetached(ref)
 }
 
 func (self *RefCommitCopyController) requireSelectedRef() *types.DisabledReason {

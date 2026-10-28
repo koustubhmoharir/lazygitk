@@ -28,8 +28,8 @@ func TestForkShortKeysDefaultRoutes(t *testing.T) {
 		assert.Equal(t, "s p", gui.commandKeyLabel("branch.checkout-previous", "localBranches"))
 	})
 
-	t.Run("checkout by name is s b in branches", func(t *testing.T) {
-		assert.Equal(t, "s b", gui.commandKeyLabel("branch.checkout-by-name", "localBranches"))
+	t.Run("checkout by name has no s b route", func(t *testing.T) {
+		assert.Equal(t, "", gui.commandKeyLabel("branch.checkout-by-name", "localBranches"))
 	})
 
 	t.Run("commit move keys are angle brackets", func(t *testing.T) {

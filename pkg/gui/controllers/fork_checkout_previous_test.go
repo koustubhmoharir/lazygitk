@@ -3,62 +3,30 @@ package controllers
 import (
 	"testing"
 
-	"github.com/jesseduffield/lazygit/pkg/commands/models"
-	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/i18n"
 	"github.com/stretchr/testify/assert"
 )
 
-// Fork: roadmap item 22. forkPreviousCheckout reads the reflog, newest first.
-func TestForkPreviousCheckout(t *testing.T) {
-	reflogEntry := func(name string) *models.Commit {
-		return models.NewCommit(&utils.StringPool{}, models.NewCommitOpts{Name: name})
-	}
-	const fullSHA1 = "0123456789abcdef0123456789abcdef01234567"
-	const fullSHA256 = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+func TestForkCheckoutPreviousDisabledReason(t *testing.T) {
+	tr := i18n.EnglishTranslationSet()
 
-	tests := []struct {
-		name   string
-		reflog []string
-		want   string
-	}{
-		{
-			name:   "newest checkout entry wins",
-			reflog: []string{"checkout: moving from feature to main", "checkout: moving from old to feature"},
-			want:   "feature",
-		},
-		{
-			name:   "non-checkout entries are skipped",
-			reflog: []string{"commit: x", "rebase (finish): returning to refs/heads/a", "checkout: moving from b to c"},
-			want:   "b",
-		},
-		{
-			name:   "full sha1 source is shortened",
-			reflog: []string{"checkout: moving from " + fullSHA1 + " to main"},
-			want:   utils.ShortHash(fullSHA1),
-		},
-		{
-			name:   "full sha256 source is shortened",
-			reflog: []string{"checkout: moving from " + fullSHA256 + " to main"},
-			want:   utils.ShortHash(fullSHA256),
-		},
-		{
-			name:   "no checkout entry gives empty",
-			reflog: []string{"commit: x", "reset: moving to HEAD~1"},
-			want:   "",
-		},
-		{
-			name:   "empty reflog gives empty",
-			reflog: nil,
-			want:   "",
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			var commits []*models.Commit
-			for _, name := range test.reflog {
-				commits = append(commits, reflogEntry(name))
-			}
-			assert.Equal(t, test.want, forkPreviousCheckout(commits))
-		})
-	}
+	t.Run("hidden while Status is focused", func(t *testing.T) {
+		reason := forkCheckoutPreviousDisabledReason(tr, true, "main")
+		if assert.NotNil(t, reason) {
+			assert.True(t, reason.Inapplicable)
+			assert.Equal(t, tr.NoApplicableCommandsInThisContext, reason.Text)
+		}
+	})
+
+	t.Run("available with a previous checkout", func(t *testing.T) {
+		assert.Nil(t, forkCheckoutPreviousDisabledReason(tr, false, "main"))
+	})
+
+	t.Run("reports a missing previous checkout elsewhere", func(t *testing.T) {
+		reason := forkCheckoutPreviousDisabledReason(tr, false, "")
+		if assert.NotNil(t, reason) {
+			assert.False(t, reason.Inapplicable)
+			assert.Equal(t, tr.NoPreviousBranch, reason.Text)
+		}
+	})
 }

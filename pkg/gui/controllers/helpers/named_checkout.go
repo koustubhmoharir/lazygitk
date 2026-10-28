@@ -33,6 +33,9 @@ type namedCheckoutFlow struct {
 	git                *commands.GitCommand
 	oid                string
 	validateRepository func() error
+	// nameSuggestions overrides the branch-name suggestions of begin. Nil keeps
+	// the upstream order of every branch name.
+	nameSuggestions func() func(string) []*types.Suggestion
 }
 
 func (flow *namedCheckoutFlow) checkRepository() error {
@@ -52,17 +55,23 @@ func (flow *namedCheckoutFlow) begin() error {
 	if err := flow.checkRepository(); err != nil {
 		return err
 	}
+	findSuggestions := flow.nameSuggestions
+	if findSuggestions == nil {
+		findSuggestions = NewSuggestionsHelper(flow.c).GetBranchNameSuggestionsFunc
+	}
 	flow.c.Prompt(types.PromptOpts{
 		Title:               fmt.Sprintf(flow.c.Tr.NamedCheckoutNamePrompt, utils.ShortHash(flow.oid)),
-		FindSuggestionsFunc: NewSuggestionsHelper(flow.c).GetBranchNameSuggestionsFunc(),
+		FindSuggestionsFunc: findSuggestions(),
 		PreserveWhitespace:  true,
 		AllowEditSuggestion: true,
-		HandleConfirm:       func(name string) error { return flow.prepare(name, false) },
+		HandleConfirm:       flow.prepare,
 	})
 	return nil
 }
 
-func (flow *namedCheckoutFlow) prepare(name string, changed bool) error {
+// prepare snapshots the named destination for review. A fresh plan is
+// presented with changed false: the user just named this destination.
+func (flow *namedCheckoutFlow) prepare(name string) error {
 	if err := flow.checkRepository(); err != nil {
 		return err
 	}
@@ -71,7 +80,7 @@ func (flow *namedCheckoutFlow) prepare(name string, changed bool) error {
 		if err != nil {
 			return err
 		}
-		flow.c.OnUIThread(func() error { return flow.present(plan, changed) })
+		flow.c.OnUIThread(func() error { return flow.present(plan, false) })
 		return nil
 	})
 }

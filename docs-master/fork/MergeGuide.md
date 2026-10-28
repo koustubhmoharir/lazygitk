@@ -201,6 +201,18 @@ re-apply it if upstream changes that code.
   `context/confirmation_context.go`, `types/common.go`: the optional
   `HandleTab` prompt hook used by `s n`. Keep the pass-throughs when upstream
   changes prompt options.
+- Default `s c` routes: `projectForkBinding` replaces the handlers of
+  `branch.checkout`, `remote-branch.checkout`, `tag.checkout` and
+  `commit.checkout-menu` with the flat checkouts in
+  `helpers/fork_flat_checkout.go` (`pkg/gui/fork_selected_checkout.go`).
+  Upstream's `CreateCheckoutMenu`, `CheckoutRemoteBranch` and
+  `CheckoutPreviousRef` stay for explicit legacy configuration only; they use
+  `CheckoutRef`, which offers an autostash, so fork defaults must not call
+  them. `s d` (`commit.checkout-detached`) attaches through
+  `fork_checkout_detached.go` and `RefCommitCopyController`.
+- In Status, `s` is for repositories: the global `repo.switch-menu` binding in
+  `keybindings.go` gets no path (Status's own binding keeps `s r`),
+  `repo.open-path` is a Status binding, and `s p` is inapplicable there.
 - `controllers/switch_to_focused_main_view_controller.go`: `WithInspect` makes
   Files' `v` inspect, and adds the focus-only `navigation.focus-main` (`0`).
 - `controllers/switch_to_sub_commits_controller.go`: `WithoutDoubleClick`, so
