@@ -1,6 +1,38 @@
 # Current work
 
-No work is in progress.
+## Item 25: stable scoped logs, branch / tag filter, flat `w` keys
+
+Agreed behaviour:
+
+- Scoped logs (`w a`, `w d`, `w b`) keep the order of the unfiltered log: they
+  read the same `git log` (revisions, `--all`, order) and drop the commits
+  outside the scope, so the filtered rows are a subsequence of the unfiltered
+  rows. Ancestors are kept by propagation from the selected commits (a commit
+  is kept when it is selected or a parent of a kept commit), which is exact
+  because the walk lists children before parents. `git.log.order: default`
+  walks scopes with `--date-order`. When the log shows only the current
+  branch, a branch / tag scope adds its tips to the walk.
+- `w b` is "Show branch / tag". In Commits it is offered when a local branch,
+  remote branch or tag points at the commit; the refs are looked up when it
+  runs. A local branch shows with its upstream; a remote branch or tag shows
+  alone. One ref applies directly; several are chosen from a menu (local
+  branches, remote branches, then tags). Branches, Remote branches and Tags
+  offer it on the selected ref. The scope stores the full ref name and
+  resolves it on every refresh. The command ID becomes `filter.ref`.
+- `w o` loses its key. `w p` and `w u` open the path and author prompts,
+  prefilled with the selected file's path (Files, Commit files) or the
+  selected commit's author (Commits). `w c` clears the log filter and is
+  offered only while one is active.
+
+Acceptance: integration scenarios show a scoped ancestors log of two diverged
+branches in the unfiltered relative order; `w b` on a remote branch tip, a tag
+and a commit with several refs; `w p`, `w u` and `w c` from the `w` group.
+
+Tasks:
+
+- Order-preserving scoped walk.
+- Branch / tag filter in Commits, Branches, Remote branches and Tags.
+- Flat `w p`, `w u`, `w c`.
 
 ## How this tracker works
 
