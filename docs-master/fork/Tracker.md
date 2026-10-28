@@ -83,6 +83,11 @@ filters hide everything but part of the graph:
 - Integration scenarios for each of the above.
 - Guide, Design and MergeGuide updates.
 
+## 25. Quieter first-run banner (next, after item 24)
+
+The first-run popup only says that lazygitk is a fork of the upstream
+repository. The notice about contributing to the original author stays.
+
 ## How this tracker works
 
 - This file holds the current piece of work: its agreed behaviour, acceptance
