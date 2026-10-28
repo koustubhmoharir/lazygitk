@@ -9,7 +9,7 @@ import (
 
 // Fork: branch and tag panels offer the flat `y` copy menu's commit actions for
 // the commit their selected ref points at (see the copy table in
-// new-features/Roadmap.md, item 12). The commit is resolved when an action runs,
+// docs-master/fork/Guide.md, Prefix menus). The commit is resolved when an action runs,
 // so it is never stale. Annotated tags resolve to their commit, not the tag
 // object.
 type RefCommitCopyController struct {

@@ -3,7 +3,7 @@ package controllers
 import "github.com/jesseduffield/lazygit/pkg/gui/types"
 
 // Fork: the flat `y` copy menu's file actions (see the copy table in
-// new-features/Roadmap.md, item 12). Each binding runs the same item as the
+// docs-master/fork/Guide.md, Prefix menus). Each binding runs the same item as the
 // nested Copy to clipboard menu, which keeps its items for the palette.
 func (self *FilesController) copyBindings() []*types.Binding {
 	return flatMenuItemBindings(self.copyMenuItems,

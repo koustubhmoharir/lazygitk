@@ -1,6 +1,6 @@
 ## Custom Keybindings
 
-This fork uses [semantic command paths](Fork_Keybindings.md) in normal panes.
+This fork uses [semantic command paths](../fork/Guide.md#how-keys-work) in normal panes.
 ASCII command letters are case-insensitive there. The legacy syntax below still
 applies to explicit overrides and native dialog/editor controls; custom commands
 retain exact key matching. Copy only the fields you intend to override.

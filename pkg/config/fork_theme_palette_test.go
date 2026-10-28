@@ -41,7 +41,7 @@ func assertThemeFields(t *testing.T, theme ThemeConfig, expected map[string][]st
 	}
 }
 
-func TestForkThemePaletteMatchesRoadmapTable(t *testing.T) {
+func TestForkThemePaletteMatchesDocumentedTable(t *testing.T) {
 	theme := GetDefaultConfig().Gui.ThemeForBackground(false, "")
 	assertThemeFields(t, theme, forkMochaFields)
 

@@ -936,7 +936,7 @@ os:
   copyToClipboardCmd: ''
 ```
 
-Specify an external command to invoke when copying to clipboard is requested. `{{text}` will be replaced by text to be copied. Default is OSC 52 through the terminal, which needs no clipboard tool; see [Clipboard](Fork_Features.md#clipboard).
+Specify an external command to invoke when copying to clipboard is requested. `{{text}` will be replaced by text to be copied. Default is OSC 52 through the terminal, which needs no clipboard tool; see [Copying](fork/Guide.md#copying).
 
 A custom command for reading from the clipboard can be set using
 
@@ -1211,7 +1211,7 @@ Keybindings are fixed in lazygitk. The `keybinding` section, `commandBindings`
 and the `key` of custom commands are ignored in global and per-repo config
 files, and lazygitk shows a notice at startup naming each file that contains
 them. Custom commands remain available from the `?` command palette. See
-[Fork_Keybindings.md](keybindings/Fork_Keybindings.md) for the keys.
+the [user guide](fork/Guide.md) for the keys.
 
 The default config below still lists the `keybinding` fields because they are
 part of the shared configuration schema; setting them has no effect.

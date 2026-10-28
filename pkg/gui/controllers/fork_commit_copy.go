@@ -10,7 +10,7 @@ import (
 )
 
 // Fork: commit-like panels share one flat `y` copy menu with consistent second
-// keys (see the copy table in new-features/Roadmap.md, item 12). These are the
+// keys (see the y row of the prefix-menu table in docs-master/fork/Guide.md). These are the
 // commit actions; the nested copy-attribute menu keeps its binding for the
 // palette but has no default route.
 func (self *BasicCommitsController) commitCopyBindings() []*types.Binding {
