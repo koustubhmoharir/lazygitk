@@ -99,8 +99,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d c `` | Diff with commit… |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
-| `` v `` | Focar visualização principal |  |
-| `` t f t `` | Filtrar a visualização atual por texto |  |
+| `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
+| `` 0 `` | Focar visualização principal |  |
+| `` / `` | Filtrar a visualização atual por texto |  |
 
 ## Branches locais
 
@@ -128,6 +129,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p o `` | View create pull request options |  |
 | `` g p v `` | Open pull request in browser |  |
 | `` y r `` | Copiar URL do pull request para área de transferência |  |
+| `` s b `` | Checar por nome | Checar por nome. Na caixa de entrada você pode inserir '-' para trocar para a última branch  |
 | `` <delete> `` | Apagar | Ver opções de exclusão para a branch local/remoto. |
 | `` r `` | Rebase current onto selected branch… | Refazer a branch checada na branch selecionada |
 | `` m `` | Merge selected branch into current… | Ver opções para mesclar o item selecionado no branch atual (mesclar regularmente, mesclar squash) |
@@ -137,8 +139,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <f2> `` | Renomear branch |  |
 | `` g t `` | View upstream options | View options relating to the branch's upstream e.g. setting/unsetting the upstream and resetting to the upstream. |
 | `` t d e `` | Abrir ferramenta de diff externa (git difftool) |  |
+| `` 0 `` | Focar visualização principal |  |
 | `` v, <space> `` | Ver commits |  |
-| `` t f t `` | Filtrar a visualização atual por texto |  |
+| `` / `` | Filtrar a visualização atual por texto |  |
 
 ## Branches remotos
 
@@ -163,8 +166,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g t `` | Definir como upstream | Definir o ramo remoto selecionado como fluxo do branch check-out. |
 | `` t s o `` | Sort order |  |
 | `` t d e `` | Abrir ferramenta de diff externa (git difftool) |  |
+| `` 0 `` | Focar visualização principal |  |
 | `` v, <space> `` | Ver commits |  |
-| `` t f t `` | Filtrar a visualização atual por texto |  |
+| `` / `` | Filtrar a visualização atual por texto |  |
 
 ## Commit arquivos
 
@@ -192,7 +196,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y f `` | Copy absolute path |  |
 | `` y d `` | Copy file diff |  |
 | `` y c `` | Copy file content |  |
-| `` t f t `` | Filtrar a visualização atual por texto |  |
+| `` 0 `` | Focar visualização principal |  |
+| `` / `` | Filtrar a visualização atual por texto |  |
 
 ## Commits
 
@@ -206,8 +211,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | Editar (iniciar rebase interativa) | Editar o commit selecionado. Use isto para iniciar uma rebase interativa a partir do commit selecionado. Quando já estiver no meio da reconstrução, isto irá marcar o commit selecionado para edição, o que significa que ao continuar com a reformulação. a rebase irá pausar no commit selecionado para permitir que você faça alterações. |
 | `` g i `` | Start interactive rebase | Start an interactive rebase for the commits on your branch. This will include all commits from the HEAD commit down to the first merge commit or main branch commit.<br>If you would instead like to start an interactive rebase from the selected commit, press `e`. |
 | `` g r p `` | Escolher | Marque o commit selecionado para ser escolhido (quando meados da base). Isso significa que o commit será mantido ao continuar o rebase. |
-| `` g m d `` | Mover commit um para baixo |  |
-| `` g m u `` | Mover o commit um para cima |  |
+| `` > `` | Mover commit um para baixo |  |
+| `` < `` | Mover o commit um para cima |  |
 | `` c p `` | cherry-pick |  |
 | `` g r b `` | Mark as base commit for rebase | Select a base commit for the next rebase. When you rebase onto a branch, only commits above the base commit will be brought across. This uses the `git rebase --onto` command. |
 | `` a `` | Modificar | Alterar o commit com mudanças em sted. Se o commit selecionado for o commit HEAD, ele executará o `git commit --amend`. Caso contrário, o compromisso será alterado por meio de uma base de apoio. |
@@ -241,6 +246,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | Focar visualização principal |  |
 | `` v, <space> `` | Ver arquivos |  |
 | `` / `` | Pesquisar na visualização atual por texto |  |
 
@@ -264,8 +270,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <delete> `` | Apagar | Ver opções de exclusão para tag local/remoto. |
 | `` p `` | Empurrar etiqueta | Push the selected tag to a remote. You'll be prompted to select a remote. |
 | `` t d e `` | Abrir ferramenta de diff externa (git difftool) |  |
+| `` 0 `` | Focar visualização principal |  |
 | `` v, <space> `` | Ver commits |  |
-| `` t f t `` | Filtrar a visualização atual por texto |  |
+| `` / `` | Filtrar a visualização atual por texto |  |
 
 ## Input prompt
 
@@ -292,19 +299,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | Toggle hunk selection | Ativa/desativa modo linha por linha vs. modo de seleção por partes. |
 | `` t h r `` | Toggle range select |  |
 | `` e `` | Editar arquivo | Abrir arquivo no editor externo. |
-| `` g h s `` | Etapa | Ativar/desativar seleção em staged/unstaged |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | Alternar linhas no caminho |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | Etapa | Ativar/desativar seleção em staged/unstaged |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | Alternar linhas no caminho |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | Descartar | Quando a mudança não desejada for selecionada, descarte a mudança usando `git reset`. Quando a mudança em fase é selecionada, despare a mudança. |
 | `` x `` | Remover linhas do commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Editar hunk | Editar o local selecionado no editor externo. |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | Ir para o local anterior |  |
-| `` t n h `` | Ir para o próximo trecho |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | Ir para o local anterior |  |
+| `` ], t n h `` | Ir para o próximo trecho |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | Exit back to side panel |  |
@@ -324,12 +331,12 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g h p `` | Escolha o local |  |
+| `` <space>, g h p `` | Escolha o local |  |
 | `` g h b `` | Pick both hunks |  |
 | `` k, <up> `` | Trecho anterior |  |
 | `` j, <down> `` | Próximo trecho |  |
-| `` t p c `` | Conflito anterior |  |
-| `` t n c `` | Próximo conflito |  |
+| `` [, t p c `` | Conflito anterior |  |
+| `` ], t n c `` | Próximo conflito |  |
 | `` u u `` | Desfazer | Desfazer resolução de conflitos de última mesclagem. |
 | `` e `` | Editar arquivo | Abrir arquivo no editor externo. |
 | `` o `` | Abrir arquivo | Abrir arquivo no aplicativo padrão. |
@@ -366,7 +373,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
-| `` t f t `` | Filtrar a visualização atual por texto |  |
+| `` 0 `` | Focar visualização principal |  |
+| `` / `` | Filtrar a visualização atual por texto |  |
 
 ## Remotes
 
@@ -378,7 +386,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | Editar | Edit the selected remote's name or URL. |
 | `` f `` | Buscar | Fetch updates from the remote repository. This retrieves new commits and branches without merging them into your local branches. |
 | `` n f `` | Add fork remote | Quickly add a fork remote by replacing the owner in the origin URL and optionally check out a branch from new remote. |
-| `` t f t `` | Filtrar a visualização atual por texto |  |
+| `` / `` | Filtrar a visualização atual por texto |  |
 
 ## Secundário
 
@@ -388,19 +396,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | Toggle hunk selection | Ativa/desativa modo linha por linha vs. modo de seleção por partes. |
 | `` t h r `` | Toggle range select |  |
 | `` e `` | Editar arquivo | Abrir arquivo no editor externo. |
-| `` g h s `` | Etapa | Ativar/desativar seleção em staged/unstaged |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | Alternar linhas no caminho |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | Etapa | Ativar/desativar seleção em staged/unstaged |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | Alternar linhas no caminho |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | Descartar | Quando a mudança não desejada for selecionada, descarte a mudança usando `git reset`. Quando a mudança em fase é selecionada, despare a mudança. |
 | `` x `` | Remover linhas do commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Editar hunk | Editar o local selecionado no editor externo. |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | Ir para o local anterior |  |
-| `` t n h `` | Ir para o próximo trecho |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | Ir para o local anterior |  |
+| `` ], t n h `` | Ir para o próximo trecho |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | Exit back to side panel |  |
@@ -412,13 +420,14 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g a `` | Aplicar | Aplique o stash no seu diretório de trabalho. |
+| `` g s a `` | Aplicar | Aplique o stash no seu diretório de trabalho. |
 | `` g s p `` | Pop | Aplique a entrada de stash no seu diretório de trabalho e remova a entrada de stash. |
 | `` <delete> `` | Descartar | Remova a entrada do stash da lista de armazenamento. |
 | `` n w `` | Nova árvore de trabalho |  |
 | `` <f2> `` | Renomear o stash |  |
+| `` 0 `` | Focar visualização principal |  |
 | `` v, <space> `` | Ver arquivos |  |
-| `` t f t `` | Filtrar a visualização atual por texto |  |
+| `` / `` | Filtrar a visualização atual por texto |  |
 
 ## Status
 
@@ -429,7 +438,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s r `` | Mudar para um repositório recente |  |
 | `` t l n `` | Mostrar/ciclo todos os logs de filiais |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
-| `` v, <space> `` | Focar visualização principal |  |
+| `` v, <space>, 0 `` | Focar visualização principal |  |
 
 ## Sub-commits
 
@@ -461,6 +470,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | Focar visualização principal |  |
 | `` v, <space> `` | Ver arquivos |  |
 | `` / `` | Pesquisar na visualização atual por texto |  |
 
@@ -477,7 +487,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g u i `` | Inicializar | Initialize the selected submodule to prepare for fetching. You probably want to follow this up by invoking the 'update' action to fetch the submodule. |
 | `` g u b `` | View bulk submodule options |  |
 | `` t a g `` | Easter Egg |  |
-| `` t f t `` | Filtrar a visualização atual por texto |  |
+| `` / `` | Filtrar a visualização atual por texto |  |
 
 ## Sumário do commit
 
@@ -494,4 +504,5 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s w `` | Switch | Mudar para a árvore de trabalho selecionada. |
 | `` o `` | Abrir no editor |  |
 | `` <delete> `` | Remover | Remove the selected worktree. This will both delete the worktree's directory, as well as metadata about the worktree in the .git directory. |
-| `` t f t `` | Filtrar a visualização atual por texto |  |
+| `` v, <space> `` | Ver commits |  |
+| `` / `` | Filtrar a visualização atual por texto |  |

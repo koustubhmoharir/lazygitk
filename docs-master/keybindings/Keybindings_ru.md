@@ -80,7 +80,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s w `` | Switch | Switch to the selected worktree. |
 | `` o `` | Open in editor |  |
 | `` <delete> `` | Remove | Remove the selected worktree. This will both delete the worktree's directory, as well as metadata about the worktree in the .git directory. |
-| `` t f t `` | Filter the current view by text |  |
+| `` v, <space> `` | Просмотреть коммиты |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Вторичный
 
@@ -90,19 +91,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | Toggle hunk selection | Toggle line-by-line vs. hunk selection mode. |
 | `` t h r `` | Переключить выборку перетаскивания |  |
 | `` e `` | Редактировать файл | Open file in external editor. |
-| `` g h s `` | Переключить индекс | Переключить строку в проиндексированные / непроиндексированные |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | Добавить/удалить строку(и) для патча |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | Переключить индекс | Переключить строку в проиндексированные / непроиндексированные |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | Добавить/удалить строку(и) для патча |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | Отменить изменение (git reset) | When unstaged change is selected, discard the change using `git reset`. When staged change is selected, unstage the change. |
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Изменить эту часть | Edit selected hunk in external editor. |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | Выбрать предыдущую часть |  |
-| `` t n h `` | Выбрать следующую часть |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | Выбрать предыдущую часть |  |
+| `` ], t n h `` | Выбрать следующую часть |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | Exit back to side panel |  |
@@ -120,19 +121,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | Toggle hunk selection | Toggle line-by-line vs. hunk selection mode. |
 | `` t h r `` | Переключить выборку перетаскивания |  |
 | `` e `` | Редактировать файл | Open file in external editor. |
-| `` g h s `` | Переключить индекс | Переключить строку в проиндексированные / непроиндексированные |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | Добавить/удалить строку(и) для патча |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | Переключить индекс | Переключить строку в проиндексированные / непроиндексированные |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | Добавить/удалить строку(и) для патча |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | Отменить изменение (git reset) | When unstaged change is selected, discard the change using `git reset`. When staged change is selected, unstage the change. |
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Изменить эту часть | Edit selected hunk in external editor. |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | Выбрать предыдущую часть |  |
-| `` t n h `` | Выбрать следующую часть |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | Выбрать предыдущую часть |  |
+| `` ], t n h `` | Выбрать следующую часть |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | Exit back to side panel |  |
@@ -144,12 +145,12 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g h p `` | Выбрать эту часть |  |
+| `` <space>, g h p `` | Выбрать эту часть |  |
 | `` g h b `` | Pick both hunks |  |
 | `` k, <up> `` | Выбрать предыдущую часть |  |
 | `` j, <down> `` | Выбрать следующую часть |  |
-| `` t p c `` | Выбрать предыдущий конфликт |  |
-| `` t n c `` | Выбрать следующий конфликт |  |
+| `` [, t p c `` | Выбрать предыдущий конфликт |  |
+| `` ], t n c `` | Выбрать следующий конфликт |  |
 | `` u u `` | Отменить | Undo last merge conflict resolution. |
 | `` e `` | Редактировать файл | Open file in external editor. |
 | `` o `` | Открыть файл | Open file in default application. |
@@ -186,7 +187,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` 0 `` | Focus main view |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Коммиты
 
@@ -200,8 +202,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | Edit (start interactive rebase) | Изменить коммит |
 | `` g i `` | Start interactive rebase | Start an interactive rebase for the commits on your branch. This will include all commits from the HEAD commit down to the first merge commit or main branch commit.<br>If you would instead like to start an interactive rebase from the selected commit, press `e`. |
 | `` g r p `` | Pick | Выбрать коммит (в середине перебазирования) |
-| `` g m d `` | Переместить коммит вниз на один |  |
-| `` g m u `` | Переместить коммит вверх на один |  |
+| `` > `` | Переместить коммит вниз на один |  |
+| `` < `` | Переместить коммит вверх на один |  |
 | `` c p `` | Выборочная отборка (Cherry-Pick) |  |
 | `` g r b `` | Mark as base commit for rebase | Select a base commit for the next rebase. When you rebase onto a branch, only commits above the base commit will be brought across. This uses the `git rebase --onto` command. |
 | `` a `` | Amend | Править последний коммит с проиндексированными изменениями |
@@ -235,6 +237,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Просмотреть файлы выбранного элемента |  |
 | `` / `` | Найти |  |
 
@@ -264,6 +267,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p o `` | Создать параметры запроса принятие изменений |  |
 | `` g p v `` | Open pull request in browser |  |
 | `` y r `` | Скопировать URL запроса на принятие изменений в буфер обмена |  |
+| `` s b `` | Переключить по названию | Checkout by name. In the input box you can enter '-' to switch to the previous branch. |
 | `` <delete> `` | Delete | View delete options for local/remote branch. |
 | `` r `` | Rebase current onto selected branch… | Rebase the checked-out branch onto the selected branch. |
 | `` m `` | Merge selected branch into current… | View options for merging the selected item into the current branch (regular merge, squash merge) |
@@ -273,8 +277,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <f2> `` | Переименовать ветку |  |
 | `` g t `` | View upstream options | View options relating to the branch's upstream e.g. setting/unsetting the upstream and resetting to the upstream. |
 | `` t d e `` | Open external diff tool (git difftool) |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Просмотреть коммиты |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Меню
 
@@ -322,6 +327,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Просмотреть файлы выбранного элемента |  |
 | `` / `` | Найти |  |
 
@@ -338,7 +344,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g u i `` | Initialize | Инициализировать подмодуль |
 | `` g u b `` | Просмотреть параметры массового подмодуля |  |
 | `` t a g `` | Пасхалка |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Сводка коммита
 
@@ -373,7 +379,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y f `` | Copy absolute path |  |
 | `` y d `` | Copy file diff |  |
 | `` y c `` | Copy file content |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` 0 `` | Focus main view |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Статус
 
@@ -384,7 +391,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s r `` | Переключиться на последний репозиторий |  |
 | `` t l n `` | Show/cycle all branch logs |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
-| `` v, <space> `` | Focus main view |  |
+| `` v, <space>, 0 `` | Focus main view |  |
 
 ## Теги
 
@@ -406,8 +413,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <delete> `` | Delete | View delete options for local/remote tag. |
 | `` p `` | Отправить тег | Push the selected tag to a remote. You'll be prompted to select a remote. |
 | `` t d e `` | Open external diff tool (git difftool) |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Просмотреть коммиты |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Удалённые ветки
 
@@ -432,8 +440,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g t `` | Set as upstream | Установить как upstream-ветку переключённую ветку |
 | `` t s o `` | Порядок сортировки |  |
 | `` t d e `` | Open external diff tool (git difftool) |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Просмотреть коммиты |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Удалённые репозитории
 
@@ -445,7 +454,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | Edit | Редактировать удалённый репозитории |
 | `` f `` | Получить изменения | Получение изменения из удалённого репозитория |
 | `` n f `` | Add fork remote | Quickly add a fork remote by replacing the owner in the origin URL and optionally check out a branch from new remote. |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Файлы
 
@@ -481,17 +490,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d c `` | Diff with commit… |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
-| `` v `` | Focus main view |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
+| `` 0 `` | Focus main view |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Хранилище
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g a `` | Применить припрятанные изменения | Apply the stash entry to your working directory. |
+| `` g s a `` | Применить припрятанные изменения | Apply the stash entry to your working directory. |
 | `` g s p `` | Применить припрятанные изменения и тут же удалить их из хранилища | Apply the stash entry to your working directory and remove the stash entry. |
 | `` <delete> `` | Удалить припрятанные изменения из хранилища | Remove the stash entry from the stash list. |
 | `` n w `` | New worktree |  |
 | `` <f2> `` | Переименовать хранилище |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Просмотреть файлы выбранного элемента |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |

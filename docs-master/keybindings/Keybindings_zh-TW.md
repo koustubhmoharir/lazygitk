@@ -75,19 +75,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | 切換程式碼塊選擇 | 切換逐行選擇與程式碼塊選擇模式。 |
 | `` t h r `` | 切換拖曳選擇 |  |
 | `` e `` | 編輯檔案 | 使用外部編輯器開啟 |
-| `` g h s `` | 切換預存 | 切換現有行的狀態 (已預存/未預存) |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | 向 (或從) 補丁中添加/刪除行 |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | 切換預存 | 切換現有行的狀態 (已預存/未預存) |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | 向 (或從) 補丁中添加/刪除行 |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | 刪除變更 (git reset) | 選取未暫存的變更時，使用 `git reset` 捨棄變更。選取已暫存的變更時，取消暫存變更。 |
 | `` x `` | 從提交中移除行 | 從本次提交中移除所選行。此操作會在背景執行互動式變基，因此如果後續提交也修改了這些行，您可能會遇到合併衝突。 |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | 編輯程式碼塊 | 在外部編輯器中編輯選中的程式碼塊。 |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | 選擇上一段 |  |
-| `` t n h `` | 選擇下一段 |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | 選擇上一段 |  |
+| `` ], t n h `` | 選擇下一段 |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | 退出回到側邊面板 |  |
@@ -99,12 +99,12 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g h p `` | 挑選程式碼片段 |  |
+| `` <space>, g h p `` | 挑選程式碼片段 |  |
 | `` g h b `` | 選取兩個區塊 |  |
 | `` k, <up> `` | 選擇上一段 |  |
 | `` j, <down> `` | 選擇下一段 |  |
-| `` t p c `` | 選擇上一個衝突 |  |
-| `` t n c `` | 選擇下一個衝突 |  |
+| `` [, t p c `` | 選擇上一個衝突 |  |
+| `` ], t n c `` | 選擇下一個衝突 |  |
 | `` u u `` | 復原 | 撤消上次合併衝突解決。 |
 | `` e `` | 編輯檔案 | 使用外部編輯器開啟 |
 | `` o `` | 開啟檔案 | 使用預設軟體開啟 |
@@ -149,6 +149,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | 聚焦主檢視 |  |
 | `` v, <space> `` | 檢視所選項目的檔案 |  |
 | `` / `` | 搜尋 |  |
 
@@ -165,7 +166,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g u i `` | 初始化 | 初始化子模組 |
 | `` g u b `` | 查看批量子模組選項 |  |
 | `` t a g `` | 彩蛋 |  |
-| `` t f t `` | 搜尋 |  |
+| `` / `` | 搜尋 |  |
 
 ## 工作目錄
 
@@ -175,7 +176,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s w `` | 切換 | 切換到選中的工作樹。 |
 | `` o `` | 在編輯器中開啟 |  |
 | `` <delete> `` | 刪除 | 刪除選定的工作樹。這將刪除工作樹的目錄以及 .git 目錄中有關工作樹的後設資料。 |
-| `` t f t `` | 搜尋 |  |
+| `` v, <space> `` | 檢視提交 |  |
+| `` / `` | 搜尋 |  |
 
 ## 提交
 
@@ -189,8 +191,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | 編輯(開始互動變基) | 編輯提交 |
 | `` g i `` | 開始互動變基 | 為分支上的提交啟動互動式變基。這將包括從 HEAD 提交到第一個合併提交或主分支提交的所有提交。<br>如果您想從所選提交啟動互動式變基，請按 `e`。 |
 | `` g r p `` | 挑選 | 挑選提交 (於變基過程中) |
-| `` g m d `` | 向下移動提交 |  |
-| `` g m u `` | 向上移動提交 |  |
+| `` > `` | 向下移動提交 |  |
+| `` < `` | 向上移動提交 |  |
 | `` c p `` | 揀選 (Cherry-pick) |  |
 | `` g r b `` | 為了變基已標注提交為基準提交 | 請為了下一次變基選擇一項基準提交；此將執行 `git rebase --onto`。 |
 | `` a `` | 修改 | 使用已預存的更改修正提交 |
@@ -224,6 +226,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | 聚焦主檢視 |  |
 | `` v, <space> `` | 檢視所選項目的檔案 |  |
 | `` / `` | 搜尋 |  |
 
@@ -260,19 +263,21 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y f `` | Copy absolute path |  |
 | `` y d `` | Copy file diff |  |
 | `` y c `` | Copy file content |  |
-| `` t f t `` | 搜尋 |  |
+| `` 0 `` | 聚焦主檢視 |  |
+| `` / `` | 搜尋 |  |
 
 ## 收藏 (Stash)
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g a `` | 套用 | 將貯藏項應用到您的工作目錄。 |
+| `` g s a `` | 套用 | 將貯藏項應用到您的工作目錄。 |
 | `` g s p `` | 還原 | 將儲存項應用到工作目錄並刪除儲存項。 |
 | `` <delete> `` | 捨棄 | 從貯藏列表中刪除該貯藏項。 |
 | `` n w `` | 新建工作樹 |  |
 | `` <f2> `` | 重新命名收藏 |  |
+| `` 0 `` | 聚焦主檢視 |  |
 | `` v, <space> `` | 檢視所選項目的檔案 |  |
-| `` t f t `` | 搜尋 |  |
+| `` / `` | 搜尋 |  |
 
 ## 日誌
 
@@ -304,7 +309,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
-| `` t f t `` | 搜尋 |  |
+| `` 0 `` | 聚焦主檢視 |  |
+| `` / `` | 搜尋 |  |
 
 ## 本地分支
 
@@ -332,6 +338,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p o `` | 建立拉取請求選項 |  |
 | `` g p v `` | 在瀏覽器中開啟拉取請求 |  |
 | `` y r `` | 複製拉取請求的 URL 到剪貼板 |  |
+| `` s b `` | 根據名稱檢出 | 按名稱檢出。在輸入框中，您可以輸入'-' 來切換到最後一個分支。 |
 | `` <delete> `` | 刪除 | 檢視本地/遠端分支的刪除選項。 |
 | `` r `` | Rebase current onto selected branch… | 將檢出的分支變基到所選的分支上。 |
 | `` m `` | Merge selected branch into current… | 檢視將選中項合併到目前分支的選項(正常合併，壓縮合並) |
@@ -341,8 +348,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <f2> `` | 重新命名分支 |  |
 | `` g t `` | 檢視遠端設定 | 檢視有關遠端分支的設定（例如重設至遠端） |
 | `` t d e `` | 開啟外部差異工具 (git difftool) |  |
+| `` 0 `` | 聚焦主檢視 |  |
 | `` v, <space> `` | 檢視提交 |  |
-| `` t f t `` | 搜尋 |  |
+| `` / `` | 搜尋 |  |
 
 ## 標籤
 
@@ -364,8 +372,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <delete> `` | 刪除 | 檢視本機／遠端標籤的刪除選項。 |
 | `` p `` | 推送標籤 | 推送選擇的標籤到遠端。您將在彈窗中選擇一個遠端。 |
 | `` t d e `` | 開啟外部差異工具 (git difftool) |  |
+| `` 0 `` | 聚焦主檢視 |  |
 | `` v, <space> `` | 檢視提交 |  |
-| `` t f t `` | 搜尋 |  |
+| `` / `` | 搜尋 |  |
 
 ## 檔案
 
@@ -401,8 +410,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d c `` | Diff with commit… |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
-| `` v `` | 聚焦主檢視 |  |
-| `` t f t `` | 搜尋 |  |
+| `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
+| `` 0 `` | 聚焦主檢視 |  |
+| `` / `` | 搜尋 |  |
 
 ## 次要
 
@@ -412,19 +422,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | 切換程式碼塊選擇 | 切換逐行選擇與程式碼塊選擇模式。 |
 | `` t h r `` | 切換拖曳選擇 |  |
 | `` e `` | 編輯檔案 | 使用外部編輯器開啟 |
-| `` g h s `` | 切換預存 | 切換現有行的狀態 (已預存/未預存) |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | 向 (或從) 補丁中添加/刪除行 |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | 切換預存 | 切換現有行的狀態 (已預存/未預存) |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | 向 (或從) 補丁中添加/刪除行 |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | 刪除變更 (git reset) | 選取未暫存的變更時，使用 `git reset` 捨棄變更。選取已暫存的變更時，取消暫存變更。 |
 | `` x `` | 從提交中移除行 | 從本次提交中移除所選行。此操作會在背景執行互動式變基，因此如果後續提交也修改了這些行，您可能會遇到合併衝突。 |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | 編輯程式碼塊 | 在外部編輯器中編輯選中的程式碼塊。 |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | 選擇上一段 |  |
-| `` t n h `` | 選擇下一段 |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | 選擇上一段 |  |
+| `` ], t n h `` | 選擇下一段 |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | 退出回到側邊面板 |  |
@@ -441,7 +451,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s r `` | 切換到最近使用的版本庫 |  |
 | `` t l n `` | 顯示/迴圈所有分支日誌 |  |
 | `` t l p `` | 顯示/迴圈所有分支日誌（反向） |  |
-| `` v, <space> `` | 聚焦主檢視 |  |
+| `` v, <space>, 0 `` | 聚焦主檢視 |  |
 
 ## 確認面板
 
@@ -468,7 +478,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | 編輯 | 編輯遠端 |
 | `` f `` | 擷取 | 擷取遠端 |
 | `` n f `` | 新增復刻遠端倉庫 | 透過替換 origin URL 中的所有者來快速新增復刻遠端倉庫，並可選擇從新遠端倉庫檢出分支。 |
-| `` t f t `` | 搜尋 |  |
+| `` / `` | 搜尋 |  |
 
 ## 遠端分支
 
@@ -493,5 +503,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g t `` | 設置為遠端 | 將此分支設為當前分支之遠端 |
 | `` t s o `` | 排序規則 |  |
 | `` t d e `` | 開啟外部差異工具 (git difftool) |  |
+| `` 0 `` | 聚焦主檢視 |  |
 | `` v, <space> `` | 檢視提交 |  |
-| `` t f t `` | 搜尋 |  |
+| `` / `` | 搜尋 |  |

@@ -3,7 +3,6 @@
 Item 22: shorter keys for frequent actions.
 Scope and decisions are in [Roadmap.md](Roadmap.md#22-shorter-keys-for-frequent-actions).
 
-- Integration scenarios for the acceptance cases under real defaults.
 - Docs, generated key docs, merge guide; mark the item complete.
 
 ## How this tracker works

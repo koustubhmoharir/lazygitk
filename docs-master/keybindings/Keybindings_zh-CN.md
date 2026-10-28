@@ -95,6 +95,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | 聚焦主视图 |  |
 | `` v, <space> `` | 查看提交的文件 |  |
 | `` / `` | 开始搜索 |  |
 
@@ -111,7 +112,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g u i `` | 初始化 | 初始化子模块 |
 | `` g u b `` | 查看批量子模块选项 |  |
 | `` t a g `` | 彩蛋 |  |
-| `` t f t `` | 通过文本过滤当前视图 |  |
+| `` / `` | 通过文本过滤当前视图 |  |
 
 ## 工作区
 
@@ -121,7 +122,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s w `` | 切换 | 切换到选中的工作树 |
 | `` o `` | 在编辑器中编写 |  |
 | `` <delete> `` | 删除 | 删除选定的工作树。这将删除工作树的目录以及 .git 目录中有关工作树的元数据。 |
-| `` t f t `` | 通过文本过滤当前视图 |  |
+| `` v, <space> `` | 查看提交 |  |
+| `` / `` | 通过文本过滤当前视图 |  |
 
 ## 引用日志
 
@@ -153,7 +155,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
-| `` t f t `` | 通过文本过滤当前视图 |  |
+| `` 0 `` | 聚焦主视图 |  |
+| `` / `` | 通过文本过滤当前视图 |  |
 
 ## 提交
 
@@ -167,8 +170,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | 编辑(开始交互式变基) | 编辑提交 |
 | `` g i `` | 开始交互式变基 | 为分支上的提交启动交互式变基。这将包括从 HEAD 提交到第一个合并提交或主分支提交的所有提交。<br>如果您想从所选提交启动交互式变基，请按 `e`。 |
 | `` g r p `` | 拣选(Pick) | 标记选中的提交为 picked（变基过程中）。这意味该提交将在后续的变基中保留。 |
-| `` g m d `` | 下移提交 |  |
-| `` g m u `` | 上移提交 |  |
+| `` > `` | 下移提交 |  |
+| `` < `` | 上移提交 |  |
 | `` c p `` | 拣选(Cherry-Pick) |  |
 | `` g r b `` | 标记一个主提交用于变基 | 选择下一次变基的主提交。当您变基到一个分支时，只有高于主提交的提交才会被引入。这使用“git rebase --onto”命令。 |
 | `` a `` | 修补(Amend) | 用已暂存的变更来修补提交 |
@@ -202,6 +205,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | 聚焦主视图 |  |
 | `` v, <space> `` | 查看提交的文件 |  |
 | `` / `` | 开始搜索 |  |
 
@@ -238,7 +242,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y f `` | Copy absolute path |  |
 | `` y d `` | Copy file diff |  |
 | `` y c `` | Copy file content |  |
-| `` t f t `` | 通过文本过滤当前视图 |  |
+| `` 0 `` | 聚焦主视图 |  |
+| `` / `` | 通过文本过滤当前视图 |  |
 
 ## 文件
 
@@ -274,8 +279,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d c `` | Diff with commit… |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
-| `` v `` | 聚焦主视图 |  |
-| `` t f t `` | 通过文本过滤当前视图 |  |
+| `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
+| `` 0 `` | 聚焦主视图 |  |
+| `` / `` | 通过文本过滤当前视图 |  |
 
 ## 本地分支
 
@@ -303,6 +309,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p o `` | 创建拉取请求选项 |  |
 | `` g p v `` | 在浏览器中打开拉取请求 |  |
 | `` y r `` | 复制拉取请求 URL 到剪贴板 |  |
+| `` s b `` | 按名称检出 | 按名称检出。在输入框中，您可以输入'-' 来切换到最后一个分支。 |
 | `` <delete> `` | 删除 | 查看本地/远程分支的删除选项 |
 | `` r `` | Rebase current onto selected branch… | 将检出的分支变基到所选的分支上。 |
 | `` m `` | Merge selected branch into current… | 查看将选中项合并到当前分支的选项(正常合并，压缩合并) |
@@ -312,8 +319,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <f2> `` | 重命名分支 |  |
 | `` g t `` | 查看上游选项 | 查看与分支上游相关的选项，例如设置/取消设置上游和重置为上游。 |
 | `` t d e `` | 使用外部差异比较工具(git difftool) |  |
+| `` 0 `` | 聚焦主视图 |  |
 | `` v, <space> `` | 查看提交 |  |
-| `` t f t `` | 通过文本过滤当前视图 |  |
+| `` / `` | 通过文本过滤当前视图 |  |
 
 ## 标签
 
@@ -335,8 +343,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <delete> `` | 删除 | 查看本地/远程标签的删除选项 |
 | `` p `` | 推送标签 | 推送选择的标签到远端。您将在弹窗中选择一个远端。 |
 | `` t d e `` | 使用外部差异比较工具(git difftool) |  |
+| `` 0 `` | 聚焦主视图 |  |
 | `` v, <space> `` | 查看提交 |  |
-| `` t f t `` | 通过文本过滤当前视图 |  |
+| `` / `` | 通过文本过滤当前视图 |  |
 
 ## 次要
 
@@ -346,19 +355,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | 切换代码块选择 | 切换逐行选择与代码块选择模式。 |
 | `` t h r `` | 切换拖动选择 |  |
 | `` e `` | 编辑文件 | 使用外部编辑器打开文件 |
-| `` g h s `` | 切换暂存状态 | 切换行暂存状态 |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | 添加/移除 行到补丁 |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | 切换暂存状态 | 切换行暂存状态 |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | 添加/移除 行到补丁 |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | 取消变更(git reset) | 当选择未暂存的变更时，使用git reset丢弃该变更。当选择已暂存的变更时，取消暂存该变更 |
 | `` x `` | 从提交中移除行 | 从本次提交中移除所选行。此操作会在后台运行交互式变基，因此如果后续提交也修改了这些行，您可能会遇到合并冲突。 |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | 编辑代码块 | 在外部编辑器中编辑选中的代码块 |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | 选择上一个区块 |  |
-| `` t n h `` | 选择下一个区块 |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | 选择上一个区块 |  |
+| `` ], t n h `` | 选择下一个区块 |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | 退出回到侧边面板 |  |
@@ -370,12 +379,12 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g h p `` | 选中区块 |  |
+| `` <space>, g h p `` | 选中区块 |  |
 | `` g h b `` | Pick both hunks |  |
 | `` k, <up> `` | 选择顶部块 |  |
 | `` j, <down> `` | 选择底部块 |  |
-| `` t p c `` | 选择上一个冲突 |  |
-| `` t n c `` | 选择下一个冲突 |  |
+| `` [, t p c `` | 选择上一个冲突 |  |
+| `` ], t n c `` | 选择下一个冲突 |  |
 | `` u u `` | 撤销 | 撤消上次合并冲突解决 |
 | `` e `` | 编辑文件 | 使用外部编辑器打开文件 |
 | `` o `` | 打开文件 | 使用默认程序打开该文件 |
@@ -392,19 +401,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | 切换代码块选择 | 切换逐行选择与代码块选择模式。 |
 | `` t h r `` | 切换拖动选择 |  |
 | `` e `` | 编辑文件 | 使用外部编辑器打开文件 |
-| `` g h s `` | 切换暂存状态 | 切换行暂存状态 |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | 添加/移除 行到补丁 |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | 切换暂存状态 | 切换行暂存状态 |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | 添加/移除 行到补丁 |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | 取消变更(git reset) | 当选择未暂存的变更时，使用git reset丢弃该变更。当选择已暂存的变更时，取消暂存该变更 |
 | `` x `` | 从提交中移除行 | 从本次提交中移除所选行。此操作会在后台运行交互式变基，因此如果后续提交也修改了这些行，您可能会遇到合并冲突。 |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | 编辑代码块 | 在外部编辑器中编辑选中的代码块 |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | 选择上一个区块 |  |
-| `` t n h `` | 选择下一个区块 |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | 选择上一个区块 |  |
+| `` ], t n h `` | 选择下一个区块 |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | 退出回到侧边面板 |  |
@@ -421,7 +430,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s r `` | 切换到最近的仓库 |  |
 | `` t l n `` | 显示/循环所有分支日志 |  |
 | `` t l p `` | 显示/循环所有分支日志（反向） |  |
-| `` v, <space> `` | 聚焦主视图 |  |
+| `` v, <space>, 0 `` | 聚焦主视图 |  |
 
 ## 确认面板
 
@@ -443,13 +452,14 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g a `` | 应用 | 将贮藏项应用到您的工作目录。 |
+| `` g s a `` | 应用 | 将贮藏项应用到您的工作目录。 |
 | `` g s p `` | 应用并删除 | 将存储项应用到工作目录并删除存储项。 |
 | `` <delete> `` | 删除 | 从贮藏列表中删除该贮藏项 |
 | `` n w `` | 新建工作树 |  |
 | `` <f2> `` | 重命名贮藏 |  |
+| `` 0 `` | 聚焦主视图 |  |
 | `` v, <space> `` | 查看提交的文件 |  |
-| `` t f t `` | 通过文本过滤当前视图 |  |
+| `` / `` | 通过文本过滤当前视图 |  |
 
 ## 输入提示
 
@@ -468,7 +478,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | 编辑(Edit) | 编辑远程仓库 |
 | `` f `` | 抓取 | 抓取远程仓库 |
 | `` n f `` | 添加复刻远程仓库 | 通过替换 origin URL 中的所有者来快速添加复刻远程仓库，并可选择从新远程仓库检出分支。 |
-| `` t f t `` | 通过文本过滤当前视图 |  |
+| `` / `` | 通过文本过滤当前视图 |  |
 
 ## 远程分支
 
@@ -493,5 +503,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g t `` | 设置为上游 | 设置为检出分支的上游 |
 | `` t s o `` | 排序 |  |
 | `` t d e `` | 使用外部差异比较工具(git difftool) |  |
+| `` 0 `` | 聚焦主视图 |  |
 | `` v, <space> `` | 查看提交 |  |
-| `` t f t `` | 通过文本过滤当前视图 |  |
+| `` / `` | 通过文本过滤当前视图 |  |

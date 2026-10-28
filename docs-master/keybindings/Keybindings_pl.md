@@ -77,8 +77,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | Edytuj (rozpocznij interaktywne przebazowanie) | Edytuj wybrany commit. Użyj tego, aby rozpocząć interaktywne przebazowanie od wybranego commita. Podczas trwania przebazowania, to oznaczy wybrany commit do edycji, co oznacza, że po kontynuacji przebazowania, przebazowanie zostanie wstrzymane na wybranym commicie, aby umożliwić wprowadzenie zmian. |
 | `` g i `` | Rozpocznij interaktywne przebazowanie | Rozpocznij interaktywne przebazowanie dla commitów na twojej gałęzi. To będzie zawierać wszystkie commity od HEAD do pierwszego commita scalenia lub commita głównej gałęzi.<br>Jeśli zamiast tego chcesz rozpocząć interaktywne przebazowanie od wybranego commita, naciśnij `e`. |
 | `` g r p `` | Wybierz | Oznacz wybrany commit do wybrania (podczas przebazowania). Oznacza to, że commit zostanie zachowany po kontynuacji przebazowania. |
-| `` g m d `` | Przesuń commit w dół |  |
-| `` g m u `` | Przesuń commit w górę |  |
+| `` > `` | Przesuń commit w dół |  |
+| `` < `` | Przesuń commit w górę |  |
 | `` c p `` | Cherry-pick |  |
 | `` g r b `` | Oznacz jako bazowy commit dla przebazowania | Wybierz bazowy commit dla następnego przebazowania. Kiedy robisz przebazowanie na gałąź, tylko commity powyżej bazowego commita zostaną przeniesione. Używa to polecenia `git rebase --onto`. |
 | `` a `` | Popraw | Popraw commit ze zmianami zatwierdzonymi. Jeśli wybrany commit jest commit HEAD, to wykona `git commit --amend`. W przeciwnym razie commit zostanie poprawiony za pomocą przebazowania. |
@@ -112,6 +112,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Wyświetl pliki |  |
 | `` / `` | Szukaj w bieżącym widoku po tekście |  |
 
@@ -123,19 +124,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | Toggle hunk selection | Toggle line-by-line vs. hunk selection mode. |
 | `` t h r `` | Przełącz zaznaczenie zakresu |  |
 | `` e `` | Edytuj plik | Otwórz plik w zewnętrznym edytorze. |
-| `` g h s `` | Zatwierdź | Przełącz zaznaczenie zatwierdzone/niezatwierdzone. |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | Przełącz linie w łatce |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | Zatwierdź | Przełącz zaznaczenie zatwierdzone/niezatwierdzone. |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | Przełącz linie w łatce |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | Odrzuć | Gdy zaznaczona jest niezatwierdzona zmiana, odrzuć ją używając `git reset`. Gdy zaznaczona jest zatwierdzona zmiana, cofnij zatwierdzenie. |
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Edytuj fragment | Edytuj wybrany fragment w zewnętrznym edytorze. |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | Idź do poprzedniego fragmentu |  |
-| `` t n h `` | Idź do następnego fragmentu |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | Idź do poprzedniego fragmentu |  |
+| `` ], t n h `` | Idź do następnego fragmentu |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | Exit back to side panel |  |
@@ -151,7 +152,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s w `` | Przełącz | Przełącz do wybranego drzewa pracy. |
 | `` o `` | Otwórz w edytorze |  |
 | `` <delete> `` | Usuń | Usuń wybrane drzewo pracy. To usunie zarówno katalog drzewa pracy, jak i metadane o drzewie pracy w katalogu .git. |
-| `` t f t `` | Filtruj bieżący widok po tekście |  |
+| `` v, <space> `` | Pokaż commity |  |
+| `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Dziennik reflog
 
@@ -183,7 +185,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
-| `` t f t `` | Filtruj bieżący widok po tekście |  |
+| `` 0 `` | Focus main view |  |
+| `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Input prompt
 
@@ -218,6 +221,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p o `` | Zobacz opcje tworzenia pull requesta |  |
 | `` g p v `` | Otwórz żądanie ściągnięcia w przeglądarce |  |
 | `` y r `` | Kopiuj adres URL żądania ściągnięcia do schowka |  |
+| `` s b `` | Przełącz według nazwy | Przełącz według nazwy. W polu wprowadzania możesz wpisać '-' aby przełączyć się na ostatnią gałąź. |
 | `` <delete> `` | Usuń | Wyświetl opcje usuwania lokalnej/odległej gałęzi. |
 | `` r `` | Rebase current onto selected branch… | Przebazuj przełączoną gałąź na wybraną gałąź. |
 | `` m `` | Merge selected branch into current… | Scal wybraną gałąź z aktualnie sprawdzoną gałęzią. |
@@ -227,8 +231,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <f2> `` | Zmień nazwę gałęzi |  |
 | `` g t `` | Pokaż opcje upstream | Pokaż opcje dotyczące upstream gałęzi, np. ustawianie/usuwanie upstream i resetowanie do upstream. |
 | `` t d e `` | Otwórz zewnętrzne narzędzie różnic (git difftool) |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Pokaż commity |  |
-| `` t f t `` | Filtruj bieżący widok po tekście |  |
+| `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Menu
 
@@ -248,19 +253,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | Toggle hunk selection | Toggle line-by-line vs. hunk selection mode. |
 | `` t h r `` | Przełącz zaznaczenie zakresu |  |
 | `` e `` | Edytuj plik | Otwórz plik w zewnętrznym edytorze. |
-| `` g h s `` | Zatwierdź | Przełącz zaznaczenie zatwierdzone/niezatwierdzone. |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | Przełącz linie w łatce |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | Zatwierdź | Przełącz zaznaczenie zatwierdzone/niezatwierdzone. |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | Przełącz linie w łatce |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | Odrzuć | Gdy zaznaczona jest niezatwierdzona zmiana, odrzuć ją używając `git reset`. Gdy zaznaczona jest zatwierdzona zmiana, cofnij zatwierdzenie. |
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Edytuj fragment | Edytuj wybrany fragment w zewnętrznym edytorze. |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | Idź do poprzedniego fragmentu |  |
-| `` t n h `` | Idź do następnego fragmentu |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | Idź do poprzedniego fragmentu |  |
+| `` ], t n h `` | Idź do następnego fragmentu |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | Exit back to side panel |  |
@@ -272,12 +277,12 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g h p `` | Wybierz fragment |  |
+| `` <space>, g h p `` | Wybierz fragment |  |
 | `` g h b `` | Pick both hunks |  |
 | `` k, <up> `` | Poprzedni fragment |  |
 | `` j, <down> `` | Następny fragment |  |
-| `` t p c `` | Poprzedni konflikt |  |
-| `` t n c `` | Następny konflikt |  |
+| `` [, t p c `` | Poprzedni konflikt |  |
+| `` ], t n c `` | Następny konflikt |  |
 | `` u u `` | Cofnij | Cofnij ostatnie rozwiązanie konfliktu scalania. |
 | `` e `` | Edytuj plik | Otwórz plik w zewnętrznym edytorze. |
 | `` o `` | Otwórz plik | Otwórz plik w domyślnej aplikacji. |
@@ -326,8 +331,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d c `` | Diff with commit… |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
-| `` v `` | Focus main view |  |
-| `` t f t `` | Filtruj bieżący widok po tekście |  |
+| `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
+| `` 0 `` | Focus main view |  |
+| `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Pliki commita
 
@@ -355,7 +361,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y f `` | Copy absolute path |  |
 | `` y d `` | Copy file diff |  |
 | `` y c `` | Copy file content |  |
-| `` t f t `` | Filtruj bieżący widok po tekście |  |
+| `` 0 `` | Focus main view |  |
+| `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Podsumowanie commita
 
@@ -368,13 +375,14 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g a `` | Zastosuj | Zastosuj wpis schowka do katalogu roboczego. |
+| `` g s a `` | Zastosuj | Zastosuj wpis schowka do katalogu roboczego. |
 | `` g s p `` | Wyciągnij | Zastosuj wpis schowka do katalogu roboczego i usuń wpis schowka. |
 | `` <delete> `` | Usuń | Usuń wpis schowka z listy schowka. |
 | `` n w `` | Nowe drzewo pracy |  |
 | `` <f2> `` | Zmień nazwę schowka |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Wyświetl pliki |  |
-| `` t f t `` | Filtruj bieżący widok po tekście |  |
+| `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Status
 
@@ -385,7 +393,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s r `` | Przełącz na ostatnie repozytorium |  |
 | `` t l n `` | Show/cycle all branch logs |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
-| `` v, <space> `` | Focus main view |  |
+| `` v, <space>, 0 `` | Focus main view |  |
 
 ## Sub-commity
 
@@ -417,6 +425,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Wyświetl pliki |  |
 | `` / `` | Szukaj w bieżącym widoku po tekście |  |
 
@@ -433,7 +442,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g u i `` | Zainicjuj | Zainicjuj wybrany submoduł, aby przygotować do pobrania. Prawdopodobnie chcesz to kontynuować, wywołując akcję 'update', aby pobrać submoduł. |
 | `` g u b `` | Pokaż opcje masowych operacji na submodułach |  |
 | `` t a g `` | Jajko wielkanocne |  |
-| `` t f t `` | Filtruj bieżący widok po tekście |  |
+| `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Tagi
 
@@ -455,8 +464,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <delete> `` | Usuń | Wyświetl opcje usuwania lokalnego/odległego tagu. |
 | `` p `` | Wyślij tag | Wyślij wybrany tag do zdalnego. Zostaniesz poproszony o wybranie zdalnego. |
 | `` t d e `` | Otwórz zewnętrzne narzędzie różnic (git difftool) |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Pokaż commity |  |
-| `` t f t `` | Filtruj bieżący widok po tekście |  |
+| `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Zdalne
 
@@ -468,7 +478,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | Edytuj | Edytuj nazwę lub URL wybranego zdalnego. |
 | `` f `` | Pobierz | Pobierz aktualizacje z zdalnego repozytorium. Pobiera nowe commity i gałęzie bez scalania ich z lokalnymi gałęziami. |
 | `` n f `` | Add fork remote | Quickly add a fork remote by replacing the owner in the origin URL and optionally check out a branch from new remote. |
-| `` t f t `` | Filtruj bieżący widok po tekście |  |
+| `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Zdalne gałęzie
 
@@ -493,5 +503,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g t `` | Ustaw jako upstream | Ustaw wybraną gałąź zdalną jako upstream sprawdzonej gałęzi. |
 | `` t s o `` | Kolejność sortowania |  |
 | `` t d e `` | Otwórz zewnętrzne narzędzie różnic (git difftool) |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Pokaż commity |  |
-| `` t f t `` | Filtruj bieżący widok po tekście |  |
+| `` / `` | Filtruj bieżący widok po tekście |  |

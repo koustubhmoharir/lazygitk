@@ -102,7 +102,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` 0 `` | Focus main view |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Secondary
 
@@ -112,19 +113,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | Toggle hunk selection | Toggle line-by-line vs. hunk selection mode. |
 | `` t h r `` | 드래그 선택 전환 |  |
 | `` e `` | 파일 편집 | Open file in external editor. |
-| `` g h s `` | Staged 전환 | 선택한 행을 staged / unstaged |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | Line(s)을 패치에 추가/삭제 |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | Staged 전환 | 선택한 행을 staged / unstaged |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | Line(s)을 패치에 추가/삭제 |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | 변경을 삭제 (git reset) | When unstaged change is selected, discard the change using `git reset`. When staged change is selected, unstage the change. |
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Edit hunk | Edit selected hunk in external editor. |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | 이전 hunk를 선택 |  |
-| `` t n h `` | 다음 hunk를 선택 |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | 이전 hunk를 선택 |  |
+| `` ], t n h `` | 다음 hunk를 선택 |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | Exit back to side panel |  |
@@ -136,13 +137,14 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g a `` | 적용 | Apply the stash entry to your working directory. |
+| `` g s a `` | 적용 | Apply the stash entry to your working directory. |
 | `` g s p `` | Pop | Apply the stash entry to your working directory and remove the stash entry. |
 | `` <delete> `` | Drop | Remove the stash entry from the stash list. |
 | `` n w `` | New worktree |  |
 | `` <f2> `` | Rename stash |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | View selected item's files |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Sub-commits
 
@@ -174,6 +176,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | View selected item's files |  |
 | `` / `` | 검색 시작 |  |
 
@@ -185,7 +188,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s w `` | Switch | Switch to the selected worktree. |
 | `` o `` | Open in editor |  |
 | `` <delete> `` | Remove | Remove the selected worktree. This will both delete the worktree's directory, as well as metadata about the worktree in the .git directory. |
-| `` t f t `` | Filter the current view by text |  |
+| `` v, <space> `` | 커밋 보기 |  |
+| `` / `` | Filter the current view by text |  |
 
 ## 메뉴
 
@@ -199,12 +203,12 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g h p `` | Pick hunk |  |
+| `` <space>, g h p `` | Pick hunk |  |
 | `` g h b `` | Pick both hunks |  |
 | `` k, <up> `` | 이전 hunk를 선택 |  |
 | `` j, <down> `` | 다음 hunk를 선택 |  |
-| `` t p c `` | 이전 충돌을 선택 |  |
-| `` t n c `` | 다음 충돌을 선택 |  |
+| `` [, t p c `` | 이전 충돌을 선택 |  |
+| `` ], t n c `` | 다음 충돌을 선택 |  |
 | `` u u `` | 되돌리기 | Undo last merge conflict resolution. |
 | `` e `` | 파일 편집 | Open file in external editor. |
 | `` o `` | 파일 닫기 | Open file in default application. |
@@ -221,19 +225,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | Toggle hunk selection | Toggle line-by-line vs. hunk selection mode. |
 | `` t h r `` | 드래그 선택 전환 |  |
 | `` e `` | 파일 편집 | Open file in external editor. |
-| `` g h s `` | Staged 전환 | 선택한 행을 staged / unstaged |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | Line(s)을 패치에 추가/삭제 |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | Staged 전환 | 선택한 행을 staged / unstaged |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | Line(s)을 패치에 추가/삭제 |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | 변경을 삭제 (git reset) | When unstaged change is selected, discard the change using `git reset`. When staged change is selected, unstage the change. |
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Edit hunk | Edit selected hunk in external editor. |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | 이전 hunk를 선택 |  |
-| `` t n h `` | 다음 hunk를 선택 |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | 이전 hunk를 선택 |  |
+| `` ], t n h `` | 다음 hunk를 선택 |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | Exit back to side panel |  |
@@ -267,6 +271,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p o `` | 풀 리퀘스트 생성 옵션 |  |
 | `` g p v `` | Open pull request in browser |  |
 | `` y r `` | 풀 리퀘스트 URL을 클립보드에 복사 |  |
+| `` s b `` | 이름으로 체크아웃 | Checkout by name. In the input box you can enter '-' to switch to the previous branch. |
 | `` <delete> `` | 삭제 | View delete options for local/remote branch. |
 | `` r `` | Rebase current onto selected branch… | Rebase the checked-out branch onto the selected branch. |
 | `` m `` | Merge selected branch into current… | View options for merging the selected item into the current branch (regular merge, squash merge) |
@@ -276,8 +281,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <f2> `` | 브랜치 이름 변경 |  |
 | `` g t `` | View upstream options | View options relating to the branch's upstream e.g. setting/unsetting the upstream and resetting to the upstream. |
 | `` t d e `` | Open external diff tool (git difftool) |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | 커밋 보기 |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## 상태
 
@@ -288,7 +294,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s r `` | 최근에 사용한 저장소로 전환 |  |
 | `` t l n `` | Show/cycle all branch logs |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
-| `` v, <space> `` | Focus main view |  |
+| `` v, <space>, 0 `` | Focus main view |  |
 
 ## 서브모듈
 
@@ -303,7 +309,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g u i `` | Initialize | 서브모듈 초기화 |
 | `` g u b `` | View bulk submodule options |  |
 | `` t a g `` | 이스터 에그 |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## 원격
 
@@ -315,7 +321,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | Edit | Remote를 수정 |
 | `` f `` | Fetch | 원격을 업데이트 |
 | `` n f `` | Add fork remote | Quickly add a fork remote by replacing the owner in the origin URL and optionally check out a branch from new remote. |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## 원격 브랜치
 
@@ -340,8 +346,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g t `` | Set as upstream | Set the selected remote branch as the upstream of the checked-out branch. |
 | `` t s o `` | Sort order |  |
 | `` t d e `` | Open external diff tool (git difftool) |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | 커밋 보기 |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## 커밋
 
@@ -355,8 +362,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | Edit (start interactive rebase) | 커밋을 편집 |
 | `` g i `` | Start interactive rebase | Start an interactive rebase for the commits on your branch. This will include all commits from the HEAD commit down to the first merge commit or main branch commit.<br>If you would instead like to start an interactive rebase from the selected commit, press `e`. |
 | `` g r p `` | Pick | Pick commit (when mid-rebase) |
-| `` g m d `` | 커밋을 1개 아래로 이동 |  |
-| `` g m u `` | 커밋을 1개 위로 이동 |  |
+| `` > `` | 커밋을 1개 아래로 이동 |  |
+| `` < `` | 커밋을 1개 위로 이동 |  |
 | `` c p `` | 체리픽 |  |
 | `` g r b `` | Mark as base commit for rebase | Select a base commit for the next rebase. When you rebase onto a branch, only commits above the base commit will be brought across. This uses the `git rebase --onto` command. |
 | `` a `` | Amend | Amend commit with staged changes |
@@ -390,6 +397,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | View selected item's files |  |
 | `` / `` | 검색 시작 |  |
 
@@ -419,7 +427,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y f `` | Copy absolute path |  |
 | `` y d `` | Copy file diff |  |
 | `` y c `` | Copy file content |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` 0 `` | Focus main view |  |
+| `` / `` | Filter the current view by text |  |
 
 ## 커밋메시지
 
@@ -448,8 +457,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <delete> `` | 삭제 | View delete options for local/remote tag. |
 | `` p `` | 태그를 push | Push the selected tag to a remote. You'll be prompted to select a remote. |
 | `` t d e `` | Open external diff tool (git difftool) |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | 커밋 보기 |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## 파일
 
@@ -485,8 +495,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d c `` | Diff with commit… |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
-| `` v `` | Focus main view |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
+| `` 0 `` | Focus main view |  |
+| `` / `` | Filter the current view by text |  |
 
 ## 확인 패널
 

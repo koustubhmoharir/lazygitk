@@ -545,7 +545,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 62,
+      "line": 67,
       "owner": "branchSyncPushFlow.menu",
       "fields": {
         "CommandID": "\"branch.push-selected.execute\"",
@@ -558,7 +558,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 68,
+      "line": 73,
       "owner": "branchSyncPushFlow.menu",
       "fields": {
         "CommandID": "\"branch.push-selected.remote\"",
@@ -572,7 +572,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 69,
+      "line": 74,
       "owner": "branchSyncPushFlow.menu",
       "fields": {
         "CommandID": "\"branch.push-selected.destination\"",
@@ -586,7 +586,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 70,
+      "line": 75,
       "owner": "branchSyncPushFlow.menu",
       "fields": {
         "CommandID": "\"branch.push-selected.set-upstream\"",
@@ -599,7 +599,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 71,
+      "line": 76,
       "owner": "branchSyncPushFlow.menu",
       "fields": {
         "CommandID": "\"branch.push-selected.submodules\"",
@@ -612,7 +612,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 79,
+      "line": 84,
       "owner": "branchSyncPushFlow.menu",
       "fields": {
         "CommandID": "\"branch.push-selected.force-with-lease\"",
@@ -626,7 +626,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 209,
+      "line": 214,
       "owner": "branchSyncPushFlow.reviewAmbiguousUpstream",
       "fields": {
         "CommandID": "\"branch.push-selected.upstream-cancel\"",
@@ -639,7 +639,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 210,
+      "line": 215,
       "owner": "branchSyncPushFlow.reviewAmbiguousUpstream",
       "fields": {
         "CommandID": "\"branch.push-selected.without-upstream\"",
@@ -653,7 +653,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 233,
+      "line": 238,
       "owner": "branchSyncPushFlow.review",
       "fields": {
         "CommandID": "\"branch.push-selected.force-cancel\"",
@@ -667,7 +667,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 240,
+      "line": 245,
       "owner": "branchSyncPushFlow.review",
       "fields": {
         "CommandID": "\"branch.push-selected.force-confirm\"",
@@ -681,7 +681,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 361,
+      "line": 366,
       "owner": "branchSyncPushFlow.execute",
       "fields": {
         "CommandID": "\"branch.push-selected.multiple-urls-cancel\"",
@@ -695,7 +695,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 363,
+      "line": 368,
       "owner": "branchSyncPushFlow.execute",
       "fields": {
         "CommandID": "fmt.Sprintf(\"branch.push-selected.destination-%d\", i)",
@@ -709,7 +709,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 365,
+      "line": 370,
       "owner": "branchSyncPushFlow.execute",
       "fields": {
         "CommandID": "\"branch.push-selected.multiple-urls-approve\"",
@@ -1197,21 +1197,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 126,
-      "owner": "BranchesController.GetKeybindings",
-      "fields": {
-        "CommandID": "\"branch.checkout-previous\"",
-        "Description": "self.c.Tr.CheckoutPreviousBranch",
-        "Handler": "self.checkoutPreviousBranch",
-        "Keys": "opts.GetKeys(opts.Config.Branches.CheckoutPreviousBranch)",
-        "Verb": "\"checkout-previous\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "Binding",
-      "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 133,
+      "line": 128,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.force-checkout\"",
@@ -1226,7 +1212,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 142,
+      "line": 137,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.delete-menu\"",
@@ -1243,7 +1229,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 153,
+      "line": 148,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.rebase-current-onto-selected\"",
@@ -1260,7 +1246,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 165,
+      "line": 160,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.merge-selected-into-current\"",
@@ -1277,7 +1263,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 176,
+      "line": 171,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.fast-forward-selected\"",
@@ -1292,7 +1278,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 188,
+      "line": 183,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"tag.create-at-selection\"",
@@ -1307,7 +1293,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 196,
+      "line": 191,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.sort-menu\"",
@@ -1322,7 +1308,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 204,
+      "line": 199,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.reset-menu\"",
@@ -1339,7 +1325,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 214,
+      "line": 209,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.rename\"",
@@ -1354,7 +1340,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 222,
+      "line": 217,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.upstream-menu\"",
@@ -1371,7 +1357,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 234,
+      "line": 229,
       "owner": "BranchesController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.ref.external\"",
@@ -1386,7 +1372,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 536,
+      "line": 526,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request\"",
@@ -1399,7 +1385,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 544,
+      "line": 534,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-to-chosen-target\"",
@@ -1412,7 +1398,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branches_controller.go",
-      "line": 577,
+      "line": 567,
       "owner": "BranchesController.createPullRequestMenu",
       "fields": {
         "CommandID": "\"branch.create-pull-request-current-to-selected\"",
@@ -2947,6 +2933,20 @@
     },
     {
       "kind": "Binding",
+      "file": "pkg/gui/controllers/fork_checkout_previous.go",
+      "line": 16,
+      "owner": "forkCheckoutPreviousBinding",
+      "fields": {
+        "CommandID": "\"branch.checkout-previous\"",
+        "GetDisabledReason": "func() *types.DisabledReason {\n\tif forkPreviousCheckout(c.Model().ReflogCommits) == \"\" {\n\t\treturn \u0026types.DisabledReason{Text: c.Tr.NoPreviousBranch}\n\t}\n\treturn nil\n}",
+        "Handler": "func() error {\n\tc.LogAction(c.Tr.Actions.CheckoutBranch)\n\treturn c.Helpers().Refs.CheckoutPreviousRef()\n}",
+        "Keys": "opts.GetKeys(opts.Config.Branches.CheckoutPreviousBranch)",
+        "Verb": "\"checkout-previous\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "Binding",
       "file": "pkg/gui/controllers/fork_cherry_marks.go",
       "line": 18,
       "owner": "BasicCommitsController.addCherryMarkBindings",
@@ -3343,7 +3343,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 33,
+      "line": 35,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"app.shell-command\"",
@@ -3358,7 +3358,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 42,
+      "line": 44,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"patch.options-menu\"",
@@ -3373,7 +3373,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 50,
+      "line": 52,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.merge-rebase-menu\"",
@@ -3389,7 +3389,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 60,
+      "line": 62,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"app.refresh\"",
@@ -3403,7 +3403,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 68,
+      "line": 70,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"ui.screen.next-mode\"",
@@ -3417,7 +3417,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 75,
+      "line": 77,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"ui.screen.previous-mode\"",
@@ -3431,7 +3431,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 82,
+      "line": 84,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.renderer.next\"",
@@ -3446,7 +3446,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 91,
+      "line": 93,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.renderer.previous\"",
@@ -3461,7 +3461,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 100,
+      "line": 102,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.jump-to-file-menu\"",
@@ -3476,7 +3476,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 110,
+      "line": 112,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"app.cancel\"",
@@ -3492,7 +3492,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 120,
+      "line": 122,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"app.command-palette\"",
@@ -3510,7 +3510,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 132,
+      "line": 134,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"filter.options-menu\"",
@@ -3526,7 +3526,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 142,
+      "line": 144,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.options-menu\"",
@@ -3541,7 +3541,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 151,
+      "line": 153,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"app.quit\"",
@@ -3555,7 +3555,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 158,
+      "line": 160,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"app.quit-without-cd\"",
@@ -3568,7 +3568,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 164,
+      "line": 166,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"app.suspend\"",
@@ -3583,7 +3583,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 179,
+      "line": 181,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.toggle-whitespace\"",
@@ -3597,7 +3597,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/global_controller.go",
-      "line": 187,
+      "line": 189,
       "owner": "GlobalController.GetKeybindings",
       "fields": {
         "CommandID": "\"config.edit-menu\"",
@@ -7258,8 +7258,22 @@
     },
     {
       "kind": "Binding",
+      "file": "pkg/gui/controllers/switch_to_focused_main_view_controller.go",
+      "line": 57,
+      "owner": "SwitchToFocusedMainViewController.GetKeybindings",
+      "fields": {
+        "CommandID": "\"navigation.focus-main\"",
+        "Description": "self.c.Tr.FocusMainView",
+        "Handler": "func() error { return focusMainView(self.c, self.context, -1) }",
+        "Verb": "\"focus-diff\""
+      },
+      "enclosingCondition": "(self.inspect != nil)",
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
+      "kind": "Binding",
       "file": "pkg/gui/controllers/switch_to_sub_commits_controller.go",
-      "line": 47,
+      "line": 56,
       "owner": "SwitchToSubCommitsController.GetKeybindings",
       "fields": {
         "CommandID": "\"navigation.open-commits\"",
@@ -12156,7 +12170,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 174,
+      "line": 175,
       "owner": "forkReplacedCommand",
       "fields": {
         "key": "\"commit.copy-for-cherry-pick\""
@@ -12165,7 +12179,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 174,
+      "line": 175,
       "owner": "forkReplacedCommand",
       "fields": {
         "key": "\"commit.squash-down\""
@@ -12174,7 +12188,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 174,
+      "line": 175,
       "owner": "forkReplacedCommand",
       "fields": {
         "key": "\"commit.mark-fixup\""
@@ -12183,7 +12197,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 174,
+      "line": 175,
       "owner": "forkReplacedCommand",
       "fields": {
         "key": "\"commit.set-fixup-message\""
@@ -12192,7 +12206,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 174,
+      "line": 175,
       "owner": "forkReplacedCommand",
       "fields": {
         "key": "\"commit.create-fixup-menu\""
@@ -12201,7 +12215,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 174,
+      "line": 175,
       "owner": "forkReplacedCommand",
       "fields": {
         "key": "\"commit.autosquash\""
@@ -12210,7 +12224,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 174,
+      "line": 175,
       "owner": "forkReplacedCommand",
       "fields": {
         "key": "\"commit.find-fixup-target\""
@@ -12219,7 +12233,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"\""
@@ -12228,7 +12242,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"status\""
@@ -12237,7 +12251,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"files\""
@@ -12246,7 +12260,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"localBranches\""
@@ -12255,7 +12269,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"remotes\""
@@ -12264,7 +12278,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"remoteBranches\""
@@ -12273,7 +12287,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"tags\""
@@ -12282,7 +12296,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"commits\""
@@ -12291,7 +12305,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"subCommits\""
@@ -12300,7 +12314,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"reflogCommits\""
@@ -12309,7 +12323,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"commitFiles\""
@@ -12318,7 +12332,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"stash\""
@@ -12327,7 +12341,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"worktrees\""
@@ -12336,7 +12350,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"submodules\""
@@ -12345,7 +12359,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"main\""
@@ -12354,7 +12368,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"secondary\""
@@ -12363,7 +12377,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"mergeConflicts\""
@@ -12372,7 +12386,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 182,
+      "line": 183,
       "owner": "forkCommandView",
       "fields": {
         "key": "\"extras\""
@@ -12381,7 +12395,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 194,
+      "line": 195,
       "owner": "forkInspectionCommand",
       "fields": {
         "key": "\"file.enter\""
@@ -12390,7 +12404,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 194,
+      "line": 195,
       "owner": "forkInspectionCommand",
       "fields": {
         "key": "\"remote.view-branches\""
@@ -12399,7 +12413,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 194,
+      "line": 195,
       "owner": "forkInspectionCommand",
       "fields": {
         "key": "\"navigation.open-commits\""
@@ -12408,7 +12422,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 194,
+      "line": 195,
       "owner": "forkInspectionCommand",
       "fields": {
         "key": "\"navigation.open-diff-files\""
@@ -12417,7 +12431,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 194,
+      "line": 195,
       "owner": "forkInspectionCommand",
       "fields": {
         "key": "\"navigation.open-history-file-diff\""
@@ -12426,7 +12440,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 194,
+      "line": 195,
       "owner": "forkInspectionCommand",
       "fields": {
         "key": "\"navigation.focus-diff\""
@@ -12435,7 +12449,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 194,
+      "line": 195,
       "owner": "forkInspectionCommand",
       "fields": {
         "key": "\"submodule.enter\""
@@ -12444,7 +12458,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 202,
+      "line": 216,
       "owner": "forkPreferredInspector",
       "fields": {
         "key": "\"localBranches\""
@@ -12453,7 +12467,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 202,
+      "line": 216,
       "owner": "forkPreferredInspector",
       "fields": {
         "key": "\"remoteBranches\""
@@ -12462,7 +12476,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 202,
+      "line": 216,
       "owner": "forkPreferredInspector",
       "fields": {
         "key": "\"tags\""
@@ -12471,7 +12485,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 204,
+      "line": 218,
       "owner": "forkPreferredInspector",
       "fields": {
         "key": "\"commits\""
@@ -12480,7 +12494,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 204,
+      "line": 218,
       "owner": "forkPreferredInspector",
       "fields": {
         "key": "\"subCommits\""
@@ -12489,7 +12503,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 204,
+      "line": 218,
       "owner": "forkPreferredInspector",
       "fields": {
         "key": "\"reflogCommits\""
@@ -12498,7 +12512,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 204,
+      "line": 218,
       "owner": "forkPreferredInspector",
       "fields": {
         "key": "\"stash\""
@@ -12507,7 +12521,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 206,
+      "line": 220,
       "owner": "forkPreferredInspector",
       "fields": {
         "key": "\"remotes\""
@@ -12516,7 +12530,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 208,
+      "line": 222,
       "owner": "forkPreferredInspector",
       "fields": {
         "key": "\"commitFiles\""
@@ -12525,7 +12539,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 210,
+      "line": 224,
       "owner": "forkPreferredInspector",
       "fields": {
         "key": "\"submodules\""
@@ -12534,199 +12548,10 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 223,
-      "owner": "forkNavigationPaths",
+      "line": 226,
+      "owner": "forkPreferredInspector",
       "fields": {
-        "key": "\"navigation.list.previous\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 223,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.diff.previous-line\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 223,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.conflict.hunk.previous\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 223,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.command-log.scroll-up\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 225,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.list.next\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 225,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.diff.next-line\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 225,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.conflict.hunk.next\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 225,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.command-log.scroll-down\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 227,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.page.previous\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 227,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.command-log.page-up\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 229,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.page.next\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 229,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.command-log.page-down\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 231,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.list.first\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 231,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.diff.first\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 231,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.command-log.first\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 233,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.list.last\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 233,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.diff.last\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 233,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"navigation.command-log.last\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 235,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"selection.list.extend-up\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 235,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"selection.diff.extend-up\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 237,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"selection.list.extend-down\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 237,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"selection.diff.extend-down\""
+        "key": "\"worktrees\""
       }
     },
     {
@@ -12735,7 +12560,34 @@
       "line": 239,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"navigation.panel.previous\""
+        "key": "\"navigation.list.previous\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 239,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.diff.previous-line\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 239,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.conflict.hunk.previous\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 239,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.command-log.scroll-up\""
       }
     },
     {
@@ -12744,7 +12596,34 @@
       "line": 241,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"navigation.panel.next\""
+        "key": "\"navigation.list.next\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 241,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.diff.next-line\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 241,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.conflict.hunk.next\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 241,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.command-log.scroll-down\""
       }
     },
     {
@@ -12753,7 +12632,16 @@
       "line": 243,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"navigation.tab.previous\""
+        "key": "\"navigation.page.previous\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 243,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.command-log.page-up\""
       }
     },
     {
@@ -12762,7 +12650,16 @@
       "line": 245,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"navigation.tab.next\""
+        "key": "\"navigation.page.next\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 245,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.command-log.page-down\""
       }
     },
     {
@@ -12771,7 +12668,25 @@
       "line": 247,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"navigation.scroll.left\""
+        "key": "\"navigation.list.first\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 247,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.diff.first\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 247,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.command-log.first\""
       }
     },
     {
@@ -12780,7 +12695,25 @@
       "line": 249,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"navigation.scroll.right\""
+        "key": "\"navigation.list.last\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 249,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.diff.last\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 249,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.command-log.last\""
       }
     },
     {
@@ -12789,7 +12722,16 @@
       "line": 251,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"navigation.main.scroll-up\""
+        "key": "\"selection.list.extend-up\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 251,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"selection.diff.extend-up\""
       }
     },
     {
@@ -12798,7 +12740,16 @@
       "line": 253,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"navigation.main.scroll-down\""
+        "key": "\"selection.list.extend-down\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 253,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"selection.diff.extend-down\""
       }
     },
     {
@@ -12807,7 +12758,7 @@
       "line": 255,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"navigation.tree.collapse\""
+        "key": "\"navigation.panel.previous\""
       }
     },
     {
@@ -12816,13 +12767,85 @@
       "line": 257,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"navigation.tree.expand\""
+        "key": "\"navigation.panel.next\""
       }
     },
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
       "line": 259,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.tab.previous\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 261,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.tab.next\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 263,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.scroll.left\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 265,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.scroll.right\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 267,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.main.scroll-up\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 269,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.main.scroll-down\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 271,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.tree.collapse\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 273,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"navigation.tree.expand\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 275,
       "owner": "forkNavigationPaths",
       "fields": {
         "key": "\"app.cancel\""
@@ -12831,7 +12854,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 259,
+      "line": 275,
       "owner": "forkNavigationPaths",
       "fields": {
         "key": "\"navigation.return-files\""
@@ -12840,7 +12863,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 259,
+      "line": 275,
       "owner": "forkNavigationPaths",
       "fields": {
         "key": "\"navigation.diff.escape\""
@@ -12849,7 +12872,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/fork_command_projection.go",
-      "line": 259,
+      "line": 275,
       "owner": "forkNavigationPaths",
       "fields": {
         "key": "\"commit.cancel-drag\""
@@ -12988,7 +13011,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/gui.go",
-      "line": 1345,
+      "line": 1348,
       "owner": "Gui.terminalHasLightBackground",
       "fields": {
         "key": "\"dark\""
@@ -12997,7 +13020,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/gui.go",
-      "line": 1347,
+      "line": 1350,
       "owner": "Gui.terminalHasLightBackground",
       "fields": {
         "key": "\"light\""

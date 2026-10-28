@@ -99,8 +99,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d c `` | Diff with commit… |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
-| `` v `` | Focus main view |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
+| `` 0 `` | Focus main view |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Bevestigingspaneel
 
@@ -136,6 +137,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p o `` | Bekijk opties voor pull-aanvraag |  |
 | `` g p v `` | Open pull request in browser |  |
 | `` y r `` | Kopieer de URL van het pull-verzoek naar het klembord |  |
+| `` s b `` | Uitchecken bij naam | Checkout by name. In the input box you can enter '-' to switch to the previous branch. |
 | `` <delete> `` | Verwijderen | View delete options for local/remote branch. |
 | `` r `` | Rebase current onto selected branch… | Rebase de uitgecheckte branch bovenop de geselecteerde branch. |
 | `` m `` | Merge selected branch into current… | View options for merging the selected item into the current branch (regular merge, squash merge) |
@@ -145,8 +147,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <f2> `` | Hernoem branch |  |
 | `` g t `` | View upstream options | View options relating to the branch's upstream e.g. setting/unsetting the upstream and resetting to the upstream. |
 | `` t d e `` | Open externe diff applicatie (git difftool) |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Bekijk commits |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Commit bericht
 
@@ -181,7 +184,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y f `` | Copy absolute path |  |
 | `` y d `` | Copy file diff |  |
 | `` y c `` | Copy file content |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` 0 `` | Focus main view |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Commits
 
@@ -195,8 +199,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | Bewerken (start interactieve rebase) | Wijzig commit |
 | `` g i `` | Start interactieve rebase | Start an interactive rebase for the commits on your branch. This will include all commits from the HEAD commit down to the first merge commit or main branch commit.<br>If you would instead like to start an interactive rebase from the selected commit, press `e`. |
 | `` g r p `` | Pick | Kies commit (wanneer midden in rebase) |
-| `` g m d `` | Verplaats commit 1 naar beneden |  |
-| `` g m u `` | Verplaats commit 1 naar boven |  |
+| `` > `` | Verplaats commit 1 naar beneden |  |
+| `` < `` | Verplaats commit 1 naar boven |  |
 | `` c p `` | Cherry-Pick |  |
 | `` g r b `` | Markeer als basiscommit voor rebase | Selecteer een basiscommit voor de volgende rebase. Als je rebased op een branch worden alleen commits boven de basiscommit meegenomen. Hiervoor wordt het `git rebase --onto` commando gebruikt. |
 | `` a `` | Amend | Wijzig commit met staged veranderingen |
@@ -230,6 +234,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Bekijk gecommite bestanden |  |
 | `` / `` | Start met zoeken |  |
 
@@ -252,12 +257,12 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g h p `` | Kies stuk |  |
+| `` <space>, g h p `` | Kies stuk |  |
 | `` g h b `` | Pick both hunks |  |
 | `` k, <up> `` | Selecteer bovenste hunk |  |
 | `` j, <down> `` | Selecteer onderste hunk |  |
-| `` t p c `` | Selecteer voorgaand conflict |  |
-| `` t n c `` | Selecteer volgende conflict |  |
+| `` [, t p c `` | Selecteer voorgaand conflict |  |
+| `` ], t n c `` | Selecteer volgende conflict |  |
 | `` u u `` | Ongedaan maken | Undo last merge conflict resolution. |
 | `` e `` | Verander bestand | Open bestand in externe editor. |
 | `` o `` | Open bestand | Open bestand in standaardapplicatie. |
@@ -274,19 +279,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | Wissel tussen hunk selectie aan of uit | Wissel tussen regel-voor-regel of hunk selectie modus. |
 | `` t h r `` | Toggle drag selecteer |  |
 | `` e `` | Verander bestand | Open bestand in externe editor. |
-| `` g h s `` | Toggle staged | Toggle lijnen staged / unstaged |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | Voeg toe/verwijder lijn(en) in patch |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | Toggle staged | Toggle lijnen staged / unstaged |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | Voeg toe/verwijder lijn(en) in patch |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | Verwijdert change (git reset) | When unstaged change is selected, discard the change using `git reset`. When staged change is selected, unstage the change. |
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Edit hunk | Edit selected hunk in external editor. |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | Selecteer de vorige hunk |  |
-| `` t n h `` | Selecteer de volgende hunk |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | Selecteer de vorige hunk |  |
+| `` ], t n h `` | Selecteer de volgende hunk |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | Exit back to side panel |  |
@@ -324,7 +329,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` 0 `` | Focus main view |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Remote branches
 
@@ -349,8 +355,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g t `` | Instellen als upstream | Stel in als upstream van uitgecheckte branch |
 | `` t s o `` | Sort order |  |
 | `` t d e `` | Open externe diff applicatie (git difftool) |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Bekijk commits |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Remotes
 
@@ -362,7 +369,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | Edit | Wijzig remote |
 | `` f `` | Fetch | Fetch remote |
 | `` n f `` | Add fork remote | Quickly add a fork remote by replacing the owner in the origin URL and optionally check out a branch from new remote. |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Secondary
 
@@ -372,19 +379,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | Wissel tussen hunk selectie aan of uit | Wissel tussen regel-voor-regel of hunk selectie modus. |
 | `` t h r `` | Toggle drag selecteer |  |
 | `` e `` | Verander bestand | Open bestand in externe editor. |
-| `` g h s `` | Toggle staged | Toggle lijnen staged / unstaged |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | Voeg toe/verwijder lijn(en) in patch |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | Toggle staged | Toggle lijnen staged / unstaged |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | Voeg toe/verwijder lijn(en) in patch |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | Verwijdert change (git reset) | When unstaged change is selected, discard the change using `git reset`. When staged change is selected, unstage the change. |
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | Edit hunk | Edit selected hunk in external editor. |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | Selecteer de vorige hunk |  |
-| `` t n h `` | Selecteer de volgende hunk |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | Selecteer de vorige hunk |  |
+| `` ], t n h `` | Selecteer de volgende hunk |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | Exit back to side panel |  |
@@ -396,13 +403,14 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g a `` | Toepassen | Apply the stash entry to your working directory. |
+| `` g s a `` | Toepassen | Apply the stash entry to your working directory. |
 | `` g s p `` | Pop | Apply the stash entry to your working directory and remove the stash entry. |
 | `` <delete> `` | Laten vallen | Remove the stash entry from the stash list. |
 | `` n w `` | New worktree |  |
 | `` <f2> `` | Hernoem stash |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Bekijk gecommite bestanden |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Status
 
@@ -413,7 +421,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s r `` | Wissel naar een recente repo |  |
 | `` t l n `` | Show/cycle all branch logs |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
-| `` v, <space> `` | Focus main view |  |
+| `` v, <space>, 0 `` | Focus main view |  |
 
 ## Sub-commits
 
@@ -445,6 +453,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Bekijk gecommite bestanden |  |
 | `` / `` | Start met zoeken |  |
 
@@ -461,7 +470,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g u i `` | Initialize | Initialiseer submodule |
 | `` g u b `` | Bekijk bulk submodule opties |  |
 | `` t a g `` | Easter egg |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Tags
 
@@ -483,8 +492,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <delete> `` | Verwijderen | View delete options for local/remote tag. |
 | `` p `` | Tag pushen | Push de geselecteerde tag naar een remote. Je krijgt de optie een remote te selecteren. |
 | `` t d e `` | Open externe diff applicatie (git difftool) |  |
+| `` 0 `` | Focus main view |  |
 | `` v, <space> `` | Bekijk commits |  |
-| `` t f t `` | Filter the current view by text |  |
+| `` / `` | Filter the current view by text |  |
 
 ## Worktrees
 
@@ -494,4 +504,5 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s w `` | Switch | Switch to the selected worktree. |
 | `` o `` | Openen in editor |  |
 | `` <delete> `` | Verwijderen | Remove the selected worktree. This will both delete the worktree's directory, as well as metadata about the worktree in the .git directory. |
-| `` t f t `` | Filter the current view by text |  |
+| `` v, <space> `` | Bekijk commits |  |
+| `` / `` | Filter the current view by text |  |

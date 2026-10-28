@@ -84,8 +84,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | 編集（対話型リベースを開始） | 選択したコミットを編集します。これを使用して、選択したコミットから対話型リベースを開始します。すでにリベース中の場合、これは選択したコミットを編集用にマークし、リベースを続行すると、リベースは選択したコミットで一時停止して変更を行えるようにします。 |
 | `` g i `` | 対話的リベースを開始 | ブランチ上のコミットの対話的リベースを開始します。これには、HEADコミットから最初のマージコミットまたはメインブランチのコミットまでのすべてのコミットが含まれます。<br>選択したコミットから対話的リベースを開始したい場合は、代わりに `e` を押してください。 |
 | `` g r p `` | ピック | 選択したコミットをピックするようにマークします（リベース中）。これは、リベースを続行すると、コミットが保持されることを意味します。 |
-| `` g m d `` | コミットを1つ下に移動 |  |
-| `` g m u `` | コミットを1つ上に移動 |  |
+| `` > `` | コミットを1つ下に移動 |  |
+| `` < `` | コミットを1つ上に移動 |  |
 | `` c p `` | チェリーピック |  |
 | `` g r b `` | リベース用のベースコミットとしてマーク | 次のリベース用のベースコミットを選択します。ブランチにリベースするとき、ベースコミットより上のコミットのみが持ち込まれます。これは `git rebase --onto` コマンドを使用します。 |
 | `` a `` | 修正 | ステージされた変更でコミットを修正します。選択したコミットがHEADコミットの場合、これは `git commit --amend` を実行します。それ以外の場合、コミットはリベースを通じて修正されます。 |
@@ -119,6 +119,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | メインビューにフォーカス |  |
 | `` v, <space> `` | ファイルを表示 |  |
 | `` / `` | 現在のビューをテキストで検索 |  |
 
@@ -148,7 +149,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y f `` | Copy absolute path |  |
 | `` y d `` | Copy file diff |  |
 | `` y c `` | Copy file content |  |
-| `` t f t `` | 現在のビューをテキストでフィルタリング |  |
+| `` 0 `` | メインビューにフォーカス |  |
+| `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## コミット概要
 
@@ -187,6 +189,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
+| `` 0 `` | メインビューにフォーカス |  |
 | `` v, <space> `` | ファイルを表示 |  |
 | `` / `` | 現在のビューをテキストで検索 |  |
 
@@ -203,19 +206,20 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g u i `` | 初期化 | 選択したサブモジュールを初期化してフェッチの準備をします。おそらく、続いて「更新」アクションを呼び出してサブモジュールをフェッチしたいでしょう。 |
 | `` g u b `` | 一括サブモジュールオプションを表示 |  |
 | `` t a g `` | イースターエッグ |  |
-| `` t f t `` | 現在のビューをテキストでフィルタリング |  |
+| `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## スタッシュ
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g a `` | 適用 | スタッシュエントリをワーキングディレクトリに適用します。 |
+| `` g s a `` | 適用 | スタッシュエントリをワーキングディレクトリに適用します。 |
 | `` g s p `` | ポップ | スタッシュエントリをワーキングディレクトリに適用し、スタッシュエントリを削除します。 |
 | `` <delete> `` | 削除 | スタッシュリストからスタッシュエントリを削除します。 |
 | `` n w `` | 新しいワークツリー |  |
 | `` <f2> `` | スタッシュの名前を変更 |  |
+| `` 0 `` | メインビューにフォーカス |  |
 | `` v, <space> `` | ファイルを表示 |  |
-| `` t f t `` | 現在のビューをテキストでフィルタリング |  |
+| `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## ステータス
 
@@ -226,7 +230,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s r `` | 最近のリポジトリをチェックアウト |  |
 | `` t l n `` | ブランチログの表示モードを順に切り替え |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
-| `` v, <space> `` | メインビューにフォーカス |  |
+| `` v, <space>, 0 `` | メインビューにフォーカス |  |
 
 ## セカンダリ
 
@@ -236,19 +240,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | ハンクの選択を切り替える | Toggle line-by-line vs. hunk selection mode. |
 | `` t h r `` | 範囲選択を切り替え |  |
 | `` e `` | ファイルを編集 | 外部エディタでファイルを開きます。 |
-| `` g h s `` | ステージ | 選択された部分のステージ / アンステージを切り替えます。 |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | パッチ内の行を切り替え |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | ステージ | 選択された部分のステージ / アンステージを切り替えます。 |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | パッチ内の行を切り替え |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | 破棄 | ステージされていない変更が選択されている場合、`git reset`を使用して変更を破棄します。ステージされた変更が選択されている場合、変更をアンステージします。 |
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | ハンクを編集 | 選択したハンクを外部エディタで編集します。 |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | 前のハンクに移動 |  |
-| `` t n h `` | 次のハンクに移動 |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | 前のハンクに移動 |  |
+| `` ], t n h `` | 次のハンクに移動 |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | サイドパネルに戻る |  |
@@ -276,8 +280,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <delete> `` | 削除 | ローカル/リモートタグの削除オプションを表示します。 |
 | `` p `` | タグをプッシュ | 選択したタグをリモートにプッシュします。リモートを選択するよう促されます。 |
 | `` t d e `` | 外部差分ツールを開く（git difftool） |  |
+| `` 0 `` | メインビューにフォーカス |  |
 | `` v, <space> `` | コミットを表示 |  |
-| `` t f t `` | 現在のビューをテキストでフィルタリング |  |
+| `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## ファイル
 
@@ -313,19 +318,20 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d c `` | Diff with commit… |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
-| `` v `` | メインビューにフォーカス |  |
-| `` t f t `` | 現在のビューをテキストでフィルタリング |  |
+| `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
+| `` 0 `` | メインビューにフォーカス |  |
+| `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## メインパネル（マージ中）
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` g h p `` | ハンクを選択 |  |
+| `` <space>, g h p `` | ハンクを選択 |  |
 | `` g h b `` | Pick both hunks |  |
 | `` k, <up> `` | 前のハンク |  |
 | `` j, <down> `` | 次のハンク |  |
-| `` t p c `` | 前のコンフリクト |  |
-| `` t n c `` | 次のコンフリクト |  |
+| `` [, t p c `` | 前のコンフリクト |  |
+| `` ], t n c `` | 次のコンフリクト |  |
 | `` u u `` | 元に戻す | 最後のマージコンフリクト解決を元に戻します。 |
 | `` e `` | ファイルを編集 | 外部エディタでファイルを開きます。 |
 | `` o `` | ファイルを開く | デフォルトのアプリケーションでファイルを開きます。 |
@@ -342,19 +348,19 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t h s `` | ハンクの選択を切り替える | Toggle line-by-line vs. hunk selection mode. |
 | `` t h r `` | 範囲選択を切り替え |  |
 | `` e `` | ファイルを編集 | 外部エディタでファイルを開きます。 |
-| `` g h s `` | ステージ | 選択された部分のステージ / アンステージを切り替えます。 |
-| `` g h u `` | Unstage selected changes |  |
-| `` g h t `` | パッチ内の行を切り替え |  |
-| `` g h t `` | Remove selected lines from custom patch |  |
+| `` <space>, g h s `` | ステージ | 選択された部分のステージ / アンステージを切り替えます。 |
+| `` <space>, g h u `` | Unstage selected changes |  |
+| `` <space>, g h t `` | パッチ内の行を切り替え |  |
+| `` <space>, g h t `` | Remove selected lines from custom patch |  |
 | `` x `` | 破棄 | ステージされていない変更が選択されている場合、`git reset`を使用して変更を破棄します。ステージされた変更が選択されている場合、変更をアンステージします。 |
 | `` x `` | Remove lines from commit | Remove the selected lines from this commit. This runs an interactive rebase in the background, so you may get a merge conflict if a later commit also changes these lines. |
 | `` x `` | Unstage selected changes |  |
 | `` g e h `` | ハンクを編集 | 選択したハンクを外部エディタで編集します。 |
 | `` y d `` | Copy selected diff lines to clipboard |  |
-| `` t p h `` | 前のハンクに移動 |  |
-| `` t n h `` | 次のハンクに移動 |  |
-| `` t p f `` | Go to previous file |  |
-| `` t n f `` | Go to next file |  |
+| `` [, t p h `` | 前のハンクに移動 |  |
+| `` ], t n h `` | 次のハンクに移動 |  |
+| `` {, t p f `` | Go to previous file |  |
+| `` }, t n f `` | Go to next file |  |
 | `` t n j `` | Jump to file |  |
 | `` g p v `` | Open pull request at selected line | Open the branch's pull request in your browser, at the line the selection is on, so that you can comment on it there. Only pull requests on GitHub are found. |
 | `` <esc> `` | サイドパネルに戻る |  |
@@ -400,7 +406,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y d `` | Copy commit diff |  |
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
-| `` t f t `` | 現在のビューをテキストでフィルタリング |  |
+| `` 0 `` | メインビューにフォーカス |  |
+| `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## リモート
 
@@ -412,7 +419,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` e `` | 編集 | 選択したリモートの名前またはURLを編集します。 |
 | `` f `` | フェッチ | リモートリポジトリから更新をフェッチします。これにより、ローカルブランチにマージせずに新しいコミットとブランチを取得します。 |
 | `` n f `` | Add fork remote | Quickly add a fork remote by replacing the owner in the origin URL and optionally check out a branch from new remote. |
-| `` t f t `` | 現在のビューをテキストでフィルタリング |  |
+| `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## リモートブランチ
 
@@ -437,8 +444,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g t `` | アップストリームとして設定 | 選択したリモートブランチをチェックアウトされたブランチのアップストリームとして設定します。 |
 | `` t s o `` | 並び順 |  |
 | `` t d e `` | 外部差分ツールを開く（git difftool） |  |
+| `` 0 `` | メインビューにフォーカス |  |
 | `` v, <space> `` | コミットを表示 |  |
-| `` t f t `` | 現在のビューをテキストでフィルタリング |  |
+| `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## ローカルブランチ
 
@@ -466,6 +474,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p o `` | プルリクエスト作成オプションを表示 |  |
 | `` g p v `` | Open pull request in browser |  |
 | `` y r `` | プルリクエストURLをクリップボードにコピー |  |
+| `` s b `` | 名前でチェックアウト | 名前でチェックアウトします。入力ボックスに「-」を入力すると、最後のブランチをチェックアウトすることができます。 |
 | `` <delete> `` | 削除 | ローカル/リモートブランチの削除オプションを表示します。 |
 | `` r `` | Rebase current onto selected branch… | チェックアウトしたブランチを選択したブランチ上にリベースします。 |
 | `` m `` | Merge selected branch into current… | 選択した項目を現在のブランチにマージするためのオプションを表示します（通常のマージ、スカッシュマージ） |
@@ -475,8 +484,9 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <f2> `` | ブランチ名を変更 |  |
 | `` g t `` | アップストリームオプションを表示 | ブランチのアップストリームに関連するオプションを表示します（例：アップストリームの設定/解除やアップストリームへのリセット）。 |
 | `` t d e `` | 外部差分ツールを開く（git difftool） |  |
+| `` 0 `` | メインビューにフォーカス |  |
 | `` v, <space> `` | コミットを表示 |  |
-| `` t f t `` | 現在のビューをテキストでフィルタリング |  |
+| `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## ワークツリー
 
@@ -486,7 +496,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s w `` | チェックアウト（切り替え） | 選択したワークツリーをチェックアウト（切り替え）します。 |
 | `` o `` | エディタで開く |  |
 | `` <delete> `` | 削除 | 選択したワークツリーを削除します。これはワークツリーのディレクトリとワークツリーに関するメタデータの両方を.gitディレクトリから削除します。 |
-| `` t f t `` | 現在のビューをテキストでフィルタリング |  |
+| `` v, <space> `` | コミットを表示 |  |
+| `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## 確認パネル
 
