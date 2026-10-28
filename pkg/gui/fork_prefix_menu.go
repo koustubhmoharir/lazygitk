@@ -134,6 +134,20 @@ func (flow *forkPrefixFlow) run(tree *keymap.CommandTree, path []gocui.Key, pare
 	return flow.show(tree, bindings, path, parent)
 }
 
+// forkTreeHasApplicable reports whether a continuation still leads to an
+// action here: an applicable binding, a fallback owner, or such a descendant.
+func forkTreeHasApplicable(tree *keymap.CommandTree) bool {
+	if len(forkApplicableBindings(tree.Bindings)) > 0 || len(tree.Fallbacks) > 0 {
+		return true
+	}
+	for _, edge := range tree.Children {
+		if forkTreeHasApplicable(edge.Tree) {
+			return true
+		}
+	}
+	return false
+}
+
 func forkExplicitDescendants(tree *keymap.CommandTree) bool {
 	for _, edge := range tree.Children {
 		for _, binding := range edge.Tree.Bindings {
@@ -182,6 +196,12 @@ func (flow *forkPrefixFlow) show(tree *keymap.CommandTree, bindings []*types.Bin
 		items = append(items, item)
 	}
 	for _, edge := range tree.Children {
+		// A continuation whose every action is inapplicable in this pane is
+		// hidden, like an inapplicable leaf, so a global route cannot appear
+		// where it does nothing (for example s p in Status).
+		if !forkTreeHasApplicable(edge.Tree) {
+			continue
+		}
 		nextPath := append(append([]gocui.Key(nil), path...), edge.Key)
 		items = append(items, &types.MenuItem{
 			CommandID: "menu.command-prefix", Verb: "discover-commands",
