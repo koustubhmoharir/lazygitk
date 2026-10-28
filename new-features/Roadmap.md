@@ -1129,6 +1129,44 @@ text and shows no "no clipboard tool" error when no tool is installed; a
 configured `os.copyToClipboardCmd` runs instead; the sequence is emitted
 correctly inside tmux with `set-clipboard on`.
 
+## 22. Shorter keys for frequent actions
+
+A review of actions with no key, or with three-key paths that are pressed
+repeatedly, found several that deserve shorter routes. User decisions:
+
+- Space is the toggle on the selection in editing views as well as in Files:
+  it stages or unstages the selected lines in the working-tree diff, toggles
+  them in the custom patch while building one, and picks the selected
+  conflict hunk in the merge view. The `g h s`, `g h u`, `g h t` and `g h p`
+  paths stay. This reverses item 8's move of the merge view's Space to
+  `g h p`.
+- `]` / `[` go to the next / previous hunk in a diff, and to the next /
+  previous conflict in the merge view. `}` / `{` go to the next / previous
+  file in a diff. The `t n …` / `t p …` paths stay.
+- `<` / `>` move the selected commit up / down in Commits, replacing
+  `g m u` / `g m d`. Only the shifted characters are bound: `,` and `.` do
+  nothing, so a move cannot happen by accident.
+- `/` opens the text filter in panes that have no search (Files, Branches,
+  Remote branches, Remotes, Tags, Stash, Worktrees, Submodules, Commit files,
+  Reflog). Panes with search keep `/` for search. `t f t` stays.
+- `s p` switches to the previous branch (`git checkout -`) from any pane. Its
+  menu label names that branch, read from the already loaded reflog; with no
+  previous checkout it says so and does nothing.
+- `s b` checks out a branch by typing its name, in Branches, where the action
+  lives.
+- `0` focuses the main view from every side pane. In Files it only focuses,
+  unlike `v`, which can enter a submodule or open conflict resolution.
+- Stash apply moves from `g a` to `g s a`, beside `g s s`, `g s o` and `g s p`.
+- `v` and Space in Worktrees show the commits of the worktree's checked-out
+  branch, or of its HEAD when detached or mid-rebase, in the existing
+  read-only commit view. Nothing switches; `s w` still switches worktrees.
+
+Acceptance: each route above runs its action under the real defaults; `,`
+and `.` do not move commits; `/` searches in Commits and filters in Branches;
+`s p` names the previous branch and switches to it; `v` in Worktrees opens the
+branch's commits without changing the current worktree; generated key docs
+list the new routes.
+
 ## Verification and repository workflow
 
 During implementation use narrow package tests and named integration scenarios
