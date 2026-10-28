@@ -21,6 +21,15 @@ type SwitchToSubCommitsController struct {
 	*ListControllerTrait[models.Ref]
 	c       *ControllerCommon
 	context CanSwitchToSubCommits
+	// Fork: see WithoutDoubleClick.
+	keyOnly bool
+}
+
+// Fork: WithoutDoubleClick leaves the context's existing double-click action
+// alone. Worktrees double-click switches worktree; only v views its commits.
+func (self *SwitchToSubCommitsController) WithoutDoubleClick() *SwitchToSubCommitsController {
+	self.keyOnly = true
+	return self
 }
 
 func NewSwitchToSubCommitsController(
@@ -58,6 +67,9 @@ func (self *SwitchToSubCommitsController) GetKeybindings(opts types.KeybindingsO
 }
 
 func (self *SwitchToSubCommitsController) GetOnDoubleClick() func() error {
+	if self.keyOnly {
+		return nil
+	}
 	return self.viewCommits
 }
 

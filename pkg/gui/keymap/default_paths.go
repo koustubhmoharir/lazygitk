@@ -69,6 +69,18 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("ui.screen.next-mode", "+")
 	add("ui.screen.previous-mode", "-")
 	add("file.toggle-stage", "space")
+	// Fork: Space is also the selection toggle in the editing views (item 22):
+	// line staging, custom-patch inclusion and conflict-hunk picking.
+	add("diff.stage-selection diff.unstage-selection patch.toggle-selection patch.remove-selection conflict.pick-hunk", "space")
+	add("navigation.diff.next-hunk navigation.conflict.next", "]")
+	add("navigation.diff.previous-hunk navigation.conflict.previous", "[")
+	add("navigation.diff.next-file", "}")
+	add("navigation.diff.previous-file", "{")
+	// Only the shifted characters move commits; , and . stay unbound.
+	add("commit.move-up", "<")
+	add("commit.move-down", ">")
+	// / filters in panes without search; no pane offers both. It replaces t f t.
+	add("filter.open", "/")
 	add("commit.mark-cherry-pick", "c y")
 	add("commit.unmark-cherry-pick", "c x")
 	add("commit.cherry-pick", "c p")
@@ -103,14 +115,11 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("commit.rebase-interactive", "g i")
 	add("bisect.options-menu", "g b")
 	add("commit.revert", "g v c")
-	add("stash.apply", "g a")
 	add("branch.merge-rebase-menu", "g o")
 	add("branch.git-flow-menu", "g y")
 	add("commit.mark-rebase-base", "g r b")
 	add("commit.mark-pick", "g r p")
 	add("branch.move-commits-to-new", "g m n")
-	add("commit.move-up", "g m u")
-	add("commit.move-down", "g m d")
 	add("commit.create-with-editor", "g e c")
 	add("commit.create-without-hooks", "g e n")
 	add("commit.reword-with-editor", "g e r")
@@ -122,6 +131,7 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("stash.create", "g s s")
 	add("stash.create-menu", "g s o")
 	add("stash.pop", "g s p")
+	add("stash.apply", "g s a")
 	add("diff.stage-selection", "g h s")
 	add("diff.unstage-selection", "g h u")
 	add("patch.toggle-file-selection patch.toggle-selection patch.remove-selection", "g h t")
@@ -139,6 +149,8 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	// Fork: repository and worktree switching live under s (roadmap items 14 and 18).
 	add("repo.switch-menu", "s r")
 	add("repo.open-path", "s n")
+	add("branch.checkout-previous", "s p")
+	add("branch.checkout-by-name", "s b")
 	add("worktree.switch", "s w")
 	add("diff.commit.external diff.history-file.external diff.ref.external diff.working-file.external", "t d e")
 	add("diff.history-file.working-file", "t d f")
@@ -150,7 +162,6 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("diff.context.decrease", "t d -")
 	add("diff.rename-threshold.increase", "t d >")
 	add("diff.rename-threshold.decrease", "t d <")
-	add("filter.open", "t f t")
 	add("file.filter-menu", "t f s")
 	add("filter.options-menu", "t f o")
 	add("ui.file-tree.toggle", "t t t")
@@ -184,6 +195,9 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	for _, id := range []string{"file.enter", "remote.view-branches", "navigation.open-commits", "navigation.open-diff-files", "navigation.open-history-file-diff", "navigation.focus-diff", "submodule.enter"} {
 		add(id, "space")
 	}
+	// 0 focuses the main view from any pane that has one, after the
+	// inspection keys so labels list v first; Files uses the focus-only ID.
+	add("navigation.focus-diff navigation.focus-main", "0")
 
 	// Replaced normal routes, and nested copy menus that moved into the flat y
 	// menu, intentionally remain recognized with no path.

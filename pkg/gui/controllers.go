@@ -233,6 +233,10 @@ func (gui *Gui) resetHelpersAndControllers() {
 			common, context,
 		))
 	}
+	// Fork: v in Worktrees shows the worktree's commits (roadmap item 22).
+	// Its double-click keeps switching worktree, as upstream.
+	controllers.AttachControllers(gui.State.Contexts.Worktrees,
+		controllers.NewSwitchToSubCommitsController(common, gui.State.Contexts.Worktrees).WithoutDoubleClick())
 
 	for _, context := range []controllers.CanSwitchToDiffFiles{
 		gui.State.Contexts.LocalCommits,

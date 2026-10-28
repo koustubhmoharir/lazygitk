@@ -89,8 +89,8 @@ func TestForkProjectionKeepsModeRoutesLiveWithoutReusingStageForPatch(t *testing
 	for _, binding := range bindings {
 		byID[binding.CommandID] = binding
 	}
-	assert.Equal(t, []string{"g h s"}, byID["diff.stage-selection"].KeyLabels())
-	assert.Equal(t, []string{"g h t"}, byID["patch.toggle-selection"].KeyLabels())
+	assert.Equal(t, []string{"<space>", "g h s"}, byID["diff.stage-selection"].KeyLabels())
+	assert.Equal(t, []string{"<space>", "g h t"}, byID["patch.toggle-selection"].KeyLabels())
 	assert.Nil(t, byID["diff.stage-selection"].GetDisabledReason())
 	assert.True(t, byID["patch.toggle-selection"].GetDisabledReason().Inapplicable)
 	id = "patch.toggle-selection"
@@ -125,21 +125,24 @@ func TestForkProjectionContextControlsAndExplicitCommandOverride(t *testing.T) {
 	assert.False(t, bindings[5].DefaultCommand)
 }
 
-// Fork: roadmap item 18. Submodules enter on v and Space, Worktrees keeps v for
-// focusing details, and worktree switching is s w.
+// Fork: roadmap item 18. Submodules enter on v and Space. Worktrees shows its
+// commits on v and Space (item 22), focus-diff keeps only 0 there, and worktree
+// switching is s w.
 func TestForkSubmoduleEnterAndWorktreeSwitchRoutes(t *testing.T) {
 	gui := newForkKeymapTestGui(t)
 	bindings, err := gui.projectForkBindings([]*types.Binding{
 		{CommandID: "submodule.enter", ViewName: "submodules"},
 		{CommandID: "navigation.focus-diff", ViewName: "worktrees"},
 		{CommandID: "worktree.switch", ViewName: "worktrees"},
+		{CommandID: "navigation.open-commits", ViewName: "worktrees"},
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 	assert.Equal(t, []string{"v", "<space>"}, bindings[0].KeyLabels())
-	assert.Equal(t, []string{"v", "<space>"}, bindings[1].KeyLabels())
+	assert.Equal(t, []string{"0"}, bindings[1].KeyLabels())
 	assert.Equal(t, []string{"s w"}, bindings[2].KeyLabels())
+	assert.Equal(t, []string{"v", "<space>"}, bindings[3].KeyLabels())
 }
 
 func TestForkRefreshAliasSharesGlobalIdentityAndOverrides(t *testing.T) {

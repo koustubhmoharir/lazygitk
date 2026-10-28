@@ -50,6 +50,17 @@ func (self *SwitchToFocusedMainViewController) GetKeybindings(opts types.Keybind
 			Verb:        "focus-diff",
 		},
 	}
+	if self.inspect != nil {
+		// Fork: the focus-diff key inspects (see WithInspect), so 0 keeps a
+		// focus-only route under its own ID (roadmap item 22).
+		bindings[0].Description, bindings[0].Tooltip = self.c.Tr.InspectFile, self.c.Tr.InspectFileTooltip
+		bindings = append(bindings, &types.Binding{
+			Handler:     func() error { return focusMainView(self.c, self.context, -1) },
+			Description: self.c.Tr.FocusMainView,
+			CommandID:   "navigation.focus-main",
+			Verb:        "focus-diff",
+		})
+	}
 
 	return bindings
 }

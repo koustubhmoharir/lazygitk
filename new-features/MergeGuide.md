@@ -1931,6 +1931,30 @@ that all headless categories or the minimum-Git/cross-platform matrix ran.
   `fork_fetch_test.go`; the default `f` routes are `remote.fetch repo.fetch`.
 - Verified with `sync/fork_fetch_from_any_pane`.
 
+### Shorter keys for frequent actions (item 22)
+
+- Routes are fork catalogue entries in `keymap/default_paths.go`: Space for
+  line staging, patch toggling and conflict-hunk picking; `]` `[` `}` `{`;
+  `<` `>` commit moves; `/` for `filter.open` (no pane registers both
+  `filter.open` and `search.open`); `0` focus; `g s a`; `s p`; `s b`.
+- `fork_command_projection.go`: a pane's non-preferred inspector drops only
+  the shared `v`/Space paths (`forkWithoutInspectionKeys`), so focus-diff
+  keeps `0`. Worktrees' preferred inspector is `navigation.open-commits`.
+- Integration point in upstream: `BranchesController.GetKeybindings` no longer
+  declares `branch.checkout-previous`, and `checkoutPreviousBranch` is
+  removed. `controllers/fork_checkout_previous.go` registers it globally from
+  `GlobalController.GetKeybindings`, with a label naming the previous branch
+  from the loaded reflog. Re-apply the removal on upstream merges, or the
+  command is registered twice.
+- Integration point in upstream: `SwitchToFocusedMainViewController` adds a
+  focus-only `navigation.focus-main` binding when it has an inspect handler
+  (Files), and relabels the inspecting one "Inspect file".
+- Integration point in upstream: Worktrees gets a
+  `SwitchToSubCommitsController` in `gui/controllers.go`, attached with the
+  fork's `WithoutDoubleClick` because `WorktreesController` already owns the
+  double-click (a second owner panics). `context/fork_worktrees_ref.go`
+  supplies `GetSelectedRef` and `ShowBranchHeadsInSubCommits`.
+
 ## Reviewing an upstream merge
 
 1. Record the upstream commit being integrated and review changes around all

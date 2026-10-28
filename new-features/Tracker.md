@@ -3,11 +3,6 @@
 Item 22: shorter keys for frequent actions.
 Scope and decisions are in [Roadmap.md](Roadmap.md#22-shorter-keys-for-frequent-actions).
 
-- Default routes: Space in the diff, patch and merge views; `]` `[` `}` `{`;
-  `<` `>` commit moves; `/` filter; `0` focus main; `g s a`; unit tests.
-- `s p` global previous-branch switch with a named label, and `s b` checkout
-  by name; unit tests.
-- `v` and Space in Worktrees open the branch's commits; unit tests.
 - Integration scenarios for the acceptance cases under real defaults.
 - Docs, generated key docs, merge guide; mark the item complete.
 

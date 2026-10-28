@@ -154,8 +154,9 @@ func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string) erro
 		}
 		if forkInspectionCommand(binding.CommandID) {
 			if binding.CommandID != forkPreferredInspector(binding.ViewName) {
-				paths = nil
+				paths = forkWithoutInspectionKeys(paths)
 			} else if binding.ViewName == "files" {
+				// 0 belongs to Files' focus-only navigation.focus-main route.
 				paths = [][]gocui.Key{{gocui.NewKeyRune('v')}}
 			}
 		}
@@ -197,6 +198,19 @@ func forkInspectionCommand(id string) bool {
 	return false
 }
 
+// forkWithoutInspectionKeys drops the shared v/Space inspection routes from a
+// pane's non-preferred inspector, keeping its own keys such as focus-diff's 0.
+func forkWithoutInspectionKeys(paths [][]gocui.Key) [][]gocui.Key {
+	var kept [][]gocui.Key
+	for _, path := range paths {
+		if len(path) == 1 && (path[0] == gocui.NewKeyRune('v') || path[0] == gocui.NewKeyRune(' ')) {
+			continue
+		}
+		kept = append(kept, path)
+	}
+	return kept
+}
+
 func forkPreferredInspector(view string) string {
 	switch view {
 	case "localBranches", "remoteBranches", "tags":
@@ -209,11 +223,13 @@ func forkPreferredInspector(view string) string {
 		return "navigation.open-history-file-diff"
 	case "submodules":
 		return "submodule.enter"
+	case "worktrees":
+		return "navigation.open-commits"
 	}
 	// Unlike file.enter, this never toggles a directory: it focuses the
 	// read-only details already rendered there. Files keeps this route for
 	// its non-submodule entries; FilesController.InspectSelected enters a
-	// submodule entry itself. Worktrees keeps focusing details.
+	// submodule entry itself.
 	return "navigation.focus-diff"
 }
 

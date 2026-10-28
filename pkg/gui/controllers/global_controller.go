@@ -30,6 +30,8 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 		forkResetCommandUsageBinding(self.c),
 		// Fork: f fetches all remotes from any pane; Remotes keeps f for remote.fetch.
 		forkFetchBinding(self.c, opts),
+		// Fork: s p switches to the previous branch from any pane.
+		forkCheckoutPreviousBinding(self.c, opts),
 		{
 			CommandID:   "app.shell-command",
 			Verb:        "run-shell-command",

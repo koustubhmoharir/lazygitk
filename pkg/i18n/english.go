@@ -1292,6 +1292,10 @@ type TranslationSet struct {
 	ResetCommandUsageCounts                  string
 	ResetCommandUsageCountsPrompt            string
 	OpenRepoByPath                           string
+	InspectFile                              string
+	InspectFileTooltip                       string
+	CheckoutPreviousBranchNamed              string
+	NoPreviousBranch                         string
 	RepoPathPrompt                           string
 	ErrRepoPathNotDirectory                  string
 	ErrRepoPathNotGitRepo                    string
@@ -2792,6 +2796,10 @@ func EnglishTranslationSet() *TranslationSet {
 		ResetCommandUsageCounts:                  "Reset command usage counts",
 		ResetCommandUsageCountsPrompt:            "Reset all command usage counts? The ? palette returns to its default order until commands are used again.",
 		OpenRepoByPath:                           "Open repository by path",
+		InspectFile:                              "Inspect file",
+		InspectFileTooltip:                       "Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule.",
+		CheckoutPreviousBranchNamed:              "Switch to previous branch: %s",
+		NoPreviousBranch:                         "No branch was checked out before the current one.",
 		RepoPathPrompt:                           "Repository path",
 		ErrRepoPathNotDirectory:                  "Not a directory: {{.path}}",
 		ErrRepoPathNotGitRepo:                    "Not a Git repository: {{.path}}",

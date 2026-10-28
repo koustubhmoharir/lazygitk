@@ -123,13 +123,8 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			Description: self.c.Tr.CheckoutByName,
 			Tooltip:     self.c.Tr.CheckoutByNameTooltip,
 		},
-		{
-			CommandID:   "branch.checkout-previous",
-			Verb:        "checkout-previous",
-			Keys:        opts.GetKeys(opts.Config.Branches.CheckoutPreviousBranch),
-			Handler:     self.checkoutPreviousBranch,
-			Description: self.c.Tr.CheckoutPreviousBranch,
-		},
+		// Fork: branch.checkout-previous is a global binding
+		// (fork_checkout_previous.go), roadmap item 22.
 		{
 			CommandID:         "branch.force-checkout",
 			Verb:              "force-checkout",
@@ -398,11 +393,6 @@ func (self *BranchesController) forceCheckout() error {
 	})
 
 	return nil
-}
-
-func (self *BranchesController) checkoutPreviousBranch() error {
-	self.c.LogAction(self.c.Tr.Actions.CheckoutBranch)
-	return self.c.Helpers().Refs.CheckoutPreviousRef()
 }
 
 func (self *BranchesController) checkoutByName() error {
