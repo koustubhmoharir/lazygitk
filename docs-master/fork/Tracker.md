@@ -1,7 +1,37 @@
 # Current work
 
-There is no current work. New work starts by writing its section here and
-reviewing it with the user.
+## Flat checkout keys under `s`
+
+`s c` opened a second menu (switch, check out under a name, detached HEAD),
+and `s b` (check out by name) overlapped with its naming item. Agreed
+behaviour:
+
+| Keys | Selection | Behaviour |
+| --- | --- | --- |
+| `s c` | Local branch | Switch to it through the safe named-checkout path; no menu |
+| `s c` | Remote branch | Switch to the local branch of that name if it exists; otherwise create it tracking the remote branch, then switch |
+| `s c` | Commit, tag, reflog or sub-commit entry | The named-checkout prompt for that commit; suggestions list branches already at the commit first; a new name is created there, an existing name elsewhere gets the move warning |
+| `s d` | Anything with a commit | Detached HEAD at it, in every pane that has `s c` |
+| `s b` | | No key; "Checkout by name" stays in `?` |
+| `s p` | | Unchanged, but through the safe checkout (never offers a stash); a detached previous checkout is checked out detached |
+
+- In Status, `s` is only for repositories: `s r` and `s n` have keys only in
+  Status, and `s p` does not appear there. Elsewhere `s` switches commits and
+  branches (and `s w` worktrees, in Worktrees).
+- The old second-level checkout menus and their numbered branch items have no
+  key route.
+
+Acceptance: each row above works under the real defaults with no extra menu;
+`s p` with blocking changes shows Git's refusal, not a stash offer; `s b`
+does nothing; in Status the `s` menu lists only `r` and `n`; in other panes
+it has no `r`, `n`; generated key docs and the user guide match.
+
+Tasks:
+
+- Rewire `s c`, `s d`, `s b`, `s p` and the Status-only `s r`/`s n`; unit
+  tests.
+- Integration scenarios for the acceptance cases.
+- User guide, merge guide, generated docs; close this section.
 
 ## How this tracker works
 
