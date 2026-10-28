@@ -180,6 +180,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n t `` | 标签提交 | 创建一个新标签指向所选提交。您可以在弹窗中输入标签名称和描述(可选)。 |
 | `` t l o `` | 打开日志菜单 | 查看提交日志的选项，例如更改排序顺序、隐藏 git graph、显示整个 git graph。 |
 | `` g p v `` | 在浏览器中打开拉取请求 |  |
+| `` w a `` | Show selected commits and their ancestors |  |
+| `` w d `` | Show selected commits and their descendants |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |

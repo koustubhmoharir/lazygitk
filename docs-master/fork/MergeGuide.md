@@ -120,6 +120,12 @@ re-apply it if upstream changes that code.
   `SetClipboardWriter` (OSC 52, `pkg/gui/fork_clipboard.go`, wired right after
   `gui.os = osCommand`). Paste still uses `atotto/clipboard`. Keep the writer
   injected so `oscommands` never imports gocui.
+- `git_commands/commit_loader.go`: `GetCommitsOptions` carries the commit
+  scope (`ScopeHashes`, `ScopeDescendants`). `GetCommits` loads a scoped list
+  with `loadCommitScope` and skips rebase todos for it; `getLogCmd` takes its
+  revisions, order, `--all` and limit from `commitScopeLog`
+  (`fork_commit_scope.go`). New `git log` arguments that depend on the ref or
+  limit must go through `commitScopeLog`.
 
 ### Keys and dispatch
 
@@ -184,7 +190,9 @@ re-apply it if upstream changes that code.
   commit, combine, historical diffs, reset modes, cherry-pick marks and flat
   copy bindings.
 - `controllers/local_commits_controller.go` (replacement): paste is the
-  reviewed cherry-pick; fixup and amend creation preflight their placement.
+  reviewed cherry-pick; fixup and amend creation preflight their placement;
+  `GetKeybindings` appends the commit scope filters
+  (`fork_commit_scope_filters.go`).
 - `controllers/commits_files_controller.go`: tree navigation, flat copy and
   historical diffs; copy menu items are shared with the flat bindings.
 - `controllers/sync_controller.go` (replacement): push and pull act on the
@@ -236,6 +244,22 @@ re-apply it if upstream changes that code.
 
 Upstream changes to these menus should be ported into the captured flows, not
 restored.
+
+Commit scope filters (`w a`, `w d`) are a third kind of filtering mode:
+
+- `modes/filtering/filtering.go`: a `commitScope` field
+  (`fork_commit_scope.go`); `Active()` counts it so that upstream's
+  filter-mode restrictions apply, and `Reset()` clears it.
+- `helpers/mode_helper.go`: the filtering status label defers to
+  `commitScopeInfoLabel`; `changeFiltering` takes its screen layout from
+  `changeFilteringWithLayout`, and `ClearFiltering` keeps the screen mode for a
+  scope (`fork_commit_scope_filter.go`).
+- `helpers/refresh_helper.go`: the commits refresh passes the scope; the
+  reflog filters only for a path or author (`HasPathOrAuthorFilter`).
+- `helpers/diff_helper.go`: `DiffArgs` appends the filter path only when one is
+  set.
+- Upstream code that tests `Filtering.Active()` to mean a path or author
+  filter should use `HasPathOrAuthorFilter` or `GetPath`.
 
 ### Appearance
 

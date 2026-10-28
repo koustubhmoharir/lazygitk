@@ -90,6 +90,13 @@ type TranslationSet struct {
 	BranchActionDeleteForcePrompt        string
 	// Fork-owned integration strings are separate to avoid reformatting the
 	// upstream table when longer field names are added.
+	FilterCommitAncestors                 string
+	FilterCommitDescendants               string
+	CommitScopeSelectCommits              string
+	ShowingCommitAncestorsOne             string
+	ShowingCommitAncestorsMany            string
+	ShowingCommitDescendantsOne           string
+	ShowingCommitDescendantsMany          string
 	BranchSyncCurrentPullSummary          string
 	BranchSyncIntegrationMenu             string
 	BranchSyncIntegrationSummary          string
@@ -1593,6 +1600,13 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchActionDeleteRemotePrompt:        "\n\nDelete these server branches?\n%s\n\nCached commit IDs may differ from the server's current tips. This deletes the named server branches, including any newer commits they contain.",
 		BranchActionDeleteLocalUpstream:       "This upstream is a local ref. Select it in the branches pane to delete it, or choose a server branch explicitly.",
 		BranchActionDeleteForcePrompt:         "\n\nThese branches have history not preserved by the remaining reviewed HEAD, upstream or main refs:\n%s\n\nDelete these local branches anyway?",
+		FilterCommitAncestors:                 "Show selected commits and their ancestors",
+		FilterCommitDescendants:               "Show selected commits and their descendants",
+		CommitScopeSelectCommits:              "Select only commits to filter by their ancestors or descendants.",
+		ShowingCommitAncestorsOne:             "Showing ancestors of %d selected commit",
+		ShowingCommitAncestorsMany:            "Showing ancestors of %d selected commits",
+		ShowingCommitDescendantsOne:           "Showing descendants of %d selected commit",
+		ShowingCommitDescendantsMany:          "Showing descendants of %d selected commits",
 		BranchSyncCurrentPullSummary:          "Checked-out branch %q at %s\nUpstream remote: %q\nUpstream branch: %q\nLocal tracking storage: %q\n\nFetch first, then review the exact incoming commit and integration method before changing files. Saved upstream settings will not change.",
 		BranchSyncIntegrationMenu:             "Integrate reviewed incoming commit",
 		BranchSyncIntegrationSummary:          "Checked-out branch %q at %s\nReviewed incoming commit: %s\n\nChoose an integration method. The default uses Git configuration; explicit choices replace the corresponding defaults. No second network pull or autostash will run.",
@@ -2487,7 +2501,7 @@ func EnglishTranslationSet() *TranslationSet {
 		FilteringMenuTitle:               "Filtering",
 		WillCancelExistingFilterTooltip:  "Note: this will cancel the existing filter",
 		MustExitFilterModeTitle:          "Command not available",
-		MustExitFilterModePrompt:         "Command not available in filter-by-path mode. Exit filter-by-path mode?",
+		MustExitFilterModePrompt:         "Command not available while the commit log is filtered. Exit filter mode?",
 		Diff:                             "Diff",
 		EnterRefToDiff:                   "Enter ref to diff",
 		EnterRefName:                     "Enter ref:",

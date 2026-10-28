@@ -200,6 +200,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n t `` | 打標籤到提交 | 建立一個新標籤指向所選提交。您可以在彈窗中輸入標籤名稱和描述(可選)。 |
 | `` t l o `` | 開啟記錄選單 | 檢視提交日誌的選項，例如更改排序順序、隱藏 git graph、顯示整個 git graph。 |
 | `` g p v `` | 在瀏覽器中開啟拉取請求 |  |
+| `` w a `` | Show selected commits and their ancestors |  |
+| `` w d `` | Show selected commits and their descendants |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |

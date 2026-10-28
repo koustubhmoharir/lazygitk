@@ -709,7 +709,8 @@ func (self *LocalCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 		},
 	}
 
-	return bindings
+	// Fork: the commit scope filters w a and w d (see fork_commit_scope_filters.go).
+	return self.addCommitScopeFilterBindings(bindings)
 }
 
 func (self *LocalCommitsController) checkedOutBranchHasPR() *types.DisabledReason {

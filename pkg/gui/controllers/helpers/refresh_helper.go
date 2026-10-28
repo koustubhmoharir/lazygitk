@@ -695,11 +695,12 @@ type capturedReflogState struct {
 // captureReflogState reads the reflog refresh's inputs into an immutable
 // snapshot. It must run on the UI thread.
 func (self *RefreshHelper) captureReflogState() capturedReflogState {
+	// Fork: a commit scope does not filter the reflog, so only path and author count.
 	return capturedReflogState{
 		reflogCommits:         self.c.Model().ReflogCommits,
 		filteredReflogCommits: self.c.Model().FilteredReflogCommits,
 		hashPool:              self.c.Model().HashPool,
-		filteringActive:       self.c.Modes().Filtering.Active(),
+		filteringActive:       self.c.Modes().Filtering.HasPathOrAuthorFilter(),
 		filterPath:            self.c.Modes().Filtering.GetPath(),
 		filterAuthor:          self.c.Modes().Filtering.GetAuthor(),
 	}
@@ -763,6 +764,9 @@ type capturedCommitState struct {
 	mainBranches         *git_commands.MainBranches
 	hashPool             *utils.StringPool
 	parentIsLocalCommits bool
+	// Fork: the commit scope filter (see fork_commit_scope.go).
+	scopeHashes      []string
+	scopeDescendants bool
 }
 
 // captureCommitsState reads the commits refresh's model/context/mode inputs
@@ -771,6 +775,7 @@ type capturedCommitState struct {
 // received while the git work is in flight is not overwritten.
 func (self *RefreshHelper) captureCommitsState() capturedCommitState {
 	parentCtx := self.c.Contexts().CommitFiles.GetParentContext()
+	scope := self.c.Modes().Filtering.GetCommitScope()
 
 	return capturedCommitState{
 		limitCommits:         self.c.Contexts().LocalCommits.GetLimitCommits(),
@@ -780,6 +785,8 @@ func (self *RefreshHelper) captureCommitsState() capturedCommitState {
 		mainBranches:         self.c.Model().MainBranches,
 		hashPool:             self.c.Model().HashPool,
 		parentIsLocalCommits: parentCtx != nil && parentCtx.GetKey() == context.LOCAL_COMMITS_CONTEXT_KEY,
+		scopeHashes:          scope.Hashes,
+		scopeDescendants:     scope.Descendants,
 	}
 }
 
@@ -853,6 +860,8 @@ func (self *RefreshHelper) refreshCommitsWithLimit(captured capturedCommitState,
 			All:                  captured.showWholeGitGraph,
 			MainBranches:         captured.mainBranches,
 			HashPool:             captured.hashPool,
+			ScopeHashes:          captured.scopeHashes,
+			ScopeDescendants:     captured.scopeDescendants,
 		},
 	)
 	if err != nil {

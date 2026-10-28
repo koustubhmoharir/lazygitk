@@ -68,13 +68,19 @@ type GetCommitsOptions struct {
 	RefToShowDivergenceFrom string
 	MainBranches            *MainBranches
 	HashPool                *utils.StringPool
+	// Fork: commit scope filter (see fork_commit_scope.go). When ScopeHashes is
+	// non-empty, the list shows those commits with their ancestors, or with their
+	// descendants when ScopeDescendants is set.
+	ScopeHashes      []string
+	ScopeDescendants bool
 }
 
 // GetCommits obtains the commits of the current branch
 func (self *CommitLoader) GetCommits(opts GetCommitsOptions) ([]*models.Commit, error) {
 	commits := []*models.Commit{}
 
-	if opts.IncludeRebaseCommits && opts.FilterPath == "" {
+	// Fork: a commit scope lists only commits, so rebase todos are not merged in.
+	if opts.IncludeRebaseCommits && opts.FilterPath == "" && !opts.hasCommitScope() {
 		var err error
 		commits, err = self.MergeRebasingCommits(opts.HashPool, commits)
 		if err != nil {
@@ -91,9 +97,15 @@ func (self *CommitLoader) GetCommits(opts GetCommitsOptions) ([]*models.Commit, 
 		defer wg.Done()
 
 		var realCommits []*models.Commit
-		realCommits, logErr = loadCommits(self.getLogCmd(opts), opts.FilterPath, func(line string) (*models.Commit, bool) {
+		parseLine := func(line string) (*models.Commit, bool) {
 			return self.extractCommitFromLine(opts.HashPool, line, opts.RefToShowDivergenceFrom != ""), false
-		})
+		}
+		// Fork: a commit scope has its own loader (see fork_commit_scope.go).
+		if opts.hasCommitScope() {
+			realCommits, logErr = self.loadCommitScope(opts, parseLine)
+		} else {
+			realCommits, logErr = loadCommits(self.getLogCmd(opts), opts.FilterPath, parseLine)
+		}
 		if logErr == nil {
 			commits = append(commits, realCommits...)
 		}
@@ -603,15 +615,18 @@ func (self *CommitLoader) getLogCmd(opts GetCommitsOptions) *oscommands.CmdObj {
 		refSpec += "..." + opts.RefToShowDivergenceFrom
 	}
 
+	// Fork: a commit scope replaces the revisions, order, --all and limit (see fork_commit_scope.go).
+	scope := commitScopeLog(opts, refSpec, gitLogOrder)
+
 	cmdArgs := NewGitCmd("log").
-		Arg(refSpec).
-		ArgIf(gitLogOrder != "default", "--"+gitLogOrder).
-		ArgIf(opts.All, "--all").
+		Arg(scope.revisions...).
+		ArgIf(scope.order != "default", "--"+scope.order).
+		ArgIf(scope.all, "--all").
 		Arg("--oneline").
 		Arg(prettyFormat).
 		Arg("--abbrev=40").
 		ArgIf(opts.FilterAuthor != "", "--author="+opts.FilterAuthor).
-		ArgIf(opts.Limit, "-300").
+		ArgIf(scope.limit, "-300").
 		ArgIf(opts.FilterPath != "", "--follow", "--name-status").
 		Arg("--no-show-signature").
 		ArgIf(opts.RefToShowDivergenceFrom != "", "--left-right").

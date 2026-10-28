@@ -85,6 +85,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n t `` | Otaguj commit | Utwórz nowy tag wskazujący na wybrany commit. Zostaniesz poproszony o wprowadzenie nazwy tagu i opcjonalnego opisu. |
 | `` t l o `` | Zobacz opcje logów | Zobacz opcje dla logów commitów, np. zmiana kolejności sortowania, ukrywanie grafu gita, pokazywanie całego grafu gita. |
 | `` g p v `` | Otwórz żądanie ściągnięcia w przeglądarce |  |
+| `` w a `` | Show selected commits and their ancestors |  |
+| `` w d `` | Show selected commits and their descendants |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |

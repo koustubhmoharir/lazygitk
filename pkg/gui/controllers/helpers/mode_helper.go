@@ -78,6 +78,10 @@ func (self *ModeHelper) Statuses() []ModeStatus {
 		{
 			IsActive: self.c.Modes().Filtering.Active,
 			InfoLabel: func() string {
+				// Fork: a commit scope has its own label (see fork_commit_scope_filter.go).
+				if self.c.Modes().Filtering.HasCommitScope() {
+					return self.commitScopeInfoLabel()
+				}
 				filterContent := lo.Ternary(self.c.Modes().Filtering.GetPath() != "", self.c.Modes().Filtering.GetPath(), self.c.Modes().Filtering.GetAuthor())
 				return self.withResetButton(
 					fmt.Sprintf(
@@ -213,7 +217,13 @@ func (self *ModeHelper) setFiltering(setFilter func()) error {
 func (self *ModeHelper) ClearFiltering() error {
 	selectedCommitHash := self.c.Contexts().LocalCommits.GetSelectedCommitHash()
 
-	return self.changeFiltering(
+	// Fork: clearing a commit scope keeps the screen mode and focuses Commits (see fork_commit_scope_filter.go).
+	layout := self.pathFilteringLayout
+	if self.c.Modes().Filtering.HasCommitScope() {
+		layout = self.commitScopeFilteringLayout
+	}
+
+	return self.changeFilteringWithLayout(
 		self.c.Modes().Filtering.Reset,
 		func() {
 			// Find the commit that was last selected in filtering mode, and select it again after refreshing
@@ -225,6 +235,7 @@ func (self *ModeHelper) ClearFiltering() error {
 				self.c.Contexts().LocalCommits.SelectCommitByHash(self.c.Modes().Filtering.GetSelectedCommitHash())
 			}
 		},
+		layout,
 	)
 }
 
@@ -248,6 +259,26 @@ func (self *ModeHelper) ClearFiltering() error {
 // change from racing this one — they would both refresh with whichever filter
 // happened to be set when their git commands ran.
 func (self *ModeHelper) changeFiltering(setFilter func(), selectCommit func()) error {
+	return self.changeFilteringWithLayout(setFilter, selectCommit, self.pathFilteringLayout)
+}
+
+// pathFilteringLayout shows a path or author filter: the list takes half the
+// screen and Commits is focused. Clearing the filter restores the full screen.
+func (self *ModeHelper) pathFilteringLayout(filtering bool) {
+	repoState := self.c.State().GetRepoState()
+	if filtering {
+		if repoState.GetScreenMode() == types.SCREEN_NORMAL {
+			repoState.SetScreenMode(types.SCREEN_HALF)
+		}
+		self.c.Context().Push(self.c.Contexts().LocalCommits, types.OnFocusOpts{})
+	} else if repoState.GetScreenMode() == types.SCREEN_HALF {
+		repoState.SetScreenMode(types.SCREEN_NORMAL)
+	}
+}
+
+// changeFilteringWithLayout is changeFiltering with the screen mode and focus
+// applied by layout when the reloaded lists land, instead of the path filter's.
+func (self *ModeHelper) changeFilteringWithLayout(setFilter func(), selectCommit func(), layout func(filtering bool)) error {
 	setFilter()
 
 	filtering := self.c.Modes().Filtering.Active()
@@ -258,15 +289,7 @@ func (self *ModeHelper) changeFiltering(setFilter func(), selectCommit func()) e
 			Scope:          ScopesToRefreshWhenFilteringModeChanges(),
 			BatchUIUpdates: true,
 			Then: func() error {
-				repoState := self.c.State().GetRepoState()
-				if filtering {
-					if repoState.GetScreenMode() == types.SCREEN_NORMAL {
-						repoState.SetScreenMode(types.SCREEN_HALF)
-					}
-					self.c.Context().Push(self.c.Contexts().LocalCommits, types.OnFocusOpts{})
-				} else if repoState.GetScreenMode() == types.SCREEN_HALF {
-					repoState.SetScreenMode(types.SCREEN_NORMAL)
-				}
+				layout(filtering)
 
 				selectCommit()
 				self.c.PostRefreshUpdate(self.c.Contexts().LocalCommits)

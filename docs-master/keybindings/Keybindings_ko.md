@@ -374,6 +374,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n t `` | Tag commit | Create a new tag pointing at the selected commit. You'll be prompted to enter a tag name and optional description. |
 | `` t l o `` | 로그 메뉴 열기 | View options for commit log e.g. changing sort order, hiding the git graph, showing the whole git graph. |
 | `` g p v `` | Open pull request in browser |  |
+| `` w a `` | Show selected commits and their ancestors |  |
+| `` w d `` | Show selected commits and their descendants |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |

@@ -47,8 +47,9 @@ func (self *DiffHelper) DiffArgs() []string {
 	file := self.currentlySelectedFilename()
 	if file != "" {
 		output = append(output, file)
-	} else if self.c.Modes().Filtering.Active() {
-		output = append(output, self.c.Modes().Filtering.GetPath())
+	} else if filterPath := self.c.Modes().Filtering.GetPath(); filterPath != "" {
+		// Fork: a commit scope has no path, so only a path filter adds one.
+		output = append(output, filterPath)
 	}
 
 	return output

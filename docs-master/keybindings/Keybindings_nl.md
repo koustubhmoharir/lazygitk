@@ -207,6 +207,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n t `` | Tag commit | Maak een nieuwe tag die naar de geselecteerde commit wijst. Je wordt gevraagd om een tag naam en optionele omschrijving. |
 | `` t l o `` | Log opties weergeven | View options for commit log e.g. changing sort order, hiding the git graph, showing the whole git graph. |
 | `` g p v `` | Open pull request in browser |  |
+| `` w a `` | Show selected commits and their ancestors |  |
+| `` w d `` | Show selected commits and their descendants |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |

@@ -78,9 +78,9 @@ filters hide everything but part of the graph:
   toggle, rendering of selection and cursor, Escape order, refresh retention.
 - Command scoping: set-aware commands use the set; the others are disabled
   with the reason.
-- Commit loader: ancestor, descendant and branch filters; filter mode and
-  status; Branches entry.
-- `w` prefix group: `w a`, `w d`, `w b`.
+- Branch filter `w b` in Commits and Branches, with its loader and status.
+- `w a`/`w d` keep the multi-selection once it exists (today a Shift range
+  collapses to the cursor commit when a filter is applied).
 - Integration scenarios for each of the above.
 - Guide, Design and MergeGuide updates.
 

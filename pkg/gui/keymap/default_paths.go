@@ -162,6 +162,9 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("diff.context.decrease", "t d -")
 	add("diff.rename-threshold.increase", "t d >")
 	add("diff.rename-threshold.decrease", "t d <")
+	// Fork: commit scope filters, declared before the menu entries so they list first.
+	add("filter.commit-ancestors", "w a")
+	add("filter.commit-descendants", "w d")
 	add("file.filter-menu", "w s")
 	add("filter.options-menu", "w o")
 	add("ui.file-tree.toggle", "t t t")

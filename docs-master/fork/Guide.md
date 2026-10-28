@@ -164,6 +164,7 @@ Commits only:
 | `g b` | Bisect options |
 | `g p v` | Open the pull request |
 | `t l o` | Log options |
+| `w a`, `w d` | Show only the selected commits and their ancestors, or their descendants |
 | `w o` | Filter the log by path or author |
 
 ### Commit files
@@ -224,7 +225,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 | `y` copy | `n` name, `p` path, `f` absolute path, `c` file content, `h` hash, `i` short hash, `s` subject, `m` message, `b` body, `u` URL, `a` author, `t` tags, `d` diff, `w` all files' diff, `r` pull request URL, `y` confirmation text |
 | `g` Git | `c` combine, `l` pull, `f` fast-forward, `t` upstream, `i` interactive rebase, `b` bisect, `o` merge/rebase options, `y` git-flow; `v f`/`v c` restore file, revert commit; `r p`/`r b` pick, rebase base; `m n` move commits to new branch; `e c`/`e n`/`e r`/`e a`/`e h` editor commit, commit without hooks, editor reword, commit attributes, edit hunk; `p c`/`p o`/`p v` pull request; `s s`/`s o`/`s a`/`s p` stash, stash options, apply, pop; `h s`/`h u`/`h t`/`h a`/`h o` stage, unstage, patch toggle, patch all, patch options; `h c`/`h p`/`h b` conflict options, pick hunk, pick both; `u s`/`u i`/`u b` submodule update, init, bulk; `z u`/`z w` upstream reset, working-tree reset |
 | `t` view and tools | `d` diff display: `e` external diff, `f` diff with a chosen file, `c` comparison options, `w` whitespace, `n`/`p` renderer, `+`/`-` context, `>`/`<` rename threshold; `t` tree: `t` toggle, `c` collapse all, `e` expand all; `l` log: `n`/`p` all-branch logs, `o` log options, `c` command log options, `s` select branch commits; `s o` sort order; `a` app: `c` config, `u` check update, `s` suspend, `q` quit without changing directory, `g` game; `n`/`p` next/previous: `h` hunk, `f` file, `c` conflict, `d` diff pane, `j` jump to file; `h s`/`h r` hunk selection, range selection |
-| `w` filters | `s` file status (Files), `o` log filter by path or author (Commits) |
+| `w` filters | `a` ancestors, `d` descendants of the selected commits (Commits); `s` file status (Files), `o` log filter by path or author (Commits) |
 
 ## How behaviour differs from upstream
 
@@ -271,6 +272,17 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - Deleting a branch offers local, remote or both, refuses branches checked out
   in any worktree, and asks before deleting unmerged history. For both, the
   remote branch is deleted first; a remote failure keeps the local branch.
+
+### Filtering the commit log
+
+- `w a` shows only the selected commits and their ancestors; `w d` shows only
+  the selected commits and their descendants, from every branch. The graph is
+  still drawn, the status bar names the filter, and the cursor stays on its
+  commit. A filter replaces any other log filter, survives refreshes, and is
+  removed by Escape (the cursor stays on its commit), or by choosing another.
+- While the log is filtered, commands that rewrite history offer to leave the
+  filter first, as upstream's path filter does. Unlike the path filter, these
+  filters do not change the screen mode.
 
 ### Rebase, merge, reset
 
