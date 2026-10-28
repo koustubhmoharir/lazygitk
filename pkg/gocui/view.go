@@ -192,6 +192,11 @@ type View struct {
 	showInclusionGutter  bool
 	inclusionGutterMarks []bool
 
+	// Fork: selectedLines, indexed by line of the content, is an explicit set of lines
+	// highlighted in place of the cursor and range selection. nil means no override.
+	// Set via SetSelectedLines (see fork_selected_lines.go).
+	selectedLines []bool
+
 	// If Frame is true, a border will be drawn around the view.
 	Frame bool
 
@@ -975,8 +980,9 @@ func (v *View) InclusionGutterWidthWhenShown() int {
 
 // setCharacter sets a character (grapheme cluster) at the given point relative to the view. It applies
 // the specified colors, taking into account if the cell must be highlighted. Also, it checks if the
-// position is valid. width is the number of columns the character takes up.
-func (v *View) setCharacter(x, y int, ch string, width int, fgColor, bgColor Attribute, isWindowFocused bool) {
+// position is valid. width is the number of columns the character takes up. contentLine is the line
+// of the content the cell belongs to, which an explicit selection (SetSelectedLines) is indexed by.
+func (v *View) setCharacter(x, y, contentLine int, ch string, width int, fgColor, bgColor Attribute, isWindowFocused bool) {
 	maxX, maxY := v.Size()
 	if x < 0 || x >= maxX || y < 0 || y >= maxY {
 		return
@@ -986,6 +992,9 @@ func (v *View) setCharacter(x, y int, ch string, width int, fgColor, bgColor Att
 		fgColor = v.FgColor
 		bgColor = v.BgColor
 		ch = v.Mask
+	} else if v.Highlight && v.selectedLines != nil {
+		// Fork: an explicit set of lines replaces the cursor and range highlight.
+		fgColor, bgColor = v.highlightSelectedLine(x, y, contentLine, width, fgColor, bgColor, isWindowFocused)
 	} else if v.Highlight {
 		rangeSelectStart := v.cy
 		rangeSelectEnd := v.cy
@@ -1911,10 +1920,10 @@ func (v *View) draw(isWindowFocused bool) {
 		// content begins after it. The blanks go through setCharacter like everything
 		// else, so that a selection reaching the left edge covers the gutter too.
 		for gx := range gutterWidth {
-			v.setCharacter(gx, y, " ", 1, v.FgColor, v.BgColor, isWindowFocused)
+			v.setCharacter(gx, y, vline.linesY, " ", 1, v.FgColor, v.BgColor, isWindowFocused)
 		}
 		if gutterWidth > 0 && vline.linesY < len(v.inclusionGutterMarks) && v.inclusionGutterMarks[vline.linesY] {
-			v.setCharacter(0, y, v.InclusionGutterMarker, uniseg.StringWidth(v.InclusionGutterMarker),
+			v.setCharacter(0, y, vline.linesY, v.InclusionGutterMarker, uniseg.StringWidth(v.InclusionGutterMarker),
 				v.InclusionGutterMarkerColor, v.BgColor, isWindowFocused)
 		}
 
@@ -1968,7 +1977,7 @@ func (v *View) draw(isWindowFocused bool) {
 				fgColor |= AttrUnderline
 			}
 
-			v.setCharacter(x, y, c.chr, c.width, fgColor, bgColor, isWindowFocused)
+			v.setCharacter(x, y, vline.linesY, c.chr, c.width, fgColor, bgColor, isWindowFocused)
 
 			x += c.width
 			cellIdx++

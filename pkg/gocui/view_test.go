@@ -1303,6 +1303,175 @@ func TestInclusionGutter(t *testing.T) {
 	assert.Equal(t, "a", chr)
 }
 
+// bgOfViewCell is the background the cell at view column x and row y is drawn with; the
+// frame puts view cells one column and row in from the screen's.
+func bgOfViewCell(x, y int) tcell.Color {
+	_, style, _ := Screen.Get(x+1, y+1)
+	return style.GetBackground()
+}
+
+// Fork: an explicit selection highlights its lines, and the cursor's line is drawn with
+// the inactive selection background when it is not one of them.
+func TestSelectedLinesHighlightTheSetAndTheCursorSeparately(t *testing.T) {
+	WithSimulationScreen(t, 14, 6)
+
+	v := NewView("name", 0, 0, 11, 5, OutputNormal) // InnerWidth 10
+	v.Highlight = true
+	v.SelBgColor = ColorGreen
+	v.InactiveViewSelBgColor = ColorBlue
+	v.writeString("aaa\nbbb\nccc\n")
+
+	v.SetSelectedLines([]bool{true, false, true})
+	v.FocusPoint(0, 1, false)
+	v.draw(true)
+
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(0, 0), "a selected line")
+	assert.Equal(t, getTcellColor(ColorBlue, OutputNormal), bgOfViewCell(0, 1),
+		"the cursor's line, which is not selected, has the inactive background")
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(0, 2), "a selected line")
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(9, 2),
+		"the whole line is highlighted, past its text")
+}
+
+// Fork: a cursor on a selected line shows it as selected, not with the inactive background.
+func TestSelectedLinesCursorOnASelectedLine(t *testing.T) {
+	WithSimulationScreen(t, 14, 6)
+
+	v := NewView("name", 0, 0, 11, 5, OutputNormal) // InnerWidth 10
+	v.Highlight = true
+	v.SelBgColor = ColorGreen
+	v.InactiveViewSelBgColor = ColorBlue
+	v.writeString("aaa\nbbb\nccc\n")
+
+	v.SetSelectedLines([]bool{true, false, true})
+	v.FocusPoint(0, 0, false)
+	v.draw(true)
+
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(0, 0))
+	assert.Equal(t, tcell.ColorDefault, bgOfViewCell(0, 1), "an unselected line without the cursor is plain")
+}
+
+// Fork: an unfocused view shows its selected lines with the inactive background, as the
+// range select does.
+func TestSelectedLinesInAnUnfocusedView(t *testing.T) {
+	WithSimulationScreen(t, 14, 6)
+
+	v := NewView("name", 0, 0, 11, 5, OutputNormal) // InnerWidth 10
+	v.Highlight = true
+	v.SelBgColor = ColorGreen
+	v.InactiveViewSelBgColor = ColorBlue
+	v.writeString("aaa\nbbb\nccc\n")
+
+	v.SetSelectedLines([]bool{true, false, true})
+	v.FocusPoint(0, 1, false)
+	v.draw(false)
+
+	assert.Equal(t, getTcellColor(ColorBlue, OutputNormal), bgOfViewCell(0, 0))
+	assert.Equal(t, getTcellColor(ColorBlue, OutputNormal), bgOfViewCell(0, 1))
+	assert.Equal(t, getTcellColor(ColorBlue, OutputNormal), bgOfViewCell(0, 2))
+}
+
+// Fork: the selected lines take the selection's text color; the cursor's line does not.
+func TestSelectedLinesTextColor(t *testing.T) {
+	WithSimulationScreen(t, 14, 6)
+
+	v := NewView("name", 0, 0, 11, 5, OutputNormal) // InnerWidth 10
+	v.Highlight = true
+	v.SelBgColor = ColorGreen
+	v.InactiveViewSelBgColor = ColorBlue
+	v.SelTextColor = ColorRed
+	v.writeString("aaa\nbbb\nccc\n")
+
+	v.SetSelectedLines([]bool{true, false, false})
+	v.FocusPoint(0, 1, false)
+	v.draw(true)
+
+	_, style, _ := Screen.Get(1, 1)
+	assert.Equal(t, getTcellColor(ColorRed, OutputNormal), style.GetForeground(), "a selected line")
+	_, style, _ = Screen.Get(1, 2)
+	assert.Equal(t, tcell.ColorDefault, style.GetForeground(), "the cursor's line keeps its text color")
+}
+
+// Fork: clearing the selection restores the cursor and range highlight, and while the set
+// is set the range select's anchor is ignored.
+func TestSelectedLinesOverrideAndRangeSelect(t *testing.T) {
+	WithSimulationScreen(t, 14, 6)
+
+	v := NewView("name", 0, 0, 11, 5, OutputNormal) // InnerWidth 10
+	v.Highlight = true
+	v.SelBgColor = ColorGreen
+	v.InactiveViewSelBgColor = ColorBlue
+	v.writeString("aaa\nbbb\nccc\n")
+
+	v.FocusPoint(0, 2, false)
+	v.SetRangeSelectStart(0)
+	v.draw(true)
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(0, 0), "the range select")
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(0, 1), "the range select")
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(0, 2), "the range select")
+
+	v.SetSelectedLines([]bool{false, true, false})
+	v.draw(true)
+	assert.Equal(t, tcell.ColorDefault, bgOfViewCell(0, 0), "the anchor is ignored")
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(0, 1))
+	assert.Equal(t, getTcellColor(ColorBlue, OutputNormal), bgOfViewCell(0, 2), "the cursor's line")
+
+	v.SetSelectedLines(nil)
+	v.draw(true)
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(0, 0), "the range select is back")
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(0, 1))
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(0, 2))
+}
+
+// Fork: every view line of a wrapped selected line is highlighted.
+func TestSelectedLinesOfAWrappedLine(t *testing.T) {
+	WithSimulationScreen(t, 14, 8)
+
+	v := NewView("name", 0, 0, 11, 6, OutputNormal) // InnerWidth 10
+	v.Wrap = true
+	v.Highlight = true
+	v.SelBgColor = ColorGreen
+	v.InactiveViewSelBgColor = ColorBlue
+
+	// "a line that wraps" takes two view lines, so the content is drawn as four rows:
+	// "one", "a line th", "at wraps", "four".
+	v.writeString("one\na line that wraps\nfour\n")
+	assert.Equal(t, 4, v.ViewLinesHeight())
+
+	v.SetSelectedLines([]bool{false, true, false})
+	v.FocusPoint(0, 1, false)
+	v.draw(true)
+
+	assert.Equal(t, tcell.ColorDefault, bgOfViewCell(0, 0))
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(0, 1), "the wrapped line's first row")
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(0, 2), "the wrapped line's second row")
+	assert.Equal(t, tcell.ColorDefault, bgOfViewCell(0, 3))
+}
+
+// Fork: the inclusion gutter is covered by the selection on a selected line, as the
+// content is, and by the cursor's inactive background on the cursor's line.
+func TestSelectedLinesCoverTheInclusionGutter(t *testing.T) {
+	WithSimulationScreen(t, 14, 6)
+
+	v := NewView("name", 0, 0, 11, 5, OutputNormal) // InnerWidth 10
+	v.Highlight = true
+	v.SelBgColor = ColorGreen
+	v.InactiveViewSelBgColor = ColorBlue
+	v.InclusionGutterMarker = "✓"
+	v.writeString("aaa\nbbb\nccc\n")
+
+	v.SetInclusionGutter(true, []bool{true, false, false})
+	v.SetSelectedLines([]bool{true, false, true})
+	v.FocusPoint(0, 1, false)
+	v.draw(true)
+
+	chr, _, _ := Screen.Get(1, 1)
+	assert.Equal(t, "✓", chr, "the marker is drawn on its line")
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(0, 0), "the gutter of a selected line")
+	assert.Equal(t, getTcellColor(ColorBlue, OutputNormal), bgOfViewCell(0, 1), "the gutter of the cursor's line")
+	assert.Equal(t, getTcellColor(ColorGreen, OutputNormal), bgOfViewCell(0, 2), "the gutter of a selected line")
+}
+
 // A search match beside the inclusion gutter is highlighted where it is drawn.
 func TestSearchMatchBesideTheInclusionGutter(t *testing.T) {
 	WithSimulationScreen(t, 14, 6)

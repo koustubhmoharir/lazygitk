@@ -265,6 +265,10 @@ Commit scope filters (`w a`, `w d`, `w b`) are a third kind of filtering mode:
 
 ### Appearance
 
+- `pkg/gocui/view.go`: `setCharacter` takes the cell's content line, and an
+  explicit set of selected lines (`SetSelectedLines`,
+  `fork_selected_lines.go`) replaces the cursor and range highlight while set.
+  New upstream callers of `setCharacter` must pass the content line.
 - `pkg/gui/views.go` (replacement): upstream's border-style switch is removed;
   frame runes come from `updateFocusFrames` (`fork_focus_frame.go`), called
   from `configureViewProperties`, `ContextMgr.Activate` and initial layout.
