@@ -74,7 +74,6 @@ filters hide everything but part of the graph:
 
 ### Tasks
 
-- Shift+J/K: keymap exception and tests.
 - Multi-select model in the Commits list: set by hash, Shift runs, Space
   toggle, rendering of selection and cursor, Escape order, refresh retention.
 - Command scoping: set-aware commands use the set; the others are disabled
