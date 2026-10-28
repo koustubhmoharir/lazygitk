@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/gocui"
+	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/style"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
@@ -177,6 +178,12 @@ func (gui *Gui) getCopySelectedSideContextItemToClipboardDisabledReason() *types
 	if !ok {
 		// This should never happen but if it does we'll just ignore the keypress
 		return nil
+	}
+
+	// Fork: y i copies the cursor commit's hash, so it is disabled while Commits holds an
+	// explicit set (see controllers/fork_commit_multi_select.go).
+	if commits, ok := currentSideContext.(*context.LocalCommitsContext); ok && commits.HasCommitSet() {
+		return &types.DisabledReason{Text: gui.Tr.ClearCommitSelectionFirst}
 	}
 
 	startIdx, endIdx := listContext.GetList().GetSelectionRange()

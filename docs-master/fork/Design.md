@@ -39,6 +39,11 @@ recorded here or in the user guide.
 - **The selected object, not the checked-out one.** Push, fast-forward,
   rename, delete, placement and comparisons act on the selected ref or commit.
   Actions on the current branch say so in their label.
+- **A multi-selection is never narrowed silently.** While Commits holds an
+  explicit selection, a command either acts on the whole set or is disabled
+  with the reason "Clear the selection first (Escape)"; it never falls back to
+  the cursor commit. Only inspection (`v` and the main view) follows the
+  cursor, which the gutter marks.
 - **Never switch the checkout to simulate an operation.** Operations that
   would need another worktree (merging or rebasing into a branch that is not
   checked out) are not offered; the user checks out explicitly.

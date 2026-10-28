@@ -47,7 +47,8 @@ func (self *BisectController) GetKeybindings(opts types.KeybindingsOpts) []*type
 		},
 	}
 
-	return bindings
+	// Fork: disabled while Commits holds an explicit set (see fork_commit_multi_select.go).
+	return guardCommitSelectionBindings(self.c.Contexts().LocalCommits, self.c.Tr.ClearCommitSelectionFirst, bindings)
 }
 
 func (self *BisectController) openMenu(commit *models.Commit) error {

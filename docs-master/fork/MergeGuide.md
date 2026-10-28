@@ -200,6 +200,14 @@ re-apply it if upstream changes that code.
   `GetSelectedRefRangeForDiffFiles` and `RefForAdjustingLineNumberInDiff`
   use the cursor commit while a set exists. New upstream `ListCursor` entry
   points that cancel a range need an override there.
+- `controllers/local_commits_controller.go`, `basic_commits_controller.go` and
+  `bisect_controller.go`: `GetKeybindings` returns through
+  `guardCommitSelectionBindings`, which disables the commands in
+  `commitSelectionScoped` while Commits holds a set. Add new upstream Commits
+  commands that use the selected commit to that list. `handleCommitDragPress`
+  falls through while a set exists. `pkg/gui/global_handlers.go`
+  `getCopySelectedSideContextItemToClipboardDisabledReason` disables `y i`
+  then.
 - `controllers/quit_actions.go`: `Escape`, `EscapeEnabled` and
   `EscapeDescription` first try the Commits steps (filter, then selection;
   `forkCommitSelectionEscape`).

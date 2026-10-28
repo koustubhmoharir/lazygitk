@@ -706,6 +706,7 @@ var tests = []*components.IntegrationTest{
 	ui.FindBaseCommitForFixupScrollsIntoView,
 	ui.ForkCommandBindingOverrides,
 	ui.ForkCommitsMultiSelect,
+	ui.ForkCommitsMultiSelectCommands,
 	ui.ForkCopyCommitKeys,
 	ui.ForkCopyFileKeys,
 	ui.ForkCopyOsc52,

@@ -131,6 +131,11 @@ func (self *LocalCommitsController) GetMouseKeybindings(types.KeybindingsOpts) [
 
 func (self *LocalCommitsController) handleCommitDragPress(opts gocui.ViewMouseBindingOpts) error {
 	context := self.context()
+	// Fork: a drag moves the cursor commit or a range, never an explicit set (see
+	// fork_commit_multi_select.go), so a press with a set falls through to the list.
+	if context.HasCommitSet() {
+		return gocui.ErrKeybindingNotHandled
+	}
 	pressedIndex := context.ViewIndexToModelIndex(opts.Y)
 	startIndex, endIndex := context.GetSelectionRange()
 	selectedIndex, rangeStartIndex, rangeSelectMode := context.GetSelectionRangeAndMode()
@@ -710,8 +715,10 @@ func (self *LocalCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 	}
 
 	// Fork: the commit scope filters w a and w d (see fork_commit_scope_filters.go),
-	// and Space's selection toggle (see fork_commit_multi_select.go).
-	return self.addCommitMultiSelectBindings(self.addCommitScopeFilterBindings(bindings))
+	// Space's selection toggle, and the disabling of commands that cannot act on an
+	// explicit set (see fork_commit_multi_select.go).
+	return guardCommitSelectionBindings(self.context(), self.c.Tr.ClearCommitSelectionFirst,
+		self.addCommitMultiSelectBindings(self.addCommitScopeFilterBindings(bindings)))
 }
 
 func (self *LocalCommitsController) checkedOutBranchHasPR() *types.DisabledReason {

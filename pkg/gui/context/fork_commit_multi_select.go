@@ -34,6 +34,14 @@ type commitMultiSelect struct {
 	drawnCursor string
 }
 
+// AreMultipleItemsSelected overrides the cursor's answer, which knows only about a run.
+// It is true with an explicit set too, so that single-item checks (singleItemSelected,
+// the discard and custom patch paths) refuse a multi-selection rather than act on the
+// cursor commit. The set's commands are scoped in controllers/fork_commit_multi_select.go.
+func (self *LocalCommitsViewModel) AreMultipleItemsSelected() bool {
+	return self.HasCommitSet() || self.ListCursor.AreMultipleItemsSelected()
+}
+
 // MultiSelectActive reports whether the pane is in multi-select mode: a set is held, or
 // a run is in progress.
 func (self *LocalCommitsViewModel) MultiSelectActive() bool {

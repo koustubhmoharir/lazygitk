@@ -100,6 +100,7 @@ type TranslationSet struct {
 	FilterBranchAndUpstream               string
 	ToggleCommitSelection                 string
 	ClearCommitSelection                  string
+	ClearCommitSelectionFirst             string
 	CommitScopeNoBranch                   string
 	CommitScopeSelectBranch               string
 	ShowingBranchWithUpstream             string
@@ -1617,6 +1618,7 @@ func EnglishTranslationSet() *TranslationSet {
 		FilterBranchAndUpstream:               "Show branch and its upstream",
 		ToggleCommitSelection:                 "Toggle selection",
 		ClearCommitSelection:                  "Clear selection",
+		ClearCommitSelectionFirst:             "Clear the selection first (Escape)",
 		CommitScopeNoBranch:                   "No local branch points at this commit.",
 		CommitScopeSelectBranch:               "Select a local branch to show it with its upstream.",
 		ShowingBranchWithUpstream:             "Showing %s and %s",

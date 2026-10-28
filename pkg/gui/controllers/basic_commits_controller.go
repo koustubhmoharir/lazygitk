@@ -161,7 +161,8 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 	// Fork direct-diff actions are additive; the existing sticky comparison remains available.
 	// Fork: expose each captured reset mode as a separately discoverable action.
 	// Fork: the flat `y` copy menu's commit actions (see fork_commit_copy.go).
-	return self.addCherryMarkBindings(self.addSelectedCheckoutBindings(self.addSelectedResetBindings(append(self.historicalDiffBindings(opts), self.addCommitCopyBindings(bindings)...))))
+	// Fork: in Commits, commands that cannot act on an explicit set are disabled (see fork_commit_multi_select.go).
+	return guardCommitSelectionBindings(self.context, self.c.Tr.ClearCommitSelectionFirst, self.addCherryMarkBindings(self.addSelectedCheckoutBindings(self.addSelectedResetBindings(append(self.historicalDiffBindings(opts), self.addCommitCopyBindings(bindings)...)))))
 }
 
 func (self *BasicCommitsController) getCommitMessageBody(hash string) string {

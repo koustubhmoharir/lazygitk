@@ -302,6 +302,10 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - Shift with a movement key always selects: the commits the cursor passes
   while Shift is held join the selection when the cursor next moves without
   Shift.
+- While a selection exists, `c y`, `c x`, `c p`, `g c`, `w a` and `w d` act
+  on all the selected commits. Commands that need one commit or a range (for
+  example reword, drop, move, reset, copy, `w b`) are disabled until Escape
+  clears the selection; mouse drags do not move commits then.
 - The selection is kept by commit, so it survives refreshes and filters. The
   main view shows the cursor commit's diff, or the whole range while a Shift
   run is the only selection.
