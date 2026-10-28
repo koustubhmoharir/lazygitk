@@ -7,7 +7,7 @@ import (
 )
 
 func TestNormalizeCommandKey(t *testing.T) {
-	for _, letter := range "abcdefghijklmnopqrstuvwxyz" {
+	for _, letter := range "abcdefghilmnopqrstuvwxyz" {
 		lower := NewKeyRune(letter)
 		upper := NewKeyRune(letter - 'a' + 'A')
 		shiftUpper := NewKeyStrMod(string(letter-'a'+'A'), ModShift)
@@ -18,6 +18,23 @@ func TestNormalizeCommandKey(t *testing.T) {
 		assert.Equal(t, canonical, NormalizeCommandKey(shiftUpper))
 		assert.Equal(t, canonical, NormalizeCommandKey(shiftLower))
 		assert.Equal(t, canonical, NormalizeCommandKey(canonical))
+	}
+}
+
+func TestNormalizeCommandKeyKeepsShiftJAndShiftKDistinct(t *testing.T) {
+	for _, letter := range "jk" {
+		upper := string(letter - 'a' + 'A')
+		plain := NormalizeCommandKey(NewKeyRune(letter))
+		assert.Equal(t, NewKeyRune(letter), plain)
+
+		for _, key := range []Key{
+			NewKeyRune(letter - 'a' + 'A'),
+			NewKeyStrMod(upper, ModShift),
+			NewKeyStrMod(string(letter), ModShift),
+		} {
+			assert.Equal(t, NewKeyRune(letter-'a'+'A'), NormalizeCommandKey(key))
+			assert.NotEqual(t, plain, NormalizeCommandKey(key))
+		}
 	}
 }
 

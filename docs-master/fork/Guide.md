@@ -7,7 +7,8 @@ in the [design principles](Design.md). The generated per-pane reference is
 
 ## How keys work
 
-- **Letters are case-insensitive.** `p` and `P` are the same key. Punctuation
+- **Letters are case-insensitive.** `p` and `P` are the same key. The one
+  exception is Shift+J and Shift+K, which extend the selection. Punctuation
   is literal: `<` is not `,`.
 - **Key paths.** A path such as `d w` means: press `d`, which opens a small
   menu, then press `w` in it. The first key never changes anything. Escape
@@ -63,7 +64,7 @@ in the [design principles](Design.md). The generated per-pane reference is
 | PageUp, PageDown | Previous, next page |
 | Alt+Up, Alt+Down | Scroll the main view without moving the selection |
 | Alt+Left, Alt+Right | Scroll left, right |
-| Shift+Up, Shift+Down | Extend the selection |
+| Shift+Up, Shift+Down; Shift+K, Shift+J | Extend the selection |
 | `v`, Space | Inspect or drill down (Space toggles staging in Files instead) |
 
 Inspection opens a branch's or tag's commits, a commit's or stash entry's

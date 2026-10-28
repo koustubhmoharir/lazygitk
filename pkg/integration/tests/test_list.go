@@ -724,6 +724,7 @@ var tests = []*components.IntegrationTest{
 	ui.ForkPaletteUsagePersisted,
 	ui.ForkPrefixEdgeCases,
 	ui.ForkPrefixOverrides,
+	ui.ForkShiftJkRangeSelect,
 	ui.ForkShortKeysConflicts,
 	ui.ForkShortKeysEditing,
 	ui.ForkShortKeysSwitching,

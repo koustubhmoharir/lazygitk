@@ -256,9 +256,9 @@ func forkNavigationPaths(id string) [][]gocui.Key {
 	case "navigation.list.last", "navigation.diff.last", "navigation.command-log.last":
 		labels = "<end>"
 	case "selection.list.extend-up", "selection.diff.extend-up":
-		labels = "<shift+up>"
+		labels = "<shift+up> K"
 	case "selection.list.extend-down", "selection.diff.extend-down":
-		labels = "<shift+down>"
+		labels = "<shift+down> J"
 	case "navigation.panel.previous":
 		labels = "h"
 	case "navigation.panel.next":

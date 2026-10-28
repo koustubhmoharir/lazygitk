@@ -41,18 +41,19 @@ func TestBuildCommandTreeRetainsSameViewCandidateOrder(t *testing.T) {
 	assert.Equal(t, []*types.Binding{first, second}, childTree(t, root, key('x')).Bindings)
 }
 
-// j and k are not declared by defaults, so these children sort by label.
+// h and l are not declared by defaults, so these children sort by label. J and
+// K are not used because they do not fold to j and k.
 func TestBuildCommandTreeCaseFoldsAndSortsUndeclaredChildrenByLabel(t *testing.T) {
-	upper := &types.Binding{Keys: []gocui.Key{gocui.NewKeyRune('K')}}
-	lower := &types.Binding{Keys: []gocui.Key{key('k')}}
-	j := &types.Binding{Keys: []gocui.Key{key('j')}}
-	root := BuildCommandTree([]*types.Binding{upper, lower, j}, "files")
+	upper := &types.Binding{Keys: []gocui.Key{gocui.NewKeyRune('L')}}
+	lower := &types.Binding{Keys: []gocui.Key{key('l')}}
+	h := &types.Binding{Keys: []gocui.Key{key('h')}}
+	root := BuildCommandTree([]*types.Binding{upper, lower, h}, "files")
 
 	if len(root.Children) != 2 {
 		t.Fatalf("expected 2 root children, got %d", len(root.Children))
 	}
-	assert.Equal(t, "j", config.LabelForKey(root.Children[0].Key))
-	assert.Equal(t, "k", config.LabelForKey(root.Children[1].Key))
+	assert.Equal(t, "h", config.LabelForKey(root.Children[0].Key))
+	assert.Equal(t, "l", config.LabelForKey(root.Children[1].Key))
 	assert.Equal(t, []*types.Binding{upper, lower}, root.Children[1].Tree.Bindings)
 }
 

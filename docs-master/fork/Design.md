@@ -69,8 +69,10 @@ recorded here or in the user guide.
   path. Where a pane has nothing for that verb, the key does nothing: no
   fallback to another binding, no error toast.
 - **Letters are case-insensitive; punctuation is literal.** `p` and `P` are
-  the same key. Shifted punctuation is its own key, so `<` and `>` move
-  commits while `,` and `.` do nothing.
+  the same key. Shift+J and Shift+K are the one exception: they extend the
+  selection like Shift+Down and Shift+Up, since `j` and `k` move it.
+  Shifted punctuation is its own key, so `<` and `>` move commits while `,`
+  and `.` do nothing.
 - **No Ctrl for core actions.** The only Ctrl keys are editor controls inside
   modal text fields.
 - **Prefix groups.** The first key of a path opens a visible menu and never
