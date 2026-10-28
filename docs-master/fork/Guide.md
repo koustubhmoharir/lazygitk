@@ -387,6 +387,8 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   set explicitly wins. The focused pane has a heavy frame.
 - Diffs render through delta when it is on `PATH`, with Git's own diff one
   `t d n` away. Without delta, Git's diff is used and a notice says so once.
+- The popup on first run only says that lazygitk is a fork of lazygit, and
+  how to thank lazygit's author through the donate link.
 
 ### Configuration and installation
 

@@ -306,6 +306,11 @@ Commit scope filters (`w a`, `w d`, `w b`) are a third kind of filtering mode:
   `GuiDriver.TerminalTitle` and `TestDriver.ExpectTerminalTitle`.
 
 - `pkg/app/daemon/daemon.go`: registers `DaemonKindCombineRebase`.
+- `pkg/i18n/english.go` `englishIntroPopupMessage`: the first-run popup only
+  names the fork and keeps the note on donating to lazygit's author.
+  `pkg/i18n/i18n.go` `newTranslationSet` restores it after merging a
+  translation, whose text is upstream's. `misc/initial_open` checks the fork
+  text.
 - `AGENTS.md`: replaced by the fork's short version; expect a conflict on
   every merge and keep the fork's file, folding in relevant upstream technical
   constraints deliberately.

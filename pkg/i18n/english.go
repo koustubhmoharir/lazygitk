@@ -1508,18 +1508,14 @@ type Actions struct {
 	AddWorktree                      string
 }
 
+// Fork: the first-run popup only says that this is a fork, and keeps upstream's note on
+// thanking lazygit's author.
 const englishIntroPopupMessage = `
-Thanks for using lazygit! Seriously you rock. Three things to share with you:
+lazygitk is a fork of lazygit: https://github.com/jesseduffield/lazygit
 
- 1) If you want to learn about lazygit's features, watch this vid:
-      https://youtu.be/CPLdltN7wgE
-
- 2) Be sure to read the latest release notes at:
-      https://github.com/jesseduffield/lazygit/releases
-
- 3) If lazygit has made your life easier, you can say thanks by clicking the
-    donate button at the bottom right. Donation does not grant priority support,
-    but it is much appreciated.
+If lazygit has made your life easier, you can say thanks to its author by
+clicking the donate button at the bottom right. Donation does not grant
+priority support, but it is much appreciated.
 
 Press {{confirmationKey}} to get started.
 `

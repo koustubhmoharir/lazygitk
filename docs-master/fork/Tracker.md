@@ -1,9 +1,6 @@
 # Current work
 
-## 25. Quieter first-run banner
-
-The first-run popup only says that lazygitk is a fork of the upstream
-repository. The notice about contributing to the original author stays.
+No work is in progress.
 
 ## How this tracker works
 

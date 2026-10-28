@@ -16,7 +16,8 @@ var InitialOpen = NewIntegrationTest(NewIntegrationTestArgs{
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
 		t.ExpectPopup().Confirmation().
 			Title(Equals("")).
-			Content(Contains("Thanks for using lazygit!")).
+			// Fork: the popup names the fork and keeps the note on thanking lazygit's author.
+			Content(Contains("lazygitk is a fork of lazygit").Contains("donate button")).
 			Confirm()
 
 		t.Views().Files().IsFocused()
