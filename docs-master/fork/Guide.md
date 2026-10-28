@@ -326,6 +326,12 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - `s n` opens a repository by path. The prompt starts at the current
   repository's parent directory, lists matching subdirectories as you type,
   and Tab completes their common prefix. `~` and relative paths work.
+- The terminal title shows the top-level folder of the repository or worktree
+  you are looking at (a submodule's own folder inside it), with your home
+  folder as `~`. It changes with every repository switch, and your terminal's
+  previous title comes back when lazygitk exits, where the terminal supports
+  saving titles. In tmux it becomes the pane title; `set-titles on` passes it
+  to the outer terminal.
 
 ### Appearance
 

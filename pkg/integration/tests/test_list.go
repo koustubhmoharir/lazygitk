@@ -725,6 +725,7 @@ var tests = []*components.IntegrationTest{
 	ui.ForkShortKeysConflicts,
 	ui.ForkShortKeysEditing,
 	ui.ForkShortKeysSwitching,
+	ui.ForkTerminalTitle,
 	ui.HideSidePanel,
 	ui.KeybindingSuggestionsDontCrashOnDisabledBindings,
 	ui.KeybindingSuggestionsWhenSwitchingRepos,

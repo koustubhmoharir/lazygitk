@@ -224,6 +224,18 @@ func (self *TestDriver) ExpectClipboard(matcher *TextMatcher) *TestDriver {
 	return self
 }
 
+// Fork: asserts the window title that lazygitk set on the simulated terminal
+// (roadmap item 23).
+func (self *TestDriver) ExpectTerminalTitle(matcher *TextMatcher) *TestDriver {
+	self.matchString(matcher, "Unexpected terminal title",
+		func() string {
+			return self.gui.TerminalTitle()
+		},
+	)
+
+	return self
+}
+
 func (self *TestDriver) ExpectSearch() *SearchDriver {
 	self.inSearch()
 

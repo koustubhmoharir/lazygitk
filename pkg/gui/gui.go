@@ -409,6 +409,9 @@ func (gui *Gui) onNewRepo(startArgs appTypes.StartArgs, contextKey types.Context
 	// item 13). Toasts need the helpers, so this runs after they are reset.
 	gui.showForkIgnoredKeyConfigNotices()
 
+	// Fork: the terminal title names the repository being viewed.
+	gui.updateForkTerminalTitle()
+
 	gui.g.SetFocusHandler(func(Focused bool) error {
 		if Focused {
 			gui.git.Config.DropConfigCache()

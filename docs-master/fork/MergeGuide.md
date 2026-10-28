@@ -236,6 +236,14 @@ restored.
 
 ### Other
 
+- `pkg/gui/gui.go` `onNewRepo`: calls `updateForkTerminalTitle`
+  (`fork_terminal_title.go`) after the key-config notices, so startup and
+  every repository switch set the terminal title. tcell saves and restores the
+  terminal's title itself; keep that behaviour in mind when upstream changes
+  screen setup. The harness reads the title through
+  `gocui.MockTerminalTitle` (`pkg/gocui/fork_mock_title.go`),
+  `GuiDriver.TerminalTitle` and `TestDriver.ExpectTerminalTitle`.
+
 - `pkg/app/daemon/daemon.go`: registers `DaemonKindCombineRebase`.
 - `AGENTS.md`: replaced by the fork's short version; expect a conflict on
   every merge and keep the fork's file, folding in relevant upstream technical

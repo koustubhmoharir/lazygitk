@@ -1,28 +1,7 @@
 # Current work
 
-## Terminal title names the repository being viewed
-
-lazygitk never sets the terminal title, so it keeps whatever the shell set at
-launch, usually the launch directory. Agreed behaviour:
-
-- The title is the top-level directory of the repository or worktree being
-  viewed, even when lazygitk was launched from a subdirectory; inside a
-  submodule it is the submodule's directory. The home directory is shown as
-  `~`.
-- It is set at startup and on every repository change: `s r`, `s n`,
-  entering or leaving a submodule, and `s w` worktree switches.
-- The terminal's title stack is saved at startup and restored on exit, so
-  the shell's own title returns where the terminal supports it. Elsewhere
-  the last repository path stays until the shell sets a title.
-
-Acceptance: the title is the repository path at startup and after each kind
-of repository change; it uses `~` for the home directory; exiting restores the
-saved title.
-
-Tasks:
-
-- Design the title writer and its seams (tcell `SetTitle`, title stack save
-  and restore, the repository-change hook), and present it before coding.
+There is no current work. New work starts by writing its section here and
+reviewing it with the user.
 
 ## How this tracker works
 

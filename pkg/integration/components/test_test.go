@@ -39,6 +39,10 @@ func (self *fakeGuiDriver) ClipboardText() string {
 	return ""
 }
 
+func (self *fakeGuiDriver) TerminalTitle() string {
+	return ""
+}
+
 func (self *fakeGuiDriver) PressKey(key string) {
 	self.pressedKeys = append(self.pressedKeys, key)
 }

@@ -296,3 +296,8 @@ func (self *GuiDriver) Headless() bool {
 func (self *GuiDriver) ClipboardText() string {
 	return gocui.MockClipboardText()
 }
+
+// Fork: reads the simulated terminal window title for terminal title scenarios (roadmap item 23).
+func (self *GuiDriver) TerminalTitle() string {
+	return gocui.MockTerminalTitle()
+}

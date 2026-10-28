@@ -85,4 +85,7 @@ type GuiDriver interface {
 	// Fork: the text that the last OSC 52 copy wrote to the simulated terminal
 	// clipboard, or "" outside the simulation (roadmap item 21).
 	ClipboardText() string
+	// Fork: the window title that lazygitk last set on the simulated terminal,
+	// or "" outside the simulation (roadmap item 23).
+	TerminalTitle() string
 }
