@@ -171,6 +171,11 @@ func (gui *Gui) createAllViews() error {
 	// built. A plus would collide with a diff's own plus column.
 	gui.Views.Main.InclusionGutterMarker = "✓"
 	gui.Views.Main.InclusionGutterMarkerColor = gocui.ColorGreen
+
+	// Fork: in multi-select mode, Commits marks its cursor line with an arrow (see
+	// fork_commit_multi_select.go in context); the selected commits are highlighted.
+	gui.Views.Commits.InclusionGutterMarker = "▶"
+	gui.Views.Commits.InclusionGutterMarkerColor = gocui.ColorGreen
 	gui.Views.Secondary.InclusionGutterMarker = "✓"
 	gui.Views.Secondary.InclusionGutterMarkerColor = gocui.ColorGreen
 

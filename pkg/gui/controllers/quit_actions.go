@@ -49,6 +49,11 @@ func (self *QuitActions) confirmQuitDuringUpdate() error {
 func (self *QuitActions) Escape() error {
 	// If you make changes to this function, be sure to update EscapeEnabled and EscapeDescription accordingly.
 
+	// Fork: in Commits, Escape first clears the filter and then the multi-select set (see fork_commit_multi_select.go).
+	if handled, err := self.forkCommitSelectionEscape(); handled {
+		return err
+	}
+
 	currentContext := self.c.Context().Current()
 
 	if listContext, ok := currentContext.(types.IListContext); ok {
@@ -92,6 +97,11 @@ func (self *QuitActions) Escape() error {
 }
 
 func (self *QuitActions) EscapeEnabled() bool {
+	// Fork: the Commits steps of Escape; see forkCommitSelectionEscape.
+	if self.forkCommitSelectionEscapeEnabled() {
+		return true
+	}
+
 	currentContext := self.c.Context().Current()
 
 	if listContext, ok := currentContext.(types.IListContext); ok {
@@ -130,6 +140,11 @@ func (self *QuitActions) EscapeEnabled() bool {
 }
 
 func (self *QuitActions) EscapeDescription() string {
+	// Fork: the Commits steps of Escape; see forkCommitSelectionEscape.
+	if description, ok := self.forkCommitSelectionEscapeDescription(); ok {
+		return description
+	}
+
 	currentContext := self.c.Context().Current()
 
 	if listContext, ok := currentContext.(types.IListContext); ok {

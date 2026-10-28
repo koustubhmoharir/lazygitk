@@ -165,6 +165,10 @@ func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string) erro
 			} else if binding.ViewName == "files" {
 				// 0 belongs to Files' focus-only navigation.focus-main route.
 				paths = [][]gocui.Key{{gocui.NewKeyRune('v')}}
+			} else if binding.ViewName == "commits" {
+				// Fork: Space toggles the commit selection in Commits (selection.commit.toggle);
+				// v still inspects there.
+				paths = forkWithoutSpaceKey(paths)
 			}
 		}
 		if strings.HasPrefix(binding.CommandID, "navigation.focus-panel.") {
@@ -211,6 +215,18 @@ func forkWithoutInspectionKeys(paths [][]gocui.Key) [][]gocui.Key {
 	var kept [][]gocui.Key
 	for _, path := range paths {
 		if len(path) == 1 && (path[0] == gocui.NewKeyRune('v') || path[0] == gocui.NewKeyRune(' ')) {
+			continue
+		}
+		kept = append(kept, path)
+	}
+	return kept
+}
+
+// forkWithoutSpaceKey drops the Space route from a pane's inspection route, keeping its v.
+func forkWithoutSpaceKey(paths [][]gocui.Key) [][]gocui.Key {
+	var kept [][]gocui.Key
+	for _, path := range paths {
+		if len(path) == 1 && path[0] == gocui.NewKeyRune(' ') {
 			continue
 		}
 		kept = append(kept, path)

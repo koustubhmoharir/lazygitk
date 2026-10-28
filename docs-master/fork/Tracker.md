@@ -74,14 +74,9 @@ filters hide everything but part of the graph:
 
 ### Tasks
 
-- Multi-select model in the Commits list: set by hash, Shift runs, Space
-  toggle, rendering of selection and cursor, Escape order, refresh retention.
 - Command scoping: set-aware commands use the set; the others are disabled
   with the reason.
-- `w a`/`w d` keep the multi-selection once it exists (today a Shift range
-  collapses to the cursor commit when a filter is applied).
-- Integration scenarios for each of the above.
-- Guide, Design and MergeGuide updates.
+- Integration scenario and Guide/MergeGuide updates for command scoping.
 
 ## 25. Quieter first-run banner (next, after item 24)
 

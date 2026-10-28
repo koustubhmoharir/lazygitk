@@ -194,6 +194,10 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("selection.diff.toggle-hunk", "t h s")
 	add("selection.diff.toggle-range selection.list.toggle-range", "t h r")
 
+	// Fork: in Commits Space toggles the commit selection instead of inspecting
+	// (item 24); the projection drops Space from the Commits inspection route.
+	add("selection.commit.toggle", "space")
+
 	// Space outside Files shares the inspection route; the main controller
 	// projects the contextual route to the appropriate command.
 	for _, id := range []string{"file.enter", "remote.view-branches", "navigation.open-commits", "navigation.open-diff-files", "navigation.open-history-file-diff", "navigation.focus-diff", "submodule.enter"} {

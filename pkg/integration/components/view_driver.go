@@ -311,6 +311,37 @@ func (self *ViewDriver) SelectedLines(matchers ...*TextMatcher) *ViewDriver {
 	return self
 }
 
+// ExplicitSelection asserts on the lines of the explicit selection of the view: the set
+// that multi-select mode highlights, which SelectedLines cannot see because it is not a
+// range. Without matchers it asserts that there is no explicit selection.
+func (self *ViewDriver) ExplicitSelection(matchers ...*TextMatcher) *ViewDriver {
+	self.t.assertWithRetries(func() (bool, string) {
+		view := self.getView()
+		set := view.SelectedLineSet()
+		var selected []string
+		for i, line := range view.BufferLines() {
+			if i < len(set) && set[i] {
+				selected = append(selected, line)
+			}
+		}
+
+		expectedContent := expectedContentFromMatchers(matchers)
+		selectedContent := strings.Join(selected, "\n")
+		if len(selected) != len(matchers) {
+			return false, fmt.Sprintf("%s: Expected the following to be in the explicit selection:\n-----\n%s\n-----\nBut got:\n-----\n%s\n-----", self.context, expectedContent, selectedContent)
+		}
+		for i, line := range selected {
+			ok, message := matchers[i].test(line)
+			if !ok {
+				return false, fmt.Sprintf("%s: Error: %s. Expected the following to be in the explicit selection:\n-----\n%s\n-----\nBut got:\n-----\n%s\n-----", self.context, message, expectedContent, selectedContent)
+			}
+		}
+		return true, ""
+	})
+
+	return self
+}
+
 // SelectedViewLineRange asserts which view lines the selection covers. View lines
 // count the wrapped segments a line is drawn as, so this can say whether a selection
 // covers a wrapped line to its end; SelectedLines, which reports the lines of the

@@ -345,6 +345,9 @@ type LocalCommitsViewModel struct {
 
 	// If this is true we'll use git log --all when fetching the commits.
 	showWholeGitGraph bool
+
+	// Fork: the explicit set and run of multi-select mode (see fork_commit_multi_select.go).
+	multiSelect commitMultiSelect
 }
 
 func NewLocalCommitsViewModel(getModel func() []*models.Commit, c *ContextCommon) *LocalCommitsViewModel {
@@ -370,6 +373,10 @@ func (self *LocalCommitsContext) GetSelectedRef() models.Ref {
 }
 
 func (self *LocalCommitsContext) GetSelectedRefRangeForDiffFiles() *types.RefRange {
+	// Fork: with an explicit set the diff is the cursor commit's; a lone run keeps the range diff.
+	if self.HasCommitSet() {
+		return nil
+	}
 	commits, startIdx, endIdx := self.GetSelectedItems()
 	if commits == nil || startIdx == endIdx {
 		return nil
@@ -412,6 +419,10 @@ func (self *LocalCommitsContext) GetDiffTerminals() []string {
 }
 
 func (self *LocalCommitsContext) RefForAdjustingLineNumberInDiff() string {
+	// Fork: with an explicit set the diff is the cursor commit's; see GetSelectedRefRangeForDiffFiles.
+	if self.HasCommitSet() {
+		return self.GetSelectedCommitHash()
+	}
 	commits, _, _ := self.GetSelectedItems()
 	if commits == nil {
 		return ""

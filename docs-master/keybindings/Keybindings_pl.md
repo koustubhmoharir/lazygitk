@@ -88,6 +88,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` w a `` | Show selected commits and their ancestors |  |
 | `` w d `` | Show selected commits and their descendants |  |
 | `` w b `` | Show branch and its upstream |  |
+| `` <space> `` | Toggle selection |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |
@@ -115,7 +116,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Wyświetl pliki |  |
+| `` v `` | Wyświetl pliki |  |
 | `` / `` | Szukaj w bieżącym widoku po tekście |  |
 
 ## Dodatkowy

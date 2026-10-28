@@ -62,7 +62,7 @@ var ForkDefaultKeymap = NewIntegrationTest(NewIntegrationTestArgs{
 			Press(config.Keybinding{"<shift+f3>"}).SelectedLine(Contains("match second")).
 			Press(config.Keybinding{"N"})
 		t.ExpectPopup().Menu().Title(Equals("n")).Cancel()
-		commits.IsFocused().PressEscape().NavigateToLine(Contains("keyboard new commit done")).Press(config.Keybinding{"<space>"})
+		commits.IsFocused().PressEscape().NavigateToLine(Contains("keyboard new commit done")).Press(config.Keybinding{"v"})
 		t.Views().CommitFiles().IsFocused().PressEnter().IsFocused()
 		t.Views().CommitMessage().IsInvisible()
 		t.Views().CommitFiles().PressEscape()

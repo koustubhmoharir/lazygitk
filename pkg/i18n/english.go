@@ -98,6 +98,8 @@ type TranslationSet struct {
 	ShowingCommitDescendantsOne           string
 	ShowingCommitDescendantsMany          string
 	FilterBranchAndUpstream               string
+	ToggleCommitSelection                 string
+	ClearCommitSelection                  string
 	CommitScopeNoBranch                   string
 	CommitScopeSelectBranch               string
 	ShowingBranchWithUpstream             string
@@ -1613,6 +1615,8 @@ func EnglishTranslationSet() *TranslationSet {
 		ShowingCommitDescendantsOne:           "Showing descendants of %d selected commit",
 		ShowingCommitDescendantsMany:          "Showing descendants of %d selected commits",
 		FilterBranchAndUpstream:               "Show branch and its upstream",
+		ToggleCommitSelection:                 "Toggle selection",
+		ClearCommitSelection:                  "Clear selection",
 		CommitScopeNoBranch:                   "No local branch points at this commit.",
 		CommitScopeSelectBranch:               "Select a local branch to show it with its upstream.",
 		ShowingBranchWithUpstream:             "Showing %s and %s",

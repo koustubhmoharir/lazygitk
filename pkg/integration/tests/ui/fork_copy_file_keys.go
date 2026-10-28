@@ -92,7 +92,7 @@ var ForkCopyFileKeys = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("second").IsSelected(),
 				Contains("first"),
 			).
-			Press(config.Keybinding{"<space>"})
+			Press(config.Keybinding{"v"})
 
 		commitFiles := t.Views().CommitFiles().
 			IsFocused().

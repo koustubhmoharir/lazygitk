@@ -134,7 +134,7 @@ exit 0
 		t.Views().Commits().IsFocused()
 		assertToolInputs("before\n", "historical\n")
 
-		t.Views().Commits().Press(config.Keybinding{"<space>"})
+		t.Views().Commits().Press(config.Keybinding{"v"})
 		t.Views().CommitFiles().
 			IsFocused().
 			NavigateToLine(Contains("sample.txt"))

@@ -709,8 +709,9 @@ func (self *LocalCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 		},
 	}
 
-	// Fork: the commit scope filters w a and w d (see fork_commit_scope_filters.go).
-	return self.addCommitScopeFilterBindings(bindings)
+	// Fork: the commit scope filters w a and w d (see fork_commit_scope_filters.go),
+	// and Space's selection toggle (see fork_commit_multi_select.go).
+	return self.addCommitMultiSelectBindings(self.addCommitScopeFilterBindings(bindings))
 }
 
 func (self *LocalCommitsController) checkedOutBranchHasPR() *types.DisabledReason {

@@ -192,7 +192,17 @@ re-apply it if upstream changes that code.
 - `controllers/local_commits_controller.go` (replacement): paste is the
   reviewed cherry-pick; fixup and amend creation preflight their placement;
   `GetKeybindings` appends the commit scope filters
-  (`fork_commit_scope_filters.go`).
+  (`fork_commit_scope_filters.go`) and Space's selection toggle
+  (`fork_commit_multi_select.go`).
+- `context/local_commits_context.go`: `LocalCommitsViewModel` holds the
+  multi-select set; `fork_commit_multi_select.go` in context overrides the
+  cursor methods that end a range, `GetSelectedItems`, focus and render.
+  `GetSelectedRefRangeForDiffFiles` and `RefForAdjustingLineNumberInDiff`
+  use the cursor commit while a set exists. New upstream `ListCursor` entry
+  points that cancel a range need an override there.
+- `controllers/quit_actions.go`: `Escape`, `EscapeEnabled` and
+  `EscapeDescription` first try the Commits steps (filter, then selection;
+  `forkCommitSelectionEscape`).
 - `controllers/branches_controller.go`: `GetKeybindings` adds `w b`
   (`fork_branch_scope_filter.go`).
 - `controllers/commits_files_controller.go`: tree navigation, flat copy and
@@ -273,6 +283,7 @@ Commit scope filters (`w a`, `w d`, `w b`) are a third kind of filtering mode:
   frame runes come from `updateFocusFrames` (`fork_focus_frame.go`), called
   from `configureViewProperties`, `ContextMgr.Activate` and initial layout.
   Port new upstream border styles into `focusFrameStyle`.
+  It also sets the Commits cursor marker (`▶`) for multi-select mode.
 - `pkg/gui/layout.go`: focus frames, and the startup notices for an
   unreadable usage file, ignored key settings and missing delta.
 
@@ -332,6 +343,8 @@ the same way:
   (`ReviewBranchRebase` and similar helpers in
   `pkg/integration/components/common.go`).
 - Per-repo config scenarios write `lazygitk.yml`.
+- Scenarios that press Space in Commits to open a commit's files press `v`
+  instead; Space toggles the selection there.
 - `TestBackgroundDefaultsAreDerivedFromTheBackgroundColor` calls
   `themeDefaults` directly; `TestCurrentDiffRendererNameWithoutDiffRenderers`
   expects `default`.
@@ -339,6 +352,6 @@ the same way:
   delta, disables fetch/file/ref polling, and selects the static palette
   order.
 
-Integration components gained `ExpectClipboard`, `Views().Extras()`, a
+Integration components gained `ExpectClipboard`, `ExplicitSelection`, `Views().Extras()`, a
 menu `Content` matcher and `ReviewBranch*` helpers. Drivers need `Title()` and
 `Content()` on a confirmation and `Title()` on a menu before confirming.

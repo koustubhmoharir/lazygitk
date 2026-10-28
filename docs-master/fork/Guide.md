@@ -65,7 +65,7 @@ in the [design principles](Design.md). The generated per-pane reference is
 | Alt+Up, Alt+Down | Scroll the main view without moving the selection |
 | Alt+Left, Alt+Right | Scroll left, right |
 | Shift+Up, Shift+Down; Shift+K, Shift+J | Extend the selection |
-| `v`, Space | Inspect or drill down (Space toggles staging in Files instead) |
+| `v`, Space | Inspect or drill down (Space toggles staging in Files and the selection in Commits instead) |
 
 Inspection opens a branch's or tag's commits, a commit's or stash entry's
 files, a file's diff, a remote's branches, a worktree's commits (without
@@ -133,7 +133,7 @@ of a stash entry:
 
 | Keys | Action |
 | --- | --- |
-| `v`, Space | Show the commit's files |
+| `v` (and Space outside Commits) | Show the commit's files |
 | `d w`, `d p`, `d c` | Difftool against the working tree, the previous commit, or a pasted commit hash |
 | `s c` | Check out the commit on a branch: a name prompt that lists the branches already at the commit first; a new name is created there, and a name that points elsewhere is moved here after a warning |
 | `s d` | Check out the commit as a detached HEAD |
@@ -151,6 +151,8 @@ Commits only:
 
 | Keys | Action |
 | --- | --- |
+| Space | Add the commit to the selection, or remove it; on a Shift run, toggle the whole run |
+| Escape | Cancel a lone Shift run; otherwise remove the log filter, then clear the selection, then the cherry-pick marks |
 | F2, `g e r` | Reword; reword in the editor |
 | `e` | Edit: start an interactive rebase here, or mark for editing during one |
 | Delete | Drop |
@@ -290,6 +292,19 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - While the log is filtered, commands that rewrite history offer to leave the
   filter first, as upstream's path filter does. Unlike the path filter, these
   filters do not change the screen mode.
+
+### Selecting commits
+
+- In Commits, Space toggles the commit under the cursor in the selection, so
+  commits that are not next to each other can be selected together. While a
+  selection exists, the cursor moves without changing it and is marked with
+  `▶` in the gutter; the selected commits are highlighted.
+- Shift with a movement key always selects: the commits the cursor passes
+  while Shift is held join the selection when the cursor next moves without
+  Shift.
+- The selection is kept by commit, so it survives refreshes and filters. The
+  main view shows the cursor commit's diff, or the whole range while a Shift
+  run is the only selection.
 
 ### Rebase, merge, reset
 
