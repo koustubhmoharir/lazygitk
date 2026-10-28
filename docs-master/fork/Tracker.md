@@ -2,7 +2,7 @@
 
 ## 24. Multi-select and selection filters in Commits
 
-Status: design agreed; implementation not started.
+Status: in progress.
 
 ### Agreed behaviour
 
@@ -80,7 +80,7 @@ filters hide everything but part of the graph:
   with the reason.
 - Commit loader: ancestor, descendant and branch filters; filter mode and
   status; Branches entry.
-- `w` prefix group: `w a`, `w d`, `w b`, and `w s`/`w o` moved from `t f`.
+- `w` prefix group: `w a`, `w d`, `w b`.
 - Integration scenarios for each of the above.
 - Guide, Design and MergeGuide updates.
 
