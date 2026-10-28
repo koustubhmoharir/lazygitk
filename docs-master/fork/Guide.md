@@ -13,7 +13,9 @@ in the [design principles](Design.md). The generated per-pane reference is
   menu, then press `w` in it. The first key never changes anything. Escape
   steps back one menu level; Escape at the top closes it.
 - **One meaning everywhere.** A key does the same thing in every pane, on
-  whatever is selected there. Where it has nothing to act on, it does nothing.
+  whatever is selected there. Where it has nothing to act on, it does nothing:
+  a menu leaves out entries that do not apply to the focused pane, and a first
+  key with nothing applicable opens no menu.
 - **`?` lists every command** for the focused pane with its full key path,
   including commands that have no key. Running a command from `?` raises it in
   the list; using its shortcut lowers it, so the commands you have not yet

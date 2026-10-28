@@ -71,7 +71,7 @@ var ForkTerminalTitle = NewIntegrationTest(NewIntegrationTestArgs{
 
 		// 4. s n opens the other repository by path. The prompt is prefilled with
 		// the parent of the launch directory, which holds the sibling repositories.
-		t.Views().Commits().Focus().Press(config.Keybinding{"s"})
+		t.Views().Status().Focus().Press(config.Keybinding{"s"})
 		t.ExpectPopup().Menu().Title(Equals("s"))
 		t.Views().Menu().Press(config.Keybinding{"n"})
 		t.ExpectPopup().Prompt().Title(Equals("Repository path")).Type("other")

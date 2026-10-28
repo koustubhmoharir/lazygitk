@@ -36,7 +36,7 @@ var ForkOpenRepoByPath = NewIntegrationTest(NewIntegrationTestArgs{
 		prefilled := parent + string(filepath.Separator)
 
 		openPathPrompt := func() {
-			t.Views().Commits().Focus().Press(config.Keybinding{"s"})
+			t.Views().Status().Focus().Press(config.Keybinding{"s"})
 			t.ExpectPopup().Menu().Title(Equals("s"))
 			t.Views().Menu().Press(config.Keybinding{"n"})
 		}
@@ -60,8 +60,8 @@ var ForkOpenRepoByPath = NewIntegrationTest(NewIntegrationTestArgs{
 		t.ExpectPopup().Prompt().Title(Equals("Repository path")).Confirm()
 		t.Views().Status().Content(Contains("other → master"))
 
-		// s r now lists the repository we left.
-		t.Views().Commits().Focus().Press(config.Keybinding{"s"})
+		// s r now lists the repository we left. s r is Status-only too.
+		t.Views().Status().Focus().Press(config.Keybinding{"s"})
 		t.ExpectPopup().Menu().Title(Equals("s"))
 		t.Views().Menu().Press(config.Keybinding{"r"})
 		t.ExpectPopup().Menu().Title(Equals("Recent repositories")).

@@ -421,3 +421,20 @@ func TestForkPrefixHidesContinuationsWithOnlyInapplicableActions(t *testing.T) {
 		assert.Equal(t, []gocui.Key{gocui.NewKeyRune('r')}, h.menus[0].Items[0].Keys)
 	}
 }
+
+func TestForkPrefixWithNoApplicableActionOpensNoMenu(t *testing.T) {
+	h := &forkPrefixMenuHarness{valid: true}
+	flow := h.flow()
+	inapplicable := &types.Binding{
+		CommandID: "inapplicable", DefaultCommand: true,
+		GetDisabledReason: func() *types.DisabledReason { return &types.DisabledReason{Text: "not here", Inapplicable: true} },
+	}
+	tree := &keymap.CommandTree{Children: []keymap.CommandEdge{
+		{Key: gocui.NewKeyRune('p'), Tree: &keymap.CommandTree{Bindings: []*types.Binding{inapplicable}}},
+	}}
+	if err := flow.run(tree, []gocui.Key{gocui.NewKeyRune('c')}, nil); err != nil {
+		t.Fatal(err)
+	}
+	assert.Empty(t, h.menus)
+	assert.Empty(t, h.invoked)
+}

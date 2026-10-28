@@ -6,7 +6,7 @@ import (
 )
 
 var ForkDefaultBranchPlacementCheckout = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "Real default n b branch placement and s c selected checkout across commits, branches and remote branches",
+	Description: "Real default n b branch placement, s c selected checkout for branches and commits, and s d detached checkout of a tag",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -111,25 +111,20 @@ var ForkDefaultBranchPlacementCheckout = NewIntegrationTest(NewIntegrationTestAr
 		commits.IsFocused()
 		assertCurrent("master", threeOID)
 
-		// 6. Selected branch checkout attaches to the existing branch from-branch.
+		// 6. Selected branch s c switches to the existing branch from-branch with
+		// no menu.
 		branches.Focus().NavigateToLine(Contains("from-branch")).Press(config.Keybinding{"s"})
 		t.ExpectPopup().Menu().Title(Equals("s"))
 		t.Views().Menu().Press(config.Keybinding{"c"})
-		t.ExpectPopup().Menu().
-			Title(Equals("Checkout branch or commit")).
-			Select(Contains("Checkout branch 'from-branch'")).
-			Confirm()
+		t.Views().Menu().IsInvisible()
 		branches.IsFocused()
 		assertCurrent("from-branch", twoOID)
 
-		// 7. Selected commit checkout creates and checks out a new named branch.
+		// 7. Selected commit s c opens the named-checkout prompt for that commit and
+		// creates the new branch there.
 		commits.Focus().NavigateToLine(Contains("one")).Press(config.Keybinding{"s"})
 		t.ExpectPopup().Menu().Title(Equals("s"))
 		t.Views().Menu().Press(config.Keybinding{"c"})
-		t.ExpectPopup().Menu().
-			Title(Equals("Checkout branch or commit")).
-			Select(Contains("Checkout as branch")).
-			Confirm()
 		t.ExpectPopup().Prompt().
 			Title(Equals("Local branch name for checkout at " + oneOID[:8])).
 			Type("co-new").
@@ -137,16 +132,11 @@ var ForkDefaultBranchPlacementCheckout = NewIntegrationTest(NewIntegrationTestAr
 		branches.IsFocused().SelectedLine(Contains("co-new"))
 		assertCurrent("co-new", oneOID)
 
-		// 8. Selected tag checkout offers only detached checkout, not an attach item.
+		// 8. Selected tag s d detaches HEAD at the tag's commit, with no menu.
 		tags := t.Views().Tags()
 		tags.Focus().NavigateToLine(Contains("v1")).Press(config.Keybinding{"s"})
 		t.ExpectPopup().Menu().Title(Equals("s"))
-		t.Views().Menu().Press(config.Keybinding{"c"})
-		t.Views().Menu().Content(DoesNotContain("Checkout branch '"))
-		t.ExpectPopup().Menu().
-			Title(Equals("Checkout branch or commit")).
-			Select(Contains("as detached head")).
-			Confirm()
+		t.Views().Menu().Press(config.Keybinding{"d"})
 		t.Views().Menu().IsInvisible()
 		tags.IsFocused()
 		if got := t.Git().GetCommitHash("HEAD"); got != twoOID {

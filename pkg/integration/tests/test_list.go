@@ -50,6 +50,8 @@ var tests = []*components.IntegrationTest{
 	branch.DeleteRemoteBranchWithDifferentName,
 	branch.DeleteWhileFiltering,
 	branch.DetachedHead,
+	branch.ForkFlatCheckout,
+	branch.ForkFlatCheckoutMenus,
 	branch.MergeFastForward,
 	branch.MergeNonFastForward,
 	branch.MoveCommitsToNewBranchFromBaseBranch,

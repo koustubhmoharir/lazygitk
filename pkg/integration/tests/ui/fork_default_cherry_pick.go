@@ -33,12 +33,9 @@ var ForkDefaultCherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 	Run: func(t *TestDriver, _ config.KeybindingConfig) {
 		masterHead := t.Git().GetCommitHash("master")
 
-		// 0. No marks and no selection: Files c p must leave no popup and no change.
-		// The c menu is opened from Files; with nothing to paste, p must be
-		// inapplicable and close without a review.
+		// 0. No marks and no selection: in Files nothing under c applies, so c
+		// opens no menu and leaves no popup and no change.
 		t.Views().Files().Focus().Press(config.Keybinding{"c"})
-		t.ExpectPopup().Menu().Title(Equals("c")).ContainsLines(Contains("Cherry-pick"), Contains("Cancel"))
-		t.Views().Menu().Press(config.Keybinding{"p"})
 		t.Views().Menu().IsInvisible()
 		t.Views().Confirmation().IsInvisible()
 		t.Views().Prompt().IsInvisible()
@@ -140,11 +137,11 @@ var ForkDefaultCherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 		commits.TopLines(Contains("p3"))
 		t.Shell().RunCommand([]string{"git", "log", "--format=%s", "--output=actual-log"})
 		t.FileSystem().FileContent("actual-log", Equals("p3\np1\nbase\n"))
-		// The paste clears the marks, so Files c p has nothing to review.
+		// The paste clears the marks, so in Files c has nothing to offer and
+		// opens no menu.
 		t.Views().Information().Content(DoesNotContain("copied"))
 		pastedHead := t.Git().GetCommitHash("HEAD")
-		t.Views().Files().Focus()
-		cherry(t.Views().Files(), "p")
+		t.Views().Files().Focus().Press(config.Keybinding{"c"})
 		t.Views().Menu().IsInvisible()
 		t.Views().Confirmation().IsInvisible()
 		t.Views().Prompt().IsInvisible()

@@ -115,6 +115,11 @@ func (flow *forkPrefixFlow) run(tree *keymap.CommandTree, path []gocui.Key, pare
 	if !flow.valid() {
 		return nil
 	}
+	// A prefix with nothing applicable in this pane does nothing, like an
+	// inapplicable single key, rather than opening a menu of only Cancel.
+	if !forkTreeHasApplicable(tree) {
+		return nil
+	}
 	bindings := forkApplicableBindings(tree.Bindings)
 	// An explicit single-key action overrides default continuations. If the
 	// user explicitly configured both a leaf and descendants, keep the visible
