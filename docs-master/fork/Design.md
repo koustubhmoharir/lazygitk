@@ -80,8 +80,9 @@ recorded here or in the user guide.
   There is no hidden chord state or timeout. Escape steps back one level.
   Menu entries appear in the keymap's declaration order. The groups are:
   `d` diff, `s` switch and reset, `n` new, `c` cherry-pick marks, `u`
-  undo/redo, `y` copy, `g` less common Git operations, and `t` view, filter,
-  navigation and app tools (nothing under `t` changes the repository).
+  undo/redo, `y` copy, `g` less common Git operations, `w` filters, and `t`
+  view, navigation and app tools (nothing under `w` or `t` changes the
+  repository). `/` stays the pane's own text filter or search.
 - **Short keys for frequent or repeated actions.** Actions used often, or
   pressed several times in a row, get single keys; occasional ones get two-
   or three-key paths. Deliberate friction is kept where it prevents surprises:

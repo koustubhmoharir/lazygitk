@@ -28,7 +28,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
 | `` <esc> `` | キャンセル |  |
 | `` ? `` | キーバインディングメニューを開く |  |
-| `` t f o `` | フィルターオプションを表示 | コミットログのフィルタリングオプションを表示し、フィルタに一致するコミットのみを表示します。 |
+| `` w o `` | フィルターオプションを表示 | コミットログのフィルタリングオプションを表示し、フィルタに一致するコミットのみを表示します。 |
 | `` t d c `` | 差分オプションを表示 | ２つのrefの差分に関連するオプションを表示します（例：選択したrefとの差分表示、差分を取るrefの入力、差分方向の反転など）。 |
 | `` q `` | 終了 |  |
 | `` t a s `` | Suspend the application |  |
@@ -51,8 +51,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <home> `` | 先頭にスクロール |  |
 | `` <end> `` | 末尾にスクロール |  |
 | `` t h r `` | 範囲選択を切り替え |  |
-| `` <shift+down> `` | 範囲選択を下に |  |
-| `` <shift+up> `` | 範囲選択を上に |  |
+| `` <shift+down>, J `` | 範囲選択を下に |  |
+| `` <shift+up>, K `` | 範囲選択を上に |  |
 | `` / `` | 現在のビューをテキストで検索 |  |
 | `` , `` | 前のページ |  |
 | `` . `` | 次のページ |  |
@@ -293,7 +293,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y p `` | パスをクリップボードにコピー |  |
 | `` <space> `` | Toggle staging of selected files | 選択したファイルのステージ状態を切り替えます。 |
 | `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
-| `` t f s `` | ステータスでファイルをフィルタリング |  |
+| `` w s `` | ステータスでファイルをフィルタリング |  |
 | `` <enter> `` | コミット | ステージされた変更をコミットします。 |
 | `` g e n `` | pre-commitフックなしで変更をコミット |  |
 | `` a `` | 直前のコミットを修正 |  |

@@ -28,7 +28,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
 | `` <esc> `` | Anuluj |  |
 | `` ? `` | Otwórz menu przypisań klawiszy |  |
-| `` t f o `` | Pokaż opcje filtrowania | Pokaż opcje filtrowania dziennika commitów, tak aby pokazywane były tylko commity pasujące do filtra. |
+| `` w o `` | Pokaż opcje filtrowania | Pokaż opcje filtrowania dziennika commitów, tak aby pokazywane były tylko commity pasujące do filtra. |
 | `` t d c `` | Pokaż opcje różnicowania | Pokaż opcje dotyczące różnicowania dwóch refów, np. różnicowanie względem wybranego refa, wprowadzanie refa do różnicowania i odwracanie kierunku różnic. |
 | `` q `` | Wyjdź |  |
 | `` t a s `` | Suspend the application |  |
@@ -51,8 +51,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <home> `` | Przewiń do góry |  |
 | `` <end> `` | Przewiń do dołu |  |
 | `` t h r `` | Przełącz zaznaczenie zakresu |  |
-| `` <shift+down> `` | Zaznacz zakres w dół |  |
-| `` <shift+up> `` | Zaznacz zakres w górę |  |
+| `` <shift+down>, J `` | Zaznacz zakres w dół |  |
+| `` <shift+up>, K `` | Zaznacz zakres w górę |  |
 | `` / `` | Szukaj w bieżącym widoku po tekście |  |
 | `` , `` | Poprzednia strona |  |
 | `` . `` | Następna strona |  |
@@ -304,7 +304,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y p `` | Kopiuj ścieżkę do schowka |  |
 | `` <space> `` | Toggle staging of selected files | Przełącz zatwierdzenie dla wybranego pliku. |
 | `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
-| `` t f s `` | Filtruj pliki według statusu |  |
+| `` w s `` | Filtruj pliki według statusu |  |
 | `` <enter> `` | Commit | Zatwierdź zmiany zatwierdzone. |
 | `` g e n `` | Zatwierdź zmiany bez hooka pre-commit |  |
 | `` a `` | Popraw ostatni commit |  |

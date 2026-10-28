@@ -28,7 +28,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
 | `` <esc> `` | 取消 |  |
 | `` ? `` | 打开菜单 |  |
-| `` t f o `` | 查看按路径过滤选项 | 查看用于过滤提交日志的选项，以便仅显示与过滤器匹配的提交。 |
+| `` w o `` | 查看按路径过滤选项 | 查看用于过滤提交日志的选项，以便仅显示与过滤器匹配的提交。 |
 | `` t d c `` | 打开 diff 菜单 | 查看与比较两个引用相关的选项，例如与选定的 ref 进行比较，输入要比较的 ref，然后反转比较方向。 |
 | `` q `` | 退出 |  |
 | `` t a s `` | 挂起应用程序 |  |
@@ -51,8 +51,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <home> `` | 滚动到顶部 |  |
 | `` <end> `` | 滚动到底部 |  |
 | `` t h r `` | 切换拖动选择 |  |
-| `` <shift+down> `` | 向下扩展选择范围 |  |
-| `` <shift+up> `` | 向上扩展选择范围 |  |
+| `` <shift+down>, J `` | 向下扩展选择范围 |  |
+| `` <shift+up>, K `` | 向上扩展选择范围 |  |
 | `` / `` | 开始搜索 |  |
 | `` , `` | 上一页 |  |
 | `` . `` | 下一页 |  |
@@ -253,7 +253,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y p `` | 复制路径到剪贴板 |  |
 | `` <space> `` | Toggle staging of selected files | 为选定的文件切换暂存状态 |
 | `` g h c `` | 查看合并冲突选项 | 查看用于解决合并冲突的选项。 |
-| `` t f s `` | 通过状态过滤文件 |  |
+| `` w s `` | 通过状态过滤文件 |  |
 | `` <enter> `` | 提交变更 | 提交暂存文件 |
 | `` g e n `` | 提交变更而无需预先提交钩子 |  |
 | `` a `` | 修补最后一次提交 |  |

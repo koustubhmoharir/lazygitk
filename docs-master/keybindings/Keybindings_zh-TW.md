@@ -28,7 +28,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
 | `` <esc> `` | 取消 |  |
 | `` ? `` | 開啟選單 |  |
-| `` t f o `` | 檢視篩選路徑選項 | 檢視用於過濾提交日誌的選項，以便僅顯示與過濾器匹配的提交。 |
+| `` w o `` | 檢視篩選路徑選項 | 檢視用於過濾提交日誌的選項，以便僅顯示與過濾器匹配的提交。 |
 | `` t d c `` | 開啟差異比較選單 | 檢視與比較兩個引用相關的選項，例如與選定的 ref 進行比較，輸入要比較的 ref，然後反轉比較方向。 |
 | `` q `` | 結束 |  |
 | `` t a s `` | 掛起應用程式 |  |
@@ -51,8 +51,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <home> `` | 捲動到頂部 |  |
 | `` <end> `` | 捲動到底部 |  |
 | `` t h r `` | 切換拖曳選擇 |  |
-| `` <shift+down> `` | 向下擴充套件選擇範圍 |  |
-| `` <shift+up> `` | 向上擴充套件選擇範圍 |  |
+| `` <shift+down>, J `` | 向下擴充套件選擇範圍 |  |
+| `` <shift+up>, K `` | 向上擴充套件選擇範圍 |  |
 | `` / `` | 搜尋 |  |
 | `` , `` | 上一頁 |  |
 | `` . `` | 下一頁 |  |
@@ -385,7 +385,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y p `` | 複製檔案名稱到剪貼簿 |  |
 | `` <space> `` | Toggle staging of selected files | 切換所選檔案的暫存狀態。 |
 | `` g h c `` | 檢視合併衝突選項 | 檢視用於解決合併衝突的選項。 |
-| `` t f s `` | 篩選檔案 (預存/未預存) |  |
+| `` w s `` | 篩選檔案 (預存/未預存) |  |
 | `` <enter> `` | 提交變更 | 提交暫存區變更 |
 | `` g e n `` | 沒有預提交 hook 就提交更改 |  |
 | `` a `` | 修改上次提交 |  |

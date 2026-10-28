@@ -8,7 +8,7 @@ import (
 )
 
 var ForkShortKeysEditing = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "Real default short keys: ] [ and Space in the staging view, , . (unbound) and > < moving commits, / filtering Branches, t f with no t item, and 0 focusing the main view",
+	Description: "Real default short keys: ] [ and Space in the staging view, , . (unbound) and > < moving commits, / filtering Branches, t s with no t item, and 0 focusing the main view",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -134,15 +134,15 @@ var ForkShortKeysEditing = NewIntegrationTest(NewIntegrationTestArgs{
 			IsFocused().
 			Content(Contains("bugfix").Contains("feature-alpha").Contains("master"))
 
-		// t f shows the filter menu; it has no t item, so t does nothing there.
+		// t s shows the sort menu; it has no t item, so t does nothing there.
 		branches.Press(config.Keybinding{"t"})
 		t.ExpectPopup().Menu().Title(Equals("t"))
-		t.Views().Menu().Press(config.Keybinding{"f"})
-		t.ExpectPopup().Menu().Title(Equals("t f"))
+		t.Views().Menu().Press(config.Keybinding{"s"})
+		t.ExpectPopup().Menu().Title(Equals("t s"))
 		t.Views().Menu().Press(config.Keybinding{"t"})
-		// Escape closes the t f menu, which was opened from the t menu, so the
+		// Escape closes the t s menu, which was opened from the t menu, so the
 		// t menu is still open underneath; a second Escape closes it.
-		t.ExpectPopup().Menu().Title(Equals("t f")).Cancel()
+		t.ExpectPopup().Menu().Title(Equals("t s")).Cancel()
 		t.ExpectPopup().Menu().Title(Equals("t")).Cancel()
 		t.Views().Menu().IsInvisible()
 

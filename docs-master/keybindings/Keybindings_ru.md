@@ -28,7 +28,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
 | `` <esc> `` | Отменить |  |
 | `` ? `` | Открыть меню |  |
-| `` t f o `` | Просмотреть параметры фильтрации по пути | View options for filtering the commit log, so that only commits matching the filter are shown. |
+| `` w o `` | Просмотреть параметры фильтрации по пути | View options for filtering the commit log, so that only commits matching the filter are shown. |
 | `` t d c `` | Открыть меню сравнении | View options relating to diffing two refs e.g. diffing against selected ref, entering ref to diff against, and reversing the diff direction. |
 | `` q `` | Выйти |  |
 | `` t a s `` | Suspend the application |  |
@@ -51,8 +51,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <home> `` | Пролистать наверх |  |
 | `` <end> `` | Прокрутить вниз |  |
 | `` t h r `` | Переключить выборку перетаскивания |  |
-| `` <shift+down> `` | Range select down |  |
-| `` <shift+up> `` | Range select up |  |
+| `` <shift+down>, J `` | Range select down |  |
+| `` <shift+up>, K `` | Range select up |  |
 | `` / `` | Найти |  |
 | `` , `` | Предыдущая страница |  |
 | `` . `` | Следующая страница |  |
@@ -467,7 +467,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y p `` | Скопировать название файла в буфер обмена |  |
 | `` <space> `` | Toggle staging of selected files | Toggle staged for selected file. |
 | `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
-| `` t f s `` | Фильтровать файлы (проиндексированные/непроиндексированные) |  |
+| `` w s `` | Фильтровать файлы (проиндексированные/непроиндексированные) |  |
 | `` <enter> `` | Сохранить изменения | Commit staged changes. |
 | `` g e n `` | Закоммитить изменения без предварительного хука коммита |  |
 | `` a `` | Правка последнего коммита |  |

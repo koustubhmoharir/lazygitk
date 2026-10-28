@@ -28,7 +28,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
 | `` <esc> `` | Cancelar |  |
 | `` ? `` | Abrir o menu de atalhos do teclado |  |
-| `` t f o `` | Ver opções de filtro | View options for filtering the commit log, so that only commits matching the filter are shown. |
+| `` w o `` | Ver opções de filtro | View options for filtering the commit log, so that only commits matching the filter are shown. |
 | `` t d c `` | View diffing options | View options relating to diffing two refs e.g. diffing against selected ref, entering ref to diff against, and reversing the diff direction. |
 | `` q `` | Sair |  |
 | `` t a s `` | Suspender a aplicação |  |
@@ -51,8 +51,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <home> `` | Voltar ao topo |  |
 | `` <end> `` | Ir para o final |  |
 | `` t h r `` | Toggle range select |  |
-| `` <shift+down> `` | Range select down |  |
-| `` <shift+up> `` | Range select up |  |
+| `` <shift+down>, J `` | Range select down |  |
+| `` <shift+up>, K `` | Range select up |  |
 | `` / `` | Pesquisar na visualização atual por texto |  |
 | `` , `` | Aba anterior |  |
 | `` . `` | Próxima aba |  |
@@ -70,7 +70,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y p `` | Copiar caminho para área de transferência |  |
 | `` <space> `` | Toggle staging of selected files | Alternar para staging para o arquivo selecionado. |
 | `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
-| `` t f s `` | Filtrar arquivos por status |  |
+| `` w s `` | Filtrar arquivos por status |  |
 | `` <enter> `` | Commit | Submeter mudanças em staging |
 | `` g e n `` | Fazer commit de alterações sem pré-commit |  |
 | `` a `` | Alterar último commit |  |

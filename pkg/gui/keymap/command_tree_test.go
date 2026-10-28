@@ -113,9 +113,9 @@ func TestBuildCommandTreeOrdersTPrefixByDeclaration(t *testing.T) {
 	}
 	root := BuildCommandTree(bindings, "")
 
-	// Each group keeps the rank of its first declaration: t d, t f, t t, t s, t n, t h.
+	// Each group keeps the rank of its first declaration: t d, t t, t s, t n, t h.
 	tPrefix := childTree(t, root, key('t'))
-	assert.Equal(t, []string{"d", "f", "t", "s", "n", "h"}, childLabels(tPrefix))
+	assert.Equal(t, []string{"d", "t", "s", "n", "h"}, childLabels(tPrefix))
 	assert.Equal(t, []string{"e", "f", "c", "w", "n", "+"}, childLabels(childTree(t, tPrefix, key('d'))))
 }
 

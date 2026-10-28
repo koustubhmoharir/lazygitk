@@ -28,7 +28,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
 | `` <esc> `` | Annuleren |  |
 | `` ? `` | Open menu |  |
-| `` t f o `` | Bekijk scoping opties | View options for filtering the commit log, so that only commits matching the filter are shown. |
+| `` w o `` | Bekijk scoping opties | View options for filtering the commit log, so that only commits matching the filter are shown. |
 | `` t d c `` | Open diff menu | View options relating to diffing two refs e.g. diffing against selected ref, entering ref to diff against, and reversing the diff direction. |
 | `` q `` | Afsluiten |  |
 | `` t a s `` | Pauzeer de applicatie |  |
@@ -51,8 +51,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <home> `` | Scroll naar boven |  |
 | `` <end> `` | Scroll naar beneden |  |
 | `` t h r `` | Toggle drag selecteer |  |
-| `` <shift+down> `` | Range select down |  |
-| `` <shift+up> `` | Range select up |  |
+| `` <shift+down>, J `` | Range select down |  |
+| `` <shift+up>, K `` | Range select up |  |
 | `` / `` | Start met zoeken |  |
 | `` , `` | Vorige pagina |  |
 | `` . `` | Volgende pagina |  |
@@ -70,7 +70,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y p `` | Kopieer de bestandsnaam naar het klembord |  |
 | `` <space> `` | Toggle staging of selected files | Toggle staged for selected file. |
 | `` g h c `` | Bekijk merge conflict opties | Bekijk opties voor het oplossen van mergeconflicten. |
-| `` t f s `` | Filter bestanden op status |  |
+| `` w s `` | Filter bestanden op status |  |
 | `` <enter> `` | Commit veranderingen | Commit gestagede wijzigingen. |
 | `` g e n `` | Commit veranderingen zonder pre-commit hook |  |
 | `` a `` | Wijzig laatste commit |  |

@@ -28,7 +28,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
 | `` <esc> `` | 취소 |  |
 | `` ? `` | 매뉴 열기 |  |
-| `` t f o `` | View filter-by-path options | View options for filtering the commit log, so that only commits matching the filter are shown. |
+| `` w o `` | View filter-by-path options | View options for filtering the commit log, so that only commits matching the filter are shown. |
 | `` t d c `` | Diff 메뉴 열기 | View options relating to diffing two refs e.g. diffing against selected ref, entering ref to diff against, and reversing the diff direction. |
 | `` q `` | 종료 |  |
 | `` t a s `` | Suspend the application |  |
@@ -51,8 +51,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <home> `` | 맨 위로 스크롤  |  |
 | `` <end> `` | 맨 아래로 스크롤  |  |
 | `` t h r `` | 드래그 선택 전환 |  |
-| `` <shift+down> `` | Range select down |  |
-| `` <shift+up> `` | Range select up |  |
+| `` <shift+down>, J `` | Range select down |  |
+| `` <shift+up>, K `` | Range select up |  |
 | `` / `` | 검색 시작 |  |
 | `` , `` | 이전 페이지 |  |
 | `` . `` | 다음 페이지 |  |
@@ -472,7 +472,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y p `` | 파일명을 클립보드에 복사 |  |
 | `` <space> `` | Toggle staging of selected files | Toggle staged for selected file. |
 | `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
-| `` t f s `` | 파일을 필터하기 (Staged/unstaged) |  |
+| `` w s `` | 파일을 필터하기 (Staged/unstaged) |  |
 | `` <enter> `` | 커밋 변경내용 | 스테이징된 변경 사항 커밋. |
 | `` g e n `` | Commit changes without pre-commit hook |  |
 | `` a `` | 마지맛 커밋 수정 |  |
