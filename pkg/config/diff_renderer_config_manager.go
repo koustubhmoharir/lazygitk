@@ -76,10 +76,9 @@ type DiffRendererValues struct {
 	DiffContext uint64
 	// Whether the terminal has a light background
 	LightBackground bool
-	// Fork: the terminal's background colour as #rrggbb, or empty if it isn't
-	// known. The default delta renderer mixes its backgrounds from it
-	// (fork_diff_renderers.go).
-	BackgroundColor string
+	// Fork: whether the screen shows true colour. The default delta renderer
+	// only uses its dark tints then (fork_diff_renderers.go).
+	TrueColor bool
 }
 
 func (self *DiffRendererConfigManager) GetStdinFilterCommand(values DiffRendererValues) (string, error) {

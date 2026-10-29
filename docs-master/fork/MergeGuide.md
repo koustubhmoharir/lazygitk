@@ -103,9 +103,9 @@ re-apply it if upstream changes that code.
   The default delta renderer's command is built in Go from the render values
   (`forkDeltaCommand`): `resolveCommand` returns
   `DiffRendererConfig.forkResolveCommand` (`user_config.go`) when it is set,
-  and `DiffRendererValues.BackgroundColor`, set in `main_view_render.go`,
-  carries the terminal background that its tints mix with. It leaves out
-  settings that the git config sets; `gui.go` connects the git config through
+  and `DiffRendererValues.TrueColor`, set in `main_view_render.go`, decides
+  whether it passes its dark tints. It leaves out settings that the git
+  config sets; `gui.go` connects the git config through
   `SetForkGitDeltaConfig` (`pkg/gui/fork_delta_config.go`).
 - Key configuration is ignored for users, but the integration runner sets
   `LAZYGITK_HONOUR_KEY_CONFIG` (`pkg/integration/components/runner.go`) so
@@ -304,6 +304,11 @@ Commit scope filters (`w a`, `w d`, `w b`) are a third kind of filtering mode:
 
 ### Appearance
 
+- `pkg/gocui/tcell_driver.go` `tcellInit`: passes
+  `trueColorScreenOptions` (`fork_true_color.go`), which asks the terminal
+  whether it shows true colour before tcell starts, when `COLORTERM` doesn't
+  say so. Keep it before `NewTerminfoScreenFromTty` if tcell's start-up
+  changes.
 - `pkg/gocui/view.go`: `setCharacter` takes the cell's content line, and an
   explicit set of selected lines (`SetSelectedLines`,
   `fork_selected_lines.go`) replaces the cursor and range highlight while set.

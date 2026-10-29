@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/jesseduffield/generics/set"
-	"github.com/jesseduffield/lazygit/pkg/utils"
 	"github.com/samber/lo"
 )
 
@@ -19,20 +18,20 @@ import (
 // delta.
 
 // forkDeltaStyle is a delta setting that the default delta renderer passes,
-// with its value for a background.
+// with its value for the render values, or "" to leave it to delta.
 type forkDeltaStyle struct {
 	key   string
-	value func(lightBackground bool, backgroundColor string) string
+	value func(DiffRendererValues) string
 }
 
 // forkDeltaStyles are the delta settings that the default delta renderer
-// passes, so that its colours follow the palette and the terminal's
-// background.
+// passes, so that its colours follow the palette.
 var forkDeltaStyles = []forkDeltaStyle{
-	// The palette's colours are true colours, which delta would round to
-	// its 256-colour palette unless it sees COLORTERM. gocui takes true
-	// colours whatever the terminal supports.
-	{"true-color", func(bool, string) string { return "always" }},
+	// delta rounds colours to its 256-colour palette unless it sees COLORTERM,
+	// which the screen may show true colour without.
+	{"true-color", func(values DiffRendererValues) string {
+		return lo.Ternary(values.TrueColor, "always", "")
+	}},
 
 	// delta's default for these is the terminal's basic blue, which many
 	// terminal palettes make too dark to read on a black background.
@@ -44,39 +43,30 @@ var forkDeltaStyles = []forkDeltaStyle{
 	{"line-numbers-left-style", forkDeltaBlue("")},
 	{"line-numbers-right-style", forkDeltaBlue("")},
 
-	// delta's default backgrounds for changed lines are bright enough to drown
-	// the dimmer syntax colours of added lines, such as comments. These are a
-	// little of the palette's Green or Red over the terminal's background, and
-	// a little more for the changed part of a line and for the marker of an
-	// empty line. Deleted lines keep delta's plain text.
-	{"plus-style", forkDeltaTint("syntax", forkPaletteGreen, forkDeltaLineTint)},
-	{"plus-emph-style", forkDeltaTint("syntax", forkPaletteGreen, forkDeltaChangeTint)},
-	{"plus-empty-line-marker-style", forkDeltaTint("normal", forkPaletteGreen, forkDeltaChangeTint)},
-	{"minus-style", forkDeltaTint("normal", forkPaletteRed, forkDeltaLineTint)},
-	{"minus-emph-style", forkDeltaTint("normal", forkPaletteRed, forkDeltaChangeTint)},
-	{"minus-empty-line-marker-style", forkDeltaTint("normal", forkPaletteRed, forkDeltaChangeTint)},
+	// On a dark background, delta's default backgrounds for the changed part
+	// of a line, and for whole lines once rounded to 256 colours, are bright
+	// enough to drown the dimmer syntax colours of added lines, such as
+	// comments. These are dark greens and reds, a little brighter for the
+	// changed part of a line and the marker of an empty line. The 256-colour
+	// palette has no dark greens or reds, so without true colour delta keeps
+	// its own.
+	{"plus-style", forkDeltaDarkTint("syntax #0a300c")},
+	{"plus-emph-style", forkDeltaDarkTint("syntax #104a14")},
+	{"plus-empty-line-marker-style", forkDeltaDarkTint("normal #104a14")},
+	{"minus-style", forkDeltaDarkTint("normal #4a1218")},
+	{"minus-emph-style", forkDeltaDarkTint("normal #6e1e28")},
+	{"minus-empty-line-marker-style", forkDeltaDarkTint("normal #6e1e28")},
 }
 
-// How much of the palette's Green or Red tints a changed line, and the changed
-// part of it. On a black background, delta's default syntax colours keep a
-// contrast of at least 3.5 and 2.7 over them.
-const (
-	forkDeltaLineTint   = 0.12
-	forkDeltaChangeTint = 0.22
-)
-
-func forkDeltaBlue(attributes string) func(bool, string) string {
-	return func(lightBackground bool, _ string) string {
-		return ForkPaletteBlue(lightBackground) + attributes
+func forkDeltaBlue(attributes string) func(DiffRendererValues) string {
+	return func(values DiffRendererValues) string {
+		return ForkPaletteBlue(values.LightBackground) + attributes
 	}
 }
 
-func forkDeltaTint(foreground string, color func(lightBackground bool) string, amount float64) func(bool, string) string {
-	return func(lightBackground bool, backgroundColor string) string {
-		if len(backgroundColor) != 7 || !utils.IsValidHexValue(backgroundColor) {
-			backgroundColor = lo.Ternary(lightBackground, "#ffffff", "#000000")
-		}
-		return foreground + " " + mixHexColors(backgroundColor, color(lightBackground), amount)
+func forkDeltaDarkTint(style string) func(DiffRendererValues) string {
+	return func(values DiffRendererValues) string {
+		return lo.Ternary(values.TrueColor && !values.LightBackground, style, "")
 	}
 }
 
@@ -94,8 +84,8 @@ func forkDeltaCommand(gitDeltaConfig string, values DiffRendererValues) string {
 
 	command := "delta --" + lo.Ternary(values.LightBackground, "light", "dark") + " --paging=never --tabs=4"
 	for _, style := range forkDeltaStyles {
-		if !configured.Includes(style.key) {
-			command += fmt.Sprintf(` --%s="%s"`, style.key, style.value(values.LightBackground, values.BackgroundColor))
+		if value := style.value(values); value != "" && !configured.Includes(style.key) {
+			command += fmt.Sprintf(` --%s="%s"`, style.key, value)
 		}
 	}
 	return command

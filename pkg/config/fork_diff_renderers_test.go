@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/jesseduffield/lazygit/pkg/i18n"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -59,7 +60,7 @@ func TestForkDefaultDiffRenderersWhenDeltaIsFound(t *testing.T) {
 	assert.Equal(t, DiffRendererType_StdinFilter, manager.GetDiffRendererType())
 	command, err := manager.GetStdinFilterCommand(DiffRendererValues{Width: 80, LightBackground: true})
 	assert.NoError(t, err)
-	assert.Equal(t, "delta --light --paging=never --tabs=4"+forkDeltaArgs(true), command)
+	assert.Equal(t, "delta --light --paging=never --tabs=4"+forkDeltaArgs(true, false), command)
 	assert.Equal(t, "always", manager.GetColorArg())
 
 	manager.CycleDiffRenderers()
@@ -174,24 +175,22 @@ func TestDiffRendererCyclingNeverSeesAnEmptyList(t *testing.T) {
 }
 
 // forkDeltaArgs is what the default delta command passes when the git config
-// sets none of its settings, for a background of black or white.
-func forkDeltaArgs(lightBackground bool) string {
-	if lightBackground {
-		return ` --true-color="always"` + forkDeltaBlueArgs("#1e66f5") +
-			` --plus-style="syntax #e8f4e6"` +
-			` --plus-emph-style="syntax #d5ead0"` +
-			` --plus-empty-line-marker-style="normal #d5ead0"` +
-			` --minus-style="normal #fae2e7"` +
-			` --minus-emph-style="normal #f5cad3"` +
-			` --minus-empty-line-marker-style="normal #f5cad3"`
+// sets none of its settings.
+func forkDeltaArgs(lightBackground bool, trueColor bool) string {
+	args := ""
+	if trueColor {
+		args += ` --true-color="always"`
 	}
-	return ` --true-color="always"` + forkDeltaBlueArgs("#89b4fa") +
-		` --plus-style="syntax #141b13"` +
-		` --plus-emph-style="syntax #253223"` +
-		` --plus-empty-line-marker-style="normal #253223"` +
-		` --minus-style="normal #1d1114"` +
-		` --minus-emph-style="normal #351f25"` +
-		` --minus-empty-line-marker-style="normal #351f25"`
+	args += forkDeltaBlueArgs(lo.Ternary(lightBackground, "#1e66f5", "#89b4fa"))
+	if trueColor && !lightBackground {
+		args += ` --plus-style="syntax #0a300c"` +
+			` --plus-emph-style="syntax #104a14"` +
+			` --plus-empty-line-marker-style="normal #104a14"` +
+			` --minus-style="normal #4a1218"` +
+			` --minus-emph-style="normal #6e1e28"` +
+			` --minus-empty-line-marker-style="normal #6e1e28"`
+	}
+	return args
 }
 
 func forkDeltaBlueArgs(blue string) string {
@@ -208,24 +207,16 @@ func TestForkDeltaCommandFollowsThePalette(t *testing.T) {
 	setForkLookPath(t, true)
 	manager := newForkDiffRendererTestManager(GetDefaultConfig())
 
-	// An unknown background counts as black or white.
-	command, err := manager.GetStdinFilterCommand(DiffRendererValues{Width: 80})
-	assert.NoError(t, err)
-	assert.Equal(t, "delta --dark --paging=never --tabs=4"+forkDeltaArgs(false), command)
-
-	command, err = manager.GetStdinFilterCommand(DiffRendererValues{Width: 80, BackgroundColor: "#000000"})
-	assert.NoError(t, err)
-	assert.Equal(t, "delta --dark --paging=never --tabs=4"+forkDeltaArgs(false), command)
-}
-
-func TestForkDeltaCommandTintsTheTerminalBackground(t *testing.T) {
-	setForkLookPath(t, true)
-	manager := newForkDiffRendererTestManager(GetDefaultConfig())
-
-	command, err := manager.GetStdinFilterCommand(DiffRendererValues{Width: 80, BackgroundColor: "#1e1e2e"})
-	assert.NoError(t, err)
-	assert.Contains(t, command, ` --plus-style="syntax #2e363c"`)
-	assert.Contains(t, command, ` --minus-emph-style="normal #4d3649"`)
+	for _, lightBackground := range []bool{false, true} {
+		for _, trueColor := range []bool{false, true} {
+			command, err := manager.GetStdinFilterCommand(DiffRendererValues{
+				Width: 80, LightBackground: lightBackground, TrueColor: trueColor,
+			})
+			assert.NoError(t, err)
+			assert.Equal(t, "delta --"+lo.Ternary(lightBackground, "light", "dark")+" --paging=never --tabs=4"+
+				forkDeltaArgs(lightBackground, trueColor), command)
+		}
+	}
 }
 
 func TestForkDeltaCommandLeavesSettingsOfTheGitConfigToDelta(t *testing.T) {
@@ -242,15 +233,15 @@ func TestForkDeltaCommandLeavesSettingsOfTheGitConfigToDelta(t *testing.T) {
 			"delta.mytheme.minus-emph-style normal #901011"
 	})
 
-	command, err := manager.GetStdinFilterCommand(DiffRendererValues{Width: 80, BackgroundColor: "#000000"})
+	command, err := manager.GetStdinFilterCommand(DiffRendererValues{Width: 80, TrueColor: true})
 	assert.NoError(t, err)
 	assert.Equal(t, "delta --dark --paging=never --tabs=4"+
 		` --file-decoration-style="#89b4fa ul"`+
 		` --hunk-header-file-style="#89b4fa"`+
 		` --hunk-header-line-number-style="#89b4fa"`+
 		` --line-numbers-right-style="#89b4fa"`+
-		` --plus-emph-style="syntax #253223"`+
-		` --plus-empty-line-marker-style="normal #253223"`+
-		` --minus-style="normal #1d1114"`+
-		` --minus-empty-line-marker-style="normal #351f25"`, command)
+		` --plus-emph-style="syntax #104a14"`+
+		` --plus-empty-line-marker-style="normal #104a14"`+
+		` --minus-style="normal #4a1218"`+
+		` --minus-empty-line-marker-style="normal #6e1e28"`, command)
 }
