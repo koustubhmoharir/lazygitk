@@ -121,7 +121,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s m `` | Mixed reset |  |
 | `` s s `` | Soft reset |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
-| `` w b `` | Show branch and its upstream |  |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | Verificar | Checar item selecionado |
 | `` g m n `` | Mover commits para uma nova branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | Nova árvore de trabalho |  |
@@ -158,6 +158,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y t `` | Copy commit tags |  |
 | `` s d `` | Checkout detached HEAD |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | Verificar | Checar a nova branch baseada na brach remota selecionada, ou a branch remota como HEAD, desanexado |
 | `` n w `` | Nova árvore de trabalho |  |
 | `` m `` | Mesclar | Ver opções para mesclar o item selecionado no branch atual (mesclar regularmente, mesclar squash) |
@@ -223,7 +224,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p v `` | Open pull request in browser |  |
 | `` w a `` | Show selected commits and their ancestors |  |
 | `` w d `` | Show selected commits and their descendants |  |
-| `` w b `` | Show branch and its upstream |  |
+| `` w b `` | Show branch / tag |  |
 | `` <space> `` | Toggle selection |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
@@ -270,6 +271,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` s d `` | Checkout detached HEAD |  |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | Verificar | Checar a tag selecionada como um HEAD, desanexado |
 | `` n t `` | Nova etiqueta | Crie uma nova etiqueta a partir do commit atual. Você será solicitado a digitar um nome e uma descrição opcional. |
 | `` n w `` | Nova árvore de trabalho |  |

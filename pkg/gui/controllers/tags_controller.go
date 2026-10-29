@@ -39,6 +39,8 @@ func NewTagsController(
 
 func (self *TagsController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
+		// Fork: w b shows the tag with its history (see fork_ref_scope_filter.go).
+		self.refScopeFilterBinding(),
 		{
 			CommandID:         "tag.checkout",
 			Verb:              "checkout",

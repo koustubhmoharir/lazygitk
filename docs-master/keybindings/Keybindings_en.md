@@ -123,7 +123,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p v `` | Open pull request in browser |  |
 | `` w a `` | Show selected commits and their ancestors |  |
 | `` w d `` | Show selected commits and their descendants |  |
-| `` w b `` | Show branch and its upstream |  |
+| `` w b `` | Show branch / tag |  |
 | `` <space> `` | Toggle selection |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
@@ -228,7 +228,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s m `` | Mixed reset |  |
 | `` s s `` | Soft reset |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
-| `` w b `` | Show branch and its upstream |  |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | Checkout | Checkout selected item. |
 | `` g m n `` | Move commits to new branch | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | New worktree |  |
@@ -353,6 +353,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y t `` | Copy commit tags |  |
 | `` s d `` | Checkout detached HEAD |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | Checkout | Checkout a new local branch based on the selected remote branch, or the remote branch as a detached head. |
 | `` n w `` | New worktree |  |
 | `` m `` | Merge | View options for merging the selected item into the current branch (regular merge, squash merge) |
@@ -495,6 +496,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` s d `` | Checkout detached HEAD |  |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | Checkout | Checkout the selected tag as a detached HEAD. |
 | `` n t `` | New tag | Create new tag from current commit. You'll be prompted to enter a tag name and optional description. |
 | `` n w `` | New worktree |  |

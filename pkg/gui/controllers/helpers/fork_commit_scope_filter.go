@@ -2,15 +2,18 @@ package helpers
 
 import (
 	"fmt"
+	"strings"
 
+	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gui/modes/filtering"
 	"github.com/jesseduffield/lazygit/pkg/gui/style"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 )
 
-// Fork: the commit scope filters (w a, w d) show the selected commits with their
-// ancestors or descendants. Unlike the path filter they keep the screen mode, and
-// they are applied and cleared the same way otherwise (see ModeHelper).
+// Fork: the commit scope filters (w a, w d, w b) show the selected commits with their
+// ancestors or descendants, or a branch, remote branch or tag with its history. Unlike
+// the path filter they keep the screen mode, and they are applied and cleared the same
+// way otherwise (see ModeHelper).
 
 // SetCommitScopeFilter applies scope in place of any path, author or scope filter.
 // cursorHash is the commit the cursor is on, which stays selected, and Commits is
@@ -49,8 +52,8 @@ func (self *ModeHelper) commitScopeInfoLabel() string {
 
 	var text string
 	switch {
-	case scope.Branch != "":
-		text = self.branchScopeInfoText(scope.Branch)
+	case scope.Ref != "":
+		text = self.refScopeInfoText(scope.Ref)
 	case scope.Descendants && count == 1:
 		text = fmt.Sprintf(self.c.Tr.ShowingCommitDescendantsOne, count)
 	case scope.Descendants:
@@ -63,14 +66,30 @@ func (self *ModeHelper) commitScopeInfoLabel() string {
 	return self.withResetButton(text, style.FgRed)
 }
 
-// branchScopeInfoText names the branch and its upstream, as the model knows them
-// when the label is drawn. The loader uses the same upstream, so a gone upstream
-// counts as none.
-func (self *ModeHelper) branchScopeInfoText(name string) string {
-	for _, branch := range self.c.Model().Branches {
+// refScopeInfoText describes a ref scope. A local branch names its upstream, as the
+// model knows it when the label is drawn; the loader uses the same upstream, so a gone
+// upstream counts as none.
+func (self *ModeHelper) refScopeInfoText(ref string) string {
+	if name, isBranch := strings.CutPrefix(ref, "refs/heads/"); isBranch {
+		if upstream, ok := LocalBranchScopeUpstream(self.c.Model().Branches, name); ok {
+			return fmt.Sprintf(self.c.Tr.ShowingBranchWithUpstream, name, upstream)
+		}
+		return fmt.Sprintf(self.c.Tr.ShowingBranchNoUpstream, name)
+	}
+	if name, isTag := strings.CutPrefix(ref, "refs/tags/"); isTag {
+		return fmt.Sprintf(self.c.Tr.ShowingTagHistory, name)
+	}
+	return fmt.Sprintf(self.c.Tr.ShowingRemoteBranchHistory, strings.TrimPrefix(ref, "refs/remotes/"))
+}
+
+// LocalBranchScopeUpstream returns the upstream that a ref scope shows for the local
+// branch called name, and false when it has none. It is shared by the status label
+// and the w b menu, so that they agree with the loader about the upstream.
+func LocalBranchScopeUpstream(branches []*models.Branch, name string) (string, bool) {
+	for _, branch := range branches {
 		if branch.Name == name && branch.IsTrackingRemote() && !branch.UpstreamGone {
-			return fmt.Sprintf(self.c.Tr.ShowingBranchWithUpstream, name, branch.ShortUpstreamRefName())
+			return branch.ShortUpstreamRefName(), true
 		}
 	}
-	return fmt.Sprintf(self.c.Tr.ShowingBranchNoUpstream, name)
+	return "", false
 }

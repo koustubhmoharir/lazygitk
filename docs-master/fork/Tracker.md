@@ -30,7 +30,6 @@ and a commit with several refs; `w p`, `w u` and `w c` from the `w` group.
 
 Tasks:
 
-- Branch / tag filter in Commits, Branches, Remote branches and Tags.
 - Flat `w p`, `w u`, `w c`.
 
 ## How this tracker works

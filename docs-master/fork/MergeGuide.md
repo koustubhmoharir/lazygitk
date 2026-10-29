@@ -121,7 +121,7 @@ re-apply it if upstream changes that code.
   `gui.os = osCommand`). Paste still uses `atotto/clipboard`. Keep the writer
   injected so `oscommands` never imports gocui.
 - `git_commands/commit_loader.go`: `GetCommitsOptions` carries the commit
-  scope (`ScopeHashes`, `ScopeDescendants`, `ScopeBranch`, `ScopeTips`). `GetCommits`
+  scope (`ScopeHashes`, `ScopeDescendants`, `ScopeRef`, `ScopeTips`). `GetCommits`
   loads a scoped list with `loadCommitScope` and skips rebase todos for it;
   `getLogCmd` takes its revisions, order, `--all` and limit from
   `commitScopeLog` (`fork_commit_scope.go`). New `git log` arguments that depend on the ref or
@@ -213,8 +213,9 @@ re-apply it if upstream changes that code.
 - `controllers/quit_actions.go`: `Escape`, `EscapeEnabled` and
   `EscapeDescription` first try the Commits steps (filter, then selection;
   `forkCommitSelectionEscape`).
-- `controllers/branches_controller.go`: `GetKeybindings` adds `w b`
-  (`fork_branch_scope_filter.go`).
+- `controllers/branches_controller.go`, `remote_branches_controller.go` and
+  `tags_controller.go`: `GetKeybindings` adds `w b`
+  (`fork_branch_scope_filter.go`, `fork_ref_scope_filter.go`).
 - `controllers/commits_files_controller.go`: tree navigation, flat copy and
   historical diffs; copy menu items are shared with the flat bindings.
 - `controllers/sync_controller.go` (replacement): push and pull act on the

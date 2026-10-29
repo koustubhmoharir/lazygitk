@@ -97,14 +97,18 @@ type TranslationSet struct {
 	ShowingCommitAncestorsMany            string
 	ShowingCommitDescendantsOne           string
 	ShowingCommitDescendantsMany          string
-	FilterBranchAndUpstream               string
+	FilterRef                             string
 	ToggleCommitSelection                 string
 	ClearCommitSelection                  string
 	ClearCommitSelectionFirst             string
-	CommitScopeNoBranch                   string
+	CommitScopeNoRef                      string
 	CommitScopeSelectBranch               string
 	ShowingBranchWithUpstream             string
 	ShowingBranchNoUpstream               string
+	ShowingRemoteBranchHistory            string
+	ShowingTagHistory                     string
+	RefScopeLocalWithUpstream             string
+	RefScopeTagLabel                      string
 	BranchSyncCurrentPullSummary          string
 	BranchSyncIntegrationMenu             string
 	BranchSyncIntegrationSummary          string
@@ -1611,14 +1615,18 @@ func EnglishTranslationSet() *TranslationSet {
 		ShowingCommitAncestorsMany:            "Showing ancestors of %d selected commits",
 		ShowingCommitDescendantsOne:           "Showing descendants of %d selected commit",
 		ShowingCommitDescendantsMany:          "Showing descendants of %d selected commits",
-		FilterBranchAndUpstream:               "Show branch and its upstream",
+		FilterRef:                             "Show branch / tag",
 		ToggleCommitSelection:                 "Toggle selection",
 		ClearCommitSelection:                  "Clear selection",
 		ClearCommitSelectionFirst:             "Clear the selection first (Escape)",
-		CommitScopeNoBranch:                   "No local branch points at this commit.",
+		CommitScopeNoRef:                      "No branch or tag points at this commit.",
 		CommitScopeSelectBranch:               "Select a local branch to show it with its upstream.",
 		ShowingBranchWithUpstream:             "Showing %s and %s",
 		ShowingBranchNoUpstream:               "Showing %s (no tracking branch)",
+		ShowingRemoteBranchHistory:            "Showing %s and its history",
+		ShowingTagHistory:                     "Showing tag %s and its history",
+		RefScopeLocalWithUpstream:             "%s and %s",
+		RefScopeTagLabel:                      "tag %s",
 		BranchSyncCurrentPullSummary:          "Checked-out branch %q at %s\nUpstream remote: %q\nUpstream branch: %q\nLocal tracking storage: %q\n\nFetch first, then review the exact incoming commit and integration method before changing files. Saved upstream settings will not change.",
 		BranchSyncIntegrationMenu:             "Integrate reviewed incoming commit",
 		BranchSyncIntegrationSummary:          "Checked-out branch %q at %s\nReviewed incoming commit: %s\n\nChoose an integration method. The default uses Git configuration; explicit choices replace the corresponding defaults. No second network pull or autostash will run.",

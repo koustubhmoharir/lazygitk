@@ -10,8 +10,8 @@ import (
 
 // Fork: the commit scope filter shows the selected commits with their ancestors,
 // or with their descendants (commits reachable from any ref that have a selected
-// commit as an ancestor). A branch scope shows a local branch and its upstream
-// with their ancestors.
+// commit as an ancestor). A ref scope shows a local branch and its upstream with
+// their ancestors, or a remote branch or tag alone with its ancestors.
 //
 // A scope walks the same commits as the unfiltered list, in the same order, and
 // drops the commits outside the scope. So the rows of a scope are a subsequence of
@@ -21,7 +21,7 @@ import (
 //
 // Integration points: GetCommits loads a scoped list with loadCommitScope instead
 // of loadCommits, and getLogCmd takes its revisions, order, --all and limit from
-// commitScopeLog. Upstream lists never set ScopeHashes or ScopeBranch, so they keep
+// commitScopeLog. Upstream lists never set ScopeHashes or ScopeRef, so they keep
 // their path.
 
 // commitScopeLimit is the number of commits in a limited list. getLogCmd applies
@@ -31,7 +31,7 @@ const commitScopeLimit = 300
 
 // hasCommitScope reports whether the list is limited to a commit scope.
 func (opts GetCommitsOptions) hasCommitScope() bool {
-	return len(opts.ScopeHashes) > 0 || opts.ScopeBranch != ""
+	return len(opts.ScopeHashes) > 0 || opts.ScopeRef != ""
 }
 
 // commitScopeLogArgs holds the parts of the git log arguments that a commit
@@ -58,9 +58,9 @@ func commitScopeLog(opts GetCommitsOptions, refSpec string, configuredOrder stri
 		return commitScopeLogArgs{revisions: []string{refSpec}, order: order, all: true}
 	}
 	// Ancestors: the walk is the unfiltered one. Its tips are the ones the unfiltered
-	// list walks, plus the branch tips of a branch scope when the list is not --all,
-	// since those need not be reachable from refSpec. Selected commits of a hash
-	// scope come from the visible list, so they are reachable already.
+	// list walks, plus the tips of a ref scope when the list is not --all, since
+	// those need not be reachable from refSpec. Selected commits of a hash scope come
+	// from the visible list, so they are reachable already.
 	revisions := []string{refSpec}
 	if !opts.All {
 		revisions = append(revisions, opts.ScopeTips...)
@@ -84,8 +84,8 @@ func scopeWalkOrder(configuredOrder string) string {
 // dropped first, so that a vanished commit cannot make the descendants search
 // read the whole history, and an ancestors log cannot fail on it.
 func (self *CommitLoader) loadCommitScope(opts GetCommitsOptions, parseLine func(string) (*models.Commit, bool)) ([]*models.Commit, error) {
-	if opts.ScopeBranch != "" {
-		return self.loadBranchScope(opts, parseLine)
+	if opts.ScopeRef != "" {
+		return self.loadRefScope(opts, parseLine)
 	}
 	hashes, err := self.existingCommitScopeHashes(opts.ScopeHashes)
 	if err != nil {
@@ -147,34 +147,36 @@ func (self *CommitLoader) loadCommitAncestors(opts GetCommitsOptions, parseLine 
 	return loadCommits(self.getLogCmd(opts), "", scopedParseLine)
 }
 
-// loadBranchScope loads the commits of a branch scope: the local branch and its
-// upstream, with their ancestors, in the normal order and limit. The branch is
-// resolved on every load, so commits fetched into the upstream appear. A branch
-// that no longer exists gives an empty list.
+// loadRefScope loads the commits of a ref scope with parseLine, in the normal
+// order and limit. The ref is resolved on every load, so commits fetched into it
+// appear, and a ref that no longer resolves gives an empty list. A local branch
+// also shows its upstream; a remote branch or tag shows alone.
 //
 // The resolved commits are the selection of an ancestors scope, and they are also
 // its tips, since the walk must start from them when it is not --all.
-func (self *CommitLoader) loadBranchScope(opts GetCommitsOptions, parseLine func(string) (*models.Commit, bool)) ([]*models.Commit, error) {
-	branchRef := "refs/heads/" + opts.ScopeBranch
-	branchHash, err := self.cmd.New(NewGitCmd("rev-parse").Arg("--verify", "--quiet", branchRef).ToArgv()).DontLog().RunWithOutput()
+func (self *CommitLoader) loadRefScope(opts GetCommitsOptions, parseLine func(string) (*models.Commit, bool)) ([]*models.Commit, error) {
+	// ^{commit} peels an annotated tag to its commit.
+	refHash, err := self.cmd.New(NewGitCmd("rev-parse").Arg("--verify", "--quiet", opts.ScopeRef+"^{commit}").ToArgv()).DontLog().RunWithOutput()
 	if err != nil {
-		// The branch is gone (or the lookup failed, which the log below would
-		// report too), so there is nothing to show.
+		// The ref is gone (or the lookup failed, which the log below would report
+		// too), so there is nothing to show.
 		return []*models.Commit{}, nil
 	}
 
-	tips := []string{strings.TrimSpace(branchHash)}
+	tips := []string{strings.TrimSpace(refHash)}
 	// The upstream is optional: rev-parse --quiet exits non-zero when there is none,
 	// or when it does not resolve. Either way the branch alone is shown. The
 	// @{upstream} suffix takes the short branch name; the full ref name does not work.
-	if upstream, err := self.cmd.New(NewGitCmd("rev-parse").Arg("--verify", "--quiet", opts.ScopeBranch+"@{upstream}").ToArgv()).DontLog().RunWithOutput(); err == nil {
-		if upstream = strings.TrimSpace(upstream); upstream != "" {
-			tips = append(tips, upstream)
+	if branch, isBranch := strings.CutPrefix(opts.ScopeRef, "refs/heads/"); isBranch {
+		if upstream, err := self.cmd.New(NewGitCmd("rev-parse").Arg("--verify", "--quiet", branch+"@{upstream}").ToArgv()).DontLog().RunWithOutput(); err == nil {
+			if upstream = strings.TrimSpace(upstream); upstream != "" {
+				tips = append(tips, upstream)
+			}
 		}
 	}
 
 	scoped := opts
-	scoped.ScopeBranch = ""
+	scoped.ScopeRef = ""
 	scoped.ScopeHashes = tips
 	scoped.ScopeTips = tips
 	scoped.ScopeDescendants = false

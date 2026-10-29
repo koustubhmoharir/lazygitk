@@ -37,6 +37,8 @@ func (self *RemoteBranchesController) GetKeybindings(opts types.KeybindingsOpts)
 	return []*types.Binding{
 		// Fork: add keyless ref-only placement from the captured selected remote.
 		self.branchPlacementBinding(),
+		// Fork: w b shows the remote branch with its history (see fork_ref_scope_filter.go).
+		self.refScopeFilterBinding(),
 		{
 			CommandID:         "remote-branch.checkout",
 			Verb:              "checkout",

@@ -129,7 +129,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s m `` | Mixed reset |  |
 | `` s s `` | Soft reset |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
-| `` w b `` | Show branch and its upstream |  |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | Uitchecken | Geselecteerd item uitchecken. |
 | `` g m n `` | Verplaats commits naar nieuwe branch | Maak een nieuwe branch en verplaats niet-gepushte commits van de huidige branch hier naar toe. Gebruik dit in het geval dat je deze commits eigenlijk op een nieuwe branch had willen maken.<br><br>Let op dat de selectie genegeerd wordt. De nieuwe branch komt ofwel bovenop de main branch, of bovenop de huidige branch (je kan kiezen). |
 | `` n w `` | New worktree |  |
@@ -210,7 +210,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p v `` | Open pull request in browser |  |
 | `` w a `` | Show selected commits and their ancestors |  |
 | `` w d `` | Show selected commits and their descendants |  |
-| `` w b `` | Show branch and its upstream |  |
+| `` w b `` | Show branch / tag |  |
 | `` <space> `` | Toggle selection |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
@@ -353,6 +353,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y t `` | Copy commit tags |  |
 | `` s d `` | Checkout detached HEAD |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | Uitchecken | Geselecteerde remote branch uitchecken als nieuwe locale branch of als detached head. |
 | `` n w `` | New worktree |  |
 | `` m `` | Merge in met huidige checked out branch | View options for merging the selected item into the current branch (regular merge, squash merge) |
@@ -495,6 +496,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` s d `` | Checkout detached HEAD |  |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | Uitchecken | Geselecteerde tag uitchecken als detached HEAD. |
 | `` n t `` | Creëer tag | Maak een nieuwe tag die naar de huidige commit wijst. Je wordt gevraagd om een tag naam en optionele beschrijving. |
 | `` n w `` | New worktree |  |

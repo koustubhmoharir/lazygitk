@@ -6,23 +6,25 @@ import "slices"
 // of filtering mode next to path and author: setting one replaces the others.
 //
 // Hashes with Descendants unset show the commits in Hashes together with their
-// ancestors; with Descendants set, together with their descendants. Branch, when
-// set, shows that local branch and its upstream with their ancestors. It is stored
-// by name, so that the scope follows the branch when it moves or is fetched.
+// ancestors; with Descendants set, together with their descendants. Ref, when set,
+// shows that ref's commit with its ancestors: a local branch also shows its upstream,
+// and a remote branch or tag shows alone. Ref is a full ref name (refs/heads/...,
+// refs/remotes/... or refs/tags/...), and it is resolved on every load, so that the
+// scope follows the ref when it moves or is fetched.
 type CommitScope struct {
 	Hashes      []string
 	Descendants bool
-	Branch      string
+	Ref         string
 }
 
-// Active reports whether a scope is set. A scope has either hashes or a branch.
+// Active reports whether a scope is set. A scope has either hashes or a ref.
 func (s CommitScope) Active() bool {
-	return len(s.Hashes) > 0 || s.Branch != ""
+	return len(s.Hashes) > 0 || s.Ref != ""
 }
 
 // SetCommitScope sets the scope. The mode keeps its own copy of the hashes.
 func (m *Filtering) SetCommitScope(scope CommitScope) {
-	m.commitScope = CommitScope{Hashes: slices.Clone(scope.Hashes), Descendants: scope.Descendants, Branch: scope.Branch}
+	m.commitScope = CommitScope{Hashes: slices.Clone(scope.Hashes), Descendants: scope.Descendants, Ref: scope.Ref}
 }
 
 // GetCommitScope returns the scope, which is empty when none is set.

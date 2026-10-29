@@ -90,7 +90,7 @@ var ForkFilterBranch = NewIntegrationTest(NewIntegrationTestArgs{
 		// The menu lists the branches at m1 and applies the one chosen. Neither has an
 		// upstream, so the result shows m1 and base.
 		t.ExpectPopup().Menu().
-			Title(Equals("Show branch and its upstream")).
+			Title(Equals("Show branch / tag")).
 			Content(Contains("master")).
 			Content(Contains("side")).
 			Select(Contains("side")).
@@ -109,7 +109,7 @@ var ForkFilterBranch = NewIntegrationTest(NewIntegrationTestArgs{
 		t.ExpectPopup().Menu().
 			Title(Equals("w")).
 			ContainsLines(Contains("Show selected commits and their ancestors")).
-			Content(DoesNotContain("Show branch and its upstream")).
+			Content(DoesNotContain("Show branch / tag")).
 			Cancel()
 	},
 })

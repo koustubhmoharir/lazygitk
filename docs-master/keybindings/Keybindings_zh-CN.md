@@ -182,7 +182,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p v `` | 在浏览器中打开拉取请求 |  |
 | `` w a `` | Show selected commits and their ancestors |  |
 | `` w d `` | Show selected commits and their descendants |  |
-| `` w b `` | Show branch and its upstream |  |
+| `` w b `` | Show branch / tag |  |
 | `` <space> `` | Toggle selection |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
@@ -308,7 +308,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s m `` | 混合重置 |  |
 | `` s s `` | 软重置 |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
-| `` w b `` | Show branch and its upstream |  |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | 检出 | 检出选中的项目 |
 | `` g m n `` | 移动提交至新分支 | 创建一个新分支，并将当前分支未推送的提交移动到该分支。如果您打算开始新工作但忘记先创建新分支，这会很有用。<br><br>请注意，此操作忽略选择，新分支总是从主分支创建或堆叠在当前分支之上（您可以选择哪种方式）。 |
 | `` n w `` | 新建工作树 |  |
@@ -344,6 +344,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` s d `` | Checkout detached HEAD |  |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | 检出 | 检出选择的标签作为分离的HEAD |
 | `` n t `` | 创建标签 | 基于当前提交创建一个新标签。您将在弹窗中输入标签名称和描述(可选)。 |
 | `` n w `` | 新建工作树 |  |
@@ -504,6 +505,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y t `` | Copy commit tags |  |
 | `` s d `` | Checkout detached HEAD |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | 检出 | 基于当前选中的远程分支检出一个新的本地分支，或者将远程分支作分离的HEAD。 |
 | `` n w `` | 新建工作树 |  |
 | `` m `` | 合并到当前检出的分支 | 查看将选中项合并到当前分支的选项(正常合并，压缩合并) |

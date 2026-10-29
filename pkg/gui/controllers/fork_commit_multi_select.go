@@ -50,7 +50,7 @@ var commitSelectionScoped = map[string]bool{
 	"commit.revert":               true,
 	"commit.mark-rebase-base":     true,
 	"tag.create-at-selection":     true,
-	"filter.branch-and-upstream":  true,
+	"filter.ref":                  true,
 	// BisectController
 	"bisect.options-menu": true,
 	// BasicCommitsController

@@ -87,7 +87,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g p v `` | Otwórz żądanie ściągnięcia w przeglądarce |  |
 | `` w a `` | Show selected commits and their ancestors |  |
 | `` w d `` | Show selected commits and their descendants |  |
-| `` w b `` | Show branch and its upstream |  |
+| `` w b `` | Show branch / tag |  |
 | `` <space> `` | Toggle selection |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
@@ -219,7 +219,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s m `` | Mieszany reset |  |
 | `` s s `` | Miękki reset |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
-| `` w b `` | Show branch and its upstream |  |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | Przełącz | Przełącz wybrany element. |
 | `` g m n `` | Przenieś commity do nowej gałęzi | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | Nowe drzewo pracy |  |
@@ -466,6 +466,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` s d `` | Checkout detached HEAD |  |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | Przełącz | Przełącz wybrany tag jako odłączoną głowę (detached HEAD). |
 | `` n t `` | Nowy tag | Utwórz nowy tag z bieżącego commita. Zostaniesz poproszony o wprowadzenie nazwy tagu i opcjonalnego opisu. |
 | `` n w `` | Nowe drzewo pracy |  |
@@ -504,6 +505,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y t `` | Copy commit tags |  |
 | `` s d `` | Checkout detached HEAD |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
+| `` w b `` | Show branch / tag |  |
 | `` s c `` | Przełącz | Przełącz na nową lokalną gałąź na podstawie wybranej gałęzi zdalnej. Nowa gałąź będzie śledzić gałąź zdalną. |
 | `` n w `` | Nowe drzewo pracy |  |
 | `` m `` | Scal | Scal wybraną gałąź z aktualnie sprawdzoną gałęzią. |

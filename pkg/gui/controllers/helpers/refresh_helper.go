@@ -767,7 +767,7 @@ type capturedCommitState struct {
 	// Fork: the commit scope filter (see fork_commit_scope.go).
 	scopeHashes      []string
 	scopeDescendants bool
-	scopeBranch      string
+	scopeRef         string
 }
 
 // captureCommitsState reads the commits refresh's model/context/mode inputs
@@ -788,7 +788,7 @@ func (self *RefreshHelper) captureCommitsState() capturedCommitState {
 		parentIsLocalCommits: parentCtx != nil && parentCtx.GetKey() == context.LOCAL_COMMITS_CONTEXT_KEY,
 		scopeHashes:          scope.Hashes,
 		scopeDescendants:     scope.Descendants,
-		scopeBranch:          scope.Branch,
+		scopeRef:             scope.Ref,
 	}
 }
 
@@ -864,7 +864,7 @@ func (self *RefreshHelper) refreshCommitsWithLimit(captured capturedCommitState,
 			HashPool:             captured.hashPool,
 			ScopeHashes:          captured.scopeHashes,
 			ScopeDescendants:     captured.scopeDescendants,
-			ScopeBranch:          captured.scopeBranch,
+			ScopeRef:             captured.scopeRef,
 		},
 	)
 	if err != nil {

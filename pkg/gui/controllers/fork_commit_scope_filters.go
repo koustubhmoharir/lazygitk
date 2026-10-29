@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"errors"
+
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gui/modes/filtering"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
@@ -8,71 +10,68 @@ import (
 )
 
 // Fork: w a, w d and w b show the selected commits with their ancestors or with
-// their descendants, or a branch with its upstream. They are bound to Commits only;
-// Reflog and Sub-commits keep upstream's behaviour. The filter itself is in
-// helpers/fork_commit_scope_filter.go. w b from Branches is in
-// fork_branch_scope_filter.go.
+// their descendants, or a branch, remote branch or tag with its history. They are
+// bound to Commits only; Reflog and Sub-commits keep upstream's behaviour. The filter
+// itself is in helpers/fork_commit_scope_filter.go. w b from Branches, Remote branches
+// and Tags, and the shared ref logic, are in fork_branch_scope_filter.go and
+// fork_ref_scope_filter.go.
 
 // addCommitScopeFilterBindings is the integration point in LocalCommitsController.
 func (self *LocalCommitsController) addCommitScopeFilterBindings(bindings []*types.Binding) []*types.Binding {
 	return append(bindings,
 		self.commitScopeFilterBinding("filter.commit-ancestors", self.c.Tr.FilterCommitAncestors, false),
 		self.commitScopeFilterBinding("filter.commit-descendants", self.c.Tr.FilterCommitDescendants, true),
-		self.commitBranchScopeFilterBinding(),
+		self.commitRefScopeFilterBinding(),
 	)
 }
 
-// commitBranchScopeFilterBinding is w b on a commit that local branches point at.
-// One branch is applied directly; several are chosen from a menu.
-func (self *LocalCommitsController) commitBranchScopeFilterBinding() *types.Binding {
+// commitRefScopeFilterBinding is w b on a commit that a local branch, remote branch or
+// tag points at. The refs are looked up when it runs, so the menu is never stale.
+func (self *LocalCommitsController) commitRefScopeFilterBinding() *types.Binding {
 	return &types.Binding{
-		CommandID:   "filter.branch-and-upstream",
+		CommandID:   "filter.ref",
 		Verb:        "filter",
-		Description: self.c.Tr.FilterBranchAndUpstream,
-		Handler:     self.applyBranchScopeFilterFromCommit,
+		Description: self.c.Tr.FilterRef,
+		Handler:     self.applyRefScopeFilterFromCommit,
 		GetDisabledReason: func() *types.DisabledReason {
 			commit := self.context().GetSelected()
 			if commit == nil || !isFullSelectedCommitOID(commit.Hash()) {
 				return &types.DisabledReason{Text: self.c.Tr.CommitScopeSelectCommits, Inapplicable: true}
 			}
-			if len(localBranchNamesAt(self.c.Model().Branches, commit.Hash())) == 0 {
-				return &types.DisabledReason{Text: self.c.Tr.CommitScopeNoBranch, Inapplicable: true}
+			if !commitHasRefScope(commit, self.c.Model().Branches, self.c.Model().Remotes) {
+				return &types.DisabledReason{Text: self.c.Tr.CommitScopeNoRef, Inapplicable: true}
 			}
 			return nil
 		},
 	}
 }
 
-func (self *LocalCommitsController) applyBranchScopeFilterFromCommit() error {
+// applyRefScopeFilterFromCommit lists the refs at the selected commit. One ref applies
+// directly; several are chosen from a menu, in the order RefsAtCommit gives them.
+func (self *LocalCommitsController) applyRefScopeFilterFromCommit() error {
 	commit := self.context().GetSelected()
 	if commit == nil {
 		return nil
 	}
-	names := localBranchNamesAt(self.c.Model().Branches, commit.Hash())
-	apply := func(name string) error {
-		return self.c.Helpers().Mode.SetCommitScopeFilter(filtering.CommitScope{Branch: name}, commit.Hash())
+	refs, err := self.c.Git().Commit.RefsAtCommit(commit.Hash())
+	if err != nil {
+		return err
 	}
-	if len(names) == 1 {
-		return apply(names[0])
+	switch len(refs) {
+	case 0:
+		return errors.New(self.c.Tr.CommitScopeNoRef)
+	case 1:
+		return applyRefScope(self.c, refs[0], commit.Hash())
 	}
 	return self.c.Menu(types.CreateMenuOptions{
-		Title: self.c.Tr.FilterBranchAndUpstream,
-		Items: lo.Map(names, func(name string, _ int) *types.MenuItem {
-			return &types.MenuItem{Label: name, OnPress: func() error { return apply(name) }}
+		Title: self.c.Tr.FilterRef,
+		Items: lo.Map(refs, func(ref string, _ int) *types.MenuItem {
+			return &types.MenuItem{
+				Label:   refScopeLabel(self.c, ref),
+				OnPress: func() error { return applyRefScope(self.c, ref, commit.Hash()) },
+			}
 		}),
 	})
-}
-
-// localBranchNamesAt returns the names of the local branches whose tip is hash, in
-// the model's order. A detached HEAD is not a branch.
-func localBranchNamesAt(branches []*models.Branch, hash string) []string {
-	names := []string{}
-	for _, branch := range branches {
-		if !branch.DetachedHead && branch.CommitHash == hash {
-			names = append(names, branch.Name)
-		}
-	}
-	return names
 }
 
 func (self *LocalCommitsController) commitScopeFilterBinding(commandID string, description string, descendants bool) *types.Binding {
