@@ -121,11 +121,13 @@ re-apply it if upstream changes that code.
   `gui.os = osCommand`). Paste still uses `atotto/clipboard`. Keep the writer
   injected so `oscommands` never imports gocui.
 - `git_commands/commit_loader.go`: `GetCommitsOptions` carries the commit
-  scope (`ScopeHashes`, `ScopeDescendants`, `ScopeBranch`). `GetCommits`
+  scope (`ScopeHashes`, `ScopeDescendants`, `ScopeBranch`, `ScopeTips`). `GetCommits`
   loads a scoped list with `loadCommitScope` and skips rebase todos for it;
   `getLogCmd` takes its revisions, order, `--all` and limit from
   `commitScopeLog` (`fork_commit_scope.go`). New `git log` arguments that depend on the ref or
-  limit must go through `commitScopeLog`.
+  limit must go through `commitScopeLog`. A scope walks the unfiltered
+  revisions and order and drops commits while it reads, so an upstream change
+  to the unfiltered log arguments changes the scoped walk with it.
 
 ### Keys and dispatch
 

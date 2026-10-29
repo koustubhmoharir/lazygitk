@@ -283,6 +283,8 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   still drawn, the status bar names the filter, and the cursor stays on its
   commit. A filter replaces any other log filter, survives refreshes, and is
   removed by Escape (the cursor stays on its commit), or by choosing another.
+  The filtered rows keep the order of the unfiltered log, with the other rows
+  removed, so commits that were close together stay close together.
 - `w b` shows only a local branch, its tracking branch and every ancestor of
   either, so their shared history and both sides of a divergence are visible.
   It is offered on a local branch in Branches (Commits opens on its tip) and

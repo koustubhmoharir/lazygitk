@@ -720,6 +720,7 @@ var tests = []*components.IntegrationTest{
 	ui.ForkDefaultKeymap,
 	ui.ForkDefaultRefresh,
 	ui.ForkFilterAncestors,
+	ui.ForkFilterAncestorsOrder,
 	ui.ForkFilterBranch,
 	ui.ForkFilterDescendants,
 	ui.ForkOpenRepoByPath,

@@ -13,10 +13,21 @@ import (
 // commit as an ancestor). A branch scope shows a local branch and its upstream
 // with their ancestors.
 //
+// A scope walks the same commits as the unfiltered list, in the same order, and
+// drops the commits outside the scope. So the rows of a scope are a subsequence of
+// the unfiltered rows, and commits that were adjacent in the unfiltered list stay
+// adjacent. A walk that starts from the selected commits alone would group its
+// rows by line of history instead.
+//
 // Integration points: GetCommits loads a scoped list with loadCommitScope instead
 // of loadCommits, and getLogCmd takes its revisions, order, --all and limit from
 // commitScopeLog. Upstream lists never set ScopeHashes or ScopeBranch, so they keep
 // their path.
+
+// commitScopeLimit is the number of commits in a limited list. getLogCmd applies
+// it to unscoped lists with -300; a scoped ancestors list applies it while it reads
+// the walk, because the walk has no git limit (see commitAncestorFilter).
+const commitScopeLimit = 300
 
 // hasCommitScope reports whether the list is limited to a commit scope.
 func (opts GetCommitsOptions) hasCommitScope() bool {
@@ -33,25 +44,39 @@ type commitScopeLogArgs struct {
 }
 
 // commitScopeLog returns the git log arguments for opts. refSpec is the revision
-// spec that an unscoped list walks.
+// spec that an unscoped list walks, and configuredOrder is git.log.order.
 func commitScopeLog(opts GetCommitsOptions, refSpec string, configuredOrder string) commitScopeLogArgs {
 	if !opts.hasCommitScope() {
 		return commitScopeLogArgs{revisions: []string{refSpec}, order: configuredOrder, all: opts.All, limit: opts.Limit}
 	}
-	if !opts.ScopeDescendants {
-		// Ancestors: the selected commits and everything they can reach. This
-		// replaces the ref, so --all does not apply, but the normal limit and
-		// order do.
-		return commitScopeLogArgs{revisions: opts.ScopeHashes, order: configuredOrder, limit: opts.Limit}
+	order := scopeWalkOrder(configuredOrder)
+	if opts.ScopeDescendants {
+		// Descendants can be on any ref, so the walk is always --all, whatever the
+		// unfiltered list shows. Children come before their parents in topo-order and
+		// date-order, which keepCommitDescendants relies on. The walk has no limit,
+		// so that no descendant is missed.
+		return commitScopeLogArgs{revisions: []string{refSpec}, order: order, all: true}
 	}
-	// Descendants: every ref, with no limit, so that no descendant is missed. The
-	// order must keep children before their parents, which topo-order guarantees.
-	// The date orders already do, so only the default order needs changing.
-	order := configuredOrder
-	if order == "default" {
-		order = "topo-order"
+	// Ancestors: the walk is the unfiltered one. Its tips are the ones the unfiltered
+	// list walks, plus the branch tips of a branch scope when the list is not --all,
+	// since those need not be reachable from refSpec. Selected commits of a hash
+	// scope come from the visible list, so they are reachable already.
+	revisions := []string{refSpec}
+	if !opts.All {
+		revisions = append(revisions, opts.ScopeTips...)
 	}
-	return commitScopeLogArgs{order: order, all: true}
+	return commitScopeLogArgs{revisions: revisions, order: order, all: opts.All}
+}
+
+// scopeWalkOrder returns the order of a scope walk. The default order is not
+// guaranteed to list children before their parents when commit dates are out of
+// order, and the scope filters need that, so the default walks with --date-order.
+// The two agree when commit dates follow the history, which is the usual case.
+func scopeWalkOrder(configuredOrder string) string {
+	if configuredOrder == "default" {
+		return "date-order"
+	}
+	return configuredOrder
 }
 
 // loadCommitScope loads the commits of a commit scope with parseLine, as
@@ -73,7 +98,7 @@ func (self *CommitLoader) loadCommitScope(opts GetCommitsOptions, parseLine func
 	scoped := opts
 	scoped.ScopeHashes = hashes
 	if !opts.ScopeDescendants {
-		return loadCommits(self.getLogCmd(scoped), "", parseLine)
+		return self.loadCommitAncestors(scoped, parseLine)
 	}
 
 	selected := make(map[string]bool, len(hashes))
@@ -102,36 +127,58 @@ func (self *CommitLoader) loadCommitScope(opts GetCommitsOptions, parseLine func
 	return keepCommitDescendants(commits, selected), nil
 }
 
+// loadCommitAncestors loads the ancestors of opts.ScopeHashes from the unfiltered
+// walk. The filter stops the walk as soon as the ancestors are complete or the
+// limit is reached, so the rest of the history is not read.
+func (self *CommitLoader) loadCommitAncestors(opts GetCommitsOptions, parseLine func(string) (*models.Commit, bool)) ([]*models.Commit, error) {
+	filter := newCommitAncestorFilter(opts.ScopeHashes, opts.Limit)
+	scopedParseLine := func(line string) (*models.Commit, bool) {
+		// Stopping before the line of the next commit keeps the last kept commit, as
+		// untilLastSelected does for descendants.
+		if filter.done() {
+			return nil, true
+		}
+		commit, stop := parseLine(line)
+		if stop || commit == nil || !filter.keep(commit) {
+			return nil, stop
+		}
+		return commit, false
+	}
+	return loadCommits(self.getLogCmd(opts), "", scopedParseLine)
+}
+
 // loadBranchScope loads the commits of a branch scope: the local branch and its
 // upstream, with their ancestors, in the normal order and limit. The branch is
 // resolved on every load, so commits fetched into the upstream appear. A branch
 // that no longer exists gives an empty list.
 //
-// The resolved refs are passed on as the revisions of an ancestors scope, which
-// takes ref names as readily as hashes.
+// The resolved commits are the selection of an ancestors scope, and they are also
+// its tips, since the walk must start from them when it is not --all.
 func (self *CommitLoader) loadBranchScope(opts GetCommitsOptions, parseLine func(string) (*models.Commit, bool)) ([]*models.Commit, error) {
 	branchRef := "refs/heads/" + opts.ScopeBranch
-	if err := self.cmd.New(NewGitCmd("rev-parse").Arg("--verify", "--quiet", branchRef).ToArgv()).DontLog().Run(); err != nil {
+	branchHash, err := self.cmd.New(NewGitCmd("rev-parse").Arg("--verify", "--quiet", branchRef).ToArgv()).DontLog().RunWithOutput()
+	if err != nil {
 		// The branch is gone (or the lookup failed, which the log below would
 		// report too), so there is nothing to show.
 		return []*models.Commit{}, nil
 	}
 
-	revisions := []string{branchRef}
+	tips := []string{strings.TrimSpace(branchHash)}
 	// The upstream is optional: rev-parse --quiet exits non-zero when there is none,
 	// or when it does not resolve. Either way the branch alone is shown. The
 	// @{upstream} suffix takes the short branch name; the full ref name does not work.
-	if upstream, err := self.cmd.New(NewGitCmd("rev-parse").Arg("--verify", "--quiet", "--symbolic-full-name", opts.ScopeBranch+"@{upstream}").ToArgv()).DontLog().RunWithOutput(); err == nil {
+	if upstream, err := self.cmd.New(NewGitCmd("rev-parse").Arg("--verify", "--quiet", opts.ScopeBranch+"@{upstream}").ToArgv()).DontLog().RunWithOutput(); err == nil {
 		if upstream = strings.TrimSpace(upstream); upstream != "" {
-			revisions = append(revisions, upstream)
+			tips = append(tips, upstream)
 		}
 	}
 
 	scoped := opts
 	scoped.ScopeBranch = ""
-	scoped.ScopeHashes = revisions
+	scoped.ScopeHashes = tips
+	scoped.ScopeTips = tips
 	scoped.ScopeDescendants = false
-	return loadCommits(self.getLogCmd(scoped), "", parseLine)
+	return self.loadCommitAncestors(scoped, parseLine)
 }
 
 // existingCommitScopeHashes returns the hashes that name a commit in the
@@ -160,6 +207,50 @@ func (self *CommitLoader) existingCommitScopeHashes(hashes []string) ([]string, 
 		}
 	}
 	return existing, nil
+}
+
+// commitAncestorFilter picks the ancestors of the selected commits out of a walk
+// that lists children before their parents. A commit is kept when it is selected
+// or is a parent of a kept commit. Because children come first, that is settled
+// when the walk reaches the commit, so one pass decides every commit.
+type commitAncestorFilter struct {
+	// wanted holds the selected commits and the parents of kept commits that the
+	// walk has not reached yet.
+	wanted map[string]bool
+	limit  bool
+	kept   int
+}
+
+// newCommitAncestorFilter returns a filter for the ancestors of selected. When
+// limit is set, the filter is done once commitScopeLimit commits are kept.
+func newCommitAncestorFilter(selected []string, limit bool) *commitAncestorFilter {
+	wanted := make(map[string]bool, len(selected))
+	for _, hash := range selected {
+		wanted[hash] = true
+	}
+	return &commitAncestorFilter{wanted: wanted, limit: limit}
+}
+
+// done reports whether the walk can stop before its next commit, because no
+// commit that is still wanted can come after it, or the limit has been reached.
+// A walk that stops early reads only the commits that are needed.
+func (self *commitAncestorFilter) done() bool {
+	return len(self.wanted) == 0 || (self.limit && self.kept >= commitScopeLimit)
+}
+
+// keep reports whether commit is in the scope, and if it is, it wants the parents
+// of commit. Commits must be given in walk order, and only while !done().
+func (self *commitAncestorFilter) keep(commit *models.Commit) bool {
+	hash := commit.Hash()
+	if !self.wanted[hash] {
+		return false
+	}
+	delete(self.wanted, hash)
+	for _, parent := range commit.Parents() {
+		self.wanted[parent] = true
+	}
+	self.kept++
+	return true
 }
 
 // keepCommitDescendants returns the commits that are selected or have a kept

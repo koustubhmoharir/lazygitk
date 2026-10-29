@@ -71,10 +71,12 @@ type GetCommitsOptions struct {
 	// Fork: commit scope filter (see fork_commit_scope.go). When ScopeHashes is
 	// non-empty, the list shows those commits with their ancestors, or with their
 	// descendants when ScopeDescendants is set. When ScopeBranch is set, the list
-	// shows that local branch and its upstream with their ancestors.
+	// shows that local branch and its upstream with their ancestors. ScopeTips are
+	// the branch commits that an ancestors walk starts from when the log is not --all.
 	ScopeHashes      []string
 	ScopeDescendants bool
 	ScopeBranch      string
+	ScopeTips        []string
 }
 
 // GetCommits obtains the commits of the current branch
