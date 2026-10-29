@@ -227,6 +227,13 @@ type View struct {
 	// text overflows. If true the view's y-origin will be ignored.
 	Autoscroll bool
 
+	// Fork: if KeepOriginXOnSearch is true, selecting a search match never scrolls the
+	// view sideways to it; the match is still selected. Upstream scrolls to it, which
+	// hides a list's hash and graph columns, so list views set it (see
+	// pkg/gui/context/setup.go and fork_search_scroll_test.go). Main views keep the
+	// upstream behaviour.
+	KeepOriginXOnSearch bool
+
 	// If Frame is true, Title allows to configure a title for the view.
 	Title string
 
@@ -546,7 +553,8 @@ func (v *View) SelectSearchResult(index int) {
 
 	v.FocusPoint(v.ox, y, true)
 	// A match without a position in the line has nothing to scroll to.
-	if pos.XStart >= 0 {
+	// Fork: KeepOriginXOnSearch leaves the origin alone, even if it is scrolled sideways.
+	if pos.XStart >= 0 && !v.KeepOriginXOnSearch {
 		v.scrollColumnsIntoView(pos.XStart, pos.XEnd)
 	}
 	v.renderSearchStatus(index, itemCount)

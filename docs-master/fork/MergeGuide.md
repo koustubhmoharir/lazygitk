@@ -294,6 +294,9 @@ Commit scope filters (`w a`, `w d`, `w b`) are a third kind of filtering mode:
   explicit set of selected lines (`SetSelectedLines`,
   `fork_selected_lines.go`) replaces the cursor and range highlight while set.
   New upstream callers of `setCharacter` must pass the content line.
+  `SelectSearchResult` skips the sideways scroll for views with
+  `KeepOriginXOnSearch`, which `context/setup.go` `NewContextTree` sets on
+  every list context's view (`fork_list_search_scroll.go`).
 - `pkg/gui/presentation/commits.go` `loadPipesets`: the pipe set cache key's
   `commitHash` is a digest of every hash in the list (`commitListKey`,
   `fork_pipe_set_key.go`), because scoped and whole-graph lists can share

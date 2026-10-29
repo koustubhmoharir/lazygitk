@@ -5,7 +5,7 @@ import "github.com/jesseduffield/lazygit/pkg/gui/types"
 func NewContextTree(c *ContextCommon) *ContextTree {
 	commitFilesContext := NewCommitFilesContext(c)
 
-	return &ContextTree{
+	tree := &ContextTree{
 		Global: NewSimpleContext(
 			NewBaseContext(NewBaseContextOpts{
 				Kind:                  types.GLOBAL_CONTEXT,
@@ -92,4 +92,8 @@ func NewContextTree(c *ContextCommon) *ContextTree {
 		StatusSpacer1: NewDisplayContext(STATUS_SPACER1_CONTEXT_KEY, c.Views().StatusSpacer1, "statusSpacer1"),
 		StatusSpacer2: NewDisplayContext(STATUS_SPACER2_CONTEXT_KEY, c.Views().StatusSpacer2, "statusSpacer2"),
 	}
+
+	// Fork: list views never scroll sideways to a search match (see fork_list_search_scroll.go).
+	tree.keepListViewsOriginXOnSearch()
+	return tree
 }

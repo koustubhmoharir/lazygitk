@@ -37,7 +37,7 @@ in the [design principles](Design.md). The generated per-pane reference is
 | Keys | Action |
 | --- | --- |
 | `?` | Command palette |
-| `/` | Search the pane (Commits, Sub-commits, diffs) or filter it (other lists and menus) |
+| `/` | Search the pane (Commits, Sub-commits, diffs) or filter it (other lists and menus); a list pane never scrolls sideways to a match |
 | F3, Shift+F3 | Next, previous search result |
 | `p` | Push the selected branch, or the checked-out branch outside Branches; push the selected tag in Tags |
 | `f` | Fetch all remotes; in Remotes, fetch the selected remote |
