@@ -93,6 +93,10 @@ re-apply it if upstream changes that code.
   `gui.commandPaletteOrder` and custom command IDs.
 - `pkg/config/theme_config.go`: `ThemeForBackground` merges
   `forkThemePalette` between `gui.theme` and upstream's `themeDefaults`.
+- `pkg/gui/gui.go` `applyTheme`: calls `theme.UpdateBasicColors`
+  (`pkg/theme/fork_basic_colors.go`), which replaces `style.FgBlue` with the
+  palette's Blue. Upstream code that hard-codes `style.FgBlue` gets it too;
+  `style.ColorMap` keeps the terminal's blue for config values.
 - `pkg/config/diff_renderer_config_manager.go`: every read of
   `Git.DiffRenderers` goes through `forkEffectiveDiffRenderers`, which turns
   an empty list into delta plus Git's diff. Route any new read through it.

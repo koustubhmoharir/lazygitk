@@ -394,7 +394,10 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 
 - The theme defaults to Catppuccin: Mocha on a dark terminal, Latte on a
   light one, switching when the terminal reports a change. Any theme field you
-  set explicitly wins. The focused pane has a heavy frame.
+  set explicitly wins. Text that upstream colours with the terminal's blue
+  (commit dates, reflog hashes, remote branch counts) uses the palette's Blue,
+  which stays readable on a black background. The focused pane has a heavy
+  frame.
 - Diffs render through delta when it is on `PATH`, with Git's own diff one
   `t d n` away. Without delta, Git's diff is used and a notice says so once.
 - The popup on first run only says that lazygitk is a fork of lazygit, and

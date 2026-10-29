@@ -1332,6 +1332,9 @@ func (gui *Gui) showBreakingChangesMessage() {
 func (gui *Gui) applyTheme() {
 	themeConfig := gui.UserConfig().Gui.ThemeForBackground(gui.terminalHasLightBackground(), gui.terminalBackgroundColor())
 	theme.UpdateTheme(themeConfig)
+	// Fork: the hard-coded basic blue follows the Catppuccin palette, see
+	// fork_basic_colors.go.
+	theme.UpdateBasicColors(gui.terminalHasLightBackground())
 	authors.SetCustomAuthors(themeConfig.AuthorColors)
 	presentation.SetCustomBranches(themeConfig.BranchColorPatterns)
 
