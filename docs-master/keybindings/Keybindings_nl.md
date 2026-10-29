@@ -28,12 +28,14 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
 | `` <esc> `` | Annuleren |  |
 | `` ? `` | Open menu |  |
-| `` w o `` | Bekijk scoping opties | View options for filtering the commit log, so that only commits matching the filter are shown. |
 | `` t d c `` | Open diff menu | View options relating to diffing two refs e.g. diffing against selected ref, entering ref to diff against, and reversing the diff direction. |
 | `` q `` | Afsluiten |  |
 | `` t a s `` | Pauzeer de applicatie |  |
 | `` t d w `` | Witruimte weergeven in-/uitschakelen | Toggle whether or not whitespace changes are shown in the diff view.<br><br>The default can be changed in the config file with the key 'git.ignoreWhitespaceInDiffView'. |
 | `` t a c `` | Verander config bestand | Open bestand in externe editor. |
+| `` w p `` | Filter by path |  |
+| `` w u `` | Filter by author |  |
+| `` w c `` | Clear the log filter |  |
 | `` u u `` | Ongedaan maken (via reflog) (experimenteel) | The reflog will be used to determine what git command to run to undo the last git command. This does not include changes to the working tree; only commits are taken into consideration. |
 | `` u r `` | Redo (via reflog) (experimenteel) | Het reflog wordt gebruikt om te bepalen welk git commando moet worden gebruikt om het laatste git commando te herhalen. Wijzigingen aan de working tree worden niet meegenomen, alleen command's zijn kandidaten. |
 

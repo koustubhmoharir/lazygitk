@@ -28,12 +28,14 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
 | `` <esc> `` | 取消 |  |
 | `` ? `` | 開啟選單 |  |
-| `` w o `` | 檢視篩選路徑選項 | 檢視用於過濾提交日誌的選項，以便僅顯示與過濾器匹配的提交。 |
 | `` t d c `` | 開啟差異比較選單 | 檢視與比較兩個引用相關的選項，例如與選定的 ref 進行比較，輸入要比較的 ref，然後反轉比較方向。 |
 | `` q `` | 結束 |  |
 | `` t a s `` | 掛起應用程式 |  |
 | `` t d w `` | 切換是否在差異檢視中顯示空格變更 | 切換是否在差異檢視中顯示空白字元更改。<br><br>預設值可在設定檔中透過鍵 'git.ignoreWhitespaceInDiffView' 更改。 |
 | `` t a c `` | 編輯設定檔案 | 使用外部編輯器開啟 |
+| `` w p `` | Filter by path |  |
+| `` w u `` | Filter by author |  |
+| `` w c `` | Clear the log filter |  |
 | `` u u `` | 復原 | 將使用 reflog 確任 git 指令以復原。這不包括工作區更改；只考慮提交。 |
 | `` u r `` | 取消復原 | 將使用 reflog 確任 git 指令以重作。這不包括工作區更改；只考慮提交。 |
 

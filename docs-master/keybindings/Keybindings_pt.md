@@ -28,12 +28,14 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
 | `` <esc> `` | Cancelar |  |
 | `` ? `` | Abrir o menu de atalhos do teclado |  |
-| `` w o `` | Ver opções de filtro | View options for filtering the commit log, so that only commits matching the filter are shown. |
 | `` t d c `` | View diffing options | View options relating to diffing two refs e.g. diffing against selected ref, entering ref to diff against, and reversing the diff direction. |
 | `` q `` | Sair |  |
 | `` t a s `` | Suspender a aplicação |  |
 | `` t d w `` | Toggle whitespace | Toggle whether or not whitespace changes are shown in the diff view.<br><br>The default can be changed in the config file with the key 'git.ignoreWhitespaceInDiffView'. |
 | `` t a c `` | Editar arquivo de configuração | Abrir arquivo no editor externo. |
+| `` w p `` | Filter by path |  |
+| `` w u `` | Filter by author |  |
+| `` w c `` | Clear the log filter |  |
 | `` u u `` | Desfazer | O reflog será usado para determinar qual comando git para executar para desfazer o último comando git. Isto não inclui mudanças na árvore de trabalho; apenas compromissos são tidos em consideração. |
 | `` u r `` | Refazer | O reflog será usado para determinar qual comando git para executar para refazer o último comando git. Isto não inclui mudanças na árvore de trabalho; apenas compromissos são tidos em consideração. |
 

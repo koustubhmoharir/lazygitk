@@ -28,12 +28,14 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
 | `` <esc> `` | Отменить |  |
 | `` ? `` | Открыть меню |  |
-| `` w o `` | Просмотреть параметры фильтрации по пути | View options for filtering the commit log, so that only commits matching the filter are shown. |
 | `` t d c `` | Открыть меню сравнении | View options relating to diffing two refs e.g. diffing against selected ref, entering ref to diff against, and reversing the diff direction. |
 | `` q `` | Выйти |  |
 | `` t a s `` | Suspend the application |  |
 | `` t d w `` | Переключить отображение изменении пробелов в просмотрщике сравнении | Toggle whether or not whitespace changes are shown in the diff view.<br><br>The default can be changed in the config file with the key 'git.ignoreWhitespaceInDiffView'. |
 | `` t a c `` | Редактировать файл конфигурации | Open file in external editor. |
+| `` w p `` | Filter by path |  |
+| `` w u `` | Filter by author |  |
+| `` w c `` | Clear the log filter |  |
 | `` u u `` | Отменить (через reflog) (экспериментальный) | Журнал ссылок (reflog) будет использоваться для определения того, какую команду git запустить, чтобы отменить последнюю команду git. Сюда не входят изменения в рабочем дереве; учитываются только коммиты. |
 | `` u r `` | Повторить (через reflog) (экспериментальный) | Журнал ссылок (reflog) будет использоваться для определения того, какую команду git нужно запустить, чтобы повторить последнюю команду git. Сюда не входят изменения в рабочем дереве; учитываются только коммиты. |
 

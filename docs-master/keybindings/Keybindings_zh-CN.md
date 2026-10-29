@@ -28,12 +28,14 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t n j `` | Jump to file in diff | Pick one of the files of the diff shown in the main view, and scroll the main view to it. The focus stays in this panel. |
 | `` <esc> `` | 取消 |  |
 | `` ? `` | 打开菜单 |  |
-| `` w o `` | 查看按路径过滤选项 | 查看用于过滤提交日志的选项，以便仅显示与过滤器匹配的提交。 |
 | `` t d c `` | 打开 diff 菜单 | 查看与比较两个引用相关的选项，例如与选定的 ref 进行比较，输入要比较的 ref，然后反转比较方向。 |
 | `` q `` | 退出 |  |
 | `` t a s `` | 挂起应用程序 |  |
 | `` t d w `` | 切换是否在差异视图中显示空白字符差异 | 切换是否在差异视图中显示空白字符更改。<br><br>默认值可在配置文件中通过键 'git.ignoreWhitespaceInDiffView' 更改。 |
 | `` t a c `` | 编辑配置文件 | 使用外部编辑器打开文件 |
+| `` w p `` | Filter by path |  |
+| `` w u `` | Filter by author |  |
+| `` w c `` | Clear the log filter |  |
 | `` u u `` | 撤销 | Reflog将用于确定运行哪个git命令来撤消最后一个git命令。这并不包括对工作树的更改，只考虑提交。 |
 | `` u r `` | 重做 | Reflog将用于确定运行哪个git命令来重做上一个git命令。这并不包括对工作树的更改，只考虑提交。 |
 

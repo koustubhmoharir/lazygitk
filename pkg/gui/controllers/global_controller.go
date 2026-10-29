@@ -23,7 +23,8 @@ func NewGlobalController(
 }
 
 func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
-	return []*types.Binding{
+	// Fork: w p, w u and w c are added here (fork_flat_filter_keys.go).
+	return self.addFlatFilterBindings(opts, []*types.Binding{
 		// Fork: captured cherry-pick is available for marks or focused history.
 		forkCherryPickBinding(self.c),
 		// Fork: palette-only; clears the command usage counts after confirmation.
@@ -194,7 +195,7 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 			Description: self.c.Tr.EditConfig,
 			Tooltip:     self.c.Tr.EditFileTooltip,
 		},
-	}
+	})
 }
 
 func (self *GlobalController) Context() types.Context {

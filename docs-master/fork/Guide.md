@@ -168,7 +168,6 @@ Commits only:
 | `t l o` | Log options |
 | `w a`, `w d` | Show only the selected commits and their ancestors, or their descendants |
 | `w b` | Show branch / tag: only a branch or tag at this commit and its history (a menu asks which when several are here) |
-| `w o` | Filter the log by path or author |
 
 ### Commit files
 
@@ -229,7 +228,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 | `y` copy | `n` name, `p` path, `f` absolute path, `c` file content, `h` hash, `i` short hash, `s` subject, `m` message, `b` body, `u` URL, `a` author, `t` tags, `d` diff, `w` all files' diff, `r` pull request URL, `y` confirmation text |
 | `g` Git | `c` combine, `l` pull, `f` fast-forward, `t` upstream, `i` interactive rebase, `b` bisect, `o` merge/rebase options, `y` git-flow; `v f`/`v c` restore file, revert commit; `r p`/`r b` pick, rebase base; `m n` move commits to new branch; `e c`/`e n`/`e r`/`e a`/`e h` editor commit, commit without hooks, editor reword, commit attributes, edit hunk; `p c`/`p o`/`p v` pull request; `s s`/`s o`/`s a`/`s p` stash, stash options, apply, pop; `h s`/`h u`/`h t`/`h a`/`h o` stage, unstage, patch toggle, patch all, patch options; `h c`/`h p`/`h b` conflict options, pick hunk, pick both; `u s`/`u i`/`u b` submodule update, init, bulk; `z u`/`z w` upstream reset, working-tree reset |
 | `t` view and tools | `d` diff display: `e` external diff, `f` diff with a chosen file, `c` comparison options, `w` whitespace, `n`/`p` renderer, `+`/`-` context, `>`/`<` rename threshold; `t` tree: `t` toggle, `c` collapse all, `e` expand all; `l` log: `n`/`p` all-branch logs, `o` log options, `c` command log options, `s` select branch commits; `s o` sort order; `a` app: `c` config, `u` check update, `s` suspend, `q` quit without changing directory, `g` game; `n`/`p` next/previous: `h` hunk, `f` file, `c` conflict, `d` diff pane, `j` jump to file; `h s`/`h r` hunk selection, range selection |
-| `w` filters | `a` ancestors, `d` descendants of the selected commits (Commits); `b` branch / tag (Commits, Branches, Remote branches, Tags); `s` file status (Files), `o` log filter by path or author (Commits) |
+| `w` filters | `a` ancestors, `d` descendants of the selected commits (Commits); `b` branch / tag (Commits, Branches, Remote branches, Tags); `s` file status (Files); from any pane `p` filter the log by path (prefilled with the selected file), `u` by author (prefilled with the selected commit's author), `c` clear the log filter (while one is active) |
 
 ## How behaviour differs from upstream
 
@@ -295,6 +294,10 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   or tag points at: one ref applies directly, several are chosen from a menu
   (local branches, remote branches, then tags). The refs are looked up again
   on every refresh, so fetched commits appear.
+- `w p` and `w u` filter the log by path or author from any pane, with the
+  prompt prefilled from the selected file or the selected commit's author;
+  `w c` clears whichever log filter is active. Upstream's filtering menu has
+  no key; it is still in the palette.
 - While the log is filtered, commands that rewrite history offer to leave the
   filter first, as upstream's path filter does. Unlike the path filter,
   applying or clearing these filters never changes the screen mode.

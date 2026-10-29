@@ -98,6 +98,9 @@ type TranslationSet struct {
 	ShowingCommitDescendantsOne           string
 	ShowingCommitDescendantsMany          string
 	FilterRef                             string
+	FilterByPath                          string
+	FilterByAuthor                        string
+	ClearLogFilter                        string
 	ToggleCommitSelection                 string
 	ClearCommitSelection                  string
 	ClearCommitSelectionFirst             string
@@ -1616,6 +1619,9 @@ func EnglishTranslationSet() *TranslationSet {
 		ShowingCommitDescendantsOne:           "Showing descendants of %d selected commit",
 		ShowingCommitDescendantsMany:          "Showing descendants of %d selected commits",
 		FilterRef:                             "Show branch / tag",
+		FilterByPath:                          "Filter by path",
+		FilterByAuthor:                        "Filter by author",
+		ClearLogFilter:                        "Clear the log filter",
 		ToggleCommitSelection:                 "Toggle selection",
 		ClearCommitSelection:                  "Clear selection",
 		ClearCommitSelectionFirst:             "Clear the selection first (Escape)",

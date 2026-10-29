@@ -167,7 +167,10 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("filter.commit-descendants", "w d")
 	add("filter.ref", "w b")
 	add("file.filter-menu", "w s")
-	add("filter.options-menu", "w o")
+	// Fork: w p, w u and w c are flat filter keys (fork_flat_filter_keys.go); w o loses its key.
+	add("filter.by-path", "w p")
+	add("filter.by-author", "w u")
+	add("filter.clear", "w c")
 	add("ui.file-tree.toggle", "t t t")
 	add("ui.file-tree.collapse-all", "t t c")
 	add("ui.file-tree.expand-all", "t t e")
@@ -209,7 +212,7 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 
 	// Replaced normal routes, and nested copy menus that moved into the flat y
 	// menu, intentionally remain recognized with no path.
-	for _, id := range strings.Fields("file.refresh file.copy-menu history-file.copy-menu commit.copy-attribute-menu commit.copy-for-cherry-pick commit.squash-down commit.mark-fixup commit.set-fixup-message commit.create-fixup-menu commit.autosquash commit.find-fixup-target commit.clear-cherry-pick-selection branch.create-and-checkout branch.reset-menu branch.checkout-by-name branch.checkout-previous branch.force-checkout file.toggle-stage-all diff.primary-selection diff.discard-selection") {
+	for _, id := range strings.Fields("file.refresh file.copy-menu history-file.copy-menu commit.copy-attribute-menu commit.copy-for-cherry-pick commit.squash-down commit.mark-fixup commit.set-fixup-message commit.create-fixup-menu commit.autosquash commit.find-fixup-target commit.clear-cherry-pick-selection branch.create-and-checkout branch.reset-menu branch.checkout-by-name filter.options-menu branch.checkout-previous branch.force-checkout file.toggle-stage-all diff.primary-selection diff.discard-selection") {
 		if _, exists := paths[id]; !exists {
 			paths[id] = nil
 		}

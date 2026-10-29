@@ -177,7 +177,11 @@ re-apply it if upstream changes that code.
 
 - `controllers/global_controller.go`: appends the fork globals: cherry-pick
   (`fork_cherry_pick.go`), fetch (`fork_fetch.go`), previous branch
-  (`fork_checkout_previous.go`) and usage reset.
+  (`fork_checkout_previous.go`) and usage reset. `GetKeybindings` wraps its
+  list in `addFlatFilterBindings` (`fork_flat_filter_keys.go`), which adds
+  `w p`, `w u` and `w c`; their prompts copy those of upstream's filtering
+  menu (`filtering_menu_action.go`), so check them against it when merging.
+  `filter.options-menu` keeps its command but has no default key.
 - `controllers/files_controller.go`: adds the flat copy menu, `d w`/`d s`/`d c`
   and tree navigation. `repo.fetch` and `fetch` are removed (now global);
   re-apply that removal or fetch is registered twice. Conflict hints use

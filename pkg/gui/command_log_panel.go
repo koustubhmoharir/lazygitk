@@ -115,7 +115,7 @@ func (gui *Gui) getRandomTip() string {
 		),
 		gui.keyTip(
 			"To filter commits by path, press '%s'",
-			commandRoute{"filter.options-menu", ""},
+			commandRoute{"filter.by-path", ""},
 		),
 		gui.keyTip(
 			"To start an interactive rebase, press '%s' on a commit. You can always abort the rebase by pressing '%s' and selecting 'abort'",
