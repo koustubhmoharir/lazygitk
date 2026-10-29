@@ -400,6 +400,9 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   frame.
 - Diffs render through delta when it is on `PATH`, with Git's own diff one
   `t d n` away. Without delta, Git's diff is used and a notice says so once.
+  The default delta command draws file names, hunk headers and line-number
+  columns in the palette's Blue instead of the terminal's; a delta style set
+  in your git config (`[delta]` or a delta feature) wins.
 - The popup on first run only says that lazygitk is a fork of lazygit, and
   how to thank lazygit's author through the donate link.
 

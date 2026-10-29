@@ -1,6 +1,12 @@
 package config
 
-import "os/exec"
+import (
+	"fmt"
+	"os/exec"
+	"strings"
+
+	"github.com/jesseduffield/generics/set"
+)
 
 // Fork: when git.diffRenderers is empty, which includes unset and an explicit
 // [], the fork uses delta followed by git's own diff, so that | cycles between
@@ -10,9 +16,43 @@ import "os/exec"
 // A non-empty list the user configured is never changed, not even when it names
 // delta.
 
-// forkDeltaCommand is the default delta renderer command. {{colorScheme}} is
-// resolved per render like any other renderer command.
-const forkDeltaCommand = "delta --{{colorScheme}} --paging=never --tabs=4"
+// forkDeltaBlueStyles are the delta styles whose default colour is the
+// terminal's basic blue, with what each adds to the colour. Many terminal
+// palettes make that blue too dark to read on a black background.
+var forkDeltaBlueStyles = []struct{ key, attributes string }{
+	{"file-style", ""},
+	{"file-decoration-style", " ul"},
+	{"hunk-header-file-style", ""},
+	{"hunk-header-line-number-style", ""},
+	{"hunk-header-decoration-style", " box"},
+	{"line-numbers-left-style", ""},
+	{"line-numbers-right-style", ""},
+}
+
+// forkDeltaCommand returns the default delta renderer command. It gives the
+// styles in forkDeltaBlueStyles the palette's Blue, except those that the git
+// config sets. gitDeltaConfig is the git config's delta settings as `git config
+// --get-regexp` prints them. A style set in a delta feature counts as set,
+// whether or not the feature is in use. {{colorScheme}} is resolved per render
+// like any other renderer command.
+func forkDeltaCommand(gitDeltaConfig string) string {
+	configured := set.New[string]()
+	for _, line := range strings.Split(gitDeltaConfig, "\n") {
+		name, _, _ := strings.Cut(line, " ")
+		configured.Add(strings.ToLower(name[strings.LastIndex(name, ".")+1:]))
+	}
+
+	var command strings.Builder
+	fmt.Fprintf(&command, `{{$blue := %q}}{{if eq colorScheme "light"}}{{$blue = %q}}{{end}}`,
+		ForkPaletteBlue(false), ForkPaletteBlue(true))
+	command.WriteString("delta --{{colorScheme}} --paging=never --tabs=4")
+	for _, style := range forkDeltaBlueStyles {
+		if !configured.Includes(style.key) {
+			fmt.Fprintf(&command, ` --%s="{{$blue}}%s"`, style.key, style.attributes)
+		}
+	}
+	return command.String()
+}
 
 // forkLookPath finds delta on PATH. It is a variable so that tests can decide
 // whether delta is present without depending on the machine they run on.
@@ -20,9 +60,9 @@ var forkLookPath = exec.LookPath
 
 // forkDefaultDiffRenderers is the list used when the user's list is empty and
 // delta is on PATH.
-func forkDefaultDiffRenderers() []DiffRendererConfig {
+func forkDefaultDiffRenderers(gitDeltaConfig string) []DiffRendererConfig {
 	return []DiffRendererConfig{
-		{Name: "delta", ColorArg: "always", Command: forkDeltaCommand},
+		{Name: "delta", ColorArg: "always", Command: DiffRendererCommandType(forkDeltaCommand(gitDeltaConfig))},
 		{Type: "rawGit", Name: "default"},
 	}
 }
@@ -61,7 +101,7 @@ func (self *DiffRendererConfigManager) forkEffectiveDiffRenderers() (diffRendere
 		return userDiffRenderers, false
 	}
 	if self.forkDelta.available() {
-		return forkDefaultDiffRenderers(), false
+		return forkDefaultDiffRenderers(self.forkGitDeltaConfig()), false
 	}
 	return forkFallbackDiffRenderers(), true
 }
@@ -72,4 +112,18 @@ func (self *DiffRendererConfigManager) forkEffectiveDiffRenderers() (diffRendere
 func (self *DiffRendererConfigManager) DefaultDiffRendererFellBack() bool {
 	_, fellBack := self.forkEffectiveDiffRenderers()
 	return fellBack
+}
+
+// SetForkGitDeltaConfig sets where the default delta command finds the git
+// config's delta settings: a function that returns them as `git config
+// --get-regexp` prints them.
+func (self *DiffRendererConfigManager) SetForkGitDeltaConfig(getGitDeltaConfig func() string) {
+	self.getForkGitDeltaConfig = getGitDeltaConfig
+}
+
+func (self *DiffRendererConfigManager) forkGitDeltaConfig() string {
+	if self.getForkGitDeltaConfig == nil {
+		return ""
+	}
+	return self.getForkGitDeltaConfig()
 }

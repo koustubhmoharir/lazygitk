@@ -59,7 +59,7 @@ func TestForkDefaultDiffRenderersWhenDeltaIsFound(t *testing.T) {
 	assert.Equal(t, DiffRendererType_StdinFilter, manager.GetDiffRendererType())
 	command, err := manager.GetStdinFilterCommand(DiffRendererValues{Width: 80, LightBackground: true})
 	assert.NoError(t, err)
-	assert.Equal(t, "delta --light --paging=never --tabs=4", command)
+	assert.Equal(t, "delta --light --paging=never --tabs=4"+forkDeltaBlueArgs("#1e66f5"), command)
 	assert.Equal(t, "always", manager.GetColorArg())
 
 	manager.CycleDiffRenderers()
@@ -171,4 +171,45 @@ func TestDiffRendererCyclingNeverSeesAnEmptyList(t *testing.T) {
 	assert.Equal(t, DiffRendererType_RawGit, manager.GetDiffRendererType())
 	_, err := manager.GetStdinFilterCommand(DiffRendererValues{})
 	assert.NoError(t, err)
+}
+
+// forkDeltaBlueArgs is what the default delta command adds to give delta's blue
+// styles the palette's Blue when the git config sets none of them.
+func forkDeltaBlueArgs(blue string) string {
+	return ` --file-style="` + blue + `"` +
+		` --file-decoration-style="` + blue + ` ul"` +
+		` --hunk-header-file-style="` + blue + `"` +
+		` --hunk-header-line-number-style="` + blue + `"` +
+		` --hunk-header-decoration-style="` + blue + ` box"` +
+		` --line-numbers-left-style="` + blue + `"` +
+		` --line-numbers-right-style="` + blue + `"`
+}
+
+func TestForkDeltaCommandUsesThePaletteBlue(t *testing.T) {
+	setForkLookPath(t, true)
+	manager := newForkDiffRendererTestManager(GetDefaultConfig())
+
+	command, err := manager.GetStdinFilterCommand(DiffRendererValues{Width: 80})
+	assert.NoError(t, err)
+	assert.Equal(t, "delta --dark --paging=never --tabs=4"+forkDeltaBlueArgs("#89b4fa"), command)
+}
+
+func TestForkDeltaCommandLeavesStylesSetInTheGitConfigToDelta(t *testing.T) {
+	setForkLookPath(t, true)
+	manager := newForkDiffRendererTestManager(GetDefaultConfig())
+	// Keys of the main section and of a feature both count, in any case.
+	manager.SetForkGitDeltaConfig(func() string {
+		return "delta.side-by-side true\n" +
+			"delta.file-style red\n" +
+			"delta.mytheme.Hunk-Header-Decoration-Style green box\n" +
+			"delta.line-numbers-left-style"
+	})
+
+	command, err := manager.GetStdinFilterCommand(DiffRendererValues{Width: 80})
+	assert.NoError(t, err)
+	assert.Equal(t, "delta --dark --paging=never --tabs=4"+
+		` --file-decoration-style="#89b4fa ul"`+
+		` --hunk-header-file-style="#89b4fa"`+
+		` --hunk-header-line-number-style="#89b4fa"`+
+		` --line-numbers-right-style="#89b4fa"`, command)
 }

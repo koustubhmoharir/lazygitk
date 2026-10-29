@@ -914,6 +914,9 @@ func NewGui(
 	gui.stateAccessor = &StateAccessor{gui: gui}
 
 	gui.diffRendererConfig = config.NewDiffRendererConfigManager(func() *config.UserConfig { return gui.UserConfig() })
+	// Fork: delta styles set in the git config win over the palette colours of
+	// the default delta renderer (fork_delta_config.go).
+	gui.diffRendererConfig.SetForkGitDeltaConfig(gui.forkGitDeltaConfig)
 
 	// Fork: the tracker and store need gui.c for logging, so they are set up
 	// after it. Popups created earlier only call the hook once a command runs.

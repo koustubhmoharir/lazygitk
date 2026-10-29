@@ -14,6 +14,9 @@ type DiffRendererConfigManager struct {
 	diffRendererIndex int
 	// Fork: caches the PATH lookup for the default delta renderer (fork_diff_renderers.go).
 	forkDelta forkDeltaAvailability
+	// Fork: the git config's delta settings, which keep the default delta
+	// renderer from overriding the styles they set (fork_diff_renderers.go).
+	getForkGitDeltaConfig func() string
 }
 
 type DiffRendererType int
