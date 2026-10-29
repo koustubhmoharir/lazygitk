@@ -280,7 +280,10 @@ Commit scope filters (`w a`, `w d`, `w b`) are a third kind of filtering mode:
 - `helpers/mode_helper.go`: the filtering status label defers to
   `commitScopeInfoLabel`; `changeFiltering` takes its screen layout from
   `changeFilteringWithLayout`, and `ClearFiltering` keeps the screen mode for a
-  scope (`fork_commit_scope_filter.go`).
+  scope (`fork_commit_scope_filter.go`). `pathFilteringLayout` (replacement)
+  only focuses Commits: upstream's switch to a half screen on applying a path
+  or author filter, and back to normal on clearing any filter, is removed.
+  The startup half screen for `--filter` and git arguments is upstream's.
 - `helpers/refresh_helper.go`: the commits refresh passes the scope; the
   reflog filters only for a path or author (`HasPathOrAuthorFilter`).
 - `helpers/diff_helper.go`: `DiffArgs` appends the filter path only when one is

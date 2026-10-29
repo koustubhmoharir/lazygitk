@@ -262,17 +262,13 @@ func (self *ModeHelper) changeFiltering(setFilter func(), selectCommit func()) e
 	return self.changeFilteringWithLayout(setFilter, selectCommit, self.pathFilteringLayout)
 }
 
-// pathFilteringLayout shows a path or author filter: the list takes half the
-// screen and Commits is focused. Clearing the filter restores the full screen.
+// pathFilteringLayout focuses Commits when a path or author filter is applied.
+// Fork: upstream also switched a normal screen to half here, and back to normal when
+// any filter was cleared, undoing a half screen the user chose with +. The fork's
+// filters never change the screen mode; only + and - do.
 func (self *ModeHelper) pathFilteringLayout(filtering bool) {
-	repoState := self.c.State().GetRepoState()
 	if filtering {
-		if repoState.GetScreenMode() == types.SCREEN_NORMAL {
-			repoState.SetScreenMode(types.SCREEN_HALF)
-		}
 		self.c.Context().Push(self.c.Contexts().LocalCommits, types.OnFocusOpts{})
-	} else if repoState.GetScreenMode() == types.SCREEN_HALF {
-		repoState.SetScreenMode(types.SCREEN_NORMAL)
 	}
 }
 

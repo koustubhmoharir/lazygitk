@@ -299,8 +299,9 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   `w c` clears whichever log filter is active. Upstream's filtering menu has
   no key; it is still in the palette.
 - While the log is filtered, commands that rewrite history offer to leave the
-  filter first, as upstream's path filter does. Unlike the path filter,
-  applying or clearing these filters never changes the screen mode.
+  filter first, as upstream's path filter does. Unlike upstream, applying or
+  clearing any log filter, including a path or author filter, never changes
+  the screen mode.
 
 ### Selecting commits
 

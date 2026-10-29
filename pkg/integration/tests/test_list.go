@@ -735,6 +735,7 @@ var tests = []*components.IntegrationTest{
 	ui.ForkPaletteUsageCorrupt,
 	ui.ForkPaletteUsageOrder,
 	ui.ForkPaletteUsagePersisted,
+	ui.ForkPathFilterKeepsScreenMode,
 	ui.ForkPrefixEdgeCases,
 	ui.ForkPrefixOverrides,
 	ui.ForkScreenModeFocusMain,

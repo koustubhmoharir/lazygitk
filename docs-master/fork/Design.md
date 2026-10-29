@@ -120,7 +120,8 @@ recorded here or in the user guide.
   click, keeps the layout; only focusing a pane that the layout hides shrinks
   the mode, just enough to show it (a full side area becomes half; an
   enlarged main area returns to normal). `+` in the other area starts that
-  area from normal.
+  area from normal. Filters never change the screen mode either; only `+` and
+  `-` do.
 
 ## Coexistence with upstream
 
