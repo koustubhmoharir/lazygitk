@@ -2,6 +2,7 @@ package gui
 
 import (
 	"github.com/jesseduffield/lazygit/pkg/gocui"
+	"github.com/jesseduffield/lazygit/pkg/gui/presentation"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 )
 
@@ -10,6 +11,8 @@ import (
 func (gui *Gui) refreshAllForkState() error {
 	git, generation := gui.git, gui.repoGeneration.Load()
 	git.Config.DropConfigCache()
+	// The graph is computed again too, in case a cached one is wrong.
+	presentation.DropPipeSetCache()
 	gui.c.Refresh(types.RefreshOptions{
 		Scope: []types.RefreshableView{
 			types.COMMITS, types.REBASE_COMMITS, types.SUB_COMMITS, types.BRANCHES,

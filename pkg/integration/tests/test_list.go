@@ -724,6 +724,7 @@ var tests = []*components.IntegrationTest{
 	ui.ForkFilterAuthorKey,
 	ui.ForkFilterBranch,
 	ui.ForkFilterDescendants,
+	ui.ForkFilterGraph,
 	ui.ForkFilterPathKey,
 	ui.ForkFilterRefMenu,
 	ui.ForkFilterRemoteBranch,

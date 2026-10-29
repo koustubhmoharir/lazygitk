@@ -42,7 +42,7 @@ in the [design principles](Design.md). The generated per-pane reference is
 | `p` | Push the selected branch, or the checked-out branch outside Branches; push the selected tag in Tags |
 | `f` | Fetch all remotes; in Remotes, fetch the selected remote |
 | `g l` | Pull (deliberately no single key) |
-| F5 | Reload all repository state and redraw every pane; never fetches |
+| F5 | Reload all repository state and redraw every pane, drawing the commit graph again; never fetches |
 | `u u`, `u r` | Undo, redo (from the reflog) |
 | `s p` | Switch to the previous branch; the menu names it (not in Status, where `s` is for repositories) |
 | `c p` | Cherry-pick the marked or selected commits, after reviewing the list |
