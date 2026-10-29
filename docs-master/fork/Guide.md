@@ -290,8 +290,8 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   tracking branch is shown alone, and the status bar says so. The branch names
   are looked up again on every refresh, so fetched commits appear.
 - While the log is filtered, commands that rewrite history offer to leave the
-  filter first, as upstream's path filter does. Unlike the path filter, these
-  filters do not change the screen mode.
+  filter first, as upstream's path filter does. Unlike the path filter,
+  applying or clearing these filters never changes the screen mode.
 
 ### Selecting commits
 

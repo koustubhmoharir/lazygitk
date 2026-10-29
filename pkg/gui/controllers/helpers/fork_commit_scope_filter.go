@@ -34,14 +34,11 @@ func (self *ModeHelper) SetCommitScopeFilter(scope filtering.CommitScope, cursor
 	)
 }
 
-// commitScopeFilteringLayout leaves the screen mode alone while a commit scope is
-// applied, and focuses Commits. Clearing a filter still restores a half screen,
-// which a path filter may have left behind when a scope replaced it.
-func (self *ModeHelper) commitScopeFilteringLayout(filtering bool) {
-	repoState := self.c.State().GetRepoState()
-	if !filtering && repoState.GetScreenMode() == types.SCREEN_HALF {
-		repoState.SetScreenMode(types.SCREEN_NORMAL)
-	}
+// commitScopeFilteringLayout leaves the screen mode alone when a commit scope is
+// applied or cleared, and focuses Commits. The screen mode is the user's: a half
+// screen may have come from + as well as from a path filter that a scope replaced,
+// and the two cannot be told apart.
+func (self *ModeHelper) commitScopeFilteringLayout(bool) {
 	self.c.Context().Push(self.c.Contexts().LocalCommits, types.OnFocusOpts{})
 }
 
