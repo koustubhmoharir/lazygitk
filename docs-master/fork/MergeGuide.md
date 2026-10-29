@@ -100,9 +100,13 @@ re-apply it if upstream changes that code.
 - `pkg/config/diff_renderer_config_manager.go`: every read of
   `Git.DiffRenderers` goes through `forkEffectiveDiffRenderers`, which turns
   an empty list into delta plus Git's diff. Route any new read through it.
-  The default delta command gives delta's blue styles the palette's Blue,
-  except styles that the git config sets; `gui.go` connects the git config
-  through `SetForkGitDeltaConfig` (`pkg/gui/fork_delta_config.go`).
+  The default delta renderer's command is built in Go from the render values
+  (`forkDeltaCommand`): `resolveCommand` returns
+  `DiffRendererConfig.forkResolveCommand` (`user_config.go`) when it is set,
+  and `DiffRendererValues.BackgroundColor`, set in `main_view_render.go`,
+  carries the terminal background that its tints mix with. It leaves out
+  settings that the git config sets; `gui.go` connects the git config through
+  `SetForkGitDeltaConfig` (`pkg/gui/fork_delta_config.go`).
 - Key configuration is ignored for users, but the integration runner sets
   `LAZYGITK_HONOUR_KEY_CONFIG` (`pkg/integration/components/runner.go`) so
   upstream scenarios that drive legacy key fields run unchanged.

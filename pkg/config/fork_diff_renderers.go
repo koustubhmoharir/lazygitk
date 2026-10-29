@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/jesseduffield/generics/set"
+	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/samber/lo"
 )
 
 // Fork: when git.diffRenderers is empty, which includes unset and an explicit
@@ -16,42 +18,87 @@ import (
 // A non-empty list the user configured is never changed, not even when it names
 // delta.
 
-// forkDeltaBlueStyles are the delta styles whose default colour is the
-// terminal's basic blue, with what each adds to the colour. Many terminal
-// palettes make that blue too dark to read on a black background.
-var forkDeltaBlueStyles = []struct{ key, attributes string }{
-	{"file-style", ""},
-	{"file-decoration-style", " ul"},
-	{"hunk-header-file-style", ""},
-	{"hunk-header-line-number-style", ""},
-	{"hunk-header-decoration-style", " box"},
-	{"line-numbers-left-style", ""},
-	{"line-numbers-right-style", ""},
+// forkDeltaStyle is a delta setting that the default delta renderer passes,
+// with its value for a background.
+type forkDeltaStyle struct {
+	key   string
+	value func(lightBackground bool, backgroundColor string) string
 }
 
-// forkDeltaCommand returns the default delta renderer command. It gives the
-// styles in forkDeltaBlueStyles the palette's Blue, except those that the git
-// config sets. gitDeltaConfig is the git config's delta settings as `git config
-// --get-regexp` prints them. A style set in a delta feature counts as set,
-// whether or not the feature is in use. {{colorScheme}} is resolved per render
-// like any other renderer command.
-func forkDeltaCommand(gitDeltaConfig string) string {
+// forkDeltaStyles are the delta settings that the default delta renderer
+// passes, so that its colours follow the palette and the terminal's
+// background.
+var forkDeltaStyles = []forkDeltaStyle{
+	// The palette's colours are true colours, which delta would round to
+	// its 256-colour palette unless it sees COLORTERM. gocui takes true
+	// colours whatever the terminal supports.
+	{"true-color", func(bool, string) string { return "always" }},
+
+	// delta's default for these is the terminal's basic blue, which many
+	// terminal palettes make too dark to read on a black background.
+	{"file-style", forkDeltaBlue("")},
+	{"file-decoration-style", forkDeltaBlue(" ul")},
+	{"hunk-header-file-style", forkDeltaBlue("")},
+	{"hunk-header-line-number-style", forkDeltaBlue("")},
+	{"hunk-header-decoration-style", forkDeltaBlue(" box")},
+	{"line-numbers-left-style", forkDeltaBlue("")},
+	{"line-numbers-right-style", forkDeltaBlue("")},
+
+	// delta's default backgrounds for changed lines are bright enough to drown
+	// the dimmer syntax colours of added lines, such as comments. These are a
+	// little of the palette's Green or Red over the terminal's background, and
+	// a little more for the changed part of a line and for the marker of an
+	// empty line. Deleted lines keep delta's plain text.
+	{"plus-style", forkDeltaTint("syntax", forkPaletteGreen, forkDeltaLineTint)},
+	{"plus-emph-style", forkDeltaTint("syntax", forkPaletteGreen, forkDeltaChangeTint)},
+	{"plus-empty-line-marker-style", forkDeltaTint("normal", forkPaletteGreen, forkDeltaChangeTint)},
+	{"minus-style", forkDeltaTint("normal", forkPaletteRed, forkDeltaLineTint)},
+	{"minus-emph-style", forkDeltaTint("normal", forkPaletteRed, forkDeltaChangeTint)},
+	{"minus-empty-line-marker-style", forkDeltaTint("normal", forkPaletteRed, forkDeltaChangeTint)},
+}
+
+// How much of the palette's Green or Red tints a changed line, and the changed
+// part of it. On a black background, delta's default syntax colours keep a
+// contrast of at least 3.5 and 2.7 over them.
+const (
+	forkDeltaLineTint   = 0.12
+	forkDeltaChangeTint = 0.22
+)
+
+func forkDeltaBlue(attributes string) func(bool, string) string {
+	return func(lightBackground bool, _ string) string {
+		return ForkPaletteBlue(lightBackground) + attributes
+	}
+}
+
+func forkDeltaTint(foreground string, color func(lightBackground bool) string, amount float64) func(bool, string) string {
+	return func(lightBackground bool, backgroundColor string) string {
+		if len(backgroundColor) != 7 || !utils.IsValidHexValue(backgroundColor) {
+			backgroundColor = lo.Ternary(lightBackground, "#ffffff", "#000000")
+		}
+		return foreground + " " + mixHexColors(backgroundColor, color(lightBackground), amount)
+	}
+}
+
+// forkDeltaCommand returns the default delta renderer command for values. It
+// passes the settings in forkDeltaStyles, except those that the git config sets.
+// gitDeltaConfig is the git config's delta settings as `git config
+// --get-regexp` prints them. A setting in a delta feature counts as set, whether
+// or not the feature is in use.
+func forkDeltaCommand(gitDeltaConfig string, values DiffRendererValues) string {
 	configured := set.New[string]()
 	for _, line := range strings.Split(gitDeltaConfig, "\n") {
 		name, _, _ := strings.Cut(line, " ")
 		configured.Add(strings.ToLower(name[strings.LastIndex(name, ".")+1:]))
 	}
 
-	var command strings.Builder
-	fmt.Fprintf(&command, `{{$blue := %q}}{{if eq colorScheme "light"}}{{$blue = %q}}{{end}}`,
-		ForkPaletteBlue(false), ForkPaletteBlue(true))
-	command.WriteString("delta --{{colorScheme}} --paging=never --tabs=4")
-	for _, style := range forkDeltaBlueStyles {
+	command := "delta --" + lo.Ternary(values.LightBackground, "light", "dark") + " --paging=never --tabs=4"
+	for _, style := range forkDeltaStyles {
 		if !configured.Includes(style.key) {
-			fmt.Fprintf(&command, ` --%s="{{$blue}}%s"`, style.key, style.attributes)
+			command += fmt.Sprintf(` --%s="%s"`, style.key, style.value(values.LightBackground, values.BackgroundColor))
 		}
 	}
-	return command.String()
+	return command
 }
 
 // forkLookPath finds delta on PATH. It is a variable so that tests can decide
@@ -62,7 +109,9 @@ var forkLookPath = exec.LookPath
 // delta is on PATH.
 func forkDefaultDiffRenderers(gitDeltaConfig string) []DiffRendererConfig {
 	return []DiffRendererConfig{
-		{Name: "delta", ColorArg: "always", Command: DiffRendererCommandType(forkDeltaCommand(gitDeltaConfig))},
+		{Name: "delta", ColorArg: "always", forkResolveCommand: func(values DiffRendererValues) string {
+			return forkDeltaCommand(gitDeltaConfig, values)
+		}},
 		{Type: "rawGit", Name: "default"},
 	}
 }

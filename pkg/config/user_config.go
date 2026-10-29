@@ -422,6 +422,10 @@ type DiffRendererConfig struct {
 	Command DiffRendererCommandType `yaml:"command"`
 	// Extra arguments (array of strings) passed to the git command. Only applicable if the type is 'rawGit'.
 	Args []string `yaml:"args"`
+
+	// Fork: builds the command of the fork's default delta renderer in place of
+	// Command, see fork_diff_renderers.go. Never set in a user's config.
+	forkResolveCommand func(DiffRendererValues) string
 }
 
 type CommitConfig struct {

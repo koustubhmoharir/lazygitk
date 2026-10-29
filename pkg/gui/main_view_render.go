@@ -86,6 +86,8 @@ func (gui *Gui) newRenderTask(view *gocui.View, cmd *exec.Cmd, prefix types.Pref
 			Width:           width,
 			DiffContext:     gui.c.UserConfig().Git.DiffContextSize,
 			LightBackground: gui.terminalHasLightBackground(),
+			// Fork: see DiffRendererValues.BackgroundColor.
+			BackgroundColor: gui.terminalBackgroundColor(),
 		}
 		stdinFilter, stdinFilterErr := diffRendererConfigManager.GetStdinFilterCommand(values)
 		externalDiff, externalDiffErr := diffRendererConfigManager.GetExternalDiffCommand(values)

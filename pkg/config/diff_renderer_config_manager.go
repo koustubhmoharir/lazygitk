@@ -76,6 +76,10 @@ type DiffRendererValues struct {
 	DiffContext uint64
 	// Whether the terminal has a light background
 	LightBackground bool
+	// Fork: the terminal's background colour as #rrggbb, or empty if it isn't
+	// known. The default delta renderer mixes its backgrounds from it
+	// (fork_diff_renderers.go).
+	BackgroundColor string
 }
 
 func (self *DiffRendererConfigManager) GetStdinFilterCommand(values DiffRendererValues) (string, error) {
@@ -113,6 +117,11 @@ func (self *DiffRendererConfigManager) GetExternalDiffCommand(values DiffRendere
 // the values it can refer to as its variables. A variable can be written with
 // or without the leading dot, as in {{.width}} or {{width}}.
 func (self *DiffRendererConfig) resolveCommand(values DiffRendererValues) (string, error) {
+	// Fork: the default delta renderer's command is built in Go (fork_diff_renderers.go).
+	if self.forkResolveCommand != nil {
+		return self.forkResolveCommand(values), nil
+	}
+
 	colorScheme := "dark"
 	if values.LightBackground {
 		colorScheme = "light"
