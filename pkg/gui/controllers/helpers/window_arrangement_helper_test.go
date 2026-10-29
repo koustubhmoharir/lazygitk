@@ -504,6 +504,140 @@ func TestGetWindowDimensions(t *testing.T) {
 			`,
 		},
 		{
+			name: "half screen mode in the side area stays enlarged when the main view is focused",
+			mutateArgs: func(args *WindowArrangementArgs) {
+				args.Height = 20
+				args.ScreenMode = types.SCREEN_HALF
+				args.ScreenModeArea = types.SCREEN_AREA_SIDE
+				args.CurrentWindow = "main"
+			},
+			expected: `
+			╭status──────────────────────────────╮╭main───────────────────────────────╮
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			│                                    ││                                   │
+			╰────────────────────────────────────╯╰───────────────────────────────────╯
+			<options──────────────────────────────────────────────────────>A<B────────>
+			A: statusSpacer1
+			B: information
+			`,
+		},
+		{
+			name: "half screen mode in the main area hides the side panels when the main view is focused",
+			mutateArgs: func(args *WindowArrangementArgs) {
+				args.Height = 20
+				args.ScreenMode = types.SCREEN_HALF
+				args.ScreenModeArea = types.SCREEN_AREA_MAIN
+				args.CurrentWindow = "main"
+			},
+			expected: `
+			╭main─────────────────────────────────────────────────────────────────────╮
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			╰─────────────────────────────────────────────────────────────────────────╯
+			<options──────────────────────────────────────────────────────>A<B────────>
+			A: statusSpacer1
+			B: information
+			`,
+		},
+		{
+			name: "full screen mode in the main area shows only the focused main view",
+			mutateArgs: func(args *WindowArrangementArgs) {
+				args.Height = 20
+				args.ScreenMode = types.SCREEN_FULL
+				args.ScreenModeArea = types.SCREEN_AREA_MAIN
+				args.MainPanes = types.BothMainPanes
+				args.CurrentWindow = "secondary"
+			},
+			expected: `
+			╭secondary────────────────────────────────────────────────────────────────╮
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			╰─────────────────────────────────────────────────────────────────────────╯
+			<options──────────────────────────────────────────────────────>A<B────────>
+			A: statusSpacer1
+			B: information
+			`,
+		},
+		{
+			name: "full screen mode in the main area with the main view focused",
+			mutateArgs: func(args *WindowArrangementArgs) {
+				args.Height = 20
+				args.ScreenMode = types.SCREEN_FULL
+				args.ScreenModeArea = types.SCREEN_AREA_MAIN
+				args.MainPanes = types.BothMainPanes
+				args.CurrentWindow = "main"
+			},
+			expected: `
+			╭main─────────────────────────────────────────────────────────────────────╮
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			│                                                                         │
+			╰─────────────────────────────────────────────────────────────────────────╯
+			<options──────────────────────────────────────────────────────>A<B────────>
+			A: statusSpacer1
+			B: information
+			`,
+		},
+		{
 			name: "portrait auto mode, enabled",
 			mutateArgs: func(args *WindowArrangementArgs) {
 				args.Width = 50

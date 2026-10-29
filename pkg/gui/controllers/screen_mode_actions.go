@@ -10,10 +10,12 @@ type ScreenModeActions struct {
 }
 
 func (self *ScreenModeActions) Next() error {
-	self.c.State().GetRepoState().SetScreenMode(
+	// Fork: the mode is recorded for the area of the focused window, and cycles from
+	// that area's own mode (fork_screen_mode_area.go)
+	self.setScreenModeInFocusedArea(
 		nextIntInCycle(
 			[]types.ScreenMode{types.SCREEN_NORMAL, types.SCREEN_HALF, types.SCREEN_FULL},
-			self.c.State().GetRepoState().GetScreenMode(),
+			self.focusedAreaScreenMode(),
 		),
 	)
 
@@ -22,7 +24,8 @@ func (self *ScreenModeActions) Next() error {
 }
 
 func (self *ScreenModeActions) Prev() error {
-	self.c.State().GetRepoState().SetScreenMode(
+	// Fork: the mode is recorded for the area of the focused window (fork_screen_mode_area.go)
+	self.setScreenModeInFocusedArea(
 		prevIntInCycle(
 			[]types.ScreenMode{types.SCREEN_NORMAL, types.SCREEN_HALF, types.SCREEN_FULL},
 			self.c.State().GetRepoState().GetScreenMode(),

@@ -88,4 +88,7 @@ type GuiDriver interface {
 	// Fork: the window title that lazygitk last set on the simulated terminal,
 	// or "" outside the simulation (roadmap item 23).
 	TerminalTitle() string
+	// Fork: the screen mode and the area it applies to (fork_screen_mode_area.go).
+	ScreenMode() types.ScreenMode
+	ScreenModeArea() types.ScreenModeArea
 }

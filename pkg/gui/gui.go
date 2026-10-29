@@ -289,6 +289,8 @@ type GuiRepoState struct {
 	ViewsSetup bool
 
 	ScreenMode types.ScreenMode
+	// Fork: the area that ScreenMode applies to (fork_screen_mode_area.go)
+	ScreenModeArea types.ScreenModeArea
 
 	CurrentPopupOpts *types.CreatePopupPanelOpts
 
@@ -347,6 +349,9 @@ func (self *GuiRepoState) GetScreenMode() types.ScreenMode {
 
 func (self *GuiRepoState) SetScreenMode(value types.ScreenMode) {
 	self.ScreenMode = value
+	// Fork: setting the mode without the user's + or - means the side area
+	// (fork_screen_mode_area.go). The + and - keys use SetScreenModeInArea.
+	self.ScreenModeArea = types.SCREEN_AREA_SIDE
 }
 
 func (self *GuiRepoState) InSearchPrompt() bool {

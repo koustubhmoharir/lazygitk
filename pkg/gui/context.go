@@ -204,6 +204,8 @@ func (self *ContextMgr) Activate(c types.Context, opts types.OnFocusOpts) {
 	self.UpdateSelectionHighlights()
 	// Fork: the focused view's frame changes with focus (fork_focus_frame.go).
 	self.gui.updateFocusFrames()
+	// Fork: focusing a window that the screen mode hides shrinks the mode (fork_screen_mode_area.go).
+	self.gui.applyScreenModeForFocus(c)
 
 	c.HandleFocus(opts)
 	if self.gui.ViewsSetup {

@@ -497,6 +497,9 @@ type IRepoStateAccessor interface {
 	SetCurrentPopupOpts(*CreatePopupPanelOpts)
 	GetScreenMode() ScreenMode
 	SetScreenMode(ScreenMode)
+	// Fork: the area that the screen mode applies to, and a setter for both at once
+	GetScreenModeArea() ScreenModeArea
+	SetScreenModeInArea(ScreenMode, ScreenModeArea)
 	InSearchPrompt() bool
 	GetSearchState() *SearchState
 	SetMainPanes(MainPanes)

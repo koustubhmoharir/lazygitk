@@ -43,6 +43,14 @@ func (self *fakeGuiDriver) TerminalTitle() string {
 	return ""
 }
 
+func (self *fakeGuiDriver) ScreenMode() types.ScreenMode {
+	return types.SCREEN_NORMAL
+}
+
+func (self *fakeGuiDriver) ScreenModeArea() types.ScreenModeArea {
+	return types.SCREEN_AREA_SIDE
+}
+
 func (self *fakeGuiDriver) PressKey(key string) {
 	self.pressedKeys = append(self.pressedKeys, key)
 }

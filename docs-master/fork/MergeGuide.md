@@ -307,6 +307,18 @@ Commit scope filters (`w a`, `w d`, `w b`) are a third kind of filtering mode:
   from `configureViewProperties`, `ContextMgr.Activate` and initial layout.
   Port new upstream border styles into `focusFrameStyle`.
   It also sets the Commits cursor marker (`▶`) for multi-select mode.
+- Screen mode area (`types/fork_screen_mode_area.go`): `GuiRepoState` has a
+  `ScreenModeArea` field, and `SetScreenMode` resets it to the side area;
+  `IRepoStateAccessor` gains `GetScreenModeArea` and `SetScreenModeInArea`.
+  `window_arrangement_helper.go` `getMidSectionWeights` and
+  `mainSectionChildren` decide the enlarged area from `args.ScreenModeArea`
+  instead of `CurrentWindow`; upstream changes that test `CurrentWindow`
+  for the screen mode should use the area. `screen_mode_actions.go` records
+  the focused area (`controllers/fork_screen_mode_area.go`), and
+  `ContextMgr.Activate` (`context.go`) calls `applyScreenModeForFocus`
+  (`gui/fork_screen_mode_area.go`). The integration `GuiDriver` gains
+  `ScreenMode` and `ScreenModeArea` (`TestDriver.ExpectScreenMode`,
+  `ViewDriver.HasScreenArea`, `components/fork_screen_mode.go`).
 - `pkg/gui/layout.go`: focus frames, and the startup notices for an
   unreadable usage file, ignored key settings and missing delta.
 

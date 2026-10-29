@@ -63,6 +63,9 @@ type WindowArrangementArgs struct {
 	MainPanes types.MainPanes
 	// The current screen mode (normal, half, full)
 	ScreenMode types.ScreenMode
+	// Fork: the area that ScreenMode applies to. It decides which area is enlarged, not
+	// the focused window (fork_screen_mode_area.go).
+	ScreenModeArea types.ScreenModeArea
 	// The content shown on the bottom left of the screen when showing a loader
 	// or toast e.g. 'Rebasing /'
 	AppStatus string
@@ -105,6 +108,7 @@ func (self *WindowArrangementHelper) GetWindowDimensions(informationStr string, 
 		},
 		MainPanes:        repoState.GetMainPanes(),
 		ScreenMode:       repoState.GetScreenMode(),
+		ScreenModeArea:   repoState.GetScreenModeArea(),
 		AppStatus:        appStatus,
 		InformationStr:   informationStr,
 		ShowExtrasWindow: self.c.State().GetShowExtrasWindow(),
@@ -225,7 +229,8 @@ func mainSectionChildren(args WindowArrangementArgs) []*boxlayout.Box {
 		return []*boxlayout.Box{secondaryPane}
 	case types.BothMainPanes:
 		// In full-screen mode the focused one takes the whole section anyway.
-		if args.ScreenMode == types.SCREEN_FULL {
+		// Fork: only when the main area is the enlarged one; a side-area FULL hides this section.
+		if args.ScreenMode == types.SCREEN_FULL && args.ScreenModeArea == types.SCREEN_AREA_MAIN {
 			if args.CurrentWindow == "main" {
 				return []*boxlayout.Box{mainPane}
 			}
@@ -249,7 +254,9 @@ func getMidSectionWeights(args WindowArrangementArgs) (int, int) {
 		mainSectionWeight = sideSectionWeight * 5 // need to shrink side panel to make way for main panels if side-by-side
 	}
 
-	if args.CurrentWindow == "main" || args.CurrentWindow == "secondary" {
+	// Fork: the screen mode's area decides which side is enlarged, not the focused
+	// window, so focusing a main view doesn't change the layout (fork_screen_mode_area.go).
+	if args.ScreenModeArea == types.SCREEN_AREA_MAIN {
 		if args.ScreenMode == types.SCREEN_HALF || args.ScreenMode == types.SCREEN_FULL {
 			sideSectionWeight = 0
 		}

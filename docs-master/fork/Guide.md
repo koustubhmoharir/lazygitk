@@ -47,7 +47,7 @@ in the [design principles](Design.md). The generated per-pane reference is
 | `s p` | Switch to the previous branch; the menu names it (not in Status, where `s` is for repositories) |
 | `c p` | Cherry-pick the marked or selected commits, after reviewing the list |
 | `:` | Run a shell command |
-| `=` or `+`, `-` | Next, previous screen mode (normal, half, full) |
+| `=` or `+`, `-` | Next, previous screen mode (normal, half, full) of the focused area: the side panels, or the main views |
 | `q` | Quit |
 | Escape | Leave the current layer, mode or menu |
 
