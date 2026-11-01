@@ -49,12 +49,7 @@ func TestBranchSyncSinglePushScope(t *testing.T) {
 			if err := f.sync.pushBranchSource(branchSyncSource{name: tc.source, selected: tc.selected}); err != nil {
 				t.Fatal(err)
 			}
-			if err := f.ui.runWorker(t); err != nil {
-				t.Fatal(err)
-			}
-			if err := f.ui.runUI(t); err != nil {
-				t.Fatal(err)
-			}
+			f.settleMenu(t)
 			if len(f.ui.menus) != 1 {
 				t.Fatalf("expected one normal push menu, got %d", len(f.ui.menus))
 			}

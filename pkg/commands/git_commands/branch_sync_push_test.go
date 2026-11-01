@@ -596,3 +596,52 @@ func TestBranchPushExcludedLeaseAndSubmoduleChoices(t *testing.T) {
 		assert.Equal(t, h.base, branchPushGit(t, h.bare, "rev-parse", "refs/heads/selected"))
 	})
 }
+
+func TestBranchPushDestinationDivergence(t *testing.T) {
+	t.Run("tracking ref behind the branch is not diverged", func(t *testing.T) {
+		h := branchPushTestHistory(t)
+		commands := branchSyncTestCommands(t, h.root)
+		trackingRef, diverged, err := commands.BranchPushDestinationDiverged(h.selected, "origin", "refs/heads/selected")
+		branchPushRequireNoError(t, err)
+		assert.False(t, diverged)
+		assert.Equal(t, "refs/remotes/origin/selected", trackingRef)
+		_, err = commands.PrepareBranchPush("selected", h.selected, h.options())
+		branchPushRequireNoError(t, err)
+	})
+	t.Run("tracking ref with commits the branch lacks blocks only the plain push", func(t *testing.T) {
+		h := branchPushTestHistory(t)
+		gitTest(t, h.root, "update-ref", "refs/remotes/origin/selected", h.mastertip)
+		commands := branchSyncTestCommands(t, h.root)
+		trackingRef, diverged, err := commands.BranchPushDestinationDiverged(h.selected, "origin", "refs/heads/selected")
+		branchPushRequireNoError(t, err)
+		assert.True(t, diverged)
+		assert.Equal(t, "refs/remotes/origin/selected", trackingRef)
+		_, err = commands.PrepareBranchPush("selected", h.selected, h.options())
+		assert.ErrorIs(t, err, ErrBranchPushDiverged)
+		assert.ErrorContains(t, err, "refs/remotes/origin/selected")
+		opts := h.options()
+		opts.ForceWithLease = true
+		plan, err := commands.PrepareBranchPush("selected", h.selected, opts)
+		branchPushRequireNoError(t, err)
+		assert.Equal(t, h.mastertip, plan.LeaseOID())
+		assert.Equal(t, h.base, branchPushGit(t, h.bare, "rev-parse", "refs/heads/selected"))
+	})
+	t.Run("no tracking ref is not diverged", func(t *testing.T) {
+		h := branchPushTestHistory(t)
+		gitTest(t, h.root, "update-ref", "-d", "refs/remotes/origin/selected")
+		commands := branchSyncTestCommands(t, h.root)
+		_, diverged, err := commands.BranchPushDestinationDiverged(h.selected, "origin", "refs/heads/selected")
+		branchPushRequireNoError(t, err)
+		assert.False(t, diverged)
+		_, err = commands.PrepareBranchPush("selected", h.selected, h.options())
+		branchPushRequireNoError(t, err)
+	})
+	t.Run("no remote is not diverged", func(t *testing.T) {
+		h := branchPushTestHistory(t)
+		gitTest(t, h.root, "update-ref", "refs/remotes/origin/selected", h.mastertip)
+		commands := branchSyncTestCommands(t, h.root)
+		_, diverged, err := commands.BranchPushDestinationDiverged(h.selected, "", "refs/heads/selected")
+		branchPushRequireNoError(t, err)
+		assert.False(t, diverged)
+	})
+}

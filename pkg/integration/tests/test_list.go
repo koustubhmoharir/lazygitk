@@ -667,6 +667,7 @@ var tests = []*components.IntegrationTest{
 	sync.PushFollowTags,
 	sync.PushNoFollowTags,
 	sync.PushSelectedBranch,
+	sync.PushSelectedBranchDiverged,
 	sync.PushSelectedBranchEscapeReturnsToMenu,
 	sync.PushSelectedBranchHistory,
 	sync.PushSelectedBranchPreserveTracking,

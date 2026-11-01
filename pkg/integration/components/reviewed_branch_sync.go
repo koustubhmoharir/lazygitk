@@ -25,6 +25,6 @@ func (self *TestDriver) ReviewBranchForcePush(name, destination, sourceOID, leas
 	self.Views().Menu().Content(Contains(fmt.Sprintf("source %q", name)).Contains(sourceOID).
 		Contains(fmt.Sprintf("%q", "refs/heads/"+destination)).
 		Contains("using lease").Contains(leaseRef).Contains(leaseOID))
-	menu.ContainsLines(Contains("Cancel").IsSelected())
+	menu.ContainsLines(Contains("Push with reviewed lease").IsSelected())
 	return menu
 }

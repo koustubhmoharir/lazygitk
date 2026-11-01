@@ -19,7 +19,12 @@ recorded here or in the user guide.
   defaults, not prohibitions: explicit configuration still turns them on.
 - **Meaningful choices are presented, not made silently.** Where an operation
   has real alternatives, a menu or confirmation offers them with a sensible
-  default (Cancel, for risky ones). The application never quietly picks one.
+  default. The application never quietly picks one.
+- **Risks are shown; the user's choice is respected.** A risk the user has not
+  yet seen is shown in a review before anything runs, and that review selects
+  the action the user chose, with Cancel (and Escape) beside it. A risk
+  already shown where the user chose is not asked about again. Options known
+  to fail are crossed out with the reason rather than left to fail.
 - **No redundant reviews.** When a menu already shows the source, destination
   and options, choosing its action runs it; a second confirmation is shown
   only when something new is at stake (replacing tracking, force-with-lease).

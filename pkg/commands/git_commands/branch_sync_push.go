@@ -68,7 +68,55 @@ var (
 	ErrBranchPushMultipleURLs      = errors.New("this remote has multiple configured push destinations; review and explicitly approve them first")
 	ErrBranchPushLeaseChoice       = errors.New("force-with-lease needs a locally reviewed destination tip; fetch and review it or select a known reference explicitly")
 	ErrBranchPushUpstreamAmbiguous = ErrBranchUpstreamAmbiguous
+	// ErrBranchPushDiverged means the destination's local tracking ref has
+	// commits the source lacks, so a plain push would be rejected. Only a
+	// force-with-lease push, reviewed against that tip, can replace them.
+	ErrBranchPushDiverged = errors.New("the destination's local tracking ref has commits this branch does not contain; a plain push would be rejected")
 )
+
+// BranchPushDestinationDiverged reports whether the preferred local tracking
+// ref for remote and destinationRef holds commits that sourceOID does not
+// contain. It reads local refs only and never fetches. It returns the tracking
+// ref it checked when diverged is true.
+func (self *SyncCommands) BranchPushDestinationDiverged(sourceOID, remote, destinationRef string) (trackingRef string, diverged bool, err error) {
+	if err := validateObjectID(sourceOID); err != nil {
+		return "", false, err
+	}
+	if remote == "" {
+		return "", false, nil
+	}
+	remoteInfo, err := self.InspectBranchSyncRemote(remote)
+	if err != nil {
+		return "", false, err
+	}
+	mapping, err := self.branchSyncTrackingRefs(remoteInfo.FetchRefspecs, destinationRef)
+	if err != nil {
+		return "", false, err
+	}
+	return self.branchPushDivergedFromMapping(sourceOID, mapping)
+}
+
+func (self *SyncCommands) branchPushDivergedFromMapping(sourceOID string, mapping branchSyncTrackingMapping) (string, bool, error) {
+	if mapping.excluded || mapping.preferred == "" {
+		return "", false, nil
+	}
+	branches := NewBranchCommands(self.GitCommon)
+	state, err := branches.readPlacementRef(mapping.preferred)
+	if err != nil {
+		return "", false, err
+	}
+	if !state.exists || state.symbolic != "" {
+		return "", false, nil
+	}
+	if err := branches.validateLiteralCommitOID(state.oid); err != nil {
+		return "", false, fmt.Errorf("local tracking ref %q does not point directly to a commit: %w", mapping.preferred, err)
+	}
+	ancestor, err := self.branchSyncIsCommitAncestor(state.oid, sourceOID)
+	if err != nil {
+		return "", false, err
+	}
+	return mapping.preferred, !ancestor, nil
+}
 
 func (self *SyncCommands) PrepareBranchPush(name, expectedOID string, opts BranchPushOptions) (BranchPushPlan, error) {
 	if err := validateObjectID(expectedOID); err != nil {
@@ -119,6 +167,15 @@ func (self *SyncCommands) PrepareBranchPush(name, expectedOID string, opts Branc
 	for _, ref := range mapping.refs {
 		if err := self.checkBranchSyncTrackingWrite(ref); err != nil {
 			return BranchPushPlan{}, err
+		}
+	}
+	if !opts.ForceWithLease {
+		trackingRef, diverged, err := self.branchPushDivergedFromMapping(info.OID, mapping)
+		if err != nil {
+			return BranchPushPlan{}, err
+		}
+		if diverged {
+			return BranchPushPlan{}, fmt.Errorf("%s: %w", trackingRef, ErrBranchPushDiverged)
 		}
 	}
 	urls := remote.PushURLs

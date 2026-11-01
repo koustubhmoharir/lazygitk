@@ -351,6 +351,7 @@ type TranslationSet struct {
 	BranchSyncPushMenu                    string
 	BranchSyncPushSummary                 string
 	BranchSyncPushThisBranch              string
+	BranchSyncPushDiverged                string
 	BranchSyncChooseRemote                string
 	BranchSyncChooseDestination           string
 	BranchSyncSetUpstream                 string
@@ -1871,6 +1872,7 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchSyncPushMenu:                   "Push selected branch",
 		BranchSyncPushSummary:                "Source %q at %s\nRemote: %q\nDestination: %q\nSet upstream for selected branch: %t\nCheck submodules: %t\nConfigured push mappings beyond this explicit destination will not be used.",
 		BranchSyncPushThisBranch:             "Push this branch",
+		BranchSyncPushDiverged:               "%s has commits that %s does not have; use Force with reviewed lease…",
 		BranchSyncChooseRemote:               "Choose remote…",
 		BranchSyncChooseDestination:          "Choose destination branch…",
 		BranchSyncSetUpstream:                "Toggle set upstream for selected local branch",

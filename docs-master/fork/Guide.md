@@ -358,6 +358,10 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   destination and options. A separate review appears only for replacing
   different tracking and for force-with-lease. A new branch with no push
   remote uses the repository's only remote without prompting.
+- When the destination's remote-tracking branch, as last fetched, has commits
+  the branch lacks, **Push this branch** is crossed out and says why; Force
+  with reviewed lease remains. The check reads local refs only and never
+  fetches. The force-with-lease review selects the push by default.
 - **Fetch** (`f`) fetches every remote from any pane and never moves branches.
 - **Fast-forward** (`g f`) moves each selected branch to its upstream as
   fetched, without fetching again and without prompts. Up-to-date branches are

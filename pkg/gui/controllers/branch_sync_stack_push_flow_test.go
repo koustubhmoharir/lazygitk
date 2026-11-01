@@ -62,12 +62,9 @@ func collectStackPushPlans(t *testing.T, f *branchSyncPushFixture, ui *branchSyn
 		t.Fatal(err)
 	}
 	for len(batch.plans) < len(batch.members) {
-		if err := f.ui.runWorker(t); err != nil {
-			t.Fatal(err)
-		}
-		if err := f.ui.runUI(t); err != nil {
-			t.Fatal(err)
-		}
+		// Each member is inspected, then checked for destination divergence,
+		// before its review menu is shown.
+		f.settleMenu(t)
 		menu := f.ui.menus[len(f.ui.menus)-1]
 		wantProgress := fmt.Sprintf("branch %d of %d", len(batch.plans)+1, len(batch.members))
 		if !strings.Contains(strings.ToLower(menu.Prompt), wantProgress) || !strings.Contains(strings.ToLower(menu.Prompt), "no branch is pushed") {
@@ -234,12 +231,7 @@ func TestBranchSyncStackPushRejectsDuplicatePlanAcceptanceCallback(t *testing.T)
 	if err := batch.reviewNext(); err != nil {
 		t.Fatal(err)
 	}
-	if err := f.ui.runWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := f.ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
+	f.settleMenu(t)
 	if err := menuItem(t, f.ui.menus[len(f.ui.menus)-1], "branch.push-selected.execute").OnPress(); err != nil {
 		t.Fatal(err)
 	}
@@ -279,12 +271,7 @@ func TestBranchSyncStackPushRejectsAliasedRemoteDestinationDuringCollection(t *t
 	if err := batch.reviewNext(); err != nil {
 		t.Fatal(err)
 	}
-	if err := f.ui.runWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := f.ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
+	f.settleMenu(t)
 	if err := menuItem(t, f.ui.menus[len(f.ui.menus)-1], "branch.push-selected.execute").OnPress(); err != nil {
 		t.Fatal(err)
 	}
@@ -306,12 +293,7 @@ func TestBranchSyncStackPushRejectsAliasedRemoteDestinationDuringCollection(t *t
 	if len(batch.plans) != 1 {
 		t.Fatalf("first plan count = %d", len(batch.plans))
 	}
-	if err := f.ui.runWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := f.ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
+	f.settleMenu(t)
 	branchSyncPushGit(t, f.root, "remote", "add", "alias", f.remote)
 	branchSyncPushGit(t, f.root, "config", "branch.lower.pushRemote", "alias")
 	menu := f.ui.menus[len(f.ui.menus)-1]
@@ -468,12 +450,7 @@ func TestBranchSyncStackPushCustomFirstDestinationUsesExplicitFullRef(t *testing
 	if err := batch.reviewNext(); err != nil {
 		t.Fatal(err)
 	}
-	if err := f.ui.runWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := f.ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
+	f.settleMenu(t)
 	firstMenu := f.ui.menus[len(f.ui.menus)-1]
 	if err := menuItem(t, firstMenu, "branch.push-selected.destination").OnPress(); err != nil {
 		t.Fatal(err)
@@ -500,12 +477,9 @@ func TestBranchSyncStackPushCustomFirstDestinationUsesExplicitFullRef(t *testing
 		t.Fatal(err)
 	}
 	for len(batch.plans) < len(batch.members) {
-		if err := f.ui.runWorker(t); err != nil {
-			t.Fatal(err)
-		}
-		if err := f.ui.runUI(t); err != nil {
-			t.Fatal(err)
-		}
+		// Each member is inspected, then checked for destination divergence,
+		// before its review menu is shown.
+		f.settleMenu(t)
 		menu := f.ui.menus[len(f.ui.menus)-1]
 		if err := menuItem(t, menu, "branch.push-selected.execute").OnPress(); err != nil {
 			t.Fatal(err)
@@ -558,12 +532,7 @@ func TestBranchSyncStackPushForceLeasePlanIsOpaqueAndPreflighted(t *testing.T) {
 	if err := batch.reviewNext(); err != nil {
 		t.Fatal(err)
 	}
-	if err := f.ui.runWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := f.ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
+	f.settleMenu(t)
 	memberMenu := f.ui.menus[len(f.ui.menus)-1]
 	if err := menuItem(t, memberMenu, "branch.push-selected.force-with-lease").OnPress(); err != nil {
 		t.Fatal(err)
@@ -587,8 +556,9 @@ func TestBranchSyncStackPushForceLeasePlanIsOpaqueAndPreflighted(t *testing.T) {
 		t.Fatal(err)
 	}
 	forceReview := f.ui.menus[len(f.ui.menus)-1]
-	if len(forceReview.Items) < 2 || forceReview.Items[0].Verb != "cancel" {
-		t.Fatal("force review was not cancel-first")
+	// The lease confirmation selects the reviewed push by default.
+	if len(forceReview.Items) < 2 || forceReview.Items[0].CommandID != "branch.push-selected.force-confirm" || forceReview.Items[1].Verb != "cancel" {
+		t.Fatal("force review did not select the reviewed push first")
 	}
 	if len(batch.plans) != 0 {
 		t.Fatal("force plan was collected before explicit force approval")
@@ -653,12 +623,7 @@ func TestBranchSyncStackPushMultiURLRequiresCapturedApprovalAndPreflightsTranspo
 	if err := batch.reviewNext(); err != nil {
 		t.Fatal(err)
 	}
-	if err := f.ui.runWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := f.ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
+	f.settleMenu(t)
 	if err := menuItem(t, f.ui.menus[len(f.ui.menus)-1], "branch.push-selected.execute").OnPress(); err != nil {
 		t.Fatal(err)
 	}
@@ -747,12 +712,7 @@ func TestBranchSyncStackPushCancelMidMemberReviewPushesNothing(t *testing.T) {
 	if err := batch.reviewNext(); err != nil {
 		t.Fatal(err)
 	}
-	if err := f.ui.runWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := f.ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
+	f.settleMenu(t)
 	menu := f.ui.menus[len(f.ui.menus)-1]
 	if err := menuItem(t, menu, "branch.push-selected.execute").OnPress(); err != nil {
 		t.Fatal(err)

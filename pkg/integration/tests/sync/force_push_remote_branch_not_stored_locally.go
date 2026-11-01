@@ -51,7 +51,7 @@ var ForcePushRemoteBranchNotStoredLocally = NewIntegrationTest(NewIntegrationTes
 		forceReview := t.ExpectPopup().Menu().Title(Equals("Confirm force with lease"))
 		t.Views().Menu().Content(Contains(sourceOID).Contains("refs/heads/master").
 			Contains("refs/reviewed/remote-master").Contains(leaseOID))
-		forceReview.ContainsLines(Contains("Cancel").IsSelected())
+		forceReview.ContainsLines(Contains("Push with reviewed lease").IsSelected())
 		t.Shell().RunShellCommand("test \"$(git --git-dir=../some-remote rev-parse master)\" = \"$(git rev-parse refs/reviewed/remote-master)\"")
 		forceReview.Select(Contains("Push with reviewed lease")).Confirm()
 		t.Views().Remotes().Focus().NavigateToLine(Contains("some-remote")).PressEnter()

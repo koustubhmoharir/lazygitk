@@ -58,13 +58,41 @@ func (flow *branchSyncPushFlow) menu() error {
 	if err := flow.target.checkRepository(); err != nil {
 		return err
 	}
+	return flow.target.c.WithWaitingStatus(flow.target.c.Tr.BranchSyncInspecting, func(gocui.Task) error {
+		if err := flow.target.checkRepository(); err != nil {
+			return err
+		}
+		// A failed query leaves the plain push enabled: pressing it prepares
+		// the push, which reports the same error, and the menu stays reachable
+		// so the remote or destination can still be changed.
+		trackingRef, diverged, err := flow.target.git.Sync.BranchPushDestinationDiverged(flow.info.OID, flow.opts.Remote, flow.opts.DestinationRef)
+		diverged = diverged && err == nil
+		flow.target.c.OnUIThread(func() error {
+			if err := flow.target.checkRepository(); err != nil {
+				return err
+			}
+			var divergedReason *types.DisabledReason
+			if diverged {
+				divergedReason = &types.DisabledReason{Text: fmt.Sprintf(flow.target.c.Tr.BranchSyncPushDiverged,
+					strings.TrimPrefix(trackingRef, "refs/remotes/"), flow.info.Name)}
+			}
+			return flow.showMenu(divergedReason)
+		})
+		return nil
+	})
+}
+
+// showMenu builds the push menu. A non-nil divergedReason disables the plain
+// push, because the destination has commits that only force-with-lease may
+// replace. Force stays enabled so the reviewed lease path remains available.
+func (flow *branchSyncPushFlow) showMenu(divergedReason *types.DisabledReason) error {
 	tr := flow.target.c.Tr
 	executeLabel := tr.BranchSyncPushThisBranch
 	if flow.acceptPlan != nil {
 		executeLabel = tr.BranchSyncStackPreparePush
 	}
 	items := []*types.MenuItem{
-		{CommandID: "branch.push-selected.execute", Verb: "push", Label: executeLabel, OnPress: func() error {
+		{CommandID: "branch.push-selected.execute", Verb: "push", Label: executeLabel, DisabledReason: divergedReason, OnPress: func() error {
 			if flow.opts.Remote == "" {
 				return flow.promptRemote(false)
 			}
@@ -170,6 +198,12 @@ func (flow *branchSyncPushFlow) prepareOptions(opts git_commands.BranchPushOptio
 			flow.target.c.OnUIThread(func() error { return flow.reviewAmbiguousUpstream(opts, sourceOID) })
 			return nil
 		}
+		if errors.Is(err, git_commands.ErrBranchPushDiverged) {
+			// The menu shows the reason on Push this branch, so reopen it
+			// rather than reporting an error for a state it already explains.
+			flow.target.c.OnUIThread(func() error { return flow.menu() })
+			return nil
+		}
 		if errors.Is(err, git_commands.ErrBranchSyncChanged) {
 			flow.target.c.OnUIThread(func() error {
 				return flow.target.inspect(func(fresh git_commands.BranchSyncInfo) error {
@@ -235,18 +269,18 @@ func (flow *branchSyncPushFlow) review() error {
 	if opts.ForceWithLease {
 		title = flow.target.c.Tr.BranchSyncLeaseConfirmTitle
 		return flow.target.c.Menu(types.CreateMenuOptions{Title: title, Prompt: prompt, HideCancel: true, Items: []*types.MenuItem{
+			{CommandID: "branch.push-selected.force-confirm", Verb: "push", Label: flow.target.c.Tr.BranchSyncForceConfirm, OnPress: func() error {
+				if err := flow.target.checkRepository(); err != nil {
+					return err
+				}
+				return flow.execute(plan)
+			}},
 			{CommandID: "branch.push-selected.force-cancel", Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: func() error {
 				if err := flow.target.checkRepository(); err != nil {
 					return err
 				}
 				flow.opts.LeaseRef = ""
 				return nil
-			}},
-			{CommandID: "branch.push-selected.force-confirm", Verb: "push", Label: flow.target.c.Tr.BranchSyncForceConfirm, OnPress: func() error {
-				if err := flow.target.checkRepository(); err != nil {
-					return err
-				}
-				return flow.execute(plan)
 			}},
 		}})
 	}

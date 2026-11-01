@@ -83,6 +83,17 @@ func (ui *branchSyncPushTestUI) runWorker(t *testing.T) error {
 	return f(nil)
 }
 
+// runPending runs one queued worker and then its queued UI callback.
+func (ui *branchSyncPushTestUI) runPending(t *testing.T) {
+	t.Helper()
+	if err := ui.runWorker(t); err != nil {
+		t.Fatal(err)
+	}
+	if err := ui.runUI(t); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func (ui *branchSyncPushTestUI) runUI(t *testing.T) error {
 	t.Helper()
 	if len(ui.ui) == 0 {
@@ -153,12 +164,15 @@ func (f *branchSyncPushFixture) open(t *testing.T, source branchSyncSource) {
 	if err := f.sync.pushBranchSource(source); err != nil {
 		t.Fatal(err)
 	}
-	if err := f.ui.runWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := f.ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
+	f.settleMenu(t)
+}
+
+// settleMenu runs the inspection and the destination divergence check that
+// precede the push menu.
+func (f *branchSyncPushFixture) settleMenu(t *testing.T) {
+	t.Helper()
+	f.ui.runPending(t)
+	f.ui.runPending(t)
 }
 
 func menuItem(t *testing.T, menu types.CreateMenuOptions, id string) *types.MenuItem {
@@ -180,12 +194,7 @@ func TestBranchSyncPushSelectedBranchExecutesWithoutConfirmation(t *testing.T) {
 	}
 	source.name = "main"
 	f.ui.model.Branches = []*models.Branch{{Name: "main"}}
-	if err := f.ui.runWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := f.ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
+	f.settleMenu(t)
 	if len(f.ui.menus) != 1 {
 		t.Fatalf("expected initial push menu, got %d", len(f.ui.menus))
 	}
@@ -231,13 +240,10 @@ func TestBranchSyncPushMovedBranchReopensMenu(t *testing.T) {
 	if err := menuItem(t, f.ui.menus[0], "branch.push-selected.execute").OnPress(); err != nil {
 		t.Fatal(err)
 	}
-	for range 2 {
-		if err := f.ui.runWorker(t); err != nil {
-			t.Fatal(err)
-		}
-		if err := f.ui.runUI(t); err != nil {
-			t.Fatal(err)
-		}
+	// Preparation, the fresh inspection and the divergence check all run
+	// before the menu reopens.
+	for range 3 {
+		f.ui.runPending(t)
 	}
 	if len(f.ui.confirms) != 0 {
 		t.Fatal("moved branch produced a confirmation instead of reopening the menu")
@@ -532,6 +538,7 @@ func TestBranchSyncPushPreviousUpstreamURLIsRedacted(t *testing.T) {
 	if err := menuItem(t, f.ui.menus[0], "branch.push-selected.set-upstream").OnPress(); err != nil {
 		t.Fatal(err)
 	}
+	f.ui.runPending(t)
 	if err := menuItem(t, f.ui.menus[len(f.ui.menus)-1], "branch.push-selected.execute").OnPress(); err != nil {
 		t.Fatal(err)
 	}
@@ -555,12 +562,14 @@ func TestBranchSyncPushSingleUpstreamReplacementIsReviewed(t *testing.T) {
 	if err := menuItem(t, initial, "branch.push-selected.set-upstream").OnPress(); err != nil {
 		t.Fatal(err)
 	}
+	f.ui.runPending(t)
 	if len(f.ui.confirms) != 0 {
 		t.Fatal("toggle wrote or reviewed before choosing push")
 	}
 	if err := menuItem(t, f.ui.menus[len(f.ui.menus)-1], "branch.push-selected.submodules").OnPress(); err != nil {
 		t.Fatal(err)
 	}
+	f.ui.runPending(t)
 	if !strings.Contains(f.ui.menus[len(f.ui.menus)-1].Prompt, "Check submodules: true") {
 		t.Fatal("submodule recursion toggle was not reflected in the menu")
 	}
@@ -599,6 +608,7 @@ func requestBranchSyncTrackingPush(t *testing.T, f *branchSyncPushFixture, force
 	if err := menuItem(t, f.ui.menus[len(f.ui.menus)-1], "branch.push-selected.set-upstream").OnPress(); err != nil {
 		t.Fatal(err)
 	}
+	f.ui.runPending(t)
 	id := "branch.push-selected.execute"
 	if force {
 		id = "branch.push-selected.force-with-lease"
@@ -821,8 +831,10 @@ func TestBranchSyncPushAmbiguousUpstreamForceFallbackPreservesReviewedLease(t *t
 			t.Fatalf("force fallback review omitted %q: %q", text, review.Prompt)
 		}
 	}
-	if review.Items[0].Verb != "cancel" || len(f.ui.prompts) != 1 || len(f.ui.workers) != 0 {
-		t.Fatal("force fallback lost its lease, defaulted to push, or automatically executed")
+	// The lease confirmation selects the reviewed push by default; nothing
+	// executes until that confirmation is chosen.
+	if review.Items[0].CommandID != "branch.push-selected.force-confirm" || review.Items[1].Verb != "cancel" || len(f.ui.prompts) != 1 || len(f.ui.workers) != 0 {
+		t.Fatal("force fallback lost its lease, lost the reviewed push default, or automatically executed")
 	}
 	assertBranchSyncRemoteTip(t, f, oldTip)
 	assertBranchSyncConfigUnchanged(t, configPath, before)
@@ -989,6 +1001,7 @@ func TestBranchSyncPushPromptEscapeReturnsToMenu(t *testing.T) {
 			if err := f.ui.prompts[0].HandleClose(); err != nil {
 				t.Fatal(err)
 			}
+			f.ui.runPending(t)
 			if len(f.ui.menus) != menusBefore+1 {
 				t.Fatalf("Escape did not reopen the push menu: %d menus, want %d", len(f.ui.menus), menusBefore+1)
 			}
@@ -1016,6 +1029,7 @@ func TestBranchSyncPushTrackingReplacementEscapeReturnsToMenu(t *testing.T) {
 	if err := menuItem(t, f.ui.menus[0], "branch.push-selected.set-upstream").OnPress(); err != nil {
 		t.Fatal(err)
 	}
+	f.ui.runPending(t)
 	if err := menuItem(t, f.ui.menus[len(f.ui.menus)-1], "branch.push-selected.execute").OnPress(); err != nil {
 		t.Fatal(err)
 	}
@@ -1032,6 +1046,7 @@ func TestBranchSyncPushTrackingReplacementEscapeReturnsToMenu(t *testing.T) {
 	if err := f.ui.confirms[0].HandleClose(); err != nil {
 		t.Fatal(err)
 	}
+	f.ui.runPending(t)
 	if len(f.ui.menus) != menusBefore+1 {
 		t.Fatalf("Escape did not reopen the push menu: %d menus, want %d", len(f.ui.menus), menusBefore+1)
 	}
