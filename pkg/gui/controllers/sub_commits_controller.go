@@ -29,6 +29,11 @@ func NewSubCommitsController(
 	}
 }
 
+// Fork: w v shows the commit in Commits (see fork_show_in_commits.go).
+func (self *SubCommitsController) GetKeybindings(types.KeybindingsOpts) []*types.Binding {
+	return []*types.Binding{self.showInCommitsBinding()}
+}
+
 func (self *SubCommitsController) Context() types.Context {
 	return self.context()
 }

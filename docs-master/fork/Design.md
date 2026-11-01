@@ -127,7 +127,8 @@ recorded here or in the user guide.
   the mode, just enough to show it (a full side area becomes half; an
   enlarged main area returns to normal). `+` in the other area starts that
   area from normal. Filters never change the screen mode either; only `+` and
-  `-` do.
+  `-` do, and `w v`, whose purpose is to show a commit in Commits, raises a
+  normal side area to half.
 
 ## Coexistence with upstream
 

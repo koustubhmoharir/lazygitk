@@ -124,6 +124,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y i `` | Copy abbreviated commit hash |  |
+| `` w v `` | Show in Commits |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |
@@ -290,6 +291,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y h `` | Copy commit hash |  |
+| `` w v `` | Show in Commits |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |
@@ -340,6 +342,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s s `` | 軟重設（保留變動） |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` w b `` | Show branch / tag |  |
+| `` w v `` | Show in Commits |  |
 | `` s c `` | 檢出 | 檢出選定的項目。 |
 | `` g m n `` | 移動提交至新分支 | 建立一個新分支，並將目前分支未推送的提交移動到該分支。如果您打算開始新工作但忘記先建立新分支，這會很有用。<br><br>請注意，此操作忽略選擇，新分支總是從主分支建立或堆疊在目前分支之上（您可以選擇哪種方式）。 |
 | `` n w `` | 新建工作樹 |  |
@@ -376,6 +379,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y t `` | Copy commit tags |  |
 | `` s d `` | Checkout detached HEAD |  |
 | `` w b `` | Show branch / tag |  |
+| `` w v `` | Show in Commits |  |
 | `` s c `` | 檢出 | 檢出選擇的標籤作為分離的HEAD。 |
 | `` n t `` | 建立標籤 | 基於目前提交建立一個新標籤。您將在彈窗中輸入標籤名稱和描述(可選)。 |
 | `` n w `` | 新建工作樹 |  |
@@ -508,6 +512,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s d `` | Checkout detached HEAD |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` w b `` | Show branch / tag |  |
+| `` w v `` | Show in Commits |  |
 | `` s c `` | 檢出 | 基於目前選中的遠端分支檢出一個新的本地分支，或者將遠端分支作分離的HEAD。 |
 | `` n w `` | 新建工作樹 |  |
 | `` m `` | 合併到當前檢出的分支 | 檢視將選中項合併到目前分支的選項(正常合併，壓縮合並) |

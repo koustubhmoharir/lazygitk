@@ -231,6 +231,12 @@ re-apply it if upstream changes that code.
 - `controllers/branches_controller.go`, `remote_branches_controller.go` and
   `tags_controller.go`: `GetKeybindings` adds `w b`
   (`fork_branch_scope_filter.go`, `fork_ref_scope_filter.go`).
+- `controllers/branches_controller.go`, `remote_branches_controller.go`,
+  `tags_controller.go`, `reflog_commits_controller.go` and
+  `sub_commits_controller.go`: `GetKeybindings` adds `w v` show in Commits
+  (`fork_show_in_commits.go`, `helpers/fork_show_in_commits.go`); Reflog and
+  Sub-commits gain a `GetKeybindings` for it. If upstream adds its own
+  `GetKeybindings` there, keep the binding in it.
 - `controllers/commits_files_controller.go`: tree navigation, flat copy and
   historical diffs; copy menu items are shared with the flat bindings.
 - `controllers/sync_controller.go` (replacement): push and pull act on the

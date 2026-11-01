@@ -98,6 +98,8 @@ type TranslationSet struct {
 	ShowingCommitDescendantsOne           string
 	ShowingCommitDescendantsMany          string
 	FilterRef                             string
+	ShowInCommits                         string
+	CommitNotInCommitsLog                 string
 	FilterByPath                          string
 	FilterByAuthor                        string
 	ClearLogFilter                        string
@@ -755,6 +757,8 @@ type TranslationSet struct {
 	CreatingFixupCommitStatus             string
 	MovingCommitsToNewBranchStatus        string
 	ApplyingFilterStatus                  string
+	FindingCommitStatus                   string
+	LoadingCommitsStatus                  string
 	RemovingFilterStatus                  string
 	StashingStatus                        string
 	ApplyingStashStatus                   string
@@ -1620,6 +1624,8 @@ func EnglishTranslationSet() *TranslationSet {
 		ShowingCommitDescendantsOne:           "Showing descendants of %d selected commit",
 		ShowingCommitDescendantsMany:          "Showing descendants of %d selected commits",
 		FilterRef:                             "Show branch / tag",
+		ShowInCommits:                         "Show in Commits",
+		CommitNotInCommitsLog:                 "%s is not in the Commits log: no branch, tag or HEAD reaches it.",
 		FilterByPath:                          "Filter by path",
 		FilterByAuthor:                        "Filter by author",
 		ClearLogFilter:                        "Clear the log filter",
@@ -2284,6 +2290,8 @@ func EnglishTranslationSet() *TranslationSet {
 		CreatingFixupCommitStatus:            "Creating fixup commit",
 		MovingCommitsToNewBranchStatus:       "Moving commits to new branch",
 		ApplyingFilterStatus:                 "Applying filter",
+		FindingCommitStatus:                  "Finding commit",
+		LoadingCommitsStatus:                 "Loading commits",
 		RemovingFilterStatus:                 "Removing filter",
 		StashingStatus:                       "Stashing",
 		ApplyingStashStatus:                  "Applying stash",

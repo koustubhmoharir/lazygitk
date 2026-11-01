@@ -39,6 +39,8 @@ func (self *RemoteBranchesController) GetKeybindings(opts types.KeybindingsOpts)
 		self.branchPlacementBinding(),
 		// Fork: w b shows the remote branch with its history (see fork_ref_scope_filter.go).
 		self.refScopeFilterBinding(),
+		// Fork: w v shows the remote branch's commit in Commits (see fork_show_in_commits.go).
+		self.showInCommitsBinding(),
 		{
 			CommandID:         "remote-branch.checkout",
 			Verb:              "checkout",

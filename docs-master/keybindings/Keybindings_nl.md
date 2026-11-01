@@ -132,6 +132,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s s `` | Soft reset |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` w b `` | Show branch / tag |  |
+| `` w v `` | Show in Commits |  |
 | `` s c `` | Uitchecken | Geselecteerd item uitchecken. |
 | `` g m n `` | Verplaats commits naar nieuwe branch | Maak een nieuwe branch en verplaats niet-gepushte commits van de huidige branch hier naar toe. Gebruik dit in het geval dat je deze commits eigenlijk op een nieuwe branch had willen maken.<br><br>Let op dat de selectie genegeerd wordt. De nieuwe branch komt ofwel bovenop de main branch, of bovenop de huidige branch (je kan kiezen). |
 | `` n w `` | New worktree |  |
@@ -310,6 +311,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y h `` | Copy commit hash |  |
+| `` w v `` | Show in Commits |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |
@@ -356,6 +358,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s d `` | Checkout detached HEAD |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` w b `` | Show branch / tag |  |
+| `` w v `` | Show in Commits |  |
 | `` s c `` | Uitchecken | Geselecteerde remote branch uitchecken als nieuwe locale branch of als detached head. |
 | `` n w `` | New worktree |  |
 | `` m `` | Merge in met huidige checked out branch | View options for merging the selected item into the current branch (regular merge, squash merge) |
@@ -438,6 +441,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y i `` | Copy abbreviated commit hash |  |
+| `` w v `` | Show in Commits |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |
@@ -499,6 +503,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y t `` | Copy commit tags |  |
 | `` s d `` | Checkout detached HEAD |  |
 | `` w b `` | Show branch / tag |  |
+| `` w v `` | Show in Commits |  |
 | `` s c `` | Uitchecken | Geselecteerde tag uitchecken als detached HEAD. |
 | `` n t `` | Creëer tag | Maak een nieuwe tag die naar de huidige commit wijst. Je wordt gevraagd om een tag naam en optionele beschrijving. |
 | `` n w `` | New worktree |  |

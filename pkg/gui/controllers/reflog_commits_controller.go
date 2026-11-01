@@ -45,6 +45,11 @@ func (self *ReflogCommitsController) diffTarget() *commitDiffTarget {
 	return &commitDiffTarget{from: commit.ParentRefName(), to: commit.RefName()}
 }
 
+// Fork: w v shows the entry's commit in Commits (see fork_show_in_commits.go).
+func (self *ReflogCommitsController) GetKeybindings(types.KeybindingsOpts) []*types.Binding {
+	return []*types.Binding{self.showInCommitsBinding()}
+}
+
 func (self *ReflogCommitsController) Context() types.Context {
 	return self.context()
 }

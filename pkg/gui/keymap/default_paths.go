@@ -166,6 +166,8 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("filter.commit-ancestors", "w a")
 	add("filter.commit-descendants", "w d")
 	add("filter.ref", "w b")
+	// Fork: w v shows the selected item's commit in Commits (fork_show_in_commits.go).
+	add("commits.show-selected", "w v")
 	add("file.filter-menu", "w s")
 	// Fork: w p, w u and w c are flat filter keys (fork_flat_filter_keys.go); w o loses its key.
 	add("filter.by-path", "w p")

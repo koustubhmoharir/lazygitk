@@ -145,6 +145,7 @@ of a stash entry:
 | `n t`, `n w` | New tag here; new worktree |
 | `o` | Open the commit in the browser |
 | `t l s` | Select the current branch's commits |
+| `w v` | Show the commit in Commits (Reflog, Sub-commits) |
 | `y h`, `y i`, `y s`, `y m`, `y b`, `y u`, `y a`, `y t`, `y d` | Copy full hash, short hash, subject, message, body, URL, author, tags, diff |
 
 Commits only:
@@ -198,6 +199,7 @@ Commits only:
 | `t d e` | External diff tool |
 | `y n` and the commit copy keys | Copy the name, or details of the commit it points at |
 | `w b` | Show only this branch or tag and its history, in Commits; a local branch with its tracking branch |
+| `w v` | Show its commit in Commits |
 
 Branches also: F2 rename; `g f` fast-forward the
 selected branches; `g t` upstream options; `n t` new tag; `g p c`, `g p o`,
@@ -228,7 +230,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 | `y` copy | `n` name, `p` path, `f` absolute path, `c` file content, `h` hash, `i` short hash, `s` subject, `m` message, `b` body, `u` URL, `a` author, `t` tags, `d` diff, `w` all files' diff, `r` pull request URL, `y` confirmation text |
 | `g` Git | `c` combine, `l` pull, `f` fast-forward, `t` upstream, `i` interactive rebase, `b` bisect, `o` merge/rebase options, `y` git-flow; `v f`/`v c` restore file, revert commit; `r p`/`r b` pick, rebase base; `m n` move commits to new branch; `e c`/`e n`/`e r`/`e a`/`e h` editor commit, commit without hooks, editor reword, commit attributes, edit hunk; `p c`/`p o`/`p v` pull request; `s s`/`s o`/`s a`/`s p` stash, stash options, apply, pop; `h s`/`h u`/`h t`/`h a`/`h o` stage, unstage, patch toggle, patch all, patch options; `h c`/`h p`/`h b` conflict options, pick hunk, pick both; `u s`/`u i`/`u b` submodule update, init, bulk; `z u`/`z w` upstream reset, working-tree reset |
 | `t` view and tools | `d` diff display: `e` external diff, `f` diff with a chosen file, `c` comparison options, `w` whitespace, `n`/`p` renderer, `+`/`-` context, `>`/`<` rename threshold; `t` tree: `t` toggle, `c` collapse all, `e` expand all; `l` log: `n`/`p` all-branch logs, `o` log options, `c` command log options, `s` select branch commits; `s o` sort order; `a` app: `c` config, `u` check update, `s` suspend, `q` quit without changing directory, `g` game; `n`/`p` next/previous: `h` hunk, `f` file, `c` conflict, `d` diff pane, `j` jump to file; `h s`/`h r` hunk selection, range selection |
-| `w` filters | `a` ancestors, `d` descendants of the selected commits (Commits); `b` branch / tag (Commits, Branches, Remote branches, Tags); `s` file status (Files); from any pane `p` filter the log by path (prefilled with the selected file), `u` by author (prefilled with the selected commit's author), `c` clear the log filter (while one is active) |
+| `w` filters | `a` ancestors, `d` descendants of the selected commits (Commits); `b` branch / tag (Commits, Branches, Remote branches, Tags); `v` show in Commits (Branches, Remote branches, Tags, Reflog, Sub-commits); `s` file status (Files); from any pane `p` filter the log by path (prefilled with the selected file), `u` by author (prefilled with the selected commit's author), `c` clear the log filter (while one is active) |
 
 ## How behaviour differs from upstream
 
@@ -298,6 +300,14 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   prompt prefilled from the selected file or the selected commit's author;
   `w c` clears whichever log filter is active. Upstream's filtering menu has
   no key; it is still in the palette.
+- `w v` shows the selected branch's, tag's or entry's commit in Commits, from
+  Branches, Remote branches, Tags, Reflog and Sub-commits. The commit becomes
+  the only selection (cherry-pick marks stay). A log filter that hides it is
+  removed without asking; one that shows it stays. If the side panels are in
+  normal mode, or the main views are enlarged, the side panels become half
+  screen. When the log cannot show the commit at all (no branch, tag or HEAD
+  reaches it, as with some reflog entries), nothing changes and a message says
+  so.
 - While the log is filtered, commands that rewrite history offer to leave the
   filter first, as upstream's path filter does. Unlike upstream, applying or
   clearing any log filter, including a path or author filter, never changes

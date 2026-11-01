@@ -45,6 +45,8 @@ func (self *BranchesController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 		self.branchPlacementBinding(),
 		// Fork: w b shows the branch with its upstream (see fork_branch_scope_filter.go).
 		self.branchScopeFilterBinding(),
+		// Fork: w v shows the branch's commit in Commits (see fork_show_in_commits.go).
+		self.showInCommitsBinding(),
 		{
 			CommandID: "branch.checkout",
 			Verb:      "checkout",

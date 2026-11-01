@@ -169,6 +169,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y i `` | Copy abbreviated commit hash |  |
+| `` w v `` | Show in Commits |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |
@@ -283,6 +284,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y t `` | Copy commit tags |  |
 | `` s d `` | Checkout detached HEAD |  |
 | `` w b `` | Show branch / tag |  |
+| `` w v `` | Show in Commits |  |
 | `` s c `` | チェックアウト（ブランチの切り替え） | 選択したタグをデタッチドHEADとしてチェックアウトします。 |
 | `` n t `` | 新しいタグを作成 | 現在のコミットから新しいタグを作成します。タグ名とオプションの説明を入力するよう促されます。 |
 | `` n w `` | 新しいワークツリー |  |
@@ -390,6 +392,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y h `` | Copy commit hash |  |
+| `` w v `` | Show in Commits |  |
 | `` c y `` | Mark selected commits for cherry-pick |  |
 | `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |
@@ -448,6 +451,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s d `` | Checkout detached HEAD |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` w b `` | Show branch / tag |  |
+| `` w v `` | Show in Commits |  |
 | `` s c `` | チェックアウト（ブランチの切り替え） | 選択したリモートブランチに基づいて新しいローカルブランチをチェックアウトするか、リモートブランチをデタッチドヘッドとしてチェックアウトします。 |
 | `` n w `` | 新しいワークツリー |  |
 | `` m `` | マージ | 選択した項目を現在のブランチにマージするためのオプションを表示します（通常のマージ、スカッシュマージ） |
@@ -481,6 +485,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s s `` | ソフトリセット（変更を保持してステージ） |  |
 | `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` w b `` | Show branch / tag |  |
+| `` w v `` | Show in Commits |  |
 | `` s c `` | チェックアウト（ブランチの切り替え） | 選択した項目をチェックアウトします。 |
 | `` g m n `` | コミットを新しいブランチに移動 | Create a new branch and move the unpushed commits of the current branch to it. Useful if you meant to start new work and forgot to create a new branch first.<br><br>Note that this disregards the selection, the new branch is always created either from the main branch or stacked on top of the current branch (you get to choose which). |
 | `` n w `` | 新しいワークツリー |  |
