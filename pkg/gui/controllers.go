@@ -21,6 +21,9 @@ func (gui *Gui) resetHelpersAndControllers() {
 	for _, context := range gui.Contexts().Flatten() {
 		context.ClearAllAttachedControllerFunctions()
 	}
+	// Fork: cached bindings capture the controllers and repo state that are
+	// replaced here, so the cache is dropped until resetKeybindings repopulates it.
+	gui.clearForkBindingCache()
 
 	helperCommon := gui.c
 	recordDirectoryHelper := helpers.NewRecordDirectoryHelper(helperCommon)

@@ -426,9 +426,16 @@ func (gui *Gui) GetInitialKeybindings() ([]*types.Binding, []*gocui.ViewMouseBin
 }
 
 func (gui *Gui) GetInitialKeybindingsWithCustomCommands() ([]*types.Binding, []*gocui.ViewMouseBinding) {
+	// Fork: the options bar and the palette run every frame, so they read the
+	// bindings of the last reset instead of rebuilding and projecting them, which
+	// was about half of each frame's CPU. The cache is used only for the view it
+	// was made for; otherwise the full rebuild below runs (see fork_binding_cache.go).
+	view := gui.State.ContextMgr.CurrentStatic().GetViewName()
+	if all, mouse, ok := gui.cachedForkKeybindings(view); ok {
+		return all, mouse
+	}
 	bindings, custom, mouse := gui.initialBindingsWithCustomCommands()
 	all := append(custom, bindings...)
-	view := gui.State.ContextMgr.CurrentStatic().GetViewName()
 	if forkCommandView(view) {
 		all = effectiveForkDisplayBindings(all, view)
 	}
@@ -460,6 +467,9 @@ func (gui *Gui) resetKeybindings() {
 	gui.g.DeleteAllKeybindings()
 
 	bindings, customBindings, mouseBindings := gui.initialBindingsWithCustomCommands()
+	// Fork: the options bar and the palette read these same bindings from the
+	// cache rather than rebuilding them (see fork_binding_cache.go).
+	gui.storeForkBindingCache(bindings, customBindings, mouseBindings)
 	// Fork: normal panes use compiled command paths and no-op reservations;
 	// custom, modal, editor and mouse routes retain native registration.
 	gui.registerForkCommands(bindings, customBindings)

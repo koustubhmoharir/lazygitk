@@ -149,7 +149,13 @@ re-apply it if upstream changes that code.
   `projectForkBindings` (`fork_command_projection.go`), which assigns the
   catalogue paths. `resetKeybindings` registers fork commands, key labels and
   panel jump labels; `callKeybindingHandler` records usage. Adds the global
-  `s n` binding.
+  `s n` binding. `resetKeybindings` stores the bindings it registers, and
+  `GetInitialKeybindingsWithCustomCommands` (the options bar each frame and
+  the palette) returns them for the view current at the reset instead of
+  rebuilding (`fork_binding_cache.go`). Applicability is still evaluated per
+  call. `controllers.go` `resetHelpersAndControllers` clears the cache; any new
+  upstream path that replaces controllers or bindings without
+  `resetKeybindings` must clear it too.
 - `pkg/gocui/keybinding.go` and `gui.go`: command bindings match through
   `NormalizeCommandKey` (case-insensitive letters) and are skipped while an
   editable view has focus.

@@ -122,6 +122,10 @@ type Gui struct {
 	forkCustomBindings    []*types.Binding
 	forkCommandLabelCache map[string]map[string]string
 
+	// Fork: the bindings of the last keybinding reset, read by the options bar
+	// and the palette (see fork_binding_cache.go).
+	forkBindingCache forkBindingCache
+
 	// Fork: per-user command usage counts (see fork_command_usage.go). The store
 	// is nil if its path cannot be resolved; recording is then skipped. Uses are
 	// tracked while their handlers run, and the timer batches disk flushes.

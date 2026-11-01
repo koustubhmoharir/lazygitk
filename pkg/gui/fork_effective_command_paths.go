@@ -12,19 +12,39 @@ import (
 // remain visible after local/global ownership and prefix dispatch are applied.
 // Definitions stay in the palette even when their displayed route is shadowed.
 func effectiveForkDisplayBindings(bindings []*types.Binding, view string) []*types.Binding {
+	return buildForkCommandTree(bindings, view).displayBindings(bindings, view)
+}
+
+// forkCommandTree is the structure step of effectiveForkDisplayBindings: the
+// command tree of a view's core bindings, and the custom bindings among the
+// bindings it was built from. It depends only on keys, command paths, view
+// names and default flags, not on applicability, so it can be built once per
+// keybinding reset (see fork_binding_cache.go).
+type forkCommandTree struct {
+	tree   *keymap.CommandTree
+	custom map[*types.Binding]bool
+}
+
+func buildForkCommandTree(bindings []*types.Binding, view string) forkCommandTree {
 	core := make([]*types.Binding, 0, len(bindings))
-	customCopies := make(map[*types.Binding]*types.Binding)
+	custom := make(map[*types.Binding]bool)
 	for _, binding := range bindings {
 		if binding == nil {
 			continue
 		}
 		if strings.HasPrefix(binding.GetCommandID(), "custom.") {
-			customCopies[binding] = cloneForkBinding(binding)
+			custom[binding] = true
 			continue
 		}
 		core = append(core, binding)
 	}
-	tree := keymap.BuildCommandTree(core, view)
+	return forkCommandTree{tree: keymap.BuildCommandTree(core, view), custom: custom}
+}
+
+// displayBindings is the per-call step of effectiveForkDisplayBindings. It
+// evaluates applicability live, so a route follows the current selection and
+// mode. It returns fresh copies and never mutates bindings or the tree.
+func (structure forkCommandTree) displayBindings(bindings []*types.Binding, view string) []*types.Binding {
 	effective := make(map[*types.Binding][][]gocui.Key)
 	var walk func(*keymap.CommandTree, []gocui.Key)
 	walk = func(node *keymap.CommandTree, path []gocui.Key) {
@@ -44,7 +64,7 @@ func effectiveForkDisplayBindings(bindings []*types.Binding, view string) []*typ
 			walk(edge.Tree, next)
 		}
 	}
-	walk(tree, nil)
+	walk(structure.tree, nil)
 
 	result := make([]*types.Binding, 0, len(bindings))
 	var eligibleCustoms, eligibleCore []*types.Binding
@@ -52,17 +72,21 @@ func effectiveForkDisplayBindings(bindings []*types.Binding, view string) []*typ
 		if binding == nil {
 			continue
 		}
-		copy := *binding
-		if customCopy := customCopies[binding]; customCopy != nil {
-			copy = *customCopy
+		var copy *types.Binding
+		if structure.custom[binding] {
+			copy = cloneForkBinding(binding)
 			if binding.ViewName == "" || binding.ViewName == view {
-				eligibleCustoms = append(eligibleCustoms, &copy)
+				eligibleCustoms = append(eligibleCustoms, copy)
 			}
-		} else if forkCommandView(binding.ViewName) && (binding.ViewName == "" || binding.ViewName == view) {
-			copy.SetCommandPaths(effective[binding])
-			eligibleCore = append(eligibleCore, &copy)
+		} else {
+			value := *binding
+			copy = &value
+			if forkCommandView(binding.ViewName) && (binding.ViewName == "" || binding.ViewName == view) {
+				copy.SetCommandPaths(effective[binding])
+				eligibleCore = append(eligibleCore, copy)
+			}
 		}
-		result = append(result, &copy)
+		result = append(result, copy)
 	}
 	clearForkPathsShadowedByCustoms(eligibleCore, eligibleCustoms)
 	return result

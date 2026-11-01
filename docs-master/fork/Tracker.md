@@ -11,10 +11,7 @@
   instead of rebuilding and projecting every binding on each frame (about
   half of each frame's CPU). Dispatch already uses those bindings.
 
-Tasks:
-
-- Cache the bindings at keybinding reset; audit builders for state captured
-  at construction and for callers that mutate returned bindings; measure.
+Tasks: none remain; the ui and main_view groups are verified next.
 
 ## Next: repo switch feedback
 

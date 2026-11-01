@@ -60,7 +60,7 @@ func TestForkDefaultPathsDoNotOfferUnrelatedSameKeyActions(t *testing.T) {
 	}
 }
 
-func newForkKeymapTestGui(t *testing.T) *Gui {
+func newForkKeymapTestGui(t testing.TB) *Gui {
 	t.Helper()
 	cfg := config.NewDummyAppConfig()
 	cmn := common.NewDummyCommonWithUserConfigAndAppState(cfg.GetUserConfig(), cfg.GetAppState())
