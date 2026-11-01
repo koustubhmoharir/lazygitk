@@ -23,8 +23,20 @@ var forkPalettePaneOrder = []string{
 	"commits", "reflogCommits", "subCommits", "commitFiles", "stash",
 	// The main area: staging and patch building are commands of the main view.
 	"main", "secondary", "mergeConflicts",
-	"commitMessage", "commitDescription", "extras", "information",
-	"confirmation", "prompt", "menu", "search", "suggestions",
+	"extras", "information",
+}
+
+// forkPalettePopupViews are the popups. Their commands are listed only while the
+// popup is focused, in the first section. From another pane they are noise: a
+// popup is open over that pane, and its commands are not that pane's commands.
+var forkPalettePopupViews = map[string]bool{
+	"commitMessage":     true,
+	"commitDescription": true,
+	"confirmation":      true,
+	"prompt":            true,
+	"menu":              true,
+	"search":            true,
+	"suggestions":       true,
 }
 
 // orderPaletteViews returns views in palette order: those in forkPalettePaneOrder

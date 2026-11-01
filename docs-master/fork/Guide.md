@@ -20,7 +20,8 @@ in the [design principles](Design.md). The generated per-pane reference is
 - **`?` lists every command** in the app with its full key path, including
   commands that have no key. The focused pane's and the global commands come
   first, then each other pane's in its own section, then the focused pane's
-  navigation. Within a section, single keys come first, then the `d`, `s`,
+  navigation. Popups (menus, prompts, confirmations, search, suggestions and
+  the commit message editor) list their commands only while they are focused. Within a section, single keys come first, then the `d`, `s`,
   `n`, `c`, `u`, `y`, `g`, `t` and `w` groups, then commands without a key.
   Commands that have nothing to act on here (such as another pane's, "Available
   in Commits") are faded; commands that apply but cannot run now are crossed

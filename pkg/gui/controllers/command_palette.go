@@ -29,7 +29,9 @@ type palettePane struct {
 // their callbacks, while other panes are described from their static fields
 // only, because their callbacks may read that pane's state (see
 // staticPaletteCopy). Navigation of other panes is not listed; the navigation
-// section belongs to the focused pane.
+// section belongs to the focused pane. Popups (forkPalettePopupViews) get no
+// section from another pane; when a popup is focused, its commands are in the
+// focused section.
 func commandPaletteBindings(bindings []*types.Binding, viewName string) commandPalette {
 	var focusedLocal, global, navigation []*types.Binding
 	otherPanes := make(map[string][]*types.Binding)
@@ -51,7 +53,7 @@ func commandPaletteBindings(bindings []*types.Binding, viewName string) commandP
 			}
 			continue
 		}
-		if binding.Tag == "navigation" || binding.Description == "" {
+		if binding.Tag == "navigation" || binding.Description == "" || forkPalettePopupViews[binding.ViewName] {
 			continue
 		}
 		otherPanes[binding.ViewName] = append(otherPanes[binding.ViewName], binding)

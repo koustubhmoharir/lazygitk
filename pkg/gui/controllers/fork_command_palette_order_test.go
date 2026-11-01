@@ -86,8 +86,8 @@ func TestSortPaletteBindingsByKeyGroupDoesNotCallCallbacks(t *testing.T) {
 }
 
 func TestOrderPaletteViewsFollowsPaneOrderThenName(t *testing.T) {
-	got := orderPaletteViews([]string{"zzz", "commits", "mergeConflicts", "aaa", "status", "menu"})
-	want := []string{"status", "commits", "mergeConflicts", "menu", "aaa", "zzz"}
+	got := orderPaletteViews([]string{"zzz", "commits", "mergeConflicts", "aaa", "status", "stash"})
+	want := []string{"status", "commits", "stash", "mergeConflicts", "aaa", "zzz"}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("order = %v, want %v", got, want)
 	}

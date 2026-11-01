@@ -36,6 +36,37 @@ func TestCommandPaletteBindingsPartitionsAndFilters(t *testing.T) {
 	}
 }
 
+func TestCommandPaletteBindingsOmitsPopupsFromOtherPanes(t *testing.T) {
+	bindings := []*types.Binding{
+		{CommandID: "menu-command", ViewName: "menu", Description: "Menu command"},
+		{CommandID: "message-command", ViewName: "commitMessage", Description: "Message command"},
+		{CommandID: "commits-command", ViewName: "commits", Description: "Commits command"},
+	}
+
+	palette := commandPaletteBindings(bindings, "localBranches")
+	if len(palette.Panes) != 1 || palette.Panes[0].View != "commits" {
+		t.Fatalf("panes = %v, want only a commits pane", palette.Panes)
+	}
+	if got, want := bindingIDs(palette.Panes[0].Bindings), []string{"commits-command"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("commits IDs = %v, want %v", got, want)
+	}
+}
+
+func TestCommandPaletteBindingsListsFocusedPopupCommands(t *testing.T) {
+	bindings := []*types.Binding{
+		{CommandID: "menu-command", ViewName: "menu", Description: "Menu command"},
+		{CommandID: "commits-command", ViewName: "commits", Description: "Commits command"},
+	}
+
+	palette := commandPaletteBindings(bindings, "menu")
+	if got, want := bindingIDs(palette.Focused), []string{"menu-command"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("focused IDs = %v, want %v", got, want)
+	}
+	if len(palette.Panes) != 1 || palette.Panes[0].View != "commits" {
+		t.Fatalf("panes = %v, want only a commits pane", palette.Panes)
+	}
+}
+
 func TestCommandPaletteBindingsOrdersPanesByLayoutThenName(t *testing.T) {
 	bindings := []*types.Binding{
 		{CommandID: "a", ViewName: "zzz-unlisted", Description: "A"},

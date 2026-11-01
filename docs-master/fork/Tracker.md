@@ -1,6 +1,28 @@
 # Current work
 
-No work is in progress.
+## Palette follow-ups
+
+- Popups (menu, prompt, confirmation, search, suggestions, commit message)
+  get no section in other panes' palettes; they list their commands only
+  while focused.
+- Palette integration tests reach commands by filtering, not by scrolling
+  about 300 lines, and open the palette once where they only read it.
+- The options bar reuses the bindings built by the last keybinding reset
+  instead of rebuilding and projecting every binding on each frame (about
+  half of each frame's CPU). Dispatch already uses those bindings.
+
+Tasks:
+
+- Palette tests filter instead of scrolling.
+- Cache the bindings at keybinding reset; audit builders for state captured
+  at construction and for callers that mutate returned bindings; measure.
+
+## Next: repo switch feedback
+
+Agreed: on a repo switch every pane clears at once and shows "Loading…" until
+its own data arrives, so old content never appears under the new repo; a
+toast "Opened <repo>" appears once all panes have loaded. TortoiseGit has no
+in-app repo switch to follow.
 
 ## How this tracker works
 

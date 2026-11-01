@@ -112,7 +112,8 @@ recorded here or in the user guide.
 - **Everything is discoverable.** Every action is in the `?` palette with its
   full key path, including actions without keys, whether or not it applies
   now. The palette is organized by pane and then by key group, so it teaches
-  the key structure. Unavailable actions are faded when they have nothing to
+  the key structure. A popup's commands are listed only while it is focused;
+  from a pane they are noise. Unavailable actions are faded when they have nothing to
   act on here and crossed out when a precondition fails, in every menu.
 
 ## Appearance
