@@ -232,7 +232,8 @@ func (target *branchSyncTarget) reviewIgnoredApproval(plan git_commands.CurrentP
 	if err := target.checkRepository(); err != nil {
 		return err
 	}
-	items := []*types.MenuItem{{CommandID: "branch.pull-current.cancel-ignored-risk", Verb: "cancel", Label: target.c.Tr.Cancel, OnPress: cancel}, {CommandID: "branch.pull-current.approve-ignored-risk", Verb: "integrate", Label: target.c.Tr.BranchSyncIntegrationApproveIgnored, OnPress: func() error { return approve(plan.WithIgnoredFilesApproved()) }}}
+	// The approval leads so the reviewed action is selected; Cancel follows it.
+	items := []*types.MenuItem{{CommandID: "branch.pull-current.approve-ignored-risk", Verb: "integrate", Label: target.c.Tr.BranchSyncIntegrationApproveIgnored, OnPress: func() error { return approve(plan.WithIgnoredFilesApproved()) }}, {CommandID: "branch.pull-current.cancel-ignored-risk", Verb: "cancel", Label: target.c.Tr.Cancel, OnPress: cancel}}
 	for _, path := range plan.IgnoredFiles() {
 		quoted := fmt.Sprintf("%q", path)
 		items = append(items, &types.MenuItem{CommandID: "branch.pull-current.inspect-ignored-path", Verb: "inspect", Label: quoted, Tooltip: quoted, OpensMenu: true, OnPress: func() error {

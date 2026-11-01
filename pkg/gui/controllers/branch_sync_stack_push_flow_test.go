@@ -117,11 +117,11 @@ func TestBranchSyncStackPushCollectsReviewsBeforeAnyPush(t *testing.T) {
 		t.Fatal("bottom destination exists before final approval")
 	}
 	final := f.ui.menus[len(f.ui.menus)-1]
-	if final.Items[0].Verb != "cancel" {
-		t.Fatal("batch approval is not cancel-first")
+	if final.Items[0].CommandID != "branch.push-stack.execute" || final.Items[1].Verb != "cancel" {
+		t.Fatal("batch approval is not execute-first with Cancel second")
 	}
-	if final.Items[len(final.Items)-1].CommandID != "branch.push-stack.execute" {
-		t.Fatal("batch execute is not the final menu item")
+	if final.Items[len(final.Items)-1].CommandID == "branch.push-stack.execute" {
+		t.Fatal("batch execute was left at the end instead of leading the menu")
 	}
 	inspected := false
 	for _, item := range final.Items {
@@ -144,7 +144,7 @@ func TestBranchSyncStackPushCollectsReviewsBeforeAnyPush(t *testing.T) {
 	if !inspected {
 		t.Fatal("final batch menu omitted plan inspection rows")
 	}
-	if err := final.Items[0].OnPress(); err != nil {
+	if err := menuItem(t, final, "branch.push-stack.cancel").OnPress(); err != nil {
 		t.Fatal(err)
 	}
 	if len(ui.blockingWorkers) != 0 {
@@ -643,8 +643,8 @@ func TestBranchSyncStackPushMultiURLRequiresCapturedApprovalAndPreflightsTranspo
 		t.Fatal(err)
 	}
 	urlReview := f.ui.menus[len(f.ui.menus)-1]
-	if urlReview.Items[0].Verb != "cancel" || menuItem(t, urlReview, "branch.push-selected.multiple-urls-approve") == nil {
-		t.Fatal("multiple URL review omitted explicit cancel-first approval")
+	if urlReview.Items[0].CommandID != "branch.push-selected.multiple-urls-approve" || urlReview.Items[1].Verb != "cancel" {
+		t.Fatal("multiple URL review does not lead with the approval, with Cancel second")
 	}
 	if len(batch.plans) != 0 {
 		t.Fatal("multiple-URL plan entered the batch before explicit approval")

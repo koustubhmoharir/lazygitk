@@ -318,8 +318,8 @@ func TestBranchActionMergeFlowStagedAndIgnoredRisksRequireExplicitChoices(t *tes
 		t.Fatal(err)
 	}
 	stagedReview := f.ui.menus[len(f.ui.menus)-1]
-	if len(stagedReview.Items) == 0 || stagedReview.Items[0].CommandID != "branch.merge.squash-committed.cancel-staged-risk" {
-		t.Fatal("staged risk menu must lead with Cancel")
+	if len(stagedReview.Items) < 2 || stagedReview.Items[0].CommandID != "branch.merge.squash-committed.approve-staged" || stagedReview.Items[1].CommandID != "branch.merge.squash-committed.cancel-staged-risk" {
+		t.Fatal("staged risk menu must lead with the approval, with Cancel second")
 	}
 	if menuItem(t, stagedReview, "branch.merge.squash-committed.cancel-staged-risk") == nil {
 		t.Fatal("staged risk review omitted cancel")
@@ -346,8 +346,8 @@ func TestBranchActionMergeFlowStagedAndIgnoredRisksRequireExplicitChoices(t *tes
 	if err := menuItem(t, ignoredReview, "branch.merge.squash-committed.cancel-ignored-risk").OnPress(); err != nil {
 		t.Fatal(err)
 	}
-	if len(ignoredReview.Items) == 0 || ignoredReview.Items[0].CommandID != "branch.merge.squash-committed.cancel-ignored-risk" {
-		t.Fatal("ignored risk menu must lead with Cancel")
+	if len(ignoredReview.Items) < 2 || ignoredReview.Items[0].CommandID != "branch.merge.squash-committed.approve-ignored" || ignoredReview.Items[1].CommandID != "branch.merge.squash-committed.cancel-ignored-risk" {
+		t.Fatal("ignored risk menu must lead with the approval, with Cancel second")
 	}
 	// Reopen the same captured plan, approve ignored files, then change the
 	// approved bytes before native execution; the fingerprint must reject it.

@@ -329,8 +329,9 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - Rebases need no staged or unstaged tracked changes. Untracked files are fine
   and Git refuses real collisions. Nothing offers or performs autostash, even
   if Git's configuration enables it, and other branches' refs are not updated.
-- If a rebase could overwrite ignored files, a separate menu lists them, with
-  Cancel selected by default.
+- If a rebase could overwrite ignored files, a separate menu lists them before
+  anything runs. The approval is selected; choose Cancel or press Escape to
+  stop.
 - `s h`, `s m`, `s s` reset the checked-out branch to the selection, with a
   confirmation explaining what the mode does to the index and files.
 - Conflicts and paused rebases are continued, skipped or aborted explicitly

@@ -519,8 +519,8 @@ func TestBranchSyncCurrentPullIgnoredRiskCancelAndReapprovalAfterChange(t *testi
 		t.Fatal(err)
 	}
 	risk := f.ui.menus[len(f.ui.menus)-1]
-	if risk.Items[0].Verb != "cancel" {
-		t.Fatalf("first risk action is %q", risk.Items[0].Verb)
+	if risk.Items[0].CommandID != "branch.pull-current.approve-ignored-risk" || risk.Items[1].Verb != "cancel" {
+		t.Fatalf("risk actions are not approve-first with Cancel second: first=%q second=%q", risk.Items[0].CommandID, risk.Items[1].Verb)
 	}
 	if !strings.Contains(risk.Prompt, "Integrate reviewed commit") || !branchSyncCurrentPullRiskListsPath(risk.Items, "collision") {
 		t.Fatalf("risk review omitted full context or quoted collision path: prompt=%s items=%v", risk.Prompt, risk.Items)

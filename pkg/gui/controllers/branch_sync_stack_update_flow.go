@@ -194,7 +194,11 @@ func (batch *branchStackUpdateFlow) reviewBatch() error {
 	if batch.started || !batch.hasCompleteReview() {
 		return git_commands.ErrBranchSyncChanged
 	}
-	items := []*types.MenuItem{{CommandID: "branch.update-stack.cancel", Verb: "cancel", Label: batch.target.c.Tr.Cancel, OnPress: batch.target.checkRepository}}
+	// The execute item leads so the reviewed action is selected; Cancel follows it.
+	items := []*types.MenuItem{
+		{CommandID: "branch.update-stack.execute", Verb: "update-stack", Label: batch.target.c.Tr.BranchSyncStackUpdateExecute, OnPress: batch.execute},
+		{CommandID: "branch.update-stack.cancel", Verb: "cancel", Label: batch.target.c.Tr.Cancel, OnPress: batch.target.checkRepository},
+	}
 	for _, plan := range batch.executionOrder() {
 		prompt := batch.planPrompt(plan)
 		label := fmt.Sprintf("%q %s → %s", plan.name(), utils.ShortHash(plan.sourceOID()), utils.ShortHash(plan.targetOID()))
@@ -217,7 +221,6 @@ func (batch *branchStackUpdateFlow) reviewBatch() error {
 			},
 		})
 	}
-	items = append(items, &types.MenuItem{CommandID: "branch.update-stack.execute", Verb: "update-stack", Label: batch.target.c.Tr.BranchSyncStackUpdateExecute, OnPress: batch.execute})
 	return batch.target.c.Menu(types.CreateMenuOptions{
 		Title: batch.target.c.Tr.BranchSyncStackUpdateTitle, Prompt: batch.target.c.Tr.BranchSyncStackUpdatePrompt,
 		Items: items, HideCancel: true, OnCancel: batch.target.checkRepository,

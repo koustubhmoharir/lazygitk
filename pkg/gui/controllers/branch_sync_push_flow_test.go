@@ -466,7 +466,7 @@ func TestBranchSyncPushUnknownLeaseRequiresExplicitReference(t *testing.T) {
 	}
 }
 
-func TestBranchSyncPushMultipleURLsCancelFirstThenApprove(t *testing.T) {
+func TestBranchSyncPushMultipleURLsApproveFirstThenCancel(t *testing.T) {
 	f := newBranchSyncPushFixture(t)
 	second := filepath.Join(t.TempDir(), "second.git")
 	branchSyncPushGit(t, t.TempDir(), "init", "--bare", "-q", second)
@@ -502,8 +502,8 @@ func TestBranchSyncPushMultipleURLsCancelFirstThenApprove(t *testing.T) {
 		t.Fatal(err)
 	}
 	urls := f.ui.menus[len(f.ui.menus)-1]
-	if len(urls.Items) < 4 || urls.Items[0].Verb != "cancel" {
-		t.Fatalf("multi-URL review is not cancel-first: %+v", urls.Items)
+	if len(urls.Items) < 4 || urls.Items[0].CommandID != "branch.push-selected.multiple-urls-approve" || urls.Items[1].Verb != "cancel" {
+		t.Fatalf("multi-URL review is not approve-first with Cancel second: %+v", urls.Items)
 	}
 	if !strings.Contains(urls.Prompt, "topic") || !strings.Contains(urls.Prompt, "origin") || !strings.Contains(urls.Prompt, "refs/heads/topic") {
 		t.Fatalf("multi-URL menu omitted reviewed force context: %q", urls.Prompt)
@@ -511,13 +511,13 @@ func TestBranchSyncPushMultipleURLsCancelFirstThenApprove(t *testing.T) {
 	if got := branchSyncPushGit(t, f.remote, "rev-parse", "refs/heads/topic"); got != oldTip {
 		t.Fatalf("remote changed before approval: %s", got)
 	}
-	if err := urls.Items[0].OnPress(); err != nil {
+	if err := menuItem(t, urls, "branch.push-selected.multiple-urls-cancel").OnPress(); err != nil {
 		t.Fatal(err)
 	}
 	if got := branchSyncPushGit(t, second, "rev-parse", "refs/heads/topic"); got != oldTip {
 		t.Fatalf("cancel changed second destination: %s", got)
 	}
-	if err := urls.Items[len(urls.Items)-1].OnPress(); err != nil {
+	if err := menuItem(t, urls, "branch.push-selected.multiple-urls-approve").OnPress(); err != nil {
 		t.Fatal(err)
 	}
 	if err := f.ui.runWorker(t); err != nil {

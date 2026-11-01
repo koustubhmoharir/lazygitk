@@ -315,8 +315,8 @@ func (flow *branchSyncUpdateFlow) reviewUpdate() error {
 				Title:  flow.target.c.Tr.BranchSyncUpdateReviewTitle,
 				Prompt: flow.collectionContext() + fmt.Sprintf(flow.target.c.Tr.BranchSyncAlreadyAhead, plan.Name(), plan.OldOID(), plan.TargetOID()),
 				Items: []*types.MenuItem{
-					{CommandID: "branch.update-selected.noop-cancel", Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: flow.target.checkRepository},
 					{CommandID: "branch.update-selected.noop-continue", Verb: "review-update", Label: flow.target.c.Tr.BranchSyncStackContinue, OpensMenu: true, OnPress: func() error { return flow.applyUpdate(plan) }},
+					{CommandID: "branch.update-selected.noop-cancel", Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: flow.target.checkRepository},
 				},
 				HideCancel: true, OnCancel: flow.target.checkRepository,
 			})

@@ -37,11 +37,11 @@ var FastForwardCheckedOutIgnoredFileInTheWay = NewIntegrationTest(NewIntegration
 			).
 			Press(keys.Branches.FastForward)
 
-		// The ignored-file risk is shown first, with Cancel selected by default.
+		// The ignored-file risk is shown first, with the approval selected by default.
 		risk := t.ExpectPopup().Menu().Title(Equals("Ignored files may be overwritten"))
-		t.Views().Menu().SelectedLine(Contains("Cancel")).
-			Content(Contains("Approve ignored-file overwrite risk and integrate").Contains("\"ignored-incoming\""))
-		risk.Confirm()
+		t.Views().Menu().SelectedLine(Contains("Approve ignored-file overwrite risk and integrate")).
+			Content(Contains("Cancel").Contains("\"ignored-incoming\""))
+		risk.Select(Contains("Cancel")).Confirm()
 
 		t.Views().Branches().
 			Lines(

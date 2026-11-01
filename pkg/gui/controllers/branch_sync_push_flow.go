@@ -397,16 +397,20 @@ func (flow *branchSyncPushFlow) execute(plan git_commands.BranchPushPlan) error 
 				if err := flow.target.checkRepository(); err != nil {
 					return err
 				}
-				items := []*types.MenuItem{{CommandID: "branch.push-selected.multiple-urls-cancel", Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: flow.target.checkRepository}}
+				// The approval is selected by default, with Cancel beside it; the
+				// destination rows only display the redacted URLs.
+				items := []*types.MenuItem{
+					{CommandID: "branch.push-selected.multiple-urls-approve", Verb: "push", Label: flow.target.c.Tr.BranchSyncApproveMultipleURLs, OnPress: func() error {
+						if err := flow.target.checkRepository(); err != nil {
+							return err
+						}
+						return flow.execute(plan.WithMultipleURLsApproved())
+					}},
+					{CommandID: "branch.push-selected.multiple-urls-cancel", Verb: "cancel", Label: flow.target.c.Tr.Cancel, OnPress: flow.target.checkRepository},
+				}
 				for i, display := range redacted {
 					items = append(items, &types.MenuItem{CommandID: fmt.Sprintf("branch.push-selected.destination-%d", i), Verb: "push-destination", Label: display, OnPress: func() error { return nil }})
 				}
-				items = append(items, &types.MenuItem{CommandID: "branch.push-selected.multiple-urls-approve", Verb: "push", Label: flow.target.c.Tr.BranchSyncApproveMultipleURLs, OnPress: func() error {
-					if err := flow.target.checkRepository(); err != nil {
-						return err
-					}
-					return flow.execute(plan.WithMultipleURLsApproved())
-				}})
 				return flow.target.c.Menu(types.CreateMenuOptions{Title: flow.target.c.Tr.BranchSyncMultipleURLsTitle, Prompt: flow.multipleURLsPrompt(plan), HideCancel: true, Items: items})
 			})
 			return nil

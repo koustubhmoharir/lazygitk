@@ -1653,7 +1653,7 @@ func EnglishTranslationSet() *TranslationSet {
 		BranchSyncIntegrationReplayBase:       "\n\nReplay base: %s (the captured old upstream boundary). Only local commits after this boundary will be replayed.",
 		BranchSyncIntegrationDefaultError:     "\n\nConfigured method unavailable: %s\nChoose an explicit method or cancel.",
 		BranchSyncIntegrationIgnoredTitle:     "Ignored files may be overwritten",
-		BranchSyncIntegrationIgnoredPrompt:    "\n\nGit may overwrite the listed ignored files even with a clean working tree. Move or back up files first, or explicitly approve this risk. Cancel is selected by default.",
+		BranchSyncIntegrationIgnoredPrompt:    "\n\nGit may overwrite the listed ignored files even with a clean working tree. Move or back up files first, or explicitly approve this risk.",
 		BranchSyncIntegrationApproveIgnored:   "Approve ignored-file overwrite risk and integrate",
 		BranchSyncIntegrationStatus:           "Integrating reviewed commit into branch %q",
 		BranchSyncMergeSelectedIntoCurrent:    "Merge selected branch into current…",

@@ -93,7 +93,11 @@ func (batch *branchStackPushFlow) reviewBatch() error {
 	if batch.started || len(batch.plans) == 0 || len(batch.plans) != len(batch.members) {
 		return git_commands.ErrBranchSyncChanged
 	}
-	items := []*types.MenuItem{{CommandID: "branch.push-stack.cancel", Verb: "cancel", Label: batch.target.c.Tr.Cancel, OnPress: batch.target.checkRepository}}
+	// The execute item leads so the reviewed action is selected; Cancel follows it.
+	items := []*types.MenuItem{
+		{CommandID: "branch.push-stack.execute", Verb: "push-stack", Label: batch.target.c.Tr.BranchSyncStackPushExecute, OnPress: batch.execute},
+		{CommandID: "branch.push-stack.cancel", Verb: "cancel", Label: batch.target.c.Tr.Cancel, OnPress: batch.target.checkRepository},
+	}
 	for _, plan := range batch.plans {
 		options := plan.Options()
 		prompt := batch.planPrompt(plan)
@@ -112,7 +116,6 @@ func (batch *branchStackPushFlow) reviewBatch() error {
 			},
 		})
 	}
-	items = append(items, &types.MenuItem{CommandID: "branch.push-stack.execute", Verb: "push-stack", Label: batch.target.c.Tr.BranchSyncStackPushExecute, OnPress: batch.execute})
 	return batch.target.c.Menu(types.CreateMenuOptions{
 		Title: batch.target.c.Tr.BranchSyncStackPushTitle, Prompt: batch.target.c.Tr.BranchSyncStackPushPrompt,
 		Items: items, HideCancel: true, OnCancel: batch.target.checkRepository,

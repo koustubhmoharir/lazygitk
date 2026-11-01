@@ -210,12 +210,13 @@ func (review *capturedMergeReview) reviewStaged() error {
 		return err
 	}
 	c := review.flow.repository.c
+	// The approval leads so the reviewed action is selected; Cancel follows it.
 	items := []*types.MenuItem{
-		{CommandID: review.choice.id + ".cancel-staged-risk", Verb: "cancel", Label: c.Tr.Cancel, OnPress: review.flow.repository.checkRepository},
 		{CommandID: review.choice.id + ".approve-staged", Verb: review.choice.verb, Label: c.Tr.BranchActionMergeApproveStaged, OnPress: func() error {
 			review.plan = review.plan.WithStagedFilesApproved()
 			return review.reviewIgnored()
 		}},
+		{CommandID: review.choice.id + ".cancel-staged-risk", Verb: "cancel", Label: c.Tr.Cancel, OnPress: review.flow.repository.checkRepository},
 	}
 	for _, path := range review.plan.Review().StagedFiles() {
 		quoted := fmt.Sprintf("%q", path)
@@ -236,11 +237,12 @@ func (review *capturedMergeReview) reviewIgnored() error {
 	if review.plan.ConservativeIgnoredReview() {
 		prompt = c.Tr.BranchActionMergeAllIgnoredPrompt
 	}
+	// The approval leads so the reviewed action is selected; Cancel follows it.
 	items := []*types.MenuItem{
-		{CommandID: review.choice.id + ".cancel-ignored-risk", Verb: "cancel", Label: c.Tr.Cancel, OnPress: review.flow.repository.checkRepository},
 		{CommandID: review.choice.id + ".approve-ignored", Verb: review.choice.verb, Label: c.Tr.BranchActionMergeApproveIgnored, OnPress: func() error {
 			return review.execute(review.plan.WithIgnoredFilesApproved())
 		}},
+		{CommandID: review.choice.id + ".cancel-ignored-risk", Verb: "cancel", Label: c.Tr.Cancel, OnPress: review.flow.repository.checkRepository},
 	}
 	for _, path := range review.plan.IgnoredFiles() {
 		quoted := fmt.Sprintf("%q", path)

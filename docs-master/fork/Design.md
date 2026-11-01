@@ -67,7 +67,8 @@ recorded here or in the user guide.
   untracked files are fine, and Git rejects real collisions). Checkouts carry
   dirty files when Git can, and otherwise report the files in the way.
 - **Ignored files are protected.** Where an operation could overwrite ignored
-  files, the user approves that risk explicitly, with Cancel as the default.
+  files, a review lists them and the user approves that risk explicitly; the
+  approval is selected, since the user already chose the operation.
 
 ## Keys
 

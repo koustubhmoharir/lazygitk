@@ -259,8 +259,8 @@ func TestBranchSyncUpdateCollectionNoopCancelFirstContinueCollects(t *testing.T)
 		t.Fatal(err)
 	}
 	menu := f.ui.menus[len(f.ui.menus)-1]
-	if len(menu.Items) < 2 || menu.Items[0].Verb != "cancel" {
-		t.Fatalf("no-op menu isn't cancel-first: %+v", menu.Items)
+	if len(menu.Items) < 2 || menu.Items[0].CommandID != "branch.update-selected.noop-continue" || menu.Items[1].Verb != "cancel" {
+		t.Fatalf("no-op menu isn't continue-first with Cancel second: %+v", menu.Items)
 	}
 	if accepted != 0 {
 		t.Fatal("no-op was automatically accepted")

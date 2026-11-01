@@ -123,7 +123,7 @@ var PullStackReview = NewIntegrationTest(NewIntegrationTestArgs{
 		updatesMenu := t.ExpectPopup().Menu().Title(Equals("Review branch updates"))
 		assertReviewState()
 		updatesMenu.ContainsLines(
-			Contains("Cancel").IsSelected(),
+			Contains("Apply all reviewed branch updates").IsSelected(),
 		)
 		updatesMenu.ContainsLines(
 			Contains("lower").Contains(lowerOID[:7]).Contains(topicOID[:7]),

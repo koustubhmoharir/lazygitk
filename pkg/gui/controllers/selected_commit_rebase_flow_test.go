@@ -267,10 +267,10 @@ func TestSelectedRebaseGuardsAndTopologyMenu(t *testing.T) {
 	}
 }
 
-func TestSelectedRebaseRiskMenuCancelsFirstAndApprovesOnlySnapshot(t *testing.T) {
+func TestSelectedRebaseRiskMenuApprovesFirstAndCancelsOnlyOnCancel(t *testing.T) {
 	_, ui, root := selectedRebaseFlowRiskMenu(t, true)
 	risk := ui.menus[len(ui.menus)-1]
-	if risk.Prompt == "" || !risk.HideCancel || len(risk.Items) != 4 || !strings.Contains(strings.ToLower(risk.Items[0].Label), "cancel") {
+	if risk.Prompt == "" || !risk.HideCancel || len(risk.Items) != 4 || !strings.Contains(strings.ToLower(risk.Items[1].Label), "cancel") {
 		t.Fatalf("unexpected risk menu: %+v", risk)
 	}
 	if risk.Items[2].Label != fmt.Sprintf("%q", "historical-second") || risk.Items[2].Tooltip != risk.Items[2].Label || risk.Items[3].Label != `"target"` {
@@ -290,7 +290,7 @@ func TestSelectedRebaseRiskMenuCancelsFirstAndApprovesOnlySnapshot(t *testing.T)
 		t.Fatal("opening risk menu started work")
 	}
 	oldHead := selectedRebaseFlowGit(t, root, "rev-parse", "HEAD")
-	if err := risk.Items[0].OnPress(); err != nil {
+	if err := menuItem(t, risk, "branch.rebase-current-onto-selected-commit.cancel-risk").OnPress(); err != nil {
 		t.Fatal(err)
 	}
 	if len(ui.workers) != 0 || selectedRebaseFlowGit(t, root, "rev-parse", "HEAD") != oldHead {
@@ -396,7 +396,7 @@ func TestSelectedRebaseApprovalRevalidatesIgnoredContentsAndNewPaths(t *testing.
 			risk := ui.menus[len(ui.menus)-1]
 			beforeHead := selectedRebaseFlowGit(t, root, "rev-parse", "HEAD")
 			beforeIndex := selectedRebaseFlowGit(t, root, "write-tree")
-			if err := risk.Items[1].OnPress(); err != nil {
+			if err := menuItem(t, risk, "branch.rebase-current-onto-selected-commit.approve-ignored-overwrite").OnPress(); err != nil {
 				t.Fatal(err)
 			}
 			if len(ui.workers) != 1 {

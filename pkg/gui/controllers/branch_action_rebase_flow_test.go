@@ -806,8 +806,8 @@ func TestBranchActionRebaseFlowIgnoredBytesRequireFreshApproval(t *testing.T) {
 		t.Fatal("ignored collision did not open approval menu")
 	}
 	risk := f.ui.menus[len(f.ui.menus)-1]
-	if len(risk.Items) == 0 || risk.Items[0].CommandID != "branch.rebase-current-onto-selected.simple.cancel-risk" {
-		t.Fatalf("first ignored-risk row isn't cancel: %+v", risk.Items)
+	if len(risk.Items) < 2 || risk.Items[0].CommandID != "branch.rebase-current-onto-selected.simple.approve-ignored-overwrite" || risk.Items[1].CommandID != "branch.rebase-current-onto-selected.simple.cancel-risk" {
+		t.Fatalf("ignored-risk rows are not approve-first with Cancel second: %+v", risk.Items)
 	}
 	var pathRow *types.MenuItem
 	for _, item := range risk.Items {

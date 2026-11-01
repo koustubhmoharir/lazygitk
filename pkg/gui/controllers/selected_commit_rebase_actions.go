@@ -117,15 +117,16 @@ func (flow *selectedCommitRebaseFlow) reviewIgnoredFiles(plan git_commands.Selec
 	if len(paths) == 0 {
 		return flow.apply(plan)
 	}
+	// The approval leads so the reviewed action is selected; Cancel follows it.
 	items := []*types.MenuItem{
-		{
-			CommandID: "branch.rebase-current-onto-selected-commit.cancel-risk", Verb: "cancel",
-			Label: flow.c.Tr.Cancel, OnPress: func() error { return nil },
-		},
 		{
 			CommandID: "branch.rebase-current-onto-selected-commit.approve-ignored-overwrite", Verb: "rebase",
 			Label: flow.c.Tr.SelectedRebaseApproveIgnored, Keys: menuKey('p'),
 			OnPress: func() error { return flow.apply(plan.WithIgnoredFilesApproved()) },
+		},
+		{
+			CommandID: "branch.rebase-current-onto-selected-commit.cancel-risk", Verb: "cancel",
+			Label: flow.c.Tr.Cancel, OnPress: func() error { return nil },
 		},
 	}
 	// File rows, rather than an unbounded prompt header, keep the full risk

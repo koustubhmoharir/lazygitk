@@ -51,11 +51,11 @@ var RebaseOntoSelectedCommit = NewIntegrationTest(NewIntegrationTestArgs{
 		open()
 		confirmHistory()
 		risk := t.ExpectPopup().Menu().Title(Equals("Ignored files may be overwritten"))
-		t.Views().Menu().SelectedLine(Contains("Cancel")).
-			Content(Contains("Approve ignored-file overwrite risk and rebase").Contains("ignored-target").DoesNotContain("unrelated-output"))
+		t.Views().Menu().SelectedLine(Contains("Approve ignored-file overwrite risk and rebase")).
+			Content(Contains("Cancel").Contains("ignored-target").DoesNotContain("unrelated-output"))
 		assertUnchanged("ignored user bytes\n")
-		// Enter on the default risk selection cancels; it must never approve.
-		risk.Confirm()
+		// Cancel is chosen explicitly; the default selection is the approval.
+		risk.Select(MatchesRegexp(`^[[:space:]]*Cancel[[:space:]]*$`)).Confirm()
 		history.IsFocused()
 		assertUnchanged("ignored user bytes\n")
 		open()

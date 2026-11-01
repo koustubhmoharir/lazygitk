@@ -208,12 +208,13 @@ func (review *capturedRebaseReview) reviewIgnored() error {
 		return review.execute(review.plan)
 	}
 	c := review.flow.repository.c
+	// The approval leads so the reviewed action is selected; Cancel follows it.
 	items := []*types.MenuItem{
-		{CommandID: review.choice.id + ".cancel-risk", Verb: "cancel", Label: c.Tr.Cancel, OnPress: review.flow.repository.checkRepository},
 		{
 			CommandID: review.choice.id + ".approve-ignored-overwrite", Verb: "rebase", Label: c.Tr.SelectedRebaseApproveIgnored, Keys: menuKey('p'),
 			OnPress: func() error { return review.execute(review.plan.WithIgnoredFilesApproved()) },
 		},
+		{CommandID: review.choice.id + ".cancel-risk", Verb: "cancel", Label: c.Tr.Cancel, OnPress: review.flow.repository.checkRepository},
 	}
 	for _, path := range review.plan.IgnoredFiles() {
 		quoted := fmt.Sprintf("%q", path)
