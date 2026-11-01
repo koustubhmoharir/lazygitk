@@ -96,6 +96,9 @@ var BareRepo = NewIntegrationTest(NewIntegrationTestArgs{
 			).
 			NavigateToLine(Contains("worktree2")).
 			Press(keys.Universal.Select).
+			Tap(func() {
+				t.ExpectToast(Equals("Opened actual"))
+			}).
 			Lines(
 				Contains("worktree2").IsSelected(),
 				Contains("repo"),

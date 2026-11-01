@@ -26,6 +26,7 @@ var KeybindingSuggestionsWhenSwitchingRepos = NewIntegrationTest(NewIntegrationT
 					Contains(repo).IsSelected(),
 					Contains("Cancel"),
 				).Confirm()
+			t.ExpectToast(Equals("Opened " + repo))
 			t.Views().Status().Content(Contains(repo + " → master"))
 		}
 

@@ -54,6 +54,7 @@ var RecentReposWithLongNames = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("repo-with-a-name-that-is-far-…").IsSelected(),
 			).
 			Confirm()
+		t.ExpectToast(Equals("Opened repo-with-a-name-that-is-far-too-long"))
 
 		t.Views().Status().Content(Contains("repo-with-a-name"))
 	},

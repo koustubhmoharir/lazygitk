@@ -1227,6 +1227,8 @@ func (gui *Gui) loadNewRepo() error {
 		isFirstRefreshAfterStartup = false
 	} else {
 		options.BatchUIUpdates = true
+		// Fork: toast the repo name once it has loaded (fork_repo_switch.go).
+		options.ThenIfRepoUnchanged = gui.forkRepoSwitchOpenedToast()
 		refresh = gui.c.RefreshBlockingInput
 	}
 	refresh(options)

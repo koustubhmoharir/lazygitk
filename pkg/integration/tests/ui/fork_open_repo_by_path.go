@@ -58,6 +58,7 @@ var ForkOpenRepoByPath = NewIntegrationTest(NewIntegrationTestArgs{
 
 		// Enter switches to the sibling repository.
 		t.ExpectPopup().Prompt().Title(Equals("Repository path")).Confirm()
+		t.ExpectToast(Equals("Opened other"))
 		t.Views().Status().Content(Contains("other → master"))
 
 		// s r now lists the repository we left. s r is Status-only too.

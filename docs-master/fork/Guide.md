@@ -410,6 +410,12 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   previous title comes back when lazygitk exits, where the terminal supports
   saving titles. In tmux it becomes the pane title; `set-titles on` passes it
   to the outer terminal.
+- On a repository switch (recent repositories, open by path, worktrees,
+  submodules), every pane shows "Loading…" at once, so the old repository's
+  content never shows under the new one. The panes fill together, and a toast
+  "Opened <repo>" says the switch is complete. Keys pressed meanwhile run
+  after it. If the switch fails, the current repository's panes come back
+  with the error.
 
 ### Appearance
 

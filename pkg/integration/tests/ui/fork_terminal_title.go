@@ -50,9 +50,11 @@ var ForkTerminalTitle = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("my_submodule_name").IsSelected(),
 			).
 			Press(config.Keybinding{"v"})
+		t.ExpectToast(Equals("Opened my_submodule_path"))
 		t.Views().Status().Content(Contains("my_submodule_path"))
 		assertTitleEndsWith("my_submodule_path")
 		t.Views().Files().IsFocused().PressEscape()
+		t.ExpectToast(Equals("Opened repo"))
 		t.Views().Status().Content(Contains("repo")).Content(DoesNotContain("my_submodule_path"))
 		assertTitleEndsWith("repo")
 
@@ -66,6 +68,7 @@ var ForkTerminalTitle = NewIntegrationTest(NewIntegrationTestArgs{
 			Press(config.Keybinding{"s"})
 		t.ExpectPopup().Menu().Title(Equals("s"))
 		t.Views().Menu().Press(config.Keybinding{"w"})
+		t.ExpectToast(Equals("Opened repo"))
 		t.Views().Status().Content(Contains("linked-worktree"))
 		assertTitleEndsWith("linked-worktree")
 
@@ -76,6 +79,7 @@ var ForkTerminalTitle = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Menu().Press(config.Keybinding{"n"})
 		t.ExpectPopup().Prompt().Title(Equals("Repository path")).Type("other")
 		t.ExpectPopup().Prompt().Title(Equals("Repository path")).Confirm()
+		t.ExpectToast(Equals("Opened other"))
 		t.Views().Status().Content(Contains("other → master"))
 		assertTitleEndsWith("other")
 	},

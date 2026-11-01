@@ -39,6 +39,9 @@ var ResetWindowTabs = NewIntegrationTest(NewIntegrationTestArgs{
 			).
 			NavigateToLine(Contains("linked-worktree")).
 			Press(keys.Universal.Select).
+			Tap(func() {
+				t.ExpectToast(Equals("Opened repo"))
+			}).
 			Lines(
 				Contains("linked-worktree").IsSelected(),
 				Contains("(main worktree)"),

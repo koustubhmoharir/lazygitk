@@ -53,6 +53,7 @@ var CherryPickAcrossWorktrees = NewIntegrationTest(NewIntegrationTestArgs{
 					Title(Equals("Switch to worktree")).
 					Content(Equals("This branch is checked out by worktree linked-worktree. Do you want to switch to that worktree?")).
 					Confirm()
+				t.ExpectToast(Equals("Opened repo"))
 			}).
 			Lines(
 				Contains("newbranch").IsSelected(),

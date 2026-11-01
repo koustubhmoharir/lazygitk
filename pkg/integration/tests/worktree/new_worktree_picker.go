@@ -50,6 +50,7 @@ var NewWorktreePicker = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().Menu().
 					Title(Equals("Worktree location")).
 					Confirm()
+				t.ExpectToast(Equals("Opened repo"))
 			}).
 			// we stay in the worktrees panel, now switched into the new worktree
 			IsFocused().

@@ -75,6 +75,7 @@ esac
 				Contains("Cancel"),
 			).
 			Confirm()
+		t.ExpectToast(Equals("Opened other"))
 
 		t.ExpectPopup().Confirmation().
 			Title(Equals("Approve .envrc?")).

@@ -31,6 +31,7 @@ var FilterRecentRepos = NewIntegrationTest(NewIntegrationTestArgs{
 			Filter("target").
 			Lines(Contains("target").IsSelected()).
 			Confirm()
+		t.ExpectToast(Equals("Opened target"))
 
 		t.Views().Status().Content(Contains("target → master"))
 	},

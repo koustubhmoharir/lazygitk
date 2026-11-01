@@ -59,6 +59,7 @@ var EnterFromDotfileBareRepo = NewIntegrationTest(NewIntegrationTestArgs{
 			).
 			PressEnter()
 
+		t.ExpectToast(Equals("Opened my_submodule_path"))
 		t.Views().Status().Content(Contains("my_submodule_path"))
 		t.Views().Commits().Lines(
 			Contains("initial submodule commit"),
@@ -66,6 +67,7 @@ var EnterFromDotfileBareRepo = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().Files().IsFocused().PressEscape()
 
+		t.ExpectToast(Equals("Opened repo"))
 		assertInParentRepo()
 		t.Views().Submodules().IsFocused()
 	},

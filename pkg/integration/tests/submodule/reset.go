@@ -43,6 +43,7 @@ var Reset = NewIntegrationTest(NewIntegrationTestArgs{
 			// enter the submodule
 			PressEnter()
 
+		t.ExpectToast(Equals("Opened my_submodule_path"))
 		assertInSubmodule()
 
 		t.Views().Files().IsFocused().
@@ -59,6 +60,7 @@ var Reset = NewIntegrationTest(NewIntegrationTestArgs{
 			// return to the parent repo
 			PressEscape()
 
+		t.ExpectToast(Equals("Opened repo"))
 		assertInParentRepo()
 
 		t.Views().Submodules().IsFocused()
@@ -103,6 +105,7 @@ var Reset = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Submodules().Focus().
 			PressEnter()
 
+		t.ExpectToast(Equals("Opened my_submodule_path"))
 		assertInSubmodule()
 
 		// submodule has been hard reset to the commit the parent repo specifies

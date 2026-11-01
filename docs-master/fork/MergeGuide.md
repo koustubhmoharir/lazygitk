@@ -366,6 +366,14 @@ Commit scope filters (`w a`, `w d`, `w b`) are a third kind of filtering mode:
 
 ### Other
 
+- `helpers/repos_helper.go` `switchToLocation`: shows "Loading…" in every
+  side and main pane and draws it with `ForceFlushViewsContentOnly` before
+  the synchronous switch, and renders the current repo again if the switch
+  fails before `onNewRepo` succeeds (`helpers/fork_repo_switch.go`). Keep the
+  named error result the deferred restore relies on.
+- `pkg/gui/gui.go` `loadNewRepo`: a switch's refresh sets
+  `ThenIfRepoUnchanged` to the "Opened <repo>" toast (`fork_repo_switch.go`).
+  Integration tests that switch repos must expect that toast.
 - `pkg/gui/gui.go` `onNewRepo`: calls `updateForkTerminalTitle`
   (`fork_terminal_title.go`) after the key-config notices, so startup and
   every repository switch set the terminal title. tcell saves and restores the

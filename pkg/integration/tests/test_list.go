@@ -743,6 +743,7 @@ var tests = []*components.IntegrationTest{
 	ui.ForkPathFilterKeepsScreenMode,
 	ui.ForkPrefixEdgeCases,
 	ui.ForkPrefixOverrides,
+	ui.ForkRepoSwitchFeedback,
 	ui.ForkScreenModeFocusMain,
 	ui.ForkScreenModeFullSideFocusMain,
 	ui.ForkSearchListNoSideScroll,

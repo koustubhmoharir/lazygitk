@@ -46,6 +46,7 @@ customCommands:
 				Contains("other").IsSelected(),
 				Contains("Cancel"),
 			).Confirm()
+		t.ExpectToast(Equals("Opened other"))
 		t.Views().Status().Content(Contains("other → master"))
 
 		t.GlobalPress(config.Keybinding{"X"})

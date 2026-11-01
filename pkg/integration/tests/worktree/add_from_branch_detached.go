@@ -41,6 +41,7 @@ var AddFromBranchDetached = NewIntegrationTest(NewIntegrationTestArgs{
 					Clear().
 					Type("../linked-worktree").
 					Confirm()
+				t.ExpectToast(Equals("Opened repo"))
 			}).
 			// confirm we're still focused on the branches view
 			IsFocused().

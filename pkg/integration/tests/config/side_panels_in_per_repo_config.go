@@ -39,6 +39,7 @@ gui:
 				Contains("other").IsSelected(),
 				Contains("Cancel"),
 			).Confirm()
+		t.ExpectToast(Equals("Opened other"))
 		t.Views().Status().Content(Contains("other → master"))
 
 		// Now the third panel is commits.
@@ -51,6 +52,7 @@ gui:
 		t.Views().Files().IsFocused()
 		t.GlobalPress(keys.Universal.OpenRecentRepos)
 		t.ExpectPopup().Menu().Title(Equals("Recent repositories")).Confirm()
+		t.ExpectToast(Equals("Opened repo"))
 
 		t.GlobalPress(keys.Universal.JumpToBlock[2])
 		t.Views().Branches().IsFocused()

@@ -52,8 +52,10 @@ var ForkDefaultEnterKeys = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("my_submodule_name").IsSelected(),
 			).
 			Press(config.Keybinding{"v"})
+		t.ExpectToast(Equals("Opened my_submodule_path"))
 		assertInSubmodule()
 		t.Views().Files().IsFocused().PressEscape()
+		t.ExpectToast(Equals("Opened repo"))
 		assertInParentRepo()
 
 		// b. Space in Submodules enters the submodule as well; Escape returns.
@@ -62,8 +64,10 @@ var ForkDefaultEnterKeys = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("my_submodule_name").IsSelected(),
 			).
 			Press(config.Keybinding{"<space>"})
+		t.ExpectToast(Equals("Opened my_submodule_path"))
 		assertInSubmodule()
 		t.Views().Files().IsFocused().PressEscape()
+		t.ExpectToast(Equals("Opened repo"))
 		assertInParentRepo()
 
 		// c. v on the modified submodule entry in Files enters the submodule.
@@ -72,8 +76,10 @@ var ForkDefaultEnterKeys = NewIntegrationTest(NewIntegrationTestArgs{
 				MatchesRegexp(` M.*my_submodule_path \(submodule\)`).IsSelected(),
 			).
 			Press(config.Keybinding{"v"})
+		t.ExpectToast(Equals("Opened my_submodule_path"))
 		assertInSubmodule()
 		t.Views().Files().IsFocused().PressEscape()
+		t.ExpectToast(Equals("Opened repo"))
 		assertInParentRepo()
 
 		// d. s opens the s menu, and w switches to the selected worktree.
@@ -86,6 +92,7 @@ var ForkDefaultEnterKeys = NewIntegrationTest(NewIntegrationTestArgs{
 			Press(config.Keybinding{"s"})
 		t.ExpectPopup().Menu().Title(Equals("s"))
 		t.Views().Menu().Press(config.Keybinding{"w"})
+		t.ExpectToast(Equals("Opened repo"))
 		t.Views().Status().Content(Contains("linked-worktree"))
 
 		// e. The t menu has no r route. Pressing r inside it does nothing, so

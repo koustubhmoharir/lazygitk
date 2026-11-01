@@ -376,11 +376,22 @@ func (self *ReposHelper) switchTo(path string, errMsg string, contextKey types.C
 // work tree (a dotfile repo opened with --git-dir/--work-tree, say) is the
 // reason we remember the environment at all: nothing in the path leads to its
 // git dir. On failure we put back what the repo we're staying in needs.
-func (self *ReposHelper) switchToLocation(location types.RepoLocation, errMsg string, contextKey types.ContextKey) error {
+func (self *ReposHelper) switchToLocation(location types.RepoLocation, errMsg string, contextKey types.ContextKey) (err error) {
 	originalPath, err := os.Getwd()
 	if err != nil {
 		return nil
 	}
+
+	// Fork: blank the panes now, and restore this repo's panes if the switch
+	// fails before the new repo is in place (fork_repo_switch.go).
+	self.showRepoSwitchLoading()
+	switched := false
+	defer func() {
+		if err != nil && !switched {
+			self.restoreCurrentRepoPanes()
+		}
+	}()
+
 	originalGitLocationEnvVars := env.GetGitLocationEnvVars()
 
 	env.SetGitLocationEnvVars(location.GitLocationEnvVars)
@@ -414,6 +425,7 @@ func (self *ReposHelper) switchToLocation(location types.RepoLocation, errMsg st
 	if err := self.onNewRepo(appTypes.StartArgs{}, contextKey); err != nil {
 		return err
 	}
+	switched = true
 
 	if direnvResult.Blocked {
 		self.promptDirenvApproval(direnvResult.EnvrcPath)

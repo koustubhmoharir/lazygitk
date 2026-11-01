@@ -42,6 +42,7 @@ var NewWorktreePickerRemote = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().Menu().
 					Title(Equals("Worktree location")).
 					Confirm()
+				t.ExpectToast(Equals("Opened repo"))
 			}).
 			IsFocused().
 			Lines(

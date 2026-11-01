@@ -58,6 +58,7 @@ var WorktreeCreateFromBranches = NewIntegrationTest(NewIntegrationTestArgs{
 					Clear().
 					Type("../hotfix").
 					Confirm()
+				t.ExpectToast(Equals("Opened repo"))
 			})
 	},
 })

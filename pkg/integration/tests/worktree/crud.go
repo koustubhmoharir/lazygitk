@@ -50,6 +50,7 @@ var Crud = NewIntegrationTest(NewIntegrationTestArgs{
 					Clear().
 					Type("../linked-worktree").
 					Confirm()
+				t.ExpectToast(Equals("Opened repo"))
 			}).
 			Lines(
 				Contains("linked-worktree").IsSelected(),
@@ -90,6 +91,9 @@ var Crud = NewIntegrationTest(NewIntegrationTestArgs{
 			}).
 			// switch back to main worktree
 			Press(keys.Universal.Select).
+			Tap(func() {
+				t.ExpectToast(Equals("Opened repo"))
+			}).
 			Lines(
 				Contains("(main worktree)").IsSelected(),
 				Contains("linked-worktree"),

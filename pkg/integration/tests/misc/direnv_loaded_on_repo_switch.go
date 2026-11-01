@@ -54,6 +54,7 @@ echo "direnv: loading .envrc" >&2
 				Contains("Cancel"),
 			).
 			Confirm()
+		t.ExpectToast(Equals("Opened other"))
 
 		// Run the custom command; if direnv loading worked, $LG_DIRENV_TEST
 		// reaches the subprocess and ends up in output.txt.

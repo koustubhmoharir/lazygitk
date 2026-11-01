@@ -39,6 +39,7 @@ var RecentReposColumnWidths = NewIntegrationTest(NewIntegrationTestArgs{
 				t.Views().Tooltip().IsInvisible()
 			}).
 			Confirm()
+		t.ExpectToast(Equals("Opened other"))
 
 		t.Views().Status().Content(Contains("other → master"))
 	},

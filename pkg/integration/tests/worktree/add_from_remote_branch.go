@@ -47,6 +47,7 @@ var AddFromRemoteBranch = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().Menu().
 					Title(Equals("Worktree location")).
 					Confirm()
+				t.ExpectToast(Equals("Opened repo"))
 			})
 
 		// we've switched into the new worktree, on a local branch that tracks

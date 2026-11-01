@@ -39,6 +39,7 @@ var AddFromCommit = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().Menu().
 					Title(Equals("Worktree location")).
 					Confirm()
+				t.ExpectToast(Equals("Opened repo"))
 			}).
 			Lines(
 				Contains("initial commit"),

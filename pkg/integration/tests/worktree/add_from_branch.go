@@ -38,6 +38,7 @@ var AddFromBranch = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().Menu().
 					Title(Equals("Worktree location")).
 					Confirm()
+				t.ExpectToast(Equals("Opened repo"))
 			}).
 			// confirm we're still focused on the branches view
 			IsFocused().
@@ -52,6 +53,7 @@ var AddFromBranch = NewIntegrationTest(NewIntegrationTestArgs{
 					Title(Equals("Switch to worktree")).
 					Content(Equals("This branch is checked out by worktree repo. Do you want to switch to that worktree?")).
 					Confirm()
+				t.ExpectToast(Equals("Opened repo"))
 			}).
 			Lines(
 				Contains("mybranch").IsSelected(),
