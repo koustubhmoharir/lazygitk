@@ -111,4 +111,12 @@ type RefreshOptions struct {
 	// Must not be combined with Then: Then is not generation-guarded, so it
 	// would run against the newly switched-to repo.
 	DontBlockRepoSwitch bool
+
+	// Fork: runs on the UI thread once the refresh is done: after every scope's
+	// model/UI updates (including a batched refresh's single-frame apply), and
+	// before input is unblocked for a blocking refresh. It runs only if no repo
+	// switch happened since the refresh started. Unlike Then, it may be combined
+	// with DontBlockRepoSwitch, because the generation check keeps it from running
+	// against a repo it wasn't started for.
+	ThenIfRepoUnchanged func()
 }

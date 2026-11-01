@@ -297,6 +297,11 @@ re-apply it if upstream changes that code.
   selections (`captured_reset.go`, `named_checkout.go`,
   `captured_branch_create.go`). Named checkout bypasses autostash.
 - `helpers/tags_helper.go`: tag creation uses `captured_tag_create.go`.
+- `helpers/refresh_helper.go` `performRefresh` and `types/refresh.go`:
+  `RefreshOptions.ThenIfRepoUnchanged` runs on the UI thread after all of a
+  refresh's updates (and a batch's single-frame apply), before input is
+  unblocked, and only if no repo switch happened meanwhile. Unlike `Then`, it
+  may be combined with `DontBlockRepoSwitch`.
 
 Upstream changes to these menus should be ported into the captured flows, not
 restored.

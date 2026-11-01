@@ -4,9 +4,14 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/jesseduffield/lazygit/pkg/commands"
+	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/hosting_service"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/config"
+	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/context/traits"
+	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
 	"github.com/samber/lo"
 	"github.com/stefanhaller/git-todo-parser/todo"
@@ -379,4 +384,133 @@ func makeTodoCommitWithHash(hash string, action todo.TodoCommand) *models.Commit
 
 func makeConflictedCommit(hash string) *models.Commit {
 	return models.NewCommit(&utils.StringPool{}, models.NewCommitOpts{Hash: hash, Status: models.StatusConflicted})
+}
+
+// refreshCallbackState is the repo-generation source for the refresh tests.
+type refreshCallbackState struct {
+	types.IStateAccessor
+	generation int
+}
+
+func (s *refreshCallbackState) GetRepoGeneration() int { return s.generation }
+
+// refreshCallbackUI runs workers inline and queues UI-thread work in FIFO
+// order, so a test can drain it and observe what ran before what.
+type refreshCallbackUI struct {
+	types.IGuiCommon
+	git        *commands.GitCommand
+	model      types.Model
+	state      *refreshCallbackState
+	queue      []func() error
+	statusView string
+}
+
+func (u *refreshCallbackUI) Git() *commands.GitCommand { return u.git }
+func (u *refreshCallbackUI) Model() *types.Model       { return &u.model }
+func (u *refreshCallbackUI) State() types.IStateAccessor {
+	return u.state
+}
+func (u *refreshCallbackUI) Views() types.Views              { return types.Views{} }
+func (u *refreshCallbackUI) InDemo() bool                    { return false }
+func (u *refreshCallbackUI) GetConfig() config.AppConfigurer { return refreshCallbackConfig{} }
+
+// refreshCallbackConfig supplies only the debug flag the refresh reads.
+type refreshCallbackConfig struct {
+	config.AppConfigurer
+}
+
+func (refreshCallbackConfig) GetDebug() bool { return false }
+
+func (u *refreshCallbackUI) SetViewContent(_ *gocui.View, content string) {
+	u.statusView = content
+}
+func (u *refreshCallbackUI) OnUIThread(f func() error)           { u.queue = append(u.queue, f) }
+func (u *refreshCallbackUI) OnUIThreadBackground(f func() error) { u.queue = append(u.queue, f) }
+func (u *refreshCallbackUI) OnWorker(f func(gocui.Task) error)   { _ = f(nil) }
+func (u *refreshCallbackUI) OnWorkerBackground(f func(gocui.Task) error) {
+	_ = f(nil)
+}
+
+// drain runs the queued UI-thread work in order, including work queued while
+// draining.
+func (u *refreshCallbackUI) drain(t *testing.T) {
+	t.Helper()
+	for len(u.queue) > 0 {
+		f := u.queue[0]
+		u.queue = u.queue[1:]
+		if err := f(); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+// newRefreshCallbackFixture wires a RefreshHelper to a real temp repo, with a
+// STATUS-only refresh so the only scope work is the status view update.
+func newRefreshCallbackFixture(t *testing.T) (*RefreshHelper, *refreshCallbackUI) {
+	t.Helper()
+	f := newNamedCheckoutFixture(t)
+	ui := &refreshCallbackUI{
+		git: &commands.GitCommand{
+			Status:    git_commands.NewStatusCommands(f.ui.git.Branch.GitCommon),
+			RepoPaths: f.ui.git.RepoPaths,
+		},
+		state: &refreshCallbackState{generation: 1},
+	}
+	ui.model.Branches = []*models.Branch{{Name: "main"}}
+	c := &HelperCommon{Common: f.c.Common, IGuiCommon: ui}
+	helper := NewRefreshHelper(c, &RefsHelper{c: c}, nil, nil, &WorktreeHelper{c: c}, nil)
+	return helper, ui
+}
+
+func TestRefreshThenIfRepoUnchangedRunsAfterScopeUpdates(t *testing.T) {
+	helper, ui := newRefreshCallbackFixture(t)
+
+	ran := false
+	statusAtCallback := ""
+	helper.Refresh(types.RefreshOptions{
+		Scope: []types.RefreshableView{types.STATUS},
+		ThenIfRepoUnchanged: func() {
+			ran = true
+			statusAtCallback = ui.statusView
+		},
+	})
+	assert.False(t, ran, "callback must be queued, not run inline")
+
+	ui.drain(t)
+
+	assert.True(t, ran)
+	assert.Contains(t, statusAtCallback, "main", "callback should observe the refreshed status")
+}
+
+func TestRefreshThenIfRepoUnchangedSkippedWhenRepoChanged(t *testing.T) {
+	helper, ui := newRefreshCallbackFixture(t)
+
+	ran := false
+	helper.Refresh(types.RefreshOptions{
+		Scope:               []types.RefreshableView{types.STATUS},
+		ThenIfRepoUnchanged: func() { ran = true },
+	})
+
+	// A repo switch lands while the refresh's queued work is still pending.
+	ui.state.generation++
+	ui.drain(t)
+
+	assert.False(t, ran)
+	assert.Empty(t, ui.statusView, "the scope's own stale update must be dropped too")
+}
+
+func TestRefreshThenIfRepoUnchangedWithDontBlockRepoSwitch(t *testing.T) {
+	helper, ui := newRefreshCallbackFixture(t)
+
+	ran := false
+	assert.NotPanics(t, func() {
+		helper.Refresh(types.RefreshOptions{
+			Scope:               []types.RefreshableView{types.STATUS},
+			DontBlockRepoSwitch: true,
+			ThenIfRepoUnchanged: func() { ran = true },
+		})
+	})
+	ui.drain(t)
+
+	assert.True(t, ran)
 }

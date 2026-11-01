@@ -566,6 +566,19 @@ func (self *RefreshHelper) performRefresh(options types.RefreshOptions, calledFr
 			self.onUIThread(env.background, options.Then)
 		}
 
+		if options.ThenIfRepoUnchanged != nil {
+			// Fork: a generation-guarded counterpart to Then, which is why it may be
+			// combined with DontBlockRepoSwitch. It's queued directly rather than
+			// through env.batch, which is already closed here. Queued after the
+			// batch and Then, so it runs after all the scopes' model/UI updates.
+			self.onUIThread(env.background, func() error {
+				if self.c.State().GetRepoGeneration() == env.generation {
+					options.ThenIfRepoUnchanged()
+				}
+				return nil
+			})
+		}
+
 		if blockInputUntilDone {
 			// Queued after the scopes' model bounces and Then, so by the time
 			// this runs — and the keys buffered during the refresh replay —

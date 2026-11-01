@@ -7,7 +7,19 @@ its own data arrives, so old content never appears under the new repo; a
 toast "Opened <repo>" appears once all panes have loaded. TortoiseGit has no
 in-app repo switch to follow.
 
-Tasks: design and plan the clearing and the completion signal; not started.
+Design: when a switch starts, every side pane and the main area show
+"Loading…", drawn at once (`ForceFlushViewsContentOnly`) before the
+synchronous switch work, so keys queue as before. If the switch fails, the
+current repo's panes are rendered again. The panes fill in the existing
+batched frame; the toast runs from `RefreshOptions.ThenIfRepoUnchanged`, so a
+superseded switch shows none. Startup is not a switch. Known gaps: a lazy
+list viewport re-render or a focus-in refresh may fill a pane early, always
+with the opened repo's data.
+
+Tasks:
+
+- Show "Loading…" at switch start, restore on failure, toast on completion;
+  integration test switching to a new and to a visited repo.
 
 ## How this tracker works
 
