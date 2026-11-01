@@ -77,9 +77,9 @@ func probeTrueColor(tty tcell.Tty) bool {
 	}
 
 	replies := make(chan string, 1)
-	go func() {
+	go safe(func() {
 		replies <- readUntilDeviceAttributes(tty)
-	}()
+	})
 
 	select {
 	case reply := <-replies:
