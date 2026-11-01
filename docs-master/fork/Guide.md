@@ -17,11 +17,16 @@ in the [design principles](Design.md). The generated per-pane reference is
   whatever is selected there. Where it has nothing to act on, it does nothing:
   a menu leaves out entries that do not apply to the focused pane, and a first
   key with nothing applicable opens no menu.
-- **`?` lists every command** for the focused pane with its full key path,
-  including commands that have no key. Running a command from `?` raises it in
-  the list; using its shortcut lowers it, so the commands you have not yet
-  learned come first. Typing filters by name. Navigation stays at the bottom.
-  "Reset command usage counts" clears the order.
+- **`?` lists every command** in the app with its full key path, including
+  commands that have no key. The focused pane's and the global commands come
+  first, then each other pane's in its own section, then the focused pane's
+  navigation. Within a section, single keys come first, then the `d`, `s`,
+  `n`, `c`, `u`, `y`, `g`, `t` and `w` groups, then commands without a key.
+  Commands that have nothing to act on here (such as another pane's, "Available
+  in Commits") are faded; commands that apply but cannot run now are crossed
+  out; selecting either says why. Typing filters by name. Usage counts are
+  still recorded but do not order the palette; "Reset command usage counts"
+  clears them.
 - **Keys are fixed.** The `keybinding` section, `commandBindings` and
   custom-command `key` settings are ignored, with a startup notice naming the
   file. Custom commands run from `?`.
@@ -433,8 +438,6 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   config and state directories, and `.git/lazygitk.yml` or `.lazygitk.yml` in
   repositories. Upstream lazygit's files are never read or written, and nothing
   is migrated. `CONFIG_DIR` and `LG_CONFIG_FILE` work as upstream.
-- `gui.commandPaletteOrder: static` restores the palette's fixed Local, Global
-  and Navigation sections.
 - `scripts/build_dist.sh` (or `just dist`) and `scripts/build_dist.ps1` build
   portable `lazygitk` binaries into `dist/`.
 

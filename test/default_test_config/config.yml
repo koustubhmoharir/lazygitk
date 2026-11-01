@@ -157,7 +157,6 @@ gui:
   commitGraphStyle: classic
   # Legacy scenarios assert the upstream Local/Global/Navigation palette sections.
   # Scenarios that test the palette's real ordering reset the config to the defaults.
-  commandPaletteOrder: static
   animateExplosion: false # takes too long
 git:
   log:

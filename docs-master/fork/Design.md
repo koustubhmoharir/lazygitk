@@ -110,9 +110,10 @@ recorded here or in the user guide.
   - Escape leaves the current layer or mode; it never aborts a Git operation
     or discards files.
 - **Everything is discoverable.** Every action is in the `?` palette with its
-  full key path, including actions without keys. The palette orders commands
-  by how often they are run from it: using a shortcut lowers a command, so
-  learned shortcuts sink and the rest rise.
+  full key path, including actions without keys, whether or not it applies
+  now. The palette is organized by pane and then by key group, so it teaches
+  the key structure. Unavailable actions are faded when they have nothing to
+  act on here and crossed out when a precondition fails, in every menu.
 
 ## Appearance
 

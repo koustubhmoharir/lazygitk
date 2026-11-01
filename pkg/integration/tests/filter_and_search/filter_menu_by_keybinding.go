@@ -21,7 +21,7 @@ var FilterMenuByKeybinding = NewIntegrationTest(NewIntegrationTestArgs{
 					Filter("@_").
 					Lines(
 						// menu has filtered down to the one item that matches the filter
-						Contains("─── Global"),
+						Contains("─── Files and global"),
 						Contains("_ Prev screen mode").IsSelected(),
 					).
 					Confirm()

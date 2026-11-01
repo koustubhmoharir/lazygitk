@@ -78,7 +78,7 @@ re-apply it if upstream changes that code.
   in `applyForkDefaults` (`fork_defaults.go`: explicit-action defaults,
   `showWholeGraph: true`, and the palette's theme fields cleared so the
   Catppuccin palette applies). Adds fork
-  fields: `CommandBindings`, `GuiConfig.CommandPaletteOrder`, the historical
+  fields: `CommandBindings`, the historical
   diff and placement key fields, `CustomCommand.ID`, and the `yaml:"-"`
   provenance fields.
 - `pkg/config/app_config.go` (replacement): `findConfigFile` and
@@ -89,8 +89,8 @@ re-apply it if upstream changes that code.
   `AppDirName`.
 - `pkg/gui/gui.go` `getPerRepoConfigFiles`: `lazygitk.yml` names. New upstream
   scenarios that write `lazygit.yml` must write `lazygitk.yml`.
-- `pkg/config/user_config_validation.go`: validates `commandBindings`,
-  `gui.commandPaletteOrder` and custom command IDs.
+- `pkg/config/user_config_validation.go`: validates `commandBindings` and
+  custom command IDs.
 - `pkg/config/theme_config.go`: `ThemeForBackground` merges
   `forkThemePalette` between `gui.theme` and upstream's `themeDefaults`.
 - `pkg/gui/gui.go` `applyTheme`: calls `theme.UpdateBasicColors`
@@ -172,15 +172,21 @@ re-apply it if upstream changes that code.
 
 ### Palette
 
-- `controllers/options_menu_action.go` (replacement): palette entries are
-  merged by command ID and ordered by usage (`command_palette.go`,
-  `fork_command_palette_order.go`); selections count as palette uses.
+- `controllers/options_menu_action.go` (replacement): the palette lists every
+  pane's commands, merged by command ID, in pane sections ordered by key group
+  (`command_palette.go`, `fork_command_palette_order.go`). Other panes'
+  commands are static copies whose callbacks are never run. Selections count
+  as palette uses.
+- `context/menu_context.go` `GetDisplayStrings`: an inapplicable disabled
+  reason is dimmed instead of struck through (all menus). `OnMenuPress` shows
+  the reason for items with `MenuItem.ExplainDisabled` (palette items) even
+  when an inapplicable default command would otherwise be silent.
 - `pkg/gui/popup/popup_handler.go`: `Menu`, `Confirm`, `ConfirmIf` and `Prompt`
   pass through the usage hook (`popup/fork_usage_hook.go`), so a use counts
   only when its first popup is accepted. Popups opened later by background
   workers are not tracked.
 - `pkg/gui/gui_common.go`, `types/common.go`: `CommandKeyLabel`, palette
-  recording, usage counts and reset. `gui.go` installs the hook.
+  recording and usage count reset. `gui.go` installs the hook.
 - `services/custom_commands/client.go`: custom commands carry a stable
   `CommandIdentity`.
 
@@ -414,8 +420,7 @@ the same way:
   `themeDefaults` directly; `TestCurrentDiffRendererNameWithoutDiffRenderers`
   expects `default`.
 - The shared fixture sets an explicit `rawGit` renderer so scenarios never use
-  delta, disables fetch/file/ref polling, and selects the static palette
-  order.
+  delta and disables fetch/file/ref polling.
 
 Integration components gained `ExpectClipboard`, `ExplicitSelection`, `Views().Extras()`, a
 menu `Content` matcher and `ReviewBranch*` helpers. Drivers need `Title()` and

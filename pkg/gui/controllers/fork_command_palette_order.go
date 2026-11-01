@@ -1,67 +1,208 @@
 package controllers
 
 import (
-	"cmp"
+	"fmt"
 	"slices"
 
-	"github.com/jesseduffield/lazygit/pkg/gui/style"
+	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/i18n"
 )
 
-// Fork: the `?` palette orders local and global commands by usage count
-// (roadmap item 9). The `gui.commandPaletteOrder: static` option keeps the
-// upstream Local/Global/Navigation sections instead. Navigation stays static.
+// Fork: the `?` palette lists every command in sections: the focused pane with
+// the global commands, then one section per other pane, then the focused pane's
+// navigation. Within a section, commands are ordered by key group (see
+// sortPaletteBindingsByKeyGroup). Command usage counts do not order the palette.
 
-type paletteScope int
+// forkPalettePaneOrder is the layout order of the panes in the palette. Views
+// with bindings that are not listed here follow it, in name order, so that no
+// command is dropped when a view is added.
+var forkPalettePaneOrder = []string{
+	"status", "files", "worktrees", "submodules",
+	"localBranches", "remotes", "remoteBranches", "tags",
+	"commits", "reflogCommits", "subCommits", "commitFiles", "stash",
+	// The main area: staging and patch building are commands of the main view.
+	"main", "secondary", "mergeConflicts",
+	"commitMessage", "commitDescription", "extras", "information",
+	"confirmation", "prompt", "menu", "search", "suggestions",
+}
 
+// orderPaletteViews returns views in palette order: those in forkPalettePaneOrder
+// first, then the others sorted by name.
+func orderPaletteViews(views []string) []string {
+	rank := func(view string) int {
+		if i := slices.Index(forkPalettePaneOrder, view); i >= 0 {
+			return i
+		}
+		return len(forkPalettePaneOrder)
+	}
+	ordered := slices.Clone(views)
+	slices.SortStableFunc(ordered, func(a, b string) int {
+		if ra, rb := rank(a), rank(b); ra != rb {
+			return ra - rb
+		}
+		if a < b {
+			return -1
+		}
+		if a > b {
+			return 1
+		}
+		return 0
+	})
+	return ordered
+}
+
+// paletteViewTitle returns the name a pane shows to the user: its tab title for
+// side panels, and its frame title otherwise. The main views are named as the
+// cheatsheet names them, because their frame title is always "Diff".
+func paletteViewTitle(view string, tr *i18n.TranslationSet) string {
+	switch view {
+	case "":
+		return tr.GlobalTitle
+	case "status":
+		return tr.StatusTitle
+	case "files":
+		return tr.FilesTitle
+	case "worktrees":
+		return tr.WorktreesTitle
+	case "submodules":
+		return tr.SubmodulesTitle
+	case "localBranches":
+		return tr.LocalBranchesTitle
+	case "remotes":
+		return tr.RemotesTitle
+	case "remoteBranches":
+		return tr.RemoteBranchesTitle
+	case "tags":
+		return tr.TagsTitle
+	case "commits":
+		return tr.CommitsTitle
+	case "reflogCommits":
+		return tr.ReflogCommitsTitle
+	case "subCommits":
+		return tr.SubCommitsTitle
+	case "commitFiles":
+		return tr.CommitFilesTitle
+	case "stash":
+		return tr.StashTitle
+	case "main":
+		return tr.NormalTitle
+	case "secondary":
+		return tr.SecondaryTitle
+	case "mergeConflicts":
+		return tr.MergingTitle
+	case "commitMessage":
+		return tr.CommitSummaryTitle
+	case "commitDescription":
+		return tr.CommitDescriptionTitle
+	case "extras":
+		return tr.ExtrasTitle
+	case "information":
+		return tr.InformationTitle
+	case "confirmation":
+		return tr.ConfirmationTitle
+	case "prompt":
+		return tr.PromptTitle
+	case "menu":
+		return tr.MenuTitle
+	case "search":
+		return tr.SearchTitle
+	case "suggestions":
+		return tr.SuggestionsCheatsheetTitle
+	}
+	return view
+}
+
+// paletteFocusedTitle titles the first section: the focused pane and the globals.
+func paletteFocusedTitle(view string, tr *i18n.TranslationSet) string {
+	if view == "" {
+		return tr.GlobalTitle
+	}
+	return fmt.Sprintf(tr.CommandPaletteFocusedSectionTitle, paletteViewTitle(view, tr))
+}
+
+// paletteKeyGroups are the first keys of multi-key paths that get their own
+// group, in display order. Any other first key forms a group after them,
+// sorted by key.
+var paletteKeyGroups = []string{"d", "s", "n", "c", "u", "y", "g", "t", "w"}
+
+// Group numbers: 0 for single keys, 1 to 9 for paletteKeyGroups, then other
+// first keys, then commands without a key path.
 const (
-	paletteScopeLocal paletteScope = iota
-	paletteScopeGlobal
+	paletteGroupSingleKey = 0
+	paletteGroupOtherKey  = 10
+	paletteGroupNoPath    = 11
 )
 
-type paletteEntry struct {
-	binding *types.Binding
-	scope   paletteScope
+// paletteKeyGroup returns the group of a key path given as key labels.
+func paletteKeyGroup(path []string) int {
+	switch {
+	case len(path) == 0:
+		return paletteGroupNoPath
+	case len(path) == 1:
+		return paletteGroupSingleKey
+	}
+	if i := slices.Index(paletteKeyGroups, path[0]); i >= 0 {
+		return i + 1
+	}
+	return paletteGroupOtherKey
 }
 
-// orderPaletteByUsage merges local and global commands into one list sorted by
-// usage count, highest first. Counts may be negative, and a missing count is
-// zero. Ties keep declaration order: local before global, then the original
-// order within each list.
-func orderPaletteByUsage(local, global []*types.Binding, counts map[string]int) []paletteEntry {
-	entries := make([]paletteEntry, 0, len(local)+len(global))
-	for _, binding := range local {
-		entries = append(entries, paletteEntry{binding: binding, scope: paletteScopeLocal})
+// comparePaletteKeyPaths orders key paths by group, then by their label sequence.
+func comparePaletteKeyPaths(a, b []string) int {
+	if ga, gb := paletteKeyGroup(a), paletteKeyGroup(b); ga != gb {
+		return ga - gb
 	}
-	for _, binding := range global {
-		entries = append(entries, paletteEntry{binding: binding, scope: paletteScopeGlobal})
+	return slices.Compare(a, b)
+}
+
+// paletteKeyPaths returns the key paths a binding is reachable by, as key labels.
+func paletteKeyPaths(binding *types.Binding) [][]string {
+	var paths [][]string
+	for _, key := range binding.Keys {
+		paths = append(paths, []string{config.LabelForKey(key)})
 	}
-	uses := make([]int, len(entries))
-	for i, entry := range entries {
-		uses[i] = counts[entry.binding.GetCommandID()]
+	for _, path := range binding.CommandPaths {
+		labels := make([]string, len(path))
+		for i, key := range path {
+			labels[i] = config.LabelForKey(key)
+		}
+		paths = append(paths, labels)
 	}
-	order := make([]int, len(entries))
-	for i := range order {
-		order[i] = i
+	return paths
+}
+
+// paletteSortPath returns the path a binding is sorted by: its first path in
+// key group order, or nil if it has no path.
+func paletteSortPath(binding *types.Binding) []string {
+	var best []string
+	for _, path := range paletteKeyPaths(binding) {
+		if best == nil || comparePaletteKeyPaths(path, best) < 0 {
+			best = path
+		}
 	}
-	slices.SortStableFunc(order, func(a, b int) int {
-		return cmp.Compare(uses[b], uses[a])
+	return best
+}
+
+// sortPaletteBindingsByKeyGroup returns a copy of bindings ordered by key group:
+// single keys first, then the groups of paletteKeyGroups, then other first
+// keys, then commands without a key path. Within a group, commands are ordered
+// by their key path. Ties keep their order. It calls no binding callbacks.
+func sortPaletteBindingsByKeyGroup(bindings []*types.Binding) []*types.Binding {
+	type ranked struct {
+		binding *types.Binding
+		path    []string
+	}
+	items := make([]ranked, len(bindings))
+	for i, binding := range bindings {
+		items[i] = ranked{binding: binding, path: paletteSortPath(binding)}
+	}
+	slices.SortStableFunc(items, func(a, b ranked) int {
+		return comparePaletteKeyPaths(a.path, b.path)
 	})
-	sorted := make([]paletteEntry, len(entries))
-	for i, index := range order {
-		sorted[i] = entries[index]
+	sorted := make([]*types.Binding, len(items))
+	for i, item := range items {
+		sorted[i] = item.binding
 	}
 	return sorted
-}
-
-// forkTagPaletteItem adds a dim scope column after the label. Filtering keeps
-// matching only the label, so typing "global" does not select every global command.
-func forkTagPaletteItem(item *types.MenuItem, scope paletteScope, tr *i18n.TranslationSet) {
-	tag := tr.CommandPaletteScopeGlobal
-	if scope == paletteScopeLocal {
-		tag = tr.CommandPaletteScopeLocal
-	}
-	item.LabelColumns = []string{item.Label, style.FgDefault.SetDim().Sprint(tag)}
-	item.FilterColumns = []string{item.Label}
 }

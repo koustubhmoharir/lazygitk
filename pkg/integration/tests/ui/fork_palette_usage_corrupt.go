@@ -9,16 +9,14 @@ import (
 )
 
 var ForkPaletteUsageCorrupt = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "An unreadable usage counts file is removed at startup and the ? palette keeps the default order",
+	Description: "An unreadable usage counts file is removed at startup, and the ? palette is complete without counts",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
 		// Replace the entire value to get the real default keymap, as the default
-		// keymap scenarios do. The shared fixture selects the static palette, so
-		// this scenario sets the usage order explicitly.
+		// keymap scenarios do.
 		*loaded = *config.GetDefaultConfigForPlatform(config.KeybindingPlatform())
 		loaded.Gui = appearance
-		loaded.Gui.CommandPaletteOrder = "usage"
 		loaded.DisableStartupPopups = true
 		loaded.PromptToReturnFromSubprocess = false
 		loaded.Git.AutoDetectExternalChanges = false
@@ -44,12 +42,12 @@ var ForkPaletteUsageCorrupt = NewIntegrationTest(NewIntegrationTestArgs{
 		}
 		t.FileSystem().PathNotPresent(path)
 
-		// With no counts, the palette keeps declaration order: the first local
-		// command in Commits comes first, and the Navigation section stays at the bottom.
+		// The palette is complete without counts: the focused pane's section comes
+		// first, and the Navigation section stays at the bottom.
 		t.Views().Commits().Focus().Press(keys.Universal.OptionMenu)
 		t.ExpectPopup().Menu().Title(Equals("Keybindings")).
-			TopLines(Contains("Copy abbreviated commit hash")).
-			Content(Contains("─── Navigation")).
+			TopLines(Contains("─── Commits and global")).
+			Content(MatchesRegexp("(?s)─── Commits and global.*Copy abbreviated commit hash.*─── Navigation")).
 			Cancel()
 	},
 })

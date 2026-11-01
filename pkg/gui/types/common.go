@@ -153,8 +153,6 @@ type IGuiCommon interface {
 	CallKeybindingHandler(binding *Binding) error
 	// Fork: invokes a binding chosen from the command palette (records a palette use).
 	CallPaletteKeybindingHandler(binding *Binding) error
-	// Fork: command usage counts for ordering the palette, snapshot at the call (empty if unavailable).
-	CommandUsageCounts() map[string]int
 	// Fork: clears all command usage counts, both in memory and in the shared counts file.
 	ResetCommandUsage() error
 
@@ -376,6 +374,10 @@ type MenuItem struct {
 	// If non-nil, show this in a tooltip, style the menu item as disabled,
 	// and refuse to invoke the command
 	DisabledReason *DisabledReason
+	// Fork: if true, pressing the item always shows its disabled reason, even
+	// when the reason is Inapplicable and the binding is a default command,
+	// which otherwise consumes the press silently. The command palette sets it.
+	ExplainDisabled bool
 
 	// Can be used to group menu items into sections with headers. MenuItems
 	// with the same Section should be contiguous, and will automatically get a

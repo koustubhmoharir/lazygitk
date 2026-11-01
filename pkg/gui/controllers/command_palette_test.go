@@ -15,20 +15,126 @@ func TestCommandPaletteBindingsPartitionsAndFilters(t *testing.T) {
 		{CommandID: "global", ViewName: "", Description: "Global"},
 		{CommandID: "tagged-global", ViewName: "other", Tag: "global", Description: "Tagged global"},
 		{CommandID: "navigation", ViewName: "files", Tag: "navigation", Description: "Navigation"},
-		{CommandID: "other-view", ViewName: "branches", Description: "Other view"},
+		{CommandID: "other-view", ViewName: "commits", Description: "Other view"},
 		{CommandID: "no-description", ViewName: "files"},
-		{CommandID: "other-nav", ViewName: "branches", Tag: "navigation", Description: "Other navigation"},
+		{CommandID: "other-nav", ViewName: "commits", Tag: "navigation", Description: "Other navigation"},
+		{CommandID: "no-description-other", ViewName: "commits"},
 	}
 
-	local, global, navigation := commandPaletteBindings(bindings, "files")
-	if got, want := bindingIDs(local), []string{"local"}; !reflect.DeepEqual(got, want) {
-		t.Fatalf("local IDs = %v, want %v", got, want)
+	palette := commandPaletteBindings(bindings, "files")
+	if got, want := bindingIDs(palette.Focused), []string{"local", "global", "tagged-global"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("focused IDs = %v, want %v", got, want)
 	}
-	if got, want := bindingIDs(global), []string{"global", "tagged-global"}; !reflect.DeepEqual(got, want) {
-		t.Fatalf("global IDs = %v, want %v", got, want)
-	}
-	if got, want := bindingIDs(navigation), []string{"navigation"}; !reflect.DeepEqual(got, want) {
+	if got, want := bindingIDs(palette.Navigation), []string{"navigation"}; !reflect.DeepEqual(got, want) {
 		t.Fatalf("navigation IDs = %v, want %v", got, want)
+	}
+	if len(palette.Panes) != 1 || palette.Panes[0].View != "commits" {
+		t.Fatalf("panes = %v, want one commits pane", palette.Panes)
+	}
+	if got, want := bindingIDs(palette.Panes[0].Bindings), []string{"other-view"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("commits IDs = %v, want %v", got, want)
+	}
+}
+
+func TestCommandPaletteBindingsOrdersPanesByLayoutThenName(t *testing.T) {
+	bindings := []*types.Binding{
+		{CommandID: "a", ViewName: "zzz-unlisted", Description: "A"},
+		{CommandID: "b", ViewName: "commits", Description: "B"},
+		{CommandID: "c", ViewName: "status", Description: "C"},
+		{CommandID: "d", ViewName: "aaa-unlisted", Description: "D"},
+	}
+
+	palette := commandPaletteBindings(bindings, "files")
+	var views []string
+	for _, pane := range palette.Panes {
+		views = append(views, pane.View)
+	}
+	if want := []string{"status", "commits", "aaa-unlisted", "zzz-unlisted"}; !reflect.DeepEqual(views, want) {
+		t.Fatalf("pane order = %v, want %v", views, want)
+	}
+}
+
+func TestCommandPaletteBindingsDoesNotRepeatFocusedCommandsInOtherPanes(t *testing.T) {
+	bindings := []*types.Binding{
+		{CommandID: "shared", ViewName: "files", Description: "Shared local"},
+		{CommandID: "shared", ViewName: "commits", Description: "Shared elsewhere"},
+		{CommandID: "shared-global", ViewName: "", Description: "Shared global"},
+		{CommandID: "shared-global", ViewName: "commits", Description: "Global elsewhere"},
+		{CommandID: "elsewhere", ViewName: "commits", Description: "Commits only"},
+		{CommandID: "elsewhere", ViewName: "stash", Description: "Commits only"},
+	}
+
+	palette := commandPaletteBindings(bindings, "files")
+	if got, want := bindingIDs(palette.Focused), []string{"shared", "shared-global"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("focused IDs = %v, want %v", got, want)
+	}
+	if len(palette.Panes) != 2 {
+		t.Fatalf("panes = %d, want commits and stash", len(palette.Panes))
+	}
+	if got, want := bindingIDs(palette.Panes[0].Bindings), []string{"elsewhere"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("commits IDs = %v, want %v", got, want)
+	}
+	if got, want := bindingIDs(palette.Panes[1].Bindings), []string{"elsewhere"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("stash IDs = %v, want %v: a command is listed in each other pane", got, want)
+	}
+}
+
+func TestCommandPaletteBindingsMergesAliasesWithinAnOtherPane(t *testing.T) {
+	bindings := []*types.Binding{
+		{CommandID: "copy", ViewName: "commits", Description: "Copy", Keys: []gocui.Key{gocui.NewKeyRune('y')}},
+		{CommandID: "copy", ViewName: "commits", Description: "Copy alias", Keys: []gocui.Key{gocui.NewKeyRune('Y')}},
+	}
+
+	palette := commandPaletteBindings(bindings, "files")
+	if len(palette.Panes) != 1 || len(palette.Panes[0].Bindings) != 1 {
+		t.Fatalf("panes = %v, want one merged command", palette.Panes)
+	}
+	if got, want := palette.Panes[0].Bindings[0].Keys, []gocui.Key{gocui.NewKeyRune('y'), gocui.NewKeyRune('Y')}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("merged keys = %v, want %v", got, want)
+	}
+}
+
+func TestCommandPaletteBindingsOtherPaneCopiesAreStatic(t *testing.T) {
+	calls := 0
+	foreign := &types.Binding{
+		CommandID:         "static.id",
+		CommandIDFunc:     func() string { calls++; return "dynamic.id" },
+		Verb:              "static-verb",
+		VerbFunc:          func() string { calls++; return "dynamic-verb" },
+		ViewName:          "commits",
+		Description:       "Static",
+		DescriptionFunc:   func() string { calls++; return "dynamic" },
+		Tooltip:           "Static tooltip",
+		TooltipFunc:       func() string { calls++; return "dynamic tooltip" },
+		CommandActive:     func() bool { calls++; return false },
+		GetDisabledReason: func() *types.DisabledReason { calls++; return &types.DisabledReason{Text: "dynamic"} },
+		Handler:           func() error { return nil },
+	}
+
+	palette := commandPaletteBindings([]*types.Binding{foreign}, "files")
+	if calls != 0 {
+		t.Fatalf("foreign callbacks called %d times", calls)
+	}
+	copy := palette.Panes[0].Bindings[0]
+	if copy.GetDescription() != "Static" || copy.GetCommandID() != "static.id" || copy.GetVerb() != "static-verb" || copy.GetTooltip() != "Static tooltip" {
+		t.Fatalf("static fields not used: %q %q %q %q", copy.GetDescription(), copy.GetCommandID(), copy.GetVerb(), copy.GetTooltip())
+	}
+	if copy.GetDisabledReason != nil || copy.CommandActive != nil {
+		t.Fatal("foreign copy kept a dynamic disabled or active check")
+	}
+	if calls != 0 {
+		t.Fatalf("static accessors called %d foreign callbacks", calls)
+	}
+}
+
+func TestCommandPaletteBindingsSkipsForeignWithoutStaticDescription(t *testing.T) {
+	bindings := []*types.Binding{
+		{ViewName: "commits", DescriptionFunc: func() string { return "dynamic only" }},
+		{ViewName: "commits", Description: "Static"},
+	}
+	palette := commandPaletteBindings(bindings, "files")
+	if len(palette.Panes) != 1 || len(palette.Panes[0].Bindings) != 1 || palette.Panes[0].Bindings[0].Description != "Static" {
+		t.Fatalf("panes = %v, want only the statically described command", palette.Panes)
 	}
 }
 
@@ -50,11 +156,11 @@ func TestCommandPaletteBindingsDeduplicatesAliasesWithoutMutatingBindings(t *tes
 	}
 	originalShared := append([]gocui.Key(nil), sharedBacking...)
 
-	localSection, globalSection, _ := commandPaletteBindings([]*types.Binding{global, local}, "files")
-	if len(localSection) != 1 || len(globalSection) != 0 {
-		t.Fatalf("section lengths = (%d, %d), want (1, 0)", len(localSection), len(globalSection))
+	palette := commandPaletteBindings([]*types.Binding{global, local}, "files")
+	if len(palette.Focused) != 1 {
+		t.Fatalf("focused section length = %d, want 1", len(palette.Focused))
 	}
-	merged := localSection[0]
+	merged := palette.Focused[0]
 	if merged == local {
 		t.Fatal("deduplicated binding aliases the original binding")
 	}
@@ -92,7 +198,8 @@ func TestCommandPaletteBindingsKeepsDistinctEqualLabelsAndMissingIDs(t *testing.
 		{ViewName: "files", Description: "Missing identity"},
 		{Description: "Missing identity"},
 	}
-	local, global, _ := commandPaletteBindings(bindings, "files")
+	palette := commandPaletteBindings(bindings, "files")
+	local, global := palette.Focused[:2], palette.Focused[2:]
 	if len(local) != 2 || len(global) != 2 {
 		t.Fatalf("section lengths = (%d, %d), want (2, 2)", len(local), len(global))
 	}
@@ -108,14 +215,14 @@ func TestCommandPaletteBindingsUsesLiveCommandIDsForDeduplication(t *testing.T) 
 	firstID, secondID := "shared", "shared"
 	first := &types.Binding{CommandID: "static-first", CommandIDFunc: func() string { return firstID }, ViewName: "files", Description: "First"}
 	second := &types.Binding{CommandID: "static-second", CommandIDFunc: func() string { return secondID }, Description: "Second"}
-	local, global, _ := commandPaletteBindings([]*types.Binding{first, second}, "files")
-	if len(local) != 1 || len(global) != 0 {
-		t.Fatalf("initial section lengths = (%d, %d), want (1, 0)", len(local), len(global))
+	palette := commandPaletteBindings([]*types.Binding{first, second}, "files")
+	if len(palette.Focused) != 1 {
+		t.Fatalf("initial focused length = %d, want 1", len(palette.Focused))
 	}
 	secondID = "second"
-	local, global, _ = commandPaletteBindings([]*types.Binding{first, second}, "files")
-	if len(local) != 1 || len(global) != 1 {
-		t.Fatalf("changed-ID section lengths = (%d, %d), want (1, 1)", len(local), len(global))
+	palette = commandPaletteBindings([]*types.Binding{first, second}, "files")
+	if len(palette.Focused) != 2 {
+		t.Fatalf("changed-ID focused length = %d, want 2", len(palette.Focused))
 	}
 }
 
@@ -123,22 +230,14 @@ func TestCommandPaletteBindingsMergesAndCopiesCommandPaths(t *testing.T) {
 	path := []gocui.Key{gocui.NewKeyRune('d'), gocui.NewKeyRune('w')}
 	first := &types.Binding{CommandID: "diff", ViewName: "files", Description: "Diff", CommandPaths: [][]gocui.Key{path}}
 	second := &types.Binding{CommandID: "diff", Description: "Diff alias", CommandPaths: [][]gocui.Key{path, {gocui.NewKeyRune('d'), gocui.NewKeyRune('p')}}}
-	local, _, _ := commandPaletteBindings([]*types.Binding{first, second}, "files")
-	if len(local) != 1 || len(local[0].CommandPaths) != 2 {
-		t.Fatalf("merged paths = %#v, want two unique paths", local)
+	palette := commandPaletteBindings([]*types.Binding{first, second}, "files")
+	if len(palette.Focused) != 1 || len(palette.Focused[0].CommandPaths) != 2 {
+		t.Fatalf("merged paths = %#v, want two unique paths", palette.Focused)
 	}
+	local := palette.Focused
 	local[0].CommandPaths[0][0] = gocui.NewKeyRune('z')
 	if path[0] != gocui.NewKeyRune('d') || first.CommandPaths[0][0] != gocui.NewKeyRune('d') || second.CommandPaths[0][0] != gocui.NewKeyRune('d') {
 		t.Fatalf("source command paths were mutated: first=%v second=%v", first.CommandPaths, second.CommandPaths)
-	}
-}
-
-func TestCommandPaletteBindingsSkipsForeignDescriptionCallbacks(t *testing.T) {
-	calls := 0
-	foreign := &types.Binding{ViewName: "branches", DescriptionFunc: func() string { calls++; return "foreign" }}
-	commandPaletteBindings([]*types.Binding{foreign}, "files")
-	if calls != 0 {
-		t.Fatalf("foreign description callback called %d times", calls)
 	}
 }
 

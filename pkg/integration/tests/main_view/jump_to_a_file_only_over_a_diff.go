@@ -38,14 +38,14 @@ var JumpToAFileOnlyOverADiff = NewIntegrationTest(NewIntegrationTestArgs{
 			IsFocused().
 			Press(keys.Universal.OptionMenu)
 
-		t.ExpectPopup().Menu().
-			Title(Equals("Keybindings")).
-			Tap(func() {
-				t.Views().Menu().
-					Content(Contains("Jump to file")).
-					Content(DoesNotContain("Jump to file in diff"))
-			}).
-			Cancel()
+		// The pane's own command is offered. The commits pane's copy of the key is
+		// listed too, but it is not available here.
+		palette := t.ExpectPopup().Menu().Title(Equals("Keybindings"))
+		palette.Content(Contains("Jump to file"))
+		palette.Filter("Jump to file in diff").Confirm()
+		t.ExpectToast(Contains("Disabled: "))
+		palette.Cancel()
+		palette.Cancel()
 
 		t.Views().Main().
 			IsFocused().
@@ -64,11 +64,12 @@ var JumpToAFileOnlyOverADiff = NewIntegrationTest(NewIntegrationTestArgs{
 			IsFocused().
 			Press(keys.Universal.OptionMenu)
 
-		t.ExpectPopup().Menu().
-			Title(Equals("Keybindings")).
-			Tap(func() {
-				t.Views().Menu().Content(DoesNotContain("Jump to file"))
-			}).
-			Cancel()
+		// The main view's command is listed, but it is not available over the merge
+		// conflicts.
+		palette = t.ExpectPopup().Menu().Title(Equals("Keybindings"))
+		palette.Filter("Jump to file").Confirm()
+		t.ExpectToast(Contains("Disabled: "))
+		palette.Cancel()
+		palette.Cancel()
 	},
 })

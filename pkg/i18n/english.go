@@ -964,9 +964,9 @@ type TranslationSet struct {
 	SelectRemoteRepository                string
 	FetchingPullRequests                  string
 	Keybindings                           string
-	KeybindingsMenuSectionLocal           string
-	KeybindingsMenuSectionGlobal          string
 	KeybindingsMenuSectionNavigation      string
+	CommandPaletteFocusedSectionTitle     string
+	CommandPaletteAvailableIn             string
 	KeybindingsTooltip                    string
 	RenameBranch                          string
 	Upstream                              string
@@ -1315,8 +1315,6 @@ type TranslationSet struct {
 	CommandUsageReset                        string
 	IgnoredKeyConfig                         string
 	DiffRendererDeltaNotFound                string
-	CommandPaletteScopeLocal                 string
-	CommandPaletteScopeGlobal                string
 	ResetCommandUsageCounts                  string
 	ResetCommandUsageCountsPrompt            string
 	OpenRepoByPath                           string
@@ -2185,9 +2183,9 @@ func EnglishTranslationSet() *TranslationSet {
 		Continue:                             "Continue",
 		UnstagedFilesAfterConflictsResolved:  "Files have been modified since conflicts were resolved. Auto-stage them and continue?",
 		Keybindings:                          "Keybindings",
-		KeybindingsMenuSectionLocal:          "Local",
-		KeybindingsMenuSectionGlobal:         "Global",
 		KeybindingsMenuSectionNavigation:     "Navigation",
+		CommandPaletteFocusedSectionTitle:    "%s and global",
+		CommandPaletteAvailableIn:            "Available in %s",
 		KeybindingsTooltip:                   "Keybindings: ",
 		RebasingTitle:                        "Rebase '{{.checkedOutBranch}}'",
 		RebasingFromBaseCommitTitle:          "Rebase '{{.checkedOutBranch}}' from marked base",
@@ -2843,10 +2841,8 @@ func EnglishTranslationSet() *TranslationSet {
 		CommandUsageReset:                        "Command usage counts were unreadable and have been reset.",
 		IgnoredKeyConfig:                         "Key settings are fixed in lazygitk; ignored %s in %s",
 		DiffRendererDeltaNotFound:                "delta was not found on PATH; showing git's own diff",
-		CommandPaletteScopeLocal:                 "local",
-		CommandPaletteScopeGlobal:                "global",
 		ResetCommandUsageCounts:                  "Reset command usage counts",
-		ResetCommandUsageCountsPrompt:            "Reset all command usage counts? The ? palette returns to its default order until commands are used again.",
+		ResetCommandUsageCountsPrompt:            "Reset all command usage counts?",
 		OpenRepoByPath:                           "Open repository by path",
 		InspectFile:                              "Inspect file",
 		InspectFileTooltip:                       "Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule.",

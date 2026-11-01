@@ -77,3 +77,20 @@ func TestForkDefaultsConfigLoading(t *testing.T) {
 		})
 	}
 }
+
+// The palette option was removed. A config file that still sets it must load.
+func TestRetiredCommandPaletteOrderKeyIsIgnored(t *testing.T) {
+	dir := t.TempDir()
+	userPath := filepath.Join(dir, "user.yml")
+	content := []byte("gui:\n  commandPaletteOrder: static\n  showIcons: true\n")
+	if err := os.WriteFile(userPath, content, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	files := []*ConfigFile{{Path: userPath, Policy: ConfigFilePolicyErrorIfMissing}}
+
+	loaded, err := loadUserConfigWithDefaults(files, false)
+	if err != nil {
+		t.Fatalf("loading a config with the retired key failed: %v", err)
+	}
+	assert.True(t, loaded.Gui.ShowIcons)
+}

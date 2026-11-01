@@ -13,7 +13,8 @@ import (
 )
 
 // Fork: command usage counts (roadmap item 9). A shortcut or prefix-menu leaf
-// subtracts from its command's count; the `?` palette adds to it. A use counts
+// subtracts from its command's count; the `?` palette adds to it. Counts are
+// recorded but do not order the palette. A use counts
 // only once its action is accepted: while the handler runs it is pending, and a
 // popup opened through PopupHandler claims it. See fork_usage_hook.go.
 
@@ -135,15 +136,6 @@ func (gui *Gui) openForkCommandUsage() {
 	}
 	gui.commandUsage = store
 	gui.forkUsageReset = reset
-}
-
-// forkCommandUsageCounts snapshots the counts for ordering the `?` palette.
-// Without a store, every command has no uses.
-func (gui *Gui) forkCommandUsageCounts() map[string]int {
-	if gui.commandUsage == nil {
-		return map[string]int{}
-	}
-	return gui.commandUsage.Snapshot()
 }
 
 // resetForkCommandUsage empties the counts. Without a store there is nothing to clear.

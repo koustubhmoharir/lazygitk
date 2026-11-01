@@ -4,101 +4,105 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/jesseduffield/lazygit/pkg/gui/style"
+	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/i18n"
 )
 
-func paletteEntryIDs(entries []paletteEntry) []string {
-	ids := make([]string, len(entries))
-	for i, entry := range entries {
-		ids[i] = entry.binding.GetCommandID()
+func keyPath(keys ...rune) []gocui.Key {
+	path := make([]gocui.Key, len(keys))
+	for i, r := range keys {
+		path[i] = gocui.NewKeyRune(r)
 	}
-	return ids
+	return path
 }
 
-func paletteEntryScopes(entries []paletteEntry) []paletteScope {
-	scopes := make([]paletteScope, len(entries))
-	for i, entry := range entries {
-		scopes[i] = entry.scope
+func TestSortPaletteBindingsByKeyGroup(t *testing.T) {
+	bindings := []*types.Binding{
+		{CommandID: "no-path", Description: "No path"},
+		{CommandID: "other-z", Description: "Other z", CommandPaths: [][]gocui.Key{keyPath('z', 'q')}},
+		{CommandID: "w", Description: "W", CommandPaths: [][]gocui.Key{keyPath('w', 'a')}},
+		{CommandID: "t", Description: "T", CommandPaths: [][]gocui.Key{keyPath('t', 'a')}},
+		{CommandID: "y", Description: "Y", CommandPaths: [][]gocui.Key{keyPath('y', 'a')}},
+		{CommandID: "u", Description: "U", CommandPaths: [][]gocui.Key{keyPath('u', 'a')}},
+		{CommandID: "c", Description: "C", CommandPaths: [][]gocui.Key{keyPath('c', 'a')}},
+		{CommandID: "n", Description: "N", CommandPaths: [][]gocui.Key{keyPath('n', 'a')}},
+		{CommandID: "s", Description: "S", CommandPaths: [][]gocui.Key{keyPath('s', 'a')}},
+		{CommandID: "g-b", Description: "G b", CommandPaths: [][]gocui.Key{keyPath('g', 'b')}},
+		{CommandID: "g-a", Description: "G a", CommandPaths: [][]gocui.Key{keyPath('g', 'a')}},
+		{CommandID: "d-w", Description: "D w", CommandPaths: [][]gocui.Key{keyPath('d', 'w')}},
+		{CommandID: "a-b", Description: "A b", CommandPaths: [][]gocui.Key{keyPath('a', 'b')}},
+		{CommandID: "single-x", Description: "Single x", Keys: []gocui.Key{gocui.NewKeyRune('x')}},
+		{CommandID: "single-b", Description: "Single b", Keys: []gocui.Key{gocui.NewKeyRune('b')}},
+		// A single key path sorts ahead of the multi-key paths of the same command.
+		{CommandID: "mixed", Description: "Mixed", Keys: []gocui.Key{gocui.NewKeyRune('m')}, CommandPaths: [][]gocui.Key{keyPath('d', 'a')}},
 	}
-	return scopes
-}
 
-func TestOrderPaletteByUsageSortsByCountDescending(t *testing.T) {
-	local := []*types.Binding{{CommandID: "a"}, {CommandID: "b"}, {CommandID: "c"}}
-	global := []*types.Binding{{CommandID: "d"}, {CommandID: "e"}}
-	counts := map[string]int{"b": 5, "d": 9, "e": 1, "c": 1}
-
-	entries := orderPaletteByUsage(local, global, counts)
-
-	if got, want := paletteEntryIDs(entries), []string{"d", "b", "c", "e", "a"}; !reflect.DeepEqual(got, want) {
-		t.Fatalf("order = %v, want %v", got, want)
+	got := bindingIDs(sortPaletteBindingsByKeyGroup(bindings))
+	want := []string{
+		"single-b", "mixed", "single-x",
+		"d-w", "s", "n", "c", "u", "y", "g-a", "g-b", "t", "w",
+		"a-b", "other-z",
+		"no-path",
 	}
-	if got, want := paletteEntryScopes(entries), []paletteScope{paletteScopeGlobal, paletteScopeLocal, paletteScopeLocal, paletteScopeGlobal, paletteScopeLocal}; !reflect.DeepEqual(got, want) {
-		t.Fatalf("scopes = %v, want %v", got, want)
-	}
-}
-
-func TestOrderPaletteByUsageSortsNegativeCountsBelowUnused(t *testing.T) {
-	local := []*types.Binding{{CommandID: "shortcut"}, {CommandID: "unused"}}
-	global := []*types.Binding{{CommandID: "used"}}
-	counts := map[string]int{"shortcut": -3, "used": 1}
-
-	entries := orderPaletteByUsage(local, global, counts)
-
-	if got, want := paletteEntryIDs(entries), []string{"used", "unused", "shortcut"}; !reflect.DeepEqual(got, want) {
-		t.Fatalf("order = %v, want %v", got, want)
-	}
-}
-
-func TestOrderPaletteByUsageTiesKeepDeclarationOrder(t *testing.T) {
-	local := []*types.Binding{{CommandID: "local-1"}, {CommandID: "local-2"}}
-	global := []*types.Binding{{CommandID: "global-1"}, {CommandID: "global-2"}}
-
-	entries := orderPaletteByUsage(local, global, map[string]int{"global-2": 2, "local-2": 2})
-
-	if got, want := paletteEntryIDs(entries), []string{"local-2", "global-2", "local-1", "global-1"}; !reflect.DeepEqual(got, want) {
+	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("order = %v, want %v", got, want)
 	}
 }
 
-func TestOrderPaletteByUsageWithoutCountsKeepsLocalThenGlobal(t *testing.T) {
-	local := []*types.Binding{{CommandID: "local-1"}, {CommandID: "local-2"}}
-	global := []*types.Binding{{CommandID: "global-1"}}
+func TestSortPaletteBindingsByKeyGroupKeepsDeclarationOrderForTies(t *testing.T) {
+	bindings := []*types.Binding{
+		{CommandID: "first", CommandPaths: [][]gocui.Key{keyPath('d', 'x')}},
+		{CommandID: "no-path-1"},
+		{CommandID: "second", CommandPaths: [][]gocui.Key{keyPath('d', 'x')}},
+		{CommandID: "no-path-2"},
+	}
 
-	entries := orderPaletteByUsage(local, global, nil)
+	got := bindingIDs(sortPaletteBindingsByKeyGroup(bindings))
+	if want := []string{"first", "second", "no-path-1", "no-path-2"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("order = %v, want %v", got, want)
+	}
+	if bindings[0].CommandID != "first" {
+		t.Fatal("sorting changed the input slice")
+	}
+}
 
-	if got, want := paletteEntryIDs(entries), []string{"local-1", "local-2", "global-1"}; !reflect.DeepEqual(got, want) {
+func TestSortPaletteBindingsByKeyGroupDoesNotCallCallbacks(t *testing.T) {
+	calls := 0
+	binding := &types.Binding{
+		CommandID:       "dynamic",
+		DescriptionFunc: func() string { calls++; return "dynamic" },
+		TooltipFunc:     func() string { calls++; return "" },
+		GetDisabledReason: func() *types.DisabledReason {
+			calls++
+			return nil
+		},
+	}
+
+	sortPaletteBindingsByKeyGroup([]*types.Binding{binding})
+	if calls != 0 {
+		t.Fatalf("callbacks called %d times", calls)
+	}
+}
+
+func TestOrderPaletteViewsFollowsPaneOrderThenName(t *testing.T) {
+	got := orderPaletteViews([]string{"zzz", "commits", "mergeConflicts", "aaa", "status", "menu"})
+	want := []string{"status", "commits", "mergeConflicts", "menu", "aaa", "zzz"}
+	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("order = %v, want %v", got, want)
 	}
 }
 
-func TestOrderPaletteByUsageUsesDynamicCommandIDs(t *testing.T) {
-	local := []*types.Binding{{CommandID: "stale", CommandIDFunc: func() string { return "dynamic" }}, {CommandID: "plain"}}
-
-	entries := orderPaletteByUsage(local, nil, map[string]int{"dynamic": 4})
-
-	if got, want := paletteEntryIDs(entries), []string{"dynamic", "plain"}; !reflect.DeepEqual(got, want) {
-		t.Fatalf("order = %v, want %v", got, want)
-	}
-}
-
-func TestForkTagPaletteItemAddsScopeColumnAndFiltersByLabel(t *testing.T) {
+func TestPaletteViewTitles(t *testing.T) {
 	tr := i18n.EnglishTranslationSet()
-	local := &types.MenuItem{Label: "Stage file"}
-	global := &types.MenuItem{Label: "Refresh"}
 
-	forkTagPaletteItem(local, paletteScopeLocal, tr)
-	forkTagPaletteItem(global, paletteScopeGlobal, tr)
-
-	if got, want := local.LabelColumns, []string{"Stage file", style.FgDefault.SetDim().Sprint("local")}; !reflect.DeepEqual(got, want) {
-		t.Fatalf("local columns = %v, want %v", got, want)
+	if got, want := paletteViewTitle("localBranches", tr), "Local branches"; got != want {
+		t.Fatalf("localBranches title = %q, want %q", got, want)
 	}
-	if got, want := global.LabelColumns, []string{"Refresh", style.FgDefault.SetDim().Sprint("global")}; !reflect.DeepEqual(got, want) {
-		t.Fatalf("global columns = %v, want %v", got, want)
+	if got, want := paletteFocusedTitle("localBranches", tr), "Local branches and global"; got != want {
+		t.Fatalf("focused title = %q, want %q", got, want)
 	}
-	if got, want := global.FilterColumns, []string{"Refresh"}; !reflect.DeepEqual(got, want) {
-		t.Fatalf("filter columns = %v, want %v", got, want)
+	if got, want := paletteViewTitle("unlisted", tr), "unlisted"; got != want {
+		t.Fatalf("unlisted view title = %q, want the view name %q", got, want)
 	}
 }

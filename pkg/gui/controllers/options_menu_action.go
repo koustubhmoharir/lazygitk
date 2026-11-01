@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
@@ -14,7 +15,8 @@ type OptionsMenuAction struct {
 
 func (self *OptionsMenuAction) Call() error {
 	ctx := self.c.Context().Current()
-	local, global, navigation := self.getBindings(ctx)
+	bindings, _ := self.c.GetInitialKeybindingsWithCustomCommands()
+	palette := commandPaletteBindings(bindings, ctx.GetViewName())
 
 	menuItems := []*types.MenuItem{}
 
@@ -37,19 +39,23 @@ func (self *OptionsMenuAction) Call() error {
 			})...)
 	}
 
-	// Fork: usage order merges local and global commands into one list, each
-	// tagged with its scope. The static option keeps the upstream sections.
-	if self.c.UserConfig().Gui.CommandPaletteOrder == "static" {
-		appendBindings(local, &types.MenuSection{Title: self.c.Tr.KeybindingsMenuSectionLocal, Column: 1})
-		appendBindings(global, &types.MenuSection{Title: self.c.Tr.KeybindingsMenuSectionGlobal, Column: 1})
-	} else {
-		for _, entry := range orderPaletteByUsage(local, global, self.c.CommandUsageCounts()) {
-			item := paletteItem(entry.binding, nil)
-			forkTagPaletteItem(item, entry.scope, self.c.Tr)
+	// Fork: sections are the focused pane with the globals, the other panes in
+	// layout order, and the focused pane's navigation (see command_palette.go).
+	appendBindings(palette.Focused, &types.MenuSection{Title: paletteFocusedTitle(ctx.GetViewName(), self.c.Tr), Column: 1})
+	for _, pane := range palette.Panes {
+		title := paletteViewTitle(pane.View, self.c.Tr)
+		section := &types.MenuSection{Title: title, Column: 1}
+		for _, binding := range pane.Bindings {
+			item := paletteItem(binding, section)
+			// The binding's callbacks were not evaluated, so its state here is unknown.
+			item.DisabledReason = &types.DisabledReason{
+				Text:         fmt.Sprintf(self.c.Tr.CommandPaletteAvailableIn, title),
+				Inapplicable: true,
+			}
 			menuItems = append(menuItems, item)
 		}
 	}
-	appendBindings(navigation, &types.MenuSection{Title: self.c.Tr.KeybindingsMenuSectionNavigation, Column: 1})
+	appendBindings(palette.Navigation, &types.MenuSection{Title: self.c.Tr.KeybindingsMenuSectionNavigation, Column: 1})
 
 	return self.c.Menu(types.CreateMenuOptions{
 		Title:                      self.c.Tr.Keybindings,
@@ -60,12 +66,4 @@ func (self *OptionsMenuAction) Call() error {
 		KeepConflictingKeybindings: true,
 		FilterAsYouType:            true,
 	})
-}
-
-// Returns three slices of bindings: local, global, and navigation
-func (self *OptionsMenuAction) getBindings(context types.Context) ([]*types.Binding, []*types.Binding, []*types.Binding) {
-	bindings, _ := self.c.GetInitialKeybindingsWithCustomCommands()
-	// Fork: stable operation IDs replace upstream description-based deduplication,
-	// which could hide distinct commands with equal translated labels.
-	return commandPaletteBindings(bindings, context.GetViewName())
 }

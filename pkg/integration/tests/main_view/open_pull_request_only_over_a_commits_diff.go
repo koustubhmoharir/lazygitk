@@ -33,16 +33,13 @@ var OpenPullRequestOnlyOverACommitsDiff = NewIntegrationTest(NewIntegrationTestA
 			IsFocused().
 			Press(keys.Universal.OptionMenu)
 
-		t.ExpectPopup().Menu().
-			Title(Equals("Keybindings")).
-			Tap(func() {
-				// The command is bound right below the one asserted here, so a menu
-				// showing that one would be showing this one too if it had it.
-				t.Views().Menu().
-					Content(Contains("Go to next file")).
-					Content(DoesNotContain("Open pull request at selected line"))
-			}).
-			Cancel()
+		// The command is listed, but over the working tree's diff it is not available,
+		// and selecting it says why.
+		palette := t.ExpectPopup().Menu().Title(Equals("Keybindings"))
+		palette.Filter("Open pull request at selected line").Confirm()
+		t.ExpectToast(Contains("Disabled: "))
+		palette.Cancel()
+		palette.Cancel()
 
 		// Over a commit's diff it is offered, and says so where the branch has no pull
 		// request to open.

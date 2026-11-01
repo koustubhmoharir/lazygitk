@@ -3,7 +3,11 @@ package components
 import (
 	"fmt"
 	"os"
+	"time"
 )
+
+// Longer than the two-second flush delay of the command usage counts.
+const fileContentTimeout = 5 * time.Second
 
 type FileSystem struct {
 	*assertionHelper
@@ -46,6 +50,23 @@ func (self *FileSystem) FileContent(path string, matcher *TextMatcher) *FileSyst
 			return false, fmt.Sprintf("Unexpected content in file %s: %s", path, errMsg)
 		}
 
+		return true, ""
+	})
+	return self
+}
+
+// Like FileContent, but waits for the content to match, for files that the app
+// writes in the background, such as the command usage counts (flushed after a
+// two-second delay).
+func (self *FileSystem) FileContentEventually(path string, matcher *TextMatcher) *FileSystem {
+	self.assertEventuallyWithin(fileContentTimeout, func() (bool, string) {
+		output, err := os.ReadFile(path)
+		if err != nil {
+			return false, fmt.Sprintf("Expected to read file at path '%s': %s", path, err.Error())
+		}
+		if ok, errMsg := matcher.context("").test(string(output)); !ok {
+			return false, fmt.Sprintf("Unexpected content in file %s: %s", path, errMsg)
+		}
 		return true, ""
 	})
 	return self

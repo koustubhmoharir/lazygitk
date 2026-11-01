@@ -26,13 +26,14 @@ var SelectionCommandTooltipsFollowTheDiff = NewIntegrationTest(NewIntegrationTes
 			IsFocused().
 			Press(keys.Universal.OptionMenu)
 
-		t.ExpectPopup().Menu().
-			Title(Equals("Keybindings")).
-			Select(Contains("Stage")).
-			Tooltip(Equals("Toggle selection staged / unstaged.")).
-			Select(Contains("Discard")).
-			Tooltip(Contains("discard the change using `git reset`")).
-			Cancel()
+		// The main view's own copy of Discard is the first match: the other panes' copies follow it.
+		palette := t.ExpectPopup().Menu().Title(Equals("Keybindings"))
+		palette.Select(Contains("<space> Stage")).
+			Tooltip(Equals("Toggle selection staged / unstaged."))
+		palette.Filter("Discard").
+			Tooltip(Contains("discard the change using `git reset`"))
+		palette.Cancel()
+		palette.Cancel()
 
 		t.Views().Main().PressEscape()
 

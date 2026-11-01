@@ -2,6 +2,7 @@ package context
 
 import (
 	"errors"
+	"slices"
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/gocui"
@@ -181,9 +182,16 @@ func (self *MenuViewModel) GetDisplayStrings(_ int, _ int) [][]string {
 	menuItems := self.FilteredListViewModel.GetItems()
 
 	return lo.Map(menuItems, func(item *types.MenuItem, _ int) []string {
-		displayStrings := item.LabelColumns
+		// Copied so that styling does not accumulate on the item across renders.
+		displayStrings := slices.Clone(item.LabelColumns)
 		if item.DisabledReason != nil {
-			displayStrings[0] = style.FgDefault.SetStrikethrough().Sprint(displayStrings[0])
+			// Fork: an inapplicable reason means the command has nothing to act on
+			// here, so it is faded; a failed precondition is struck through.
+			if item.DisabledReason.Inapplicable {
+				displayStrings[0] = style.FgDefault.SetDim().Sprint(displayStrings[0])
+			} else {
+				displayStrings[0] = style.FgDefault.SetStrikethrough().Sprint(displayStrings[0])
+			}
 		}
 
 		keyLabel := ""
@@ -316,7 +324,7 @@ func (self *MenuContext) OnMenuPress(selectedItem *types.MenuItem) error {
 		return nil
 	}
 	if selectedItem != nil && selectedItem.DisabledReason != nil {
-		if selectedItem.Binding != nil && selectedItem.Binding.DefaultCommand && selectedItem.DisabledReason.Inapplicable {
+		if selectedItem.Binding != nil && selectedItem.Binding.DefaultCommand && selectedItem.DisabledReason.Inapplicable && !selectedItem.ExplainDisabled {
 			return nil
 		}
 		if selectedItem.DisabledReason.ShowErrorInPanel {

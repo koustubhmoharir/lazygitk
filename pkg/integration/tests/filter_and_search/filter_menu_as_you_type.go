@@ -27,7 +27,7 @@ var FilterMenuAsYouType = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().Menu().
 			Lines(
-				Contains("─── Global"),
+				Contains("─── Files and global"),
 				Contains("Toggle whitespace").IsSelected(),
 			).
 			// the row covers the border the footer was on, so it moves there

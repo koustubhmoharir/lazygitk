@@ -27,7 +27,7 @@ var UnboundActionFromPalette = NewIntegrationTest(NewIntegrationTestArgs{
 					Title(Equals("Keybindings")).
 					Filter("Rename branch").
 					Lines(
-						Equals("─── Local"),
+						Equals("─── Local branches and global"),
 						Contains("Rename branch").IsSelected(),
 					).
 					Confirm()

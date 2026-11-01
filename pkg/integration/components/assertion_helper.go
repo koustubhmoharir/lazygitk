@@ -29,7 +29,13 @@ func (self *assertionHelper) assertWithRetries(test func() (bool, string)) {
 }
 
 func (self *assertionHelper) assertEventually(test func() (bool, string)) {
-	deadline := time.Now().Add(eventuallyTimeout)
+	self.assertEventuallyWithin(eventuallyTimeout, test)
+}
+
+// Like assertEventually, but with a timeout for background work slower than
+// the default, such as a deferred write.
+func (self *assertionHelper) assertEventuallyWithin(timeout time.Duration, test func() (bool, string)) {
+	deadline := time.Now().Add(timeout)
 	for {
 		ok, message := test()
 		if ok {

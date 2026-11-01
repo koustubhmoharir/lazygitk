@@ -385,7 +385,6 @@
   "PrevScreenMode": "Vorige scherm modus",
   "StartSearch": "Start met zoeken",
   "Keybindings": "Sneltoetsen",
-  "KeybindingsMenuSectionGlobal": "Algemeen",
   "RenameBranch": "Hernoem branch",
   "NewGitFlowBranchPrompt": "Nieuwe '{{.branchType}}' naam:",
   "RenameBranchWarning": "Deze branch volgt een remote. Deze actie zal alleen de locale branch name wijzigen niet de naam van de remote branch. Verder gaan?",

@@ -134,12 +134,12 @@ var JumpToAFileOfTheDiff = NewIntegrationTest(NewIntegrationTestArgs{
 			Focus().
 			Press(keys.Universal.OptionMenu)
 
-		t.ExpectPopup().Menu().
-			Title(Equals("Keybindings")).
-			Tap(func() {
-				t.Views().Menu().Content(DoesNotContain("Jump to file"))
-			}).
-			Cancel()
+		// The main view's command is listed, but it is not available from here.
+		palette := t.ExpectPopup().Menu().Title(Equals("Keybindings"))
+		palette.Filter("Jump to file").Confirm()
+		t.ExpectToast(Contains("Disabled: "))
+		palette.Cancel()
+		palette.Cancel()
 
 		t.Views().Commits().
 			Focus().

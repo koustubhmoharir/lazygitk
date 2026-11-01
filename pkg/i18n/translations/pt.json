@@ -515,8 +515,6 @@
   "StartSearch": "Pesquisar na visualização atual por texto",
   "StartFilter": "Filtrar a visualização atual por texto",
   "Keybindings": "Atalhos do teclado",
-  "KeybindingsMenuSectionLocal": "Local",
-  "KeybindingsMenuSectionGlobal": "Global",
   "KeybindingsMenuSectionNavigation": "Navegação",
   "RenameBranch": "Renomear branch",
   "OpenKeybindingsMenu": "Abrir o menu de atalhos do teclado",

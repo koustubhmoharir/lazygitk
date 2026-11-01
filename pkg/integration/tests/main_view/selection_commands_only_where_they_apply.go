@@ -28,13 +28,20 @@ var SelectionCommandsOnlyWhereTheyApply = NewIntegrationTest(NewIntegrationTestA
 		t.ExpectPopup().Menu().
 			Title(Equals("Keybindings")).
 			Tap(func() {
-				t.Views().Menu().
-					Content(DoesNotContain("Select hunks")).
-					Content(DoesNotContain("Toggle range select")).
-					Content(DoesNotContain("Go to next hunk")).
-					Content(DoesNotContain("Go to next file"))
+				t.Views().Menu().Content(DoesNotContain("Select hunks"))
 			}).
 			Cancel()
+
+		// The other selection commands are listed, but they are not available here, and
+		// selecting one says so.
+		for _, name := range []string{"Toggle range select", "Go to next hunk", "Go to next file"} {
+			t.Views().Main().IsFocused().Press(keys.Universal.OptionMenu)
+			palette := t.ExpectPopup().Menu().Title(Equals("Keybindings"))
+			palette.Filter(name).Confirm()
+			t.ExpectToast(Contains("Disabled: "))
+			palette.Cancel()
+			palette.Cancel()
+		}
 
 		// A diff view does list them, and with nothing changed to select they're
 		// offered but disabled.
