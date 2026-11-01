@@ -5,8 +5,8 @@ import (
 	. "github.com/jesseduffield/lazygit/pkg/integration/components"
 )
 
-var ForkDefaultKeymap = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "Real default keys, tree arrows, scoped Enter/Space, Ctrl-word editing, pane/tab navigation and search",
+var ForkDefaultKeymapFilesTree = NewIntegrationTest(NewIntegrationTestArgs{
+	Description: "Real default keys: Files tree arrows, scoped Space/Enter with Ctrl-word editing in the commit message, and pane/tab navigation",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -53,26 +53,5 @@ var ForkDefaultKeymap = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Branches().IsFocused().Press(config.Keybinding{"H"})
 		files.IsFocused().Press(config.Keybinding{"<f5>"}).IsFocused()
 		t.Views().Confirmation().IsInvisible()
-		commits := t.Views().Commits()
-		commits.Focus().PressEnter().IsFocused()
-		t.Views().CommitMessage().IsInvisible()
-		t.Views().Options().Content(Contains("d w"))
-		commits.FilterOrSearch("match").SelectedLine(Contains("match second")).
-			Press(config.Keybinding{"<f3>"}).SelectedLine(Contains("match first")).
-			Press(config.Keybinding{"<shift+f3>"}).SelectedLine(Contains("match second")).
-			Press(config.Keybinding{"N"})
-		t.ExpectPopup().Menu().Title(Equals("n")).Cancel()
-		commits.IsFocused().PressEscape().NavigateToLine(Contains("keyboard new commit done")).Press(config.Keybinding{"v"})
-		t.Views().CommitFiles().IsFocused().PressEnter().IsFocused()
-		t.Views().CommitMessage().IsInvisible()
-		t.Views().CommitFiles().PressEscape()
-		commits.IsFocused().Press(config.Keybinding{"?"})
-		t.ExpectPopup().Menu().Title(Equals("Keybindings")).Filter("Pull checked-out branch")
-		t.Views().Menu().SelectedLine(Contains("g l").Contains("Pull checked-out branch"))
-		t.ExpectPopup().Menu().Title(Equals("Keybindings")).Cancel()
-		t.Views().MenuFilter().IsInvisible()
-		t.ExpectPopup().Menu().Title(Equals("Keybindings")).Cancel()
-		commits.IsFocused().Press(config.Keybinding{"V"})
-		t.Views().CommitFiles().IsFocused()
 	},
 })

@@ -5,8 +5,8 @@ import (
 	. "github.com/jesseduffield/lazygit/pkg/integration/components"
 )
 
-var ForkDefaultBranchPlacementCheckout = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "Real default n b branch placement, s c selected checkout for branches and commits, and s d detached checkout of a tag",
+var ForkDefaultBranchPlacementCheckoutPlacement = NewIntegrationTest(NewIntegrationTestArgs{
+	Description: "Real default n b branch placement from Commits, Branches and RemoteBranches, and Escape closing the s prefix menu",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -30,7 +30,6 @@ var ForkDefaultBranchPlacementCheckout = NewIntegrationTest(NewIntegrationTestAr
 			EmptyCommit("three")
 	},
 	Run: func(t *TestDriver, _ config.KeybindingConfig) {
-		oneOID := t.Git().GetCommitHash("HEAD~2")
 		twoOID := t.Git().GetCommitHash("HEAD~1")
 		threeOID := t.Git().GetCommitHash("HEAD")
 
@@ -110,38 +109,5 @@ var ForkDefaultBranchPlacementCheckout = NewIntegrationTest(NewIntegrationTestAr
 		t.Views().Menu().IsInvisible()
 		commits.IsFocused()
 		assertCurrent("master", threeOID)
-
-		// 6. Selected branch s c switches to the existing branch from-branch with
-		// no menu.
-		branches.Focus().NavigateToLine(Contains("from-branch")).Press(config.Keybinding{"s"})
-		t.ExpectPopup().Menu().Title(Equals("s"))
-		t.Views().Menu().Press(config.Keybinding{"c"})
-		t.Views().Menu().IsInvisible()
-		branches.IsFocused()
-		assertCurrent("from-branch", twoOID)
-
-		// 7. Selected commit s c opens the named-checkout prompt for that commit and
-		// creates the new branch there.
-		commits.Focus().NavigateToLine(Contains("one")).Press(config.Keybinding{"s"})
-		t.ExpectPopup().Menu().Title(Equals("s"))
-		t.Views().Menu().Press(config.Keybinding{"c"})
-		t.ExpectPopup().Prompt().
-			Title(Equals("Local branch name for checkout at " + oneOID[:8])).
-			Type("co-new").
-			Confirm()
-		branches.IsFocused().SelectedLine(Contains("co-new"))
-		assertCurrent("co-new", oneOID)
-
-		// 8. Selected tag s d detaches HEAD at the tag's commit, with no menu.
-		tags := t.Views().Tags()
-		tags.Focus().NavigateToLine(Contains("v1")).Press(config.Keybinding{"s"})
-		t.ExpectPopup().Menu().Title(Equals("s"))
-		t.Views().Menu().Press(config.Keybinding{"d"})
-		t.Views().Menu().IsInvisible()
-		tags.IsFocused()
-		if got := t.Git().GetCommitHash("HEAD"); got != twoOID {
-			t.Fail("Expected detached HEAD " + twoOID + ", got " + got)
-		}
-		t.Shell().RunCommandExpectError([]string{"git", "symbolic-ref", "-q", "HEAD"})
 	},
 })

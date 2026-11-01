@@ -5,8 +5,8 @@ import (
 	. "github.com/jesseduffield/lazygit/pkg/integration/components"
 )
 
-var ForkDefaultCherryPick = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "Real default c y, c x, c p: marks survive subview exit, paste from the marked source clears them, and Files c p is then a no-op",
+var ForkDefaultCherryPickPaste = NewIntegrationTest(NewIntegrationTestArgs{
+	Description: "Real default c y and c p: marks made in src's SubCommits, a cancelled cherry-pick review, a paste from the marked source that clears the marks, and Files c p is then a no-op",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -33,17 +33,6 @@ var ForkDefaultCherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 	Run: func(t *TestDriver, _ config.KeybindingConfig) {
 		masterHead := t.Git().GetCommitHash("master")
 
-		// 0. No marks and no selection: in Files nothing under c applies, so c
-		// opens no menu and leaves no popup and no change.
-		t.Views().Files().Focus().Press(config.Keybinding{"c"})
-		t.Views().Menu().IsInvisible()
-		t.Views().Confirmation().IsInvisible()
-		t.Views().Prompt().IsInvisible()
-		t.Views().Files().IsFocused()
-		if got := t.Git().GetCommitHash("HEAD"); got != masterHead {
-			t.Fail("No-marks Files c p moved master to " + got)
-		}
-
 		// Opens the real default c prefix menu, then picks the continuation.
 		cherry := func(view *ViewDriver, second string) {
 			view.Press(config.Keybinding{"c"})
@@ -61,40 +50,8 @@ var ForkDefaultCherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 			return t.Views().SubCommits().IsFocused()
 		}
 
-		// 1. Mark p1, then range-select p3 and p2 downwards from p3 and mark both.
-		subCommits := openSrcSubCommits()
-		subCommits.NavigateToLine(Contains("p1"))
-		cherry(subCommits, "y")
-		assertMarkCount("1")
-
-		subCommits.NavigateToLine(Contains("p3")).Press(config.Keybinding{"<shift+down>"})
-		subCommits.TopLines(Contains("p3").IsSelected(), Contains("p2").IsSelected(), Contains("p1"))
-		cherry(subCommits, "y")
-		assertMarkCount("3")
-
-		// A range stays active until dismissed; with a range active, Escape only
-		// dismisses it and SubCommits keeps focus.
-		subCommits.Press(config.Keybinding{"<esc>"}).IsFocused()
-
-		// Marking p2 alone again keeps it marked; unmarking p2 leaves the rest.
-		subCommits.NavigateToLine(Contains("p2"))
-		cherry(subCommits, "y")
-		assertMarkCount("3")
-		cherry(subCommits, "x")
-		assertMarkCount("2")
-
-		// 2. With no range active, Escape exits SubCommits and the marks survive.
-		subCommits.IsFocused().Press(config.Keybinding{"<esc>"})
-		t.Views().Branches().IsFocused()
-		assertMarkCount("2")
-
-		// 3. Escape in Commits clears the marks.
-		commits := t.Views().Commits()
-		commits.Focus().Press(config.Keybinding{"<esc>"}).IsFocused()
-		t.Views().Information().Content(DoesNotContain("copied"))
-
 		// 4. Reopen src's SubCommits and re-mark p1 and p3.
-		subCommits = openSrcSubCommits()
+		subCommits := openSrcSubCommits()
 		subCommits.NavigateToLine(Contains("p1"))
 		cherry(subCommits, "y")
 		assertMarkCount("1")
@@ -104,6 +61,7 @@ var ForkDefaultCherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 		subCommits.IsFocused().Press(config.Keybinding{"<esc>"})
 
 		// 5. c p in Commits with marks offers the marked and selected sources.
+		commits := t.Views().Commits()
 		commits.Focus()
 		cherry(commits, "p")
 		t.ExpectPopup().Menu().
