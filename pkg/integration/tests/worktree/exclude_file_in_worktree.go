@@ -25,6 +25,8 @@ var ExcludeFileInWorktree = NewIntegrationTest(NewIntegrationTestArgs{
 			SelectNextItem().
 			PressPrimaryAction()
 
+		t.ExpectToast(Equals("Opened repo"))
+
 		t.Views().Files().
 			Focus().
 			Lines(

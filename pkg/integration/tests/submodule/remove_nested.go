@@ -37,6 +37,8 @@ var RemoveNested = NewIntegrationTest(NewIntegrationTestArgs{
 			).
 			Press(keys.Universal.GoInto)
 
+		t.ExpectToast(Equals("Opened outerSubPath"))
+
 		t.Views().Files().IsFocused().
 			Lines(
 				Equals("▼ /").IsSelected(),
