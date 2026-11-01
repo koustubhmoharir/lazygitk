@@ -13,7 +13,6 @@
 
 Tasks:
 
-- Palette tests filter instead of scrolling.
 - Cache the bindings at keybinding reset; audit builders for state captured
   at construction and for callers that mutate returned bindings; measure.
 

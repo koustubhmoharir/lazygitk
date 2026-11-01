@@ -57,7 +57,7 @@ var SelectionCommandsOnlyWhereTheyApply = NewIntegrationTest(NewIntegrationTestA
 
 		t.ExpectPopup().Menu().
 			Title(Equals("Keybindings")).
-			Select(Contains("Select hunks")).
+			Filter("Select hunks").
 			Confirm()
 
 		t.ExpectToast(Contains("There is nothing to select here"))

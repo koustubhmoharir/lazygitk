@@ -27,11 +27,15 @@ var SelectionCommandTooltipsFollowTheDiff = NewIntegrationTest(NewIntegrationTes
 			Press(keys.Universal.OptionMenu)
 
 		// The main view's own copy of Discard is the first match: the other panes' copies follow it.
+		// The palette is filtered rather than scrolled to each item, which is far down it.
 		palette := t.ExpectPopup().Menu().Title(Equals("Keybindings"))
-		palette.Select(Contains("<space> Stage")).
-			Tooltip(Equals("Toggle selection staged / unstaged."))
-		palette.Filter("Discard").
-			Tooltip(Contains("discard the change using `git reset`"))
+		palette.Filter("Stage")
+		t.Views().Menu().SelectedLine(Contains("<space> Stage"))
+		palette.Tooltip(Equals("Toggle selection staged / unstaged."))
+		// Escape clears the filter, and a second Escape closes the palette.
+		palette.Cancel()
+		palette.Filter("Discard")
+		palette.Tooltip(Contains("discard the change using `git reset`"))
 		palette.Cancel()
 		palette.Cancel()
 
@@ -52,12 +56,15 @@ var SelectionCommandTooltipsFollowTheDiff = NewIntegrationTest(NewIntegrationTes
 			IsFocused().
 			Press(keys.Universal.OptionMenu)
 
-		t.ExpectPopup().Menu().
-			Title(Equals("Keybindings")).
-			Select(Contains("Toggle lines in patch")).
-			Tooltip(Equals("")).
-			Select(Contains("Remove lines from commit")).
-			Tooltip(Contains("runs an interactive rebase in the background")).
-			Cancel()
+		palette = t.ExpectPopup().Menu().Title(Equals("Keybindings"))
+		palette.Filter("Toggle lines in patch")
+		t.Views().Menu().SelectedLine(Contains("Toggle lines in patch"))
+		palette.Tooltip(Equals(""))
+		palette.Cancel()
+		palette.Filter("Remove lines from commit")
+		t.Views().Menu().SelectedLine(Contains("Remove lines from commit"))
+		palette.Tooltip(Contains("runs an interactive rebase in the background"))
+		palette.Cancel()
+		palette.Cancel()
 	},
 })

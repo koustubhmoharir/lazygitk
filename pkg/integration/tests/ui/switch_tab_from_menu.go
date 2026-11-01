@@ -17,7 +17,7 @@ var SwitchTabFromMenu = NewIntegrationTest(NewIntegrationTestArgs{
 			Press(keys.Universal.OptionMenu)
 
 		t.ExpectPopup().Menu().Title(Equals("Keybindings")).
-			Select(Contains("Next tab")).
+			Filter("Next tab").
 			Confirm()
 
 		t.Views().Worktrees().IsFocused()
