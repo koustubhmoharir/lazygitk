@@ -16,8 +16,8 @@ func (self *TestDriver) ReviewCurrentBranchPull(name, remote, upstream, sourceOI
 		Content(Contains(fmt.Sprintf("branch %q", name)).Contains(sourceOID).Contains(targetOID))
 }
 
-// ReviewBranchForcePush returns the Cancel-first reviewed lease menu without
-// authorizing a force push. The caller must explicitly select its execute row.
+// ReviewBranchForcePush returns the reviewed lease menu, asserting that its
+// push row is selected by default. The caller confirms or cancels it.
 func (self *TestDriver) ReviewBranchForcePush(name, destination, sourceOID, leaseRef, leaseOID string) *MenuDriver {
 	self.ExpectPopup().Menu().Title(Equals("Push selected branch")).
 		Select(Contains("Force with reviewed lease")).Confirm()
