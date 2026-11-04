@@ -359,7 +359,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   conflict markers are gone but which is not staged; stage it first. While an
   operation is in progress, the status line shows `c c` as "Continue
   cherry-pick", "Continue merge", "Continue rebase" or "Continue revert",
-  before `g o`'s hint. Without an operation, `c c` is crossed out. Escape never
+  before `g o`'s hint. Without an operation, `c c` is faded and does nothing. Escape never
   aborts. Committing the resolution of a pick in a cherry-pick or revert
   sequence leaves that operation in progress, with skip unavailable.
 

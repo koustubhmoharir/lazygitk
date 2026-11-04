@@ -28,9 +28,15 @@ Conflict flow and external tools. Agreed with the user on 2026-11-04.
   reports as available. The chosen tool is passed to Git for this launch, with
   the option to save it to Git's global config. Cancel launches nothing. Git's
   "not configured" message no longer appears.
-- **Up and Down do not recall messages.** In the commit message box (commit,
-  reword, combine, tag), Up and Down no longer step through earlier commits'
-  messages, which replaced the text being edited. The description box still
+- **Up and Down recall only a cancelled draft.** In the commit message box
+  (commit, reword, combine, tag), they no longer step through earlier commits'
+  messages. Escape saves the text as the worktree's one draft if it is not empty
+  and differs from what the box opened with, and the draft survives a restart.
+  In the summary line, Up shows the draft and keeps the text it replaces; Down
+  returns to that text, and edits made to the draft are kept for the next Up.
+  Up does nothing with no draft or when the draft is already shown. Submitting
+  the draft's text clears the draft; submitting anything else keeps it. A new
+  commit's box still reopens with its cancelled text. The description box still
   moves its cursor.
 
 ## Remaining tasks
@@ -38,7 +44,7 @@ Conflict flow and external tools. Agreed with the user on 2026-11-04.
 - Drop the marks.
 - External tool chooser for every difftool launch.
 - `d m` and the merge tool chooser.
-- Remove message recall from the commit message box.
+- Replace message history with draft recall in the commit message box.
 
 ## How this tracker works
 
