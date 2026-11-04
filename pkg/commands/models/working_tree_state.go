@@ -11,6 +11,9 @@ type WorkingTreeState struct {
 	Merging       bool
 	CherryPicking bool
 	Reverting     bool
+	// Fork: true when the effective cherry-pick or revert is paused only in the
+	// sequencer, because its current pick was committed (see fork_paused_sequence.go).
+	SequencePaused bool
 }
 
 func (self WorkingTreeState) Any() bool {

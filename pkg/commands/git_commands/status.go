@@ -8,6 +8,7 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/spf13/afero"
+	"github.com/stefanhaller/git-todo-parser/todo"
 )
 
 type StatusCommands struct {
@@ -28,7 +29,25 @@ func (self *StatusCommands) WorkingTreeState() models.WorkingTreeState {
 	result.Merging, _ = self.IsInMergeState()
 	result.CherryPicking, _ = self.IsInCherryPick()
 	result.Reverting, _ = self.IsInRevert()
+	// Fork: a paused sequence (see fork_paused_sequence.go) is in progress
+	// without its HEAD file, so SequencePaused tells it apart from a stopped pick.
+	result.SequencePaused = self.isSequencePaused(result)
 	return result
+}
+
+// Fork: reports whether the effective cherry-pick or revert is in progress only
+// because of the sequencer, i.e. its HEAD file is absent. The effective operation
+// is revert before cherry-pick, as in WorkingTreeState.Effective.
+func (self *StatusCommands) isSequencePaused(state models.WorkingTreeState) bool {
+	if state.Reverting {
+		exists, err := self.os.FileExists(filepath.Join(self.repoPaths.WorktreeGitDirPath(), "REVERT_HEAD"))
+		return err == nil && !exists
+	}
+	if state.CherryPicking {
+		exists, err := self.os.FileExists(filepath.Join(self.repoPaths.WorktreeGitDirPath(), "CHERRY_PICK_HEAD"))
+		return err == nil && !exists
+	}
+	return false
 }
 
 func (self *StatusCommands) IsBareRepo() bool {
@@ -50,8 +69,14 @@ func (self *StatusCommands) IsInMergeState() (bool, error) {
 
 func (self *StatusCommands) IsInCherryPick() (bool, error) {
 	exists, err := self.os.FileExists(filepath.Join(self.repoPaths.WorktreeGitDirPath(), "CHERRY_PICK_HEAD"))
-	if err != nil || !exists {
+	if err != nil {
 		return exists, err
+	}
+	if !exists {
+		// Fork: without CHERRY_PICK_HEAD, a cherry-pick sequence can still be in
+		// progress after its current pick was committed. Git keeps the sequencer
+		// and lists that pick first; see fork_paused_sequence.go.
+		return self.isPausedSequence(todo.Pick)
 	}
 	// Sometimes, CHERRY_PICK_HEAD is present during rebases even if no
 	// cherry-pick is in progress. I suppose this is because rebase used to be
@@ -81,7 +106,13 @@ func (self *StatusCommands) IsInCherryPick() (bool, error) {
 }
 
 func (self *StatusCommands) IsInRevert() (bool, error) {
-	return self.os.FileExists(filepath.Join(self.repoPaths.WorktreeGitDirPath(), "REVERT_HEAD"))
+	exists, err := self.os.FileExists(filepath.Join(self.repoPaths.WorktreeGitDirPath(), "REVERT_HEAD"))
+	if err != nil || exists {
+		return exists, err
+	}
+	// Fork: as for cherry-pick, a revert sequence stays in progress after its
+	// current revert was committed; see fork_paused_sequence.go.
+	return self.isPausedSequence(todo.Revert)
 }
 
 // RefsSnapshot returns a string fingerprint of the current state of local

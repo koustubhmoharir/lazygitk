@@ -638,6 +638,7 @@ type TranslationSet struct {
 	RebaseOptionsTitle                    string
 	CherryPickOptionsTitle                string
 	RevertOptionsTitle                    string
+	SkipCommittedPickDisabled             string
 	CommitSummaryTitle                    string
 	CommitDescriptionTitle                string
 	CommitDescriptionSubTitle             string
@@ -2165,6 +2166,7 @@ func EnglishTranslationSet() *TranslationSet {
 		RebaseOptionsTitle:                   "Rebase options",
 		CherryPickOptionsTitle:               "Cherry-pick options",
 		RevertOptionsTitle:                   "Revert options",
+		SkipCommittedPickDisabled:            "This pick is already committed, so there is nothing to skip",
 		CommitSummaryTitle:                   "Commit summary",
 		CommitDescriptionTitle:               "Commit description",
 		CommitDescriptionSubTitle:            "Press {{.togglePanelKeyBinding}} to toggle focus, {{.commitMenuKeybinding}} to open menu",

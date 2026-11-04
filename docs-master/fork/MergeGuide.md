@@ -139,6 +139,17 @@ re-apply it if upstream changes that code.
   limit must go through `commitScopeLog`. A scope walks the unfiltered
   revisions and order and drops commits while it reads, so an upstream change
   to the unfiltered log arguments changes the scoped walk with it.
+- `git_commands/status.go`: `IsInCherryPick` and `IsInRevert` also report a
+  paused sequence, one whose CHERRY_PICK_HEAD or REVERT_HEAD is absent but
+  whose `sequencer/todo` starts with that command (`fork_paused_sequence.go`).
+  `WorkingTreeState` sets `SequencePaused` for it. Keep the existing
+  CHERRY_PICK_HEAD and stopped-sha logic as it is.
+- `git_commands/commit_loader.go`: `getHydratedSequencerCommits` drops the first
+  sequencer entry when `SequencePaused` and that entry is committed
+  (`withoutCommittedSequencerPick`), and marks no commit conflicted then. It
+  does not synthesize a conflicted commit from CHERRY_PICK_HEAD while paused.
+- `models/working_tree_state.go`: the `SequencePaused` field. `CanSkip` is
+  unchanged. Code that builds a `WorkingTreeState` by hand must set it.
 
 ### Keys and dispatch
 
@@ -291,7 +302,8 @@ re-apply it if upstream changes that code.
 - `helpers/merge_and_rebase_helper.go`: upstream's merge and rebase menus are
   removed; `CreateRebaseOptionsMenu`, `RebaseOntoRef`,
   `MergeRefIntoCheckedOutBranch` and related functions delegate to
-  `captured_merge*.go` and `captured_rebase*.go`.
+  `captured_merge*.go` and `captured_rebase*.go`. While `SequencePaused`, its
+  skip item stays in the menu, disabled with `SkipCommittedPickDisabled`.
 - `helpers/refs_helper.go`: checkout of remote branches, the reset menu,
   the checkout menu, new branch and move-commits-to-new-branch use captured
   selections (`captured_reset.go`, `named_checkout.go`,

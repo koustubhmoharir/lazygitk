@@ -274,7 +274,11 @@ func (self *CommitLoader) getHydratedRebasingCommits(hashPool *utils.StringPool,
 
 func (self *CommitLoader) getHydratedSequencerCommits(hashPool *utils.StringPool, workingTreeState models.WorkingTreeState) ([]*models.Commit, error) {
 	commits := self.getSequencerCommits(hashPool)
-	if len(commits) > 0 {
+	// Fork: a paused sequence has no conflicting pick. Its first entry may
+	// already be committed, in which case it is dropped (fork_paused_sequence.go).
+	if workingTreeState.SequencePaused {
+		commits = self.withoutCommittedSequencerPick(commits)
+	} else if len(commits) > 0 {
 		// If we have any commits in .git/sequencer/todo, then the last one of
 		// those is the conflicting one.
 		commits[len(commits)-1].Status = models.StatusConflicted

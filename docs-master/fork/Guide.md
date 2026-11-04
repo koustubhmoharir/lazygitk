@@ -352,7 +352,9 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - `s h`, `s m`, `s s` reset the checked-out branch to the selection, with a
   confirmation explaining what the mode does to the index and files.
 - Conflicts and paused rebases are continued, skipped or aborted explicitly
-  from `g o`. Escape never aborts.
+  from `g o`. Escape never aborts. Committing the resolution of a pick in a
+  cherry-pick or revert sequence leaves that operation in progress, with skip
+  unavailable.
 
 ### History editing
 

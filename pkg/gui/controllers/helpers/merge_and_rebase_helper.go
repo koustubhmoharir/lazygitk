@@ -45,18 +45,26 @@ const (
 
 func (self *MergeAndRebaseHelper) CreateRebaseOptionsMenu() error {
 	type optionAndKey struct {
-		option string
-		keys   []gocui.Key
+		option         string
+		keys           []gocui.Key
+		disabledReason *types.DisabledReason
 	}
 
+	workingTreeState := self.c.Git().Status.WorkingTreeState()
 	options := []optionAndKey{
 		{option: REBASE_OPTION_CONTINUE, keys: menuKey('c')},
 		{option: REBASE_OPTION_ABORT, keys: menuKey('a')},
 	}
 
-	if self.c.Git().Status.WorkingTreeState().CanSkip() {
+	if workingTreeState.CanSkip() {
+		// Fork: a paused sequence whose pick is already committed has nothing
+		// to skip, so skip stays in the menu, disabled with the reason.
+		var disabledReason *types.DisabledReason
+		if workingTreeState.SequencePaused {
+			disabledReason = &types.DisabledReason{Text: self.c.Tr.SkipCommittedPickDisabled}
+		}
 		options = append(options, optionAndKey{
-			option: REBASE_OPTION_SKIP, keys: menuKey('s'),
+			option: REBASE_OPTION_SKIP, keys: menuKey('s'), disabledReason: disabledReason,
 		})
 	}
 
@@ -68,11 +76,12 @@ func (self *MergeAndRebaseHelper) CreateRebaseOptionsMenu() error {
 			OnPress: func() error {
 				return self.genericMergeCommand(row.option)
 			},
-			Keys: row.keys,
+			Keys:           row.keys,
+			DisabledReason: row.disabledReason,
 		}
 	})
 
-	title := self.c.Git().Status.WorkingTreeState().OptionsMenuTitle(self.c.Tr)
+	title := workingTreeState.OptionsMenuTitle(self.c.Tr)
 	return self.c.Menu(types.CreateMenuOptions{Title: title, Items: menuItems})
 }
 
