@@ -16,6 +16,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d + `` | Increase diff context size | Increase the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
 | `` t d - `` | Decrease diff context size | Decrease the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
 | `` c p `` | cherry-pick |  |
+| `` c c `` | Continue the operation in progress |  |
 | `` f `` | Buscar | Buscar alterações do controle remoto. |
 | `` : `` | Executar comando da shell | Traga um prompt onde você pode digitar um comando shell para executar. |
 | `` g h o `` | Ver opções de patch personalizadas |  |

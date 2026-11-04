@@ -627,6 +627,9 @@ type TranslationSet struct {
 	ViewCherryPickOptions                 string
 	ViewRevertOptions                     string
 	NotMergingOrRebasing                  string
+	ContinueOperation                     string
+	ContinueOperationHint                 string
+	ContinueUnmergedFiles                 string
 	AlreadyRebasing                       string
 	NotMidRebase                          string
 	MustSelectFixupCommit                 string
@@ -2155,6 +2158,9 @@ func EnglishTranslationSet() *TranslationSet {
 		ViewCherryPickOptions:                "View cherry-pick options",
 		ViewRevertOptions:                    "View revert options",
 		NotMergingOrRebasing:                 "You are currently neither rebasing nor merging",
+		ContinueOperation:                    "Continue the operation in progress",
+		ContinueOperationHint:                "Continue %s",
+		ContinueUnmergedFiles:                "Cannot continue yet. These files are still unmerged; resolve them and stage them first:\n\n- %s",
 		AlreadyRebasing:                      "Can't perform this action during a rebase",
 		NotMidRebase:                         "This action only works during an interactive rebase",
 		MustSelectFixupCommit:                "This action only works on fixup commits",

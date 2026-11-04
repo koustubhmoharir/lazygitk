@@ -88,6 +88,10 @@ func (self *OptionsMapMgr) renderContextOptionsMap() {
 	// Mode-specific global keybindings
 	if state := self.c.Model().WorkingTreeStateAtLastCommitRefresh; state.Any() {
 		optionsMap = appendModeHint(optionsMap, effectiveModeHint(displayBindings, "branch.merge-rebase-menu", state.OptionsMapTitle(self.c.Tr), state.OptionsMapTitle(self.c.Tr), modeHintBindings, style.FgYellow))
+		// Fork: c c continues the operation. It is added after g o, so that
+		// appendModeHint's prepending puts it first in the options bar.
+		continueHint := fmt.Sprintf(self.c.Tr.ContinueOperationHint, state.CommandName())
+		optionsMap = appendModeHint(optionsMap, effectiveModeHint(displayBindings, "operation.continue-in-progress", continueHint, continueHint, modeHintBindings, style.FgYellow))
 	}
 
 	if self.c.Git().Patch.PatchBuilder.Active() {

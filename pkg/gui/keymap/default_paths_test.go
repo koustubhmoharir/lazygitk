@@ -29,6 +29,7 @@ func TestDefaultPathsUserRoutes(t *testing.T) {
 		{"commit.mark-cherry-pick", "c y"},
 		{"commit.unmark-cherry-pick", "c x"},
 		{"commit.cherry-pick", "c p"},
+		{"operation.continue-in-progress", "c c"},
 		{"file.toggle-stage", "space"},
 		{"diff.stage-selection", "space"},
 		{"diff.unstage-selection", "space"},

@@ -16,6 +16,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d + `` | 差分コンテキストサイズを増やす | Increase the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
 | `` t d - `` | 差分コンテキストサイズを減らす | Decrease the amount of the context shown around changes in the diff view.<br><br>The default can be changed in the config file with the key 'git.diffContextSize'. |
 | `` c p `` | チェリーピック |  |
+| `` c c `` | Continue the operation in progress |  |
 | `` f `` | フェッチ | リモートから変更をフェッチします。 |
 | `` : `` | シェルコマンドを実行 | 実行するシェルコマンドを入力するプロンプトを表示します。 |
 | `` g h o `` | カスタムパッチオプションを表示 |  |

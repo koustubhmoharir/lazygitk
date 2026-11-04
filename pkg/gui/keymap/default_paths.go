@@ -85,6 +85,7 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("commit.mark-cherry-pick", "c y")
 	add("commit.unmark-cherry-pick", "c x")
 	add("commit.cherry-pick", "c p")
+	add("operation.continue-in-progress", "c c")
 	add("commit.combine-selected", "g c")
 	// Fork: one flat copy menu. Each second key has the same meaning in every
 	// panel that offers it. Nested copy menus keep no default route.

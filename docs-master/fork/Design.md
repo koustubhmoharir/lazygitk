@@ -90,7 +90,7 @@ recorded here or in the user guide.
   changes anything by itself; the next key picks an item or a nested menu.
   There is no hidden chord state or timeout. Escape steps back one level.
   Menu entries appear in the keymap's declaration order. The groups are:
-  `d` diff, `s` switch and reset, `n` new, `c` cherry-pick marks, `u`
+  `d` diff, `s` switch and reset, `n` new, `c` cherry-pick and continue, `u`
   undo/redo, `y` copy, `g` less common Git operations, `w` filters, and `t`
   view, navigation and app tools (nothing under `w` or `t` changes the
   repository). `/` stays the pane's own text filter or search.

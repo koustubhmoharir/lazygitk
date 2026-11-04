@@ -16,6 +16,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d + `` | 增加差異檢視中顯示變更周圍上下文的大小 | 增加差異檢視中變更周圍顯示的上下文量。<br><br>預設值可在設定檔中透過鍵 'git.diffContextSize' 更改。 |
 | `` t d - `` | 減小差異檢視中顯示變更周圍上下文的大小 | 減少差異檢視中變更周圍顯示的上下文量。<br><br>預設值可在設定檔中透過鍵 'git.diffContextSize' 更改。 |
 | `` c p `` | 揀選 (Cherry-pick) |  |
+| `` c c `` | Continue the operation in progress |  |
 | `` f `` | 擷取 | 同步遠端異動 |
 | `` : `` | 執行 Shell 命令 | 調出可輸入shell命令執行的提示符。 |
 | `` g h o `` | 檢視自訂補丁選項 |  |

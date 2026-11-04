@@ -27,6 +27,8 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 	return self.addFlatFilterBindings(opts, []*types.Binding{
 		// Fork: captured cherry-pick is available for marks or focused history.
 		forkCherryPickBinding(self.c),
+		// Fork: c c continues the operation in progress from any pane.
+		forkContinueOperationBinding(self.c, opts),
 		// Fork: palette-only; clears the command usage counts after confirmation.
 		forkResetCommandUsageBinding(self.c),
 		// Fork: f fetches all remotes from any pane; Remotes keeps f for remote.fetch.

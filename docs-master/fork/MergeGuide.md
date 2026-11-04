@@ -139,6 +139,9 @@ re-apply it if upstream changes that code.
   limit must go through `commitScopeLog`. A scope walks the unfiltered
   revisions and order and drops commits while it reads, so an upstream change
   to the unfiltered log arguments changes the scoped walk with it.
+- `git_commands/fork_unmerged_paths.go`: `UnmergedPaths` asks Git for the
+  unmerged paths (`git diff --name-only --diff-filter=U -z`) for the `c c`
+  refusal. Keep it fresh: the Files model may be stale.
 - `git_commands/status.go`: `IsInCherryPick` and `IsInRevert` also report a
   paused sequence, one whose CHERRY_PICK_HEAD or REVERT_HEAD is absent but
   whose `sequencer/todo` starts with that command (`fork_paused_sequence.go`).
@@ -177,7 +180,9 @@ re-apply it if upstream changes that code.
   on a new menu or a focus change; `Activate` updates focus frames.
 - `pkg/gui/options_map.go` and `pkg/gui/command_log_panel.go` (replacement):
   hints and tips name effective key paths through `CommandKeyLabel`; tips for
-  keys with no route are dropped.
+  keys with no route are dropped. The operation-in-progress block adds the
+  `operation.continue-in-progress` hint after the `g o` hint, so it renders
+  first (`fork_command_hints.go`).
 - `pkg/cheatsheet/generate.go`: labels from `binding.KeyLabels()`.
 - `controllers/list_controller_trait.go`: selection disabled reasons are
   `Inapplicable`, so an unusable key does nothing quietly.
@@ -210,7 +215,8 @@ re-apply it if upstream changes that code.
 ### Controllers
 
 - `controllers/global_controller.go`: appends the fork globals: cherry-pick
-  (`fork_cherry_pick.go`), fetch (`fork_fetch.go`), previous branch
+  (`fork_cherry_pick.go`), continue the operation in progress
+  (`fork_continue_operation.go`), fetch (`fork_fetch.go`), previous branch
   (`fork_checkout_previous.go`) and usage reset. `GetKeybindings` wraps its
   list in `addFlatFilterBindings` (`fork_flat_filter_keys.go`), which adds
   `w p`, `w u` and `w c`; their prompts copy those of upstream's filtering

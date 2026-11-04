@@ -52,6 +52,7 @@ in the [design principles](Design.md). The generated per-pane reference is
 | `u u`, `u r` | Undo, redo (from the reflog) |
 | `s p` | Switch to the previous branch; the menu names it (not in Status, where `s` is for repositories) |
 | `c p` | Cherry-pick the marked or selected commits, after reviewing the list |
+| `c c` | Continue the cherry-pick, rebase, merge or revert in progress, from any pane; refuses while files are unmerged |
 | `:` | Run a shell command |
 | `=` or `+`, `-` | Next, previous screen mode (normal, half, full) of the focused area: the side panels, or the main views |
 | `q` | Quit |
@@ -231,7 +232,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 | `d` diff | `w` working tree (HEAD in Files), `p` previous commit, `s` staged version (Files), `c` pasted commit |
 | `s` switch and reset | `c` check out, `d` detached HEAD, `h` `m` `s` hard, mixed, soft reset, `p` previous branch, `w` switch worktree (Worktrees); in Status only `r` recent repositories and `n` open a repository by path |
 | `n` new | `b` branch here, `t` tag, `w` worktree, `r` remote, `f` fork remote, `s` submodule |
-| `c` cherry-pick | `y` mark, `x` unmark, `p` cherry-pick |
+| `c` cherry-pick and continue | `y` mark, `x` unmark, `p` cherry-pick, `c` continue |
 | `u` undo | `u` undo, `r` redo |
 | `y` copy | `n` name, `p` path, `f` absolute path, `c` file content, `h` hash, `i` short hash, `s` subject, `m` message, `b` body, `u` URL, `a` author, `t` tags, `d` diff, `w` all files' diff, `r` pull request URL, `y` confirmation text |
 | `g` Git | `c` combine, `l` pull, `f` fast-forward, `t` upstream, `i` interactive rebase, `b` bisect, `o` merge/rebase options, `y` git-flow; `v f`/`v c` restore file, revert commit; `r p`/`r b` pick, rebase base; `m n` move commits to new branch; `e c`/`e n`/`e r`/`e a`/`e h` editor commit, commit without hooks, editor reword, commit attributes, edit hunk; `p c`/`p o`/`p v` pull request; `s s`/`s o`/`s a`/`s p` stash, stash options, apply, pop; `h s`/`h u`/`h t`/`h a`/`h o` stage, unstage, patch toggle, patch all, patch options; `h c`/`h p`/`h b` conflict options, pick hunk, pick both; `u s`/`u i`/`u b` submodule update, init, bulk; `z u`/`z w` upstream reset, working-tree reset |
@@ -352,9 +353,15 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - `s h`, `s m`, `s s` reset the checked-out branch to the selection, with a
   confirmation explaining what the mode does to the index and files.
 - Conflicts and paused rebases are continued, skipped or aborted explicitly
-  from `g o`. Escape never aborts. Committing the resolution of a pick in a
-  cherry-pick or revert sequence leaves that operation in progress, with skip
-  unavailable.
+  from `g o`. `c c` continues the operation in progress from any pane, and
+  commits a resolved pick first if it is not committed yet. While any file is
+  still unmerged, `c c` refuses and names the files, including a file whose
+  conflict markers are gone but which is not staged; stage it first. While an
+  operation is in progress, the status line shows `c c` as "Continue
+  cherry-pick", "Continue merge", "Continue rebase" or "Continue revert",
+  before `g o`'s hint. Without an operation, `c c` is crossed out. Escape never
+  aborts. Committing the resolution of a pick in a cherry-pick or revert
+  sequence leaves that operation in progress, with skip unavailable.
 
 ### History editing
 

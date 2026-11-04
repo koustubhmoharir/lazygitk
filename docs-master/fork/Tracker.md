@@ -35,7 +35,6 @@ Conflict flow and external tools. Agreed with the user on 2026-11-04.
 
 ## Remaining tasks
 
-- `c c` and its status-line hint.
 - Drop the marks.
 - External tool chooser for every difftool launch.
 - `d m` and the merge tool chooser.

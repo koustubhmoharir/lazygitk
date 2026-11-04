@@ -16,6 +16,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d + `` | 扩大差异视图中显示的上下文范围 | 增加差异视图中变更周围显示的上下文量。<br><br>默认值可在配置文件中通过键 'git.diffContextSize' 更改。 |
 | `` t d - `` | 缩小差异视图中显示的上下文范围 | 减少差异视图中变更周围显示的上下文量。<br><br>默认值可在配置文件中通过键 'git.diffContextSize' 更改。 |
 | `` c p `` | 拣选(Cherry-Pick) |  |
+| `` c c `` | Continue the operation in progress |  |
 | `` f `` | 抓取 | 从远程获取变更 |
 | `` : `` | 执行 Shell 命令 | 调出可输入shell命令执行的提示符。 |
 | `` g h o `` | 查看自定义补丁选项 |  |
