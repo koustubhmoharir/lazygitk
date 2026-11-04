@@ -28,6 +28,10 @@ Conflict flow and external tools. Agreed with the user on 2026-11-04.
   reports as available. The chosen tool is passed to Git for this launch, with
   the option to save it to Git's global config. Cancel launches nothing. Git's
   "not configured" message no longer appears.
+- **Up and Down do not recall messages.** In the commit message box (commit,
+  reword, combine, tag), Up and Down no longer step through earlier commits'
+  messages, which replaced the text being edited. The description box still
+  moves its cursor.
 
 ## Remaining tasks
 
@@ -35,6 +39,7 @@ Conflict flow and external tools. Agreed with the user on 2026-11-04.
 - Drop the marks.
 - External tool chooser for every difftool launch.
 - `d m` and the merge tool chooser.
+- Remove message recall from the commit message box.
 
 ## How this tracker works
 
