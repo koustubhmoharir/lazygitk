@@ -1,6 +1,42 @@
 # Current work
 
-No work is in progress.
+Conflict flow and external tools. Agreed with the user on 2026-11-04.
+
+## Agreed behaviour
+
+- **`w v` on a detached HEAD.** Shows HEAD's commit in Commits, like any other
+  Branches entry. This includes the entry shown during a rebase.
+- **A paused sequence is in progress.** After a pick or revert of a sequence is
+  committed, Git removes `CHERRY_PICK_HEAD` / `REVERT_HEAD` but keeps
+  `sequencer/`. lazygitk treats this as the cherry-pick or revert still being in
+  progress, as `git status` does. The commit already made is not listed as a
+  todo. Skip is crossed out with the reason, because Git has nothing to skip.
+- **`c c` continues.** Continues the cherry-pick, rebase, merge or revert in
+  progress, from any pane, committing the resolved pick if it is not committed
+  yet. It refuses and names the files while any are still unmerged, including
+  files whose markers are gone but which are not staged. The status line shows
+  it with the operation's name while an operation is in progress. `g o c` stays.
+- **Cherry-pick marks are dropped.** `c y`, `c x` and the source menu go. `c p`
+  acts on the selection, which is cleared after a successful pick and kept when
+  it stops on conflicts.
+- **`d m` opens the merge tool.** In Files and the conflicts view, for the
+  selected conflicted files, including delete/modify conflicts. No `.orig`
+  backups unless `mergetool.keepBackup` is set. The item in `g h c` does the
+  same.
+- **No guessing of external tools.** With no `diff.tool` or `merge.tool` for
+  the difftool, or no `merge.tool` for the merge tool, a menu lists the tools Git
+  reports as available. The chosen tool is passed to Git for this launch, with
+  the option to save it to Git's global config. Cancel launches nothing. Git's
+  "not configured" message no longer appears.
+
+## Remaining tasks
+
+- `w v` on a detached HEAD.
+- Paused sequence detection.
+- `c c` and its status-line hint.
+- Drop the marks.
+- External tool chooser for every difftool launch.
+- `d m` and the merge tool chooser.
 
 ## How this tracker works
 
