@@ -33,6 +33,11 @@ func showInCommitsBinding(c *ControllerCommon, handler func() error, disabled fu
 func (self *BranchesController) showInCommitsBinding() *types.Binding {
 	return showInCommitsBinding(self.c,
 		self.withItem(func(branch *models.Branch) error {
+			// A detached HEAD entry has no CommitHash (branch_loader.go), so its
+			// commit is HEAD, resolved when the key is pressed.
+			if branch.DetachedHead {
+				return showRefInCommits(self.c, "HEAD")
+			}
 			return showCommitInCommits(self.c, branch.CommitHash)
 		}),
 		self.require(self.singleItemSelected()))

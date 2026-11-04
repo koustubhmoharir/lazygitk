@@ -307,7 +307,8 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   `w c` clears whichever log filter is active. Upstream's filtering menu has
   no key; it is still in the palette.
 - `w v` shows the selected branch's, tag's or entry's commit in Commits, from
-  Branches, Remote branches, Tags, Reflog and Sub-commits. The commit becomes
+  Branches (including the detached HEAD entry, whose commit is HEAD's), Remote
+  branches, Tags, Reflog and Sub-commits. The commit becomes
   the only selection (cherry-pick marks stay). A log filter that hides it is
   removed without asking; one that shows it stays. If the side panels are in
   normal mode, or the main views are enlarged, the side panels become half
