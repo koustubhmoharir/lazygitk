@@ -27,8 +27,11 @@ var _ types.Context = (*CommitMessageContext)(nil)
 const NoCommitIndex = -1
 
 type CommitMessageViewModel struct {
-	// index of the commit message, where -1 is 'no commit', 0 is the HEAD commit, 1
-	// is the prior commit, and so on
+	// Fork: no longer drives anything. Up and Down recall the worktree's cancelled
+	// draft (see fork_commit_draft.go), not earlier commits' messages. The field
+	// and the index parameters that set it stay so that upstream call sites are
+	// unchanged. It was: -1 is 'no commit', 0 is the HEAD commit, 1 is the prior
+	// commit, and so on.
 	selectedindex int
 	// if true, then upon escaping from the commit message panel, we will preserve
 	// the message so that it's still shown next time we open the panel
@@ -45,11 +48,13 @@ type CommitMessageViewModel struct {
 	forceSkipHooks  bool
 	skipHooksPrefix string
 
-	// The message typed in before cycling through history
-	// We store this separately to 'preservedMessage' because 'preservedMessage'
-	// is specifically for committing staged files and we don't want this affected
-	// by cycling through history in the context of rewording an old commit.
+	// Fork: the text that Up replaced with the draft, which Down puts back. It is
+	// kept apart from the preserved message, which is specifically for committing
+	// staged files and must not be affected by recalling the draft. Reset when the
+	// panel opens and closes.
 	historyMessage string
+	// Fork: true while Up shows the draft in place of the text being edited.
+	showingDraft bool
 }
 
 func NewCommitMessageContext(
@@ -72,10 +77,12 @@ func NewCommitMessageContext(
 	}
 }
 
+// Fork: see selectedindex.
 func (self *CommitMessageContext) SetSelectedIndex(value int) {
 	self.viewModel.selectedindex = value
 }
 
+// Fork: see selectedindex.
 func (self *CommitMessageContext) GetSelectedIndex() int {
 	return self.viewModel.selectedindex
 }
@@ -131,12 +138,24 @@ func (self *CommitMessageContext) GetInitialMessage() string {
 	return self.viewModel.initialMessage
 }
 
+// Fork: returns the text that Up replaced with the draft; see historyMessage.
 func (self *CommitMessageContext) GetHistoryMessage() string {
 	return self.viewModel.historyMessage
 }
 
+// Fork: see GetHistoryMessage.
 func (self *CommitMessageContext) SetHistoryMessage(message string) {
 	self.viewModel.historyMessage = message
+}
+
+// Fork: whether Up is showing the draft; see showingDraft.
+func (self *CommitMessageContext) GetShowingDraft() bool {
+	return self.viewModel.showingDraft
+}
+
+// Fork: see GetShowingDraft.
+func (self *CommitMessageContext) SetShowingDraft(showing bool) {
+	self.viewModel.showingDraft = showing
 }
 
 func (self *CommitMessageContext) OnConfirm(summary string, description string) error {
@@ -154,7 +173,10 @@ func (self *CommitMessageContext) SetPanelState(
 	forceSkipHooks bool,
 	skipHooksPrefix string,
 ) {
+	// Fork: index no longer drives anything; see selectedindex.
 	self.viewModel.selectedindex = index
+	self.viewModel.historyMessage = ""
+	self.viewModel.showingDraft = false
 	self.viewModel.preserveMessage = preserveMessage
 	self.viewModel.initialMessage = initialMessage
 	self.viewModel.onConfirm = onConfirm

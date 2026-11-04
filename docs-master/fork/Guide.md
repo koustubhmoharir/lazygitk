@@ -406,6 +406,30 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - Amending an older commit or creating stacked fixups refuses before
   committing if other tracked edits would remain for the rebase.
 
+### Commit message box
+
+The box for a commit, reword, combine or tag message does not step through
+earlier commits' messages. Up and Down in its summary line swap the text with
+the worktree's one cancelled draft:
+
+- Escape in the summary or the description saves the text as the draft if it
+  is not blank and differs from what the box opened with. Confirming, and
+  switching to the editor, do not save. Quitting lazygitk with the box open
+  saves it too. The draft is one per worktree, kept in its git directory, so it
+  survives a restart.
+- Up shows the draft in place of the text, and keeps that text. Down writes the
+  text on screen back to the draft, so edits to the draft are kept for the next
+  Up, and puts the kept text back.
+- Up does nothing when there is no draft, when the draft equals the text, or
+  when the draft is already shown.
+- Submitting while the draft is shown, or with text equal to it, clears the
+  draft; submitting anything else keeps it. A submit that fails, such as a
+  commit refused because of a missing message, keeps it.
+- Escape while the draft is shown saves the draft's text. The text that Up
+  replaced is kept only until then: press Down before Escape to keep it too.
+- A new commit's box still reopens with its cancelled text, separately from
+  the draft. The description box still moves its own cursor with Up and Down.
+
 ### Sync
 
 - **Push** pushes the selected local branch (or the checked-out one outside
@@ -500,6 +524,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 | `-` previous branch | `s p` |
 | `c` checkout by name | "Checkout by name" in `?`; normally select the branch and `s c` |
 | Squash and fixup keys | `g c` combine |
+| Up and Down in the commit message box step through earlier commits' messages | Up and Down swap the text with the one cancelled draft; see the commit message box above |
 | Copy (`C`) and paste (`V`) commits for cherry-pick | `c p` picks the selection; the selection is the copy |
 | `z` undo, Ctrl+Z redo | `u u`, `u r` |
 | Ctrl+J / Ctrl+K move commit | `>` / `<` |

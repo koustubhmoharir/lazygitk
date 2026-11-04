@@ -1,12 +1,8 @@
 package controllers
 
 import (
-	"errors"
-
-	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
-	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/samber/lo"
 )
@@ -43,17 +39,21 @@ func (self *CommitMessageController) GetKeybindings(opts types.KeybindingsOpts) 
 			CommandID:   "commit-editor.cancel",
 			Verb:        "cancel",
 		},
+		// Fork: Up and Down recall the cancelled draft, not earlier commits'
+		// messages. See docs-master/fork/Guide.md.
 		{
-			Keys:      opts.GetKeys(opts.Config.Universal.PrevItem),
-			Handler:   self.handlePreviousCommit,
-			CommandID: "commit-editor.message.previous",
-			Verb:      "previous-message",
+			Keys:        opts.GetKeys(opts.Config.Universal.PrevItem),
+			Handler:     self.handleRecallDraft,
+			Description: self.c.Tr.RecallCancelledCommitMessage,
+			CommandID:   "commit-editor.message.previous",
+			Verb:        "previous-message",
 		},
 		{
-			Keys:      opts.GetKeys(opts.Config.Universal.NextItem),
-			Handler:   self.handleNextCommit,
-			CommandID: "commit-editor.message.next",
-			Verb:      "next-message",
+			Keys:        opts.GetKeys(opts.Config.Universal.NextItem),
+			Handler:     self.handleReturnFromDraft,
+			Description: self.c.Tr.ReturnToEditedCommitMessage,
+			CommandID:   "commit-editor.message.next",
+			Verb:        "next-message",
 		},
 		{
 			Keys:      opts.GetKeys(opts.Config.Universal.TogglePanel),
@@ -98,6 +98,8 @@ func (self *CommitMessageController) GetOnFocusLost() func(types.OnFocusLostOpts
 func (self *CommitMessageController) GetOnQuit() func() {
 	return func() {
 		self.c.Helpers().Commits.PreserveCommitMessage()
+		// Fork: quitting with the box open keeps its text as the draft too.
+		self.c.Helpers().Commits.SaveCommitDraftIfChanged()
 	}
 }
 
@@ -109,15 +111,14 @@ func (self *CommitMessageController) context() *context.CommitMessageContext {
 	return self.c.Contexts().CommitMessage
 }
 
-func (self *CommitMessageController) handlePreviousCommit() error {
-	return self.handleCommitIndexChange(1)
+// Fork: Up shows the cancelled draft; see CommitsHelper.RecallCommitDraft.
+func (self *CommitMessageController) handleRecallDraft() error {
+	return self.c.Helpers().Commits.RecallCommitDraft()
 }
 
-func (self *CommitMessageController) handleNextCommit() error {
-	if self.context().GetSelectedIndex() == context.NoCommitIndex {
-		return nil
-	}
-	return self.handleCommitIndexChange(-1)
+// Fork: Down returns to the text Up replaced; see CommitsHelper.ReturnFromCommitDraft.
+func (self *CommitMessageController) handleReturnFromDraft() error {
+	return self.c.Helpers().Commits.ReturnFromCommitDraft()
 }
 
 func (self *CommitMessageController) switchToCommitDescription() error {
@@ -151,40 +152,6 @@ func (self *CommitMessageController) handleTogglePanel() error {
 	return self.switchToCommitDescription()
 }
 
-func (self *CommitMessageController) handleCommitIndexChange(value int) error {
-	currentIndex := self.context().GetSelectedIndex()
-	newIndex := currentIndex + value
-	if newIndex == context.NoCommitIndex {
-		self.context().SetSelectedIndex(newIndex)
-		self.c.Helpers().Commits.SetPreservedMessageInView(self.context().GetHistoryMessage())
-		return nil
-	} else if currentIndex == context.NoCommitIndex {
-		self.context().SetHistoryMessage(self.c.Helpers().Commits.JoinCommitMessageAndUnwrappedDescription())
-	}
-
-	validCommit, err := self.setCommitMessageAtIndex(newIndex)
-	if validCommit {
-		self.context().SetSelectedIndex(newIndex)
-	}
-	return err
-}
-
-// returns true if the given index is for a valid commit
-func (self *CommitMessageController) setCommitMessageAtIndex(index int) (bool, error) {
-	commitMessage, err := self.c.Git().Commit.GetCommitMessageFromHistory(index)
-	if err != nil {
-		if errors.Is(err, git_commands.ErrInvalidCommitIndex) {
-			return false, nil
-		}
-		return false, errors.New(self.c.Tr.CommitWithoutMessageErr)
-	}
-	if self.c.UserConfig().Git.Commit.AutoWrapCommitMessage {
-		commitMessage = helpers.TryRemoveHardLineBreaks(commitMessage, self.c.UserConfig().Git.Commit.AutoWrapWidth)
-	}
-	self.c.Helpers().Commits.SetMessageAndDescriptionInView(commitMessage)
-	return true, nil
-}
-
 func (self *CommitMessageController) confirm() error {
 	// The default keybinding for this action is "<enter>", which means that we
 	// also get here when pasting multi-line text that contains newlines. In
@@ -203,8 +170,9 @@ func (self *CommitMessageController) confirm() error {
 	return self.c.Helpers().Commits.HandleCommitConfirm()
 }
 
+// Fork: Escape saves the draft; see CommitsHelper.CancelCommitMessagePanel.
 func (self *CommitMessageController) close() error {
-	self.c.Helpers().Commits.CloseCommitMessagePanel()
+	self.c.Helpers().Commits.CancelCommitMessagePanel()
 	return nil
 }
 

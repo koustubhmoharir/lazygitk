@@ -390,41 +390,6 @@ func TestGetCommitMsg(t *testing.T) {
 	}
 }
 
-func TestGetCommitMessageFromHistory(t *testing.T) {
-	type scenario struct {
-		testName string
-		runner   *oscommands.FakeCmdObjRunner
-		test     func(string, error)
-	}
-	scenarios := []scenario{
-		{
-			"Empty message",
-			oscommands.NewFakeRunner(t).ExpectGitArgs([]string{"log", "-1", "--skip=2", "--pretty=%H"}, "", nil).ExpectGitArgs([]string{"-c", "log.showsignature=false", "log", "--format=%B", "--max-count=1"}, "", nil),
-			func(output string, err error) {
-				assert.Error(t, err)
-			},
-		},
-		{
-			"Default case to retrieve a commit in history",
-			oscommands.NewFakeRunner(t).ExpectGitArgs([]string{"log", "-1", "--skip=2", "--pretty=%H"}, "hash3 \n", nil).ExpectGitArgs([]string{"-c", "log.showsignature=false", "log", "--format=%B", "--max-count=1", "hash3"}, `use generics to DRY up context code`, nil),
-			func(output string, err error) {
-				assert.NoError(t, err)
-				assert.Equal(t, "use generics to DRY up context code", output)
-			},
-		},
-	}
-
-	for _, s := range scenarios {
-		t.Run(s.testName, func(t *testing.T) {
-			instance := buildCommitCommands(commonDeps{runner: s.runner})
-
-			output, err := instance.GetCommitMessageFromHistory(2)
-
-			s.test(output, err)
-		})
-	}
-}
-
 func TestAddCoAuthorToMessage(t *testing.T) {
 	scenarios := []struct {
 		name           string

@@ -41,7 +41,7 @@ Conflict flow and external tools. Agreed with the user on 2026-11-04.
 
 ## Remaining tasks
 
-- Replace message history with draft recall in the commit message box.
+None.
 
 ## How this tracker works
 

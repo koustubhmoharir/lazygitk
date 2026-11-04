@@ -405,6 +405,43 @@ Commit scope filters (`w a`, `w d`, `w b`) are a third kind of filtering mode:
 - Upstream code that tests `Filtering.Active()` to mean a path or author
   filter should use `HasPathOrAuthorFilter` or `GetPath`.
 
+### Commit message draft
+
+Up and Down in the commit message box recall the worktree's cancelled draft,
+instead of stepping through earlier commits' messages. The behaviour is in the
+[user guide](Guide.md#commit-message-box).
+
+- `controllers/commit_message_controller.go` and
+  `commit_description_controller.go`: Escape calls
+  `Commits.CancelCommitMessagePanel`, which saves the draft and then closes the
+  panel. `GetOnQuit` also calls `SaveCommitDraftIfChanged`. Up and Down are
+  `handleRecallDraft` and `handleReturnFromDraft`, and carry the descriptions
+  `RecallCancelledCommitMessage` and `ReturnToEditedCommitMessage`
+  (`i18n/english.go`), so the palette lists them. Their CommandIDs and keys are
+  upstream's. Upstream's `handleCommitIndexChange` and
+  `setCommitMessageAtIndex` are removed; re-apply that removal if upstream
+  changes them.
+- `helpers/commits_helper.go`: `HandleCommitConfirm` reads the joined text and
+  the draft state before `OnConfirm`, because `OnConfirm` closes the panel,
+  which resets that state. `CloseCommitMessagePanel` resets it too; confirm and
+  switch to editor reach it without saving. `SaveCommitDraftIfChanged`,
+  `CancelCommitMessagePanel`, `RecallCommitDraft` and
+  `ReturnFromCommitDraft` are fork code.
+- `context/fork_commit_draft.go` (new): the draft file,
+  `LAZYGITK_COMMIT_DRAFT`, beside `LAZYGIT_PENDING_COMMIT`. In
+  `context/commit_message_context.go`, `historyMessage` now holds the text that
+  Up replaced, `showingDraft` is new, and both are reset by `SetPanelState`.
+- Retained on purpose: `OpenCommitMessagePanelOpts.CommitIndex`, the index
+  parameter of `SetPanelState` and the `selectedindex` field. Upstream's call
+  sites (local commits, custom patch options, working tree) still pass indexes,
+  and they now drive nothing. Their `// Fork:` comments say so. Removing them
+  would mean editing those call sites for no gain.
+- `git_commands/commit.go`: `GetCommitMessageFromHistory` and
+  `ErrInvalidCommitIndex` are removed, with `TestGetCommitMessageFromHistory`.
+  `TryRemoveHardLineBreaks` stays; other callers use it.
+- Generated: `docs-master/keybindings` lists the two new descriptions. Run
+  `go generate ./...` after merges.
+
 ### Dormant upstream cherry-pick marks
 
 Upstream's copy and paste of commits (`commit.copy-for-cherry-pick`, `C`) kept
@@ -523,7 +560,6 @@ Conflicts there are mechanical; keep upstream's change and re-add the
 metadata:
 
 In `pkg/gui/controllers/`: `bisect_controller.go`,
-`commit_description_controller.go`, `commit_message_controller.go`,
 `confirmation_controller.go`, `context_lines_controller.go`,
 `diffing_menu_action.go`, `edit_config_action.go`, `filter_controller.go`,
 `filtering_menu_action.go`, `git_flow_controller.go`, `list_controller.go`,
@@ -534,7 +570,7 @@ In `pkg/gui/controllers/`: `bisect_controller.go`,
 `suggestions_controller.go`, `switch_to_diff_files_controller.go`,
 `tags_controller.go`, `undo_controller.go`, `workspace_reset_controller.go`,
 `worktrees_controller.go`. In `helpers/`: `branches_helper.go`,
-`commits_helper.go`, `diff_line_file_menu.go`, `refresh_helper.go`,
+`diff_line_file_menu.go`, `refresh_helper.go`,
 `repos_helper.go`, `worktree_helper.go`. Also
 `pkg/gui/extras_panel.go` and
 `pkg/gui/services/custom_commands/keybinding_creator.go`.

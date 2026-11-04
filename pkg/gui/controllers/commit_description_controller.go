@@ -86,6 +86,8 @@ func (self *CommitDescriptionController) GetOnFocus() func(types.OnFocusOpts) {
 func (self *CommitDescriptionController) GetOnQuit() func() {
 	return func() {
 		self.c.Helpers().Commits.PreserveCommitMessage()
+		// Fork: quitting with the box open keeps its text as the draft too.
+		self.c.Helpers().Commits.SaveCommitDraftIfChanged()
 	}
 }
 
@@ -120,8 +122,9 @@ func (self *CommitDescriptionController) handleTogglePanel() error {
 	return self.switchToCommitMessage()
 }
 
+// Fork: Escape saves the draft; see CommitsHelper.CancelCommitMessagePanel.
 func (self *CommitDescriptionController) close() error {
-	self.c.Helpers().Commits.CloseCommitMessagePanel()
+	self.c.Helpers().Commits.CancelCommitMessagePanel()
 	return nil
 }
 

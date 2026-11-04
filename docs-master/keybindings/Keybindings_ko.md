@@ -447,6 +447,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` <enter> `` | 확인 |  |
 | `` <esc> `` | 닫기 |  |
+| `` <up>, k `` | Recall cancelled message |  |
+| `` <down>, j `` | Return to the message being edited |  |
 
 ## 태그
 

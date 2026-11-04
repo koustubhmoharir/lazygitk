@@ -652,6 +652,8 @@ type TranslationSet struct {
 	CommitDescriptionTitle                string
 	CommitDescriptionSubTitle             string
 	CommitDescriptionFooter               string
+	RecallCancelledCommitMessage          string
+	ReturnToEditedCommitMessage           string
 	CommitHooksDisabledSubTitle           string
 	LocalBranchesTitle                    string
 	SearchTitle                           string
@@ -2188,6 +2190,8 @@ func EnglishTranslationSet() *TranslationSet {
 		CommitDescriptionTitle:               "Commit description",
 		CommitDescriptionSubTitle:            "Press {{.togglePanelKeyBinding}} to toggle focus, {{.commitMenuKeybinding}} to open menu",
 		CommitDescriptionFooter:              "Press {{.confirmInEditorKeybinding}} to submit",
+		RecallCancelledCommitMessage:         "Recall cancelled message",
+		ReturnToEditedCommitMessage:          "Return to the message being edited",
 		CommitHooksDisabledSubTitle:          "(hooks disabled)",
 		LocalBranchesTitle:                   "Local branches",
 		SearchTitle:                          "Search",

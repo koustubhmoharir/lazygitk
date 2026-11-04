@@ -219,6 +219,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` <enter> `` | 确认 |  |
 | `` <esc> `` | 关闭 |  |
+| `` <up>, k `` | Recall cancelled message |  |
+| `` <down>, j `` | Return to the message being edited |  |
 
 ## 提交文件
 

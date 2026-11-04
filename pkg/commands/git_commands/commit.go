@@ -8,8 +8,6 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 )
 
-var ErrInvalidCommitIndex = errors.New("invalid commit index")
-
 type CommitCommands struct {
 	*GitCommon
 }
@@ -298,17 +296,4 @@ func (self *CommitCommands) CreateAmendCommit(originalSubject, newSubject, newDe
 		ToArgv()
 
 	return self.cmd.New(cmdArgs).Run()
-}
-
-// a value of 0 means the head commit, 1 is the parent commit, etc
-func (self *CommitCommands) GetCommitMessageFromHistory(value int) (string, error) {
-	cmdArgs := NewGitCmd("log").Arg("-1", fmt.Sprintf("--skip=%d", value), "--pretty=%H").
-		ToArgv()
-
-	hash, _ := self.cmd.New(cmdArgs).DontLog().RunWithOutput()
-	formattedHash := strings.TrimSpace(hash)
-	if len(formattedHash) == 0 {
-		return "", ErrInvalidCommitIndex
-	}
-	return self.GetCommitMessage(formattedHash)
 }

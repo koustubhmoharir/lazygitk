@@ -359,6 +359,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` <enter> `` | Подтвердить |  |
 | `` <esc> `` | Закрыть |  |
+| `` <up>, k `` | Recall cancelled message |  |
+| `` <down>, j `` | Return to the message being edited |  |
 
 ## Сохранить Изменения Файлов
 
