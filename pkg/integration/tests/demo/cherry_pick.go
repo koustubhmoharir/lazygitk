@@ -46,47 +46,35 @@ var CherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 			Wait(300).
 			PressEnter()
 
-		t.Views().SubCommits().
+		subCommits := t.Views().SubCommits().
 			IsFocused().
 			TopLines(
 				Contains("Add Webpack for asset bundling").IsSelected(),
 				Contains("Handle session timeout gracefully"),
 				Contains("Fix bug in timezone conversion."),
 			).
-			Press(keys.Commits.CherryPickCopy).
-			Tap(func() {
-				t.Views().Information().Content(Contains("1 commit copied"))
-			}).
-			SelectNextItem().
-			Press(keys.Commits.CherryPickCopy)
+			// select the two commits at the top
+			Press(keys.Universal.RangeSelectDown).
+			TopLines(
+				Contains("Add Webpack for asset bundling").IsSelected(),
+				Contains("Handle session timeout gracefully").IsSelected(),
+				Contains("Fix bug in timezone conversion."),
+			)
 
-		t.Views().Information().Content(Contains("2 commits copied"))
+		t.Common().CherryPickSelection(subCommits)
+		t.Wait(1000)
+		t.Common().ConfirmCherryPickList("refs/heads/hotfix/fix-bug", destinationOID,
+			CherryPickReviewRow(1, handleSessionOID, "Handle session timeout gracefully"),
+			CherryPickReviewRow(2, addWebpackOID, "Add Webpack for asset bundling"),
+		)
 
 		t.Views().Commits().
-			Focus().
-			TopLines(
-				Contains("Remove unused code and libraries").IsSelected(),
-				Contains("Integrate support for markdown in user posts"),
-				Contains("Fix bug in timezone conversion."),
-			).
-			Press(keys.Commits.PasteCommits).
-			Tap(func() {
-				t.Wait(1000)
-				t.Common().ChooseMarkedCherryPickSource()
-				t.Common().ConfirmCherryPickList("refs/heads/hotfix/fix-bug", destinationOID,
-					CherryPickReviewRow(1, handleSessionOID, "Handle session timeout gracefully"),
-					CherryPickReviewRow(2, addWebpackOID, "Add Webpack for asset bundling"),
-				)
-			}).
 			TopLines(
 				Contains("Add Webpack for asset bundling"),
 				Contains("Handle session timeout gracefully"),
 				Contains("Remove unused code and libraries"),
 				Contains("Integrate support for markdown in user posts"),
 				Contains("Fix bug in timezone conversion."),
-			).
-			Tap(func() {
-				t.Views().Information().Content(DoesNotContain("commits copied"))
-			})
+			)
 	},
 })

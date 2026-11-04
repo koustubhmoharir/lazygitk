@@ -31,25 +31,15 @@ var CherryPickConflictsEmptyCommitAfterResolving = NewIntegrationTest(NewIntegra
 			SelectNextItem().
 			PressEnter()
 
-		t.Views().SubCommits().
+		subCommits := t.Views().SubCommits().
 			IsFocused().
 			TopLines(
 				Contains("second-change-branch unrelated change"),
 				Contains("second change"),
 			).
-			Press(keys.Universal.RangeSelectDown).
-			Press(keys.Commits.CherryPickCopy)
+			Press(keys.Universal.RangeSelectDown)
 
-		t.Views().Information().Content(Contains("2 commits copied"))
-
-		t.Views().Commits().
-			Focus().
-			TopLines(
-				Contains("first change").IsSelected(),
-			).
-			Press(keys.Commits.PasteCommits)
-
-		t.Common().ChooseMarkedCherryPickSource()
+		t.Common().CherryPickSelection(subCommits)
 		t.Common().ConfirmCherryPickList("refs/heads/first-change-branch", firstChangeOID,
 			CherryPickReviewRow(1, secondChangeOID, "second change"),
 			CherryPickReviewRow(2, unrelatedOID, "second-change-branch unrelated change"),

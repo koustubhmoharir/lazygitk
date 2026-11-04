@@ -164,8 +164,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` y h `` | Copy commit hash |  |
 | `` w v `` | Show in Commits |  |
-| `` c y `` | Mark selected commits for cherry-pick |  |
-| `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Жёсткий сброс |  |
 | `` s m `` | Смешанный сброс |  |
@@ -219,8 +217,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` w d `` | Show selected commits and their descendants |  |
 | `` w b `` | Show branch / tag |  |
 | `` <space> `` | Toggle selection |  |
-| `` c y `` | Mark selected commits for cherry-pick |  |
-| `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Жёсткий сброс |  |
 | `` s m `` | Смешанный сброс |  |
@@ -313,8 +309,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` y i `` | Copy abbreviated commit hash |  |
 | `` w v `` | Show in Commits |  |
-| `` c y `` | Mark selected commits for cherry-pick |  |
-| `` c x `` | Unmark selected commits for cherry-pick |  |
 | `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Жёсткий сброс |  |
 | `` s m `` | Смешанный сброс |  |

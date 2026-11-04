@@ -3,13 +3,22 @@ package components
 import (
 	"fmt"
 	"strings"
+
+	"github.com/jesseduffield/lazygit/pkg/config"
 )
 
-// ChooseMarkedCherryPickSource selects the copied/marked commits explicitly
-// when the source chooser is shown alongside a selected-commit source.
-func (self *Common) ChooseMarkedCherryPickSource() {
-	self.t.ExpectPopup().Menu().Title(Equals("Choose commits to cherry-pick")).
-		Select(Contains("Previously marked commits")).Confirm()
+// CherryPickSelection presses the paste key in view, which cherry-picks the commits
+// the view's selection covers. The selection must be made first.
+func (self *Common) CherryPickSelection(view *ViewDriver) {
+	view.Press(self.t.keys.Commits.PasteCommits)
+}
+
+// CherryPickSelectionWithDefaultKeys picks the view's selection with the default
+// keys, c then p, for tests that load the real defaults with shared.UseDefaultKeymap.
+func (self *Common) CherryPickSelectionWithDefaultKeys(view *ViewDriver) {
+	view.Press(config.Keybinding{"c"})
+	self.t.ExpectPopup().Menu().Title(Equals("c"))
+	self.t.Views().Menu().Press(config.Keybinding{"p"})
 }
 
 func (self *Common) ChooseFirstCherryPickMergeParent() {

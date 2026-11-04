@@ -17,9 +17,6 @@ type TranslationSet struct {
 	ForkRemovePatchSelection             string
 	CheckoutDetached                     string
 	CherryPickChangedNote                string
-	CherryPickSourceTitle                string
-	CherryPickMarkedSource               string
-	CherryPickSelectedSource             string
 	CombineSelected                      string
 	CombineSelectCommits                 string
 	CombineChecking                      string
@@ -41,8 +38,6 @@ type TranslationSet struct {
 	CherryPickMergeParentDetail          string
 	CherryPickIgnoredPrompt              string
 	CherryPickReviewPrompt               string
-	MarkForCherryPick                    string
-	UnmarkForCherryPick                  string
 	CollapseTreeNode                     string
 	ExpandTreeNode                       string
 	BranchActionResetReviewPrompt        string
@@ -105,6 +100,7 @@ type TranslationSet struct {
 	ClearLogFilter                        string
 	ToggleCommitSelection                 string
 	ClearCommitSelection                  string
+	NoCommitsSelected                     string
 	ClearCommitSelectionFirst             string
 	CommitScopeNoRef                      string
 	CommitScopeSelectBranch               string
@@ -696,8 +692,6 @@ type TranslationSet struct {
 	DroppingMergeRequiresSingleSelection  string
 	CherryPickCopy                        string
 	CherryPickCopyTooltip                 string
-	CherryPickCopyPaletteTooltip          string
-	PasteCommitsPaletteHint               string
 	PasteCommits                          string
 	SureCherryPick                        string
 	CherryPick                            string
@@ -1549,9 +1543,6 @@ func EnglishTranslationSet() *TranslationSet {
 		ForkRemovePatchSelection:              "Remove selected lines from custom patch",
 		CheckoutDetached:                      "Checkout detached HEAD",
 		CherryPickChangedNote:                 "The destination or ignored-file risks changed. Review the fresh state before proceeding.",
-		CherryPickSourceTitle:                 "Choose commits to cherry-pick",
-		CherryPickMarkedSource:                "Previously marked commits (%d)",
-		CherryPickSelectedSource:              "Selected commits (%d)",
 		CombineSelected:                       "Combine selected commits",
 		CombineSelectCommits:                  "Select at least two full commit IDs to combine.",
 		CombineChecking:                       "Inspecting selected commits",
@@ -1573,8 +1564,6 @@ func EnglishTranslationSet() *TranslationSet {
 		CherryPickMergeParentDetail:           " (relative to parent %d: %s)",
 		CherryPickIgnoredPrompt:               "Cherry-picking may overwrite these ignored paths. Approve this risk to proceed to the commit review.",
 		CherryPickReviewPrompt:                "Current destination: %s at %s\n\nCherry-pick these commits in this order:\n%s\n\nGit may stop for conflicts. No automatic stash, retry or rollback will run.",
-		MarkForCherryPick:                     "Mark selected commits for cherry-pick",
-		UnmarkForCherryPick:                   "Unmark selected commits for cherry-pick",
 		CollapseTreeNode:                      "Collapse directory or select parent",
 		ExpandTreeNode:                        "Expand directory or select first child",
 		BranchActionResetReviewPrompt:         "Current HEAD: %q at %s\nSelected source: %q (%s) at %s\n\nReset affects current HEAD, with index/worktree effects determined by the chosen mode. It does not reset another selected branch.",
@@ -1635,6 +1624,7 @@ func EnglishTranslationSet() *TranslationSet {
 		ClearLogFilter:                        "Clear the log filter",
 		ToggleCommitSelection:                 "Toggle selection",
 		ClearCommitSelection:                  "Clear selection",
+		NoCommitsSelected:                     "No commits selected",
 		ClearCommitSelectionFirst:             "Clear the selection first (Escape)",
 		CommitScopeNoRef:                      "No branch or tag points at this commit.",
 		CommitScopeSelectBranch:               "Select a local branch to show it with its upstream.",
@@ -2233,8 +2223,6 @@ func EnglishTranslationSet() *TranslationSet {
 		DroppingMergeRequiresSingleSelection: "Dropping a merge commit requires a single selected item",
 		CherryPickCopy:                       "Copy (cherry-pick)",
 		CherryPickCopyTooltip:                "Mark commit as copied. Then, within the local commits view, you can press `{{.paste}}` to paste (cherry-pick) the copied commit(s) into your checked out branch. At any time you can press `{{.escape}}` to cancel the selection.",
-		CherryPickCopyPaletteTooltip:         "Mark commit as copied. Then, in the local commits view, choose Paste (cherry-pick) from the command palette. Use `{{.escape}}` to cancel the selection.",
-		PasteCommitsPaletteHint:              "Find Paste (cherry-pick) in palette",
 		PasteCommits:                         "Paste (cherry-pick)",
 		SureCherryPick:                       "Are you sure you want to cherry-pick the {{.numCommits}} copied commit(s) onto this branch?",
 		CherryPick:                           "Cherry-pick",

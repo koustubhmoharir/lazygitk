@@ -31,29 +31,20 @@ var CherryPickConflicts = NewIntegrationTest(NewIntegrationTestArgs{
 			SelectNextItem().
 			PressEnter()
 
-		t.Views().SubCommits().
+		subCommits := t.Views().SubCommits().
 			IsFocused().
 			TopLines(
 				Contains("second-change-branch unrelated change"),
 				Contains("second change"),
 			).
-			Press(keys.Commits.CherryPickCopy).
-			Tap(func() {
-				t.Views().Information().Content(Contains("1 commit copied"))
-			}).
-			SelectNextItem().
-			Press(keys.Commits.CherryPickCopy)
-
-		t.Views().Information().Content(Contains("2 commits copied"))
-
-		t.Views().Commits().
-			Focus().
+			// select 'unrelated change' and 'second change'
+			Press(keys.Universal.RangeSelectDown).
 			TopLines(
-				Contains("first change").IsSelected(),
-			).
-			Press(keys.Commits.PasteCommits)
+				Contains("second-change-branch unrelated change").IsSelected(),
+				Contains("second change").IsSelected(),
+			)
 
-		t.Common().ChooseMarkedCherryPickSource()
+		t.Common().CherryPickSelection(subCommits)
 		t.Common().ConfirmCherryPickList("refs/heads/first-change-branch", firstChangeOID,
 			CherryPickReviewRow(1, secondChangeOID, "second change"),
 			CherryPickReviewRow(2, unrelatedOID, "second-change-branch unrelated change"),
@@ -61,9 +52,12 @@ var CherryPickConflicts = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Common().AcknowledgeConflicts()
 
-		// cherry pick selection is not cleared when there are conflicts, so that the user
-		// is able to abort and try again without having to re-copy the commits
-		t.Views().Information().Content(Contains("2 commits copied"))
+		// The pick stopped on conflicts, so the selection is kept, letting the user
+		// abort and try again without selecting the commits again.
+		subCommits.TopLines(
+			Contains("second-change-branch unrelated change").IsSelected(),
+			Contains("second change").IsSelected(),
+		)
 
 		t.Views().Files().
 			IsFocused().
@@ -94,12 +88,6 @@ var CherryPickConflicts = NewIntegrationTest(NewIntegrationTestArgs{
 				t.Views().Main().
 					Content(Contains("-First Change")).
 					Content(Contains("+Second Change"))
-
-				t.Views().Information().Content(Contains("2 commits copied"))
-			}).
-			PressEscape().
-			Tap(func() {
-				t.Views().Information().Content(DoesNotContain("commits copied"))
 			})
 	},
 })

@@ -10,6 +10,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
+	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 )
 
@@ -21,17 +22,19 @@ func forkCherryPickBinding(c *ControllerCommon) *types.Binding {
 	}
 }
 
-func forkCherryPickSelection(c *ControllerCommon) []string {
+// forkCherryPickSource returns the commit list that c p picks from, and the commits
+// its selection covers. ok is false when the focus is not a commit list.
+func forkCherryPickSource(c *ControllerCommon) (source ContainsCommits, selected []*models.Commit, ok bool) {
 	current := c.Context().CurrentStatic()
-	commits, ok := current.(ContainsCommits)
+	source, ok = current.(ContainsCommits)
 	if !ok && current.GetKind() == types.MAIN_CONTEXT {
-		commits, ok = c.Context().CurrentSide().(ContainsCommits)
+		source, ok = c.Context().CurrentSide().(ContainsCommits)
 	}
 	if !ok {
-		return nil
+		return nil, nil, false
 	}
-	selected, _, _ := commits.GetSelectedItems()
-	return forkCherryCommitIDs(selected)
+	selected, _, _ = source.GetSelectedItems()
+	return source, selected, true
 }
 
 func forkCherryCommitIDs(commits []*models.Commit) []string {
@@ -46,8 +49,12 @@ func forkCherryCommitIDs(commits []*models.Commit) []string {
 }
 
 func forkCherryPickDisabledReason(c *ControllerCommon) *types.DisabledReason {
-	if len(forkCherryCommitIDs(c.Modes().CherryPicking.CherryPickedCommits)) == 0 && len(forkCherryPickSelection(c)) == 0 {
-		return &types.DisabledReason{Text: c.Tr.NoCopiedCommits, Inapplicable: true}
+	_, selected, ok := forkCherryPickSource(c)
+	if !ok || len(selected) == 0 {
+		return &types.DisabledReason{Text: c.Tr.NoCommitsSelected, Inapplicable: true}
+	}
+	if len(forkCherryCommitIDs(selected)) == 0 {
+		return &types.DisabledReason{Text: c.Tr.CannotCherryPickNonCommit, Inapplicable: true}
 	}
 	return nil
 }
@@ -56,45 +63,20 @@ type forkCherryPickFlow struct {
 	c               *ControllerCommon
 	git             *commands.GitCommand
 	generation      int
-	oids            []string
-	marked          []string
-	usedMarked      bool
+	source          ContainsCommits // the list whose selection is picked
+	oids            []string        // the selection when c p began, in list order
 	ignoredApproved bool
 	started         bool
 }
 
 func beginForkCherryPick(c *ControllerCommon) error {
-	flow := &forkCherryPickFlow{c: c, git: c.Git(), generation: c.State().GetRepoGeneration()}
-	marked := forkCherryCommitIDs(c.Modes().CherryPicking.CherryPickedCommits)
-	selected := forkCherryPickSelection(c)
-	if len(marked) == 0 && len(selected) == 0 {
+	source, selected, ok := forkCherryPickSource(c)
+	oids := forkCherryCommitIDs(selected)
+	if !ok || len(oids) == 0 {
 		return nil
 	}
-	choose := func(ids []string, fromMarks bool) func() error {
-		captured := slices.Clone(ids)
-		return func() error {
-			if err := flow.checkRepository(); err != nil {
-				return err
-			}
-			flow.oids = captured
-			flow.marked = slices.Clone(marked)
-			flow.usedMarked = fromMarks
-			return flow.prepare(false)
-		}
-	}
-	if len(marked) > 0 && len(selected) > 0 {
-		return c.Menu(types.CreateMenuOptions{
-			Title: c.Tr.CherryPickSourceTitle,
-			Items: []*types.MenuItem{
-				{CommandID: "commit.cherry-pick.marked", Verb: "cherry-pick", Label: fmt.Sprintf(c.Tr.CherryPickMarkedSource, len(marked)), OnPress: choose(marked, true), OpensMenu: true},
-				{CommandID: "commit.cherry-pick.selected", Verb: "cherry-pick", Label: fmt.Sprintf(c.Tr.CherryPickSelectedSource, len(selected)), OnPress: choose(selected, false), OpensMenu: true},
-			}, OnCancel: flow.checkRepository,
-		})
-	}
-	if len(marked) > 0 {
-		return choose(marked, true)()
-	}
-	return choose(selected, false)()
+	flow := &forkCherryPickFlow{c: c, git: c.Git(), generation: c.State().GetRepoGeneration(), source: source, oids: oids}
+	return flow.prepare(false)
 }
 
 func (flow *forkCherryPickFlow) checkRepository() error {
@@ -217,20 +199,29 @@ func (flow *forkCherryPickFlow) apply(plan git_commands.CherryPickPlan) error {
 		if handled != nil {
 			return handled
 		}
-		if result == nil && flow.usedMarked {
-			flow.c.OnUIThread(func() error {
-				if err := flow.checkRepository(); err != nil {
-					return err
-				}
-				// Fork: clear the marks after they are pasted, rather than keeping
-				// upstream's hidden re-paste buffer (DidPaste) that Escape cannot
-				// reach. Only the captured buffer is cleared, never newer marks.
-				if slices.Equal(flow.marked, forkCherryCommitIDs(flow.c.Modes().CherryPicking.CherryPickedCommits)) {
-					return flow.c.Helpers().CherryPick.Reset()
-				}
-				return nil
-			})
+		// A pick that stops on conflicts has a non-nil result, so it keeps the selection.
+		if result == nil {
+			flow.c.OnUIThread(flow.clearPickedSelection)
 		}
 		return nil
 	})
+}
+
+// clearPickedSelection clears the selection that c p picked, after the pick succeeded.
+// A selection that is no longer the one picked is left alone.
+func (flow *forkCherryPickFlow) clearPickedSelection() error {
+	if err := flow.checkRepository(); err != nil {
+		return err
+	}
+	selected, _, _ := flow.source.GetSelectedItems()
+	if !slices.Equal(forkCherryCommitIDs(selected), flow.oids) {
+		return nil
+	}
+	if commits, ok := flow.source.(*context.LocalCommitsContext); ok {
+		commits.ClearMultiSelection()
+	} else {
+		flow.source.GetList().CancelRangeSelect()
+	}
+	flow.c.PostRefreshUpdate(flow.source)
+	return nil
 }

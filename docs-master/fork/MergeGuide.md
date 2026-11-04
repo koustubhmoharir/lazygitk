@@ -233,10 +233,10 @@ re-apply it if upstream changes that code.
 - `controllers/remote_branches_controller.go` (replacement): delete, merge,
   rebase and new local branch go through captured flows; adds placement.
 - `controllers/basic_commits_controller.go`: appends placement, rebase onto
-  commit, combine, historical diffs, reset modes, cherry-pick marks and flat
-  copy bindings.
+  commit, combine, historical diffs, reset modes and flat copy bindings.
 - `controllers/local_commits_controller.go` (replacement): paste is the
-  reviewed cherry-pick; fixup and amend creation preflight their placement;
+  reviewed cherry-pick of the selection (`fork_cherry_pick.go`); fixup and
+  amend creation preflight their placement;
   `GetKeybindings` appends the commit scope filters
   (`fork_commit_scope_filters.go`) and Space's selection toggle
   (`fork_commit_multi_select.go`).
@@ -342,6 +342,45 @@ Commit scope filters (`w a`, `w d`, `w b`) are a third kind of filtering mode:
   set.
 - Upstream code that tests `Filtering.Active()` to mean a path or author
   filter should use `HasPathOrAuthorFilter` or `GetPath`.
+
+### Dormant upstream cherry-pick marks
+
+Upstream's copy and paste of commits (`commit.copy-for-cherry-pick`, `C`) kept
+a set of marked commits in `Modes().CherryPicking`. The fork has no way to
+mark commits any more: `c p` picks the selection (`fork_cherry_pick.go`), and
+the mark bindings, the source menu and `CherryPickHelper.CopyRange` are
+removed. Nothing sets the set, so upstream's marks stay disconnected and their
+code below never runs. It is left in place because removing it means editing
+many upstream files that upstream merges also touch. When merging, keep these
+dormant rather than restoring the marks:
+
+- `modes/cherrypicking/cherry_picking.go`: the `CherryPicking` state and its
+  `Active`, `CanPaste`, `SelectedHashSet`, `Add`, `Remove`. `Active` and
+  `CanPaste` are always false.
+- `types/modes.go` and `gui.go`: the `Modes().CherryPicking` field and its
+  construction.
+- `helpers/mode_helper.go`: the cherry-pick mode banner, its reset, and
+  `cherryPickHelper` in `NewModeHelper`.
+- `context/local_commits_context.go`, `reflog_commits_context.go` and
+  `sub_commits_context.go`: the presentation highlight of marked commits,
+  which is always empty.
+- `helpers/cherry_pick_helper.go`: `Paste`, `CanPaste` and `Reset`, with
+  `rerender`. `Paste` was already replaced by `c p`; `Reset` only serves the
+  dormant banner. `CopyRange` and its `resetIfNecessary` are removed.
+- `pkg/i18n/english.go`: `CherryPickCopy`, `CherryPickCopyTooltip`,
+  `NoCopiedCommits`, `ResetCherryPick`, `ResetCherryPickShort`,
+  `CommitsCopied` and `CommitCopied`, which are used only by the dormant
+  banner or are unused. The fork-added ones were removed. `NoCommitsSelected`
+  is `c p`'s reason for an empty selection.
+- `options_map.go`: the options-bar hint for an active cherry-pick mode is
+  removed, as the mode can no longer be active.
+- `config/user_config.go`: `Commits.CherryPickCopy` (`cherryPickCopy`) and
+  `Commits.ResetCherryPick` (`resetCherryPick`) are kept, so the schema, the
+  docs and the test config still list them. Nothing binds them now, so a
+  user's setting for either does nothing. Removing them is a separate change.
+
+The generated legacy-field map and the keybinding cheatsheets no longer list
+the removed commands.
 
 ### Appearance
 

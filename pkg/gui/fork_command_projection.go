@@ -134,7 +134,7 @@ func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string) erro
 	}
 	if !explicit {
 		if forkReplacedCommand(binding.CommandID) {
-			// Fork: combine and idempotent mark/unmark replace these upstream
+			// Fork: combine and the selection-based c p replace these upstream
 			// palette actions. Explicit legacy shortcuts still restore them.
 			binding.Description, binding.ShortDescription, binding.Tooltip = "", "", ""
 			binding.DescriptionFunc, binding.ShortDescriptionFunc, binding.TooltipFunc = nil, nil, nil
@@ -183,7 +183,7 @@ func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string) erro
 
 func forkReplacedCommand(id string) bool {
 	switch id {
-	case "commit.copy-for-cherry-pick", "commit.squash-down", "commit.mark-fixup", "commit.set-fixup-message", "commit.create-fixup-menu", "commit.autosquash", "commit.find-fixup-target":
+	case "commit.squash-down", "commit.mark-fixup", "commit.set-fixup-message", "commit.create-fixup-menu", "commit.autosquash", "commit.find-fixup-target":
 		return true
 	}
 	return false

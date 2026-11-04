@@ -123,24 +123,6 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 			DisplayOnScreen:   true,
 		},
 		{
-			CommandID:         "commit.copy-for-cherry-pick",
-			Verb:              "copy-for-cherry-pick",
-			Keys:              opts.GetKeys(opts.Config.Commits.CherryPickCopy),
-			Handler:           self.withItem(self.copyRange),
-			GetDisabledReason: self.require(self.itemRangeSelected(self.canCopyCommits)),
-			Description:       self.c.Tr.CherryPickCopy,
-			// Fork: unbound paste is discoverable in the palette, not an empty key hint.
-			Tooltip:         cherryPickCopyTooltip(self.c.Tr, opts.Config),
-			DisplayOnScreen: true,
-		},
-		{
-			CommandID:   "commit.clear-cherry-pick-selection",
-			Verb:        "clear-cherry-pick-selection",
-			Keys:        opts.GetKeys(opts.Config.Commits.ResetCherryPick),
-			Handler:     self.c.Helpers().CherryPick.Reset,
-			Description: self.c.Tr.ResetCherryPick,
-		},
-		{
 			CommandID:         "diff.commit.external",
 			Verb:              "external-diff-context",
 			Keys:              opts.GetKeys(opts.Config.Universal.OpenDiffTool),
@@ -162,7 +144,7 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 	// Fork: expose each captured reset mode as a separately discoverable action.
 	// Fork: the flat `y` copy menu's commit actions (see fork_commit_copy.go).
 	// Fork: in Commits, commands that cannot act on an explicit set are disabled (see fork_commit_multi_select.go).
-	return guardCommitSelectionBindings(self.context, self.c.Tr.ClearCommitSelectionFirst, self.addCherryMarkBindings(self.addSelectedCheckoutBindings(self.addSelectedResetBindings(append(self.historicalDiffBindings(opts), self.addCommitCopyBindings(bindings)...)))))
+	return guardCommitSelectionBindings(self.context, self.c.Tr.ClearCommitSelectionFirst, self.addSelectedCheckoutBindings(self.addSelectedResetBindings(append(self.historicalDiffBindings(opts), self.addCommitCopyBindings(bindings)...))))
 }
 
 func (self *BasicCommitsController) getCommitMessageBody(hash string) string {
@@ -403,20 +385,6 @@ func (self *BasicCommitsController) createResetMenu(commit *models.Commit) error
 
 func (self *BasicCommitsController) checkout(commit *models.Commit) error {
 	return self.c.Helpers().Refs.CreateCheckoutMenu(commit)
-}
-
-func (self *BasicCommitsController) copyRange(*models.Commit) error {
-	return self.c.Helpers().CherryPick.CopyRange(self.context.GetCommits(), self.context)
-}
-
-func (self *BasicCommitsController) canCopyCommits(selectedCommits []*models.Commit, startIdx int, endIdx int) *types.DisabledReason {
-	for _, commit := range selectedCommits {
-		if commit.Hash() == "" {
-			return &types.DisabledReason{Text: self.c.Tr.CannotCherryPickNonCommit, ShowErrorInPanel: true}
-		}
-	}
-
-	return nil
 }
 
 func (self *BasicCommitsController) openDiffTool(commit *models.Commit) error {

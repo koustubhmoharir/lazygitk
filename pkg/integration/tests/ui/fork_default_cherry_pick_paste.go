@@ -6,7 +6,7 @@ import (
 )
 
 var ForkDefaultCherryPickPaste = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "Real default c y and c p: marks made in src's SubCommits, a cancelled cherry-pick review, a paste from the marked source that clears the marks, and Files c p is then a no-op",
+	Description: "Real default c p on a Commits selection of another branch: a cancelled review keeps the selection, a pick clears it, and Files c p is then a no-op",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -32,6 +32,7 @@ var ForkDefaultCherryPickPaste = NewIntegrationTest(NewIntegrationTestArgs{
 	},
 	Run: func(t *TestDriver, _ config.KeybindingConfig) {
 		masterHead := t.Git().GetCommitHash("master")
+		space := config.Keybinding{"<space>"}
 
 		// Opens the real default c prefix menu, then picks the continuation.
 		cherry := func(view *ViewDriver, second string) {
@@ -39,41 +40,19 @@ var ForkDefaultCherryPickPaste = NewIntegrationTest(NewIntegrationTestArgs{
 			t.ExpectPopup().Menu().Title(Equals("c"))
 			t.Views().Menu().Press(config.Keybinding{second})
 		}
-		// The mark state is reported by the Information view as the total number
-		// of marked commits; the marked hash colour is not visible in buffer text.
-		assertMarkCount := func(count string) {
-			t.Views().Information().Content(MatchesRegexp(`(^|[^0-9])` + count + ` commits? copied`))
-		}
-		// Opens src's commits from the Branches pane with the default v key.
-		openSrcSubCommits := func() *ViewDriver {
-			t.Views().Branches().Focus().NavigateToLine(Contains("src")).Press(config.Keybinding{"v"})
-			return t.Views().SubCommits().IsFocused()
-		}
 
-		// 4. Reopen src's SubCommits and re-mark p1 and p3.
-		subCommits := openSrcSubCommits()
-		subCommits.NavigateToLine(Contains("p1"))
-		cherry(subCommits, "y")
-		assertMarkCount("1")
-		subCommits.NavigateToLine(Contains("p3"))
-		cherry(subCommits, "y")
-		assertMarkCount("2")
-		subCommits.IsFocused().Press(config.Keybinding{"<esc>"})
+		// src's commits are in Commits with the whole graph. Space adds p1 and p3
+		// to the selection; p2 between them is not selected.
+		commits := t.Views().Commits().Focus()
+		commits.NavigateToLine(Contains("p1")).Press(space)
+		commits.NavigateToLine(Contains("p3")).Press(space)
+		commits.ExplicitSelection(Contains("p3"), Contains("p1"))
 
-		// 5. c p in Commits with marks offers the marked and selected sources.
-		commits := t.Views().Commits()
-		commits.Focus()
-		cherry(commits, "p")
-		t.ExpectPopup().Menu().
-			Title(Equals("Choose commits to cherry-pick")).
-			ContainsLines(
-				Contains("Previously marked commits (2)"),
-				Contains("Selected commits (1)"),
-			).
-			Select(Contains("Previously marked commits (2)")).
-			Confirm()
 		// Review must list p1 before p3 and name master.
 		reviewContent := MatchesRegexp(`(?s)Cherry-pick these commits in this order.*1\. \S+ p1.*2\. \S+ p3`)
+
+		// Cancelling the review moves nothing and keeps the selection.
+		cherry(commits, "p")
 		t.ExpectPopup().Confirmation().
 			Title(Equals("Cherry-pick")).
 			Content(reviewContent.Contains("master")).
@@ -81,13 +60,10 @@ var ForkDefaultCherryPickPaste = NewIntegrationTest(NewIntegrationTestArgs{
 		if got := t.Git().GetCommitHash("HEAD"); got != masterHead {
 			t.Fail("Cancelling cherry-pick review moved master to " + got)
 		}
-		assertMarkCount("2")
+		commits.ExplicitSelection(Contains("p3"), Contains("p1"))
 
+		// Confirming picks both, and the successful pick clears the selection.
 		cherry(commits, "p")
-		t.ExpectPopup().Menu().
-			Title(Equals("Choose commits to cherry-pick")).
-			Select(Contains("Previously marked commits (2)")).
-			Confirm()
 		t.ExpectPopup().Confirmation().
 			Title(Equals("Cherry-pick")).
 			Content(reviewContent.Contains("master")).
@@ -95,9 +71,9 @@ var ForkDefaultCherryPickPaste = NewIntegrationTest(NewIntegrationTestArgs{
 		commits.TopLines(Contains("p3"))
 		t.Shell().RunCommand([]string{"git", "log", "--format=%s", "--output=actual-log"})
 		t.FileSystem().FileContent("actual-log", Equals("p3\np1\nbase\n"))
-		// The paste clears the marks, so in Files c has nothing to offer and
-		// opens no menu.
-		t.Views().Information().Content(DoesNotContain("copied"))
+		commits.ExplicitSelection()
+
+		// With no selection, c in Files opens no menu and changes nothing.
 		pastedHead := t.Git().GetCommitHash("HEAD")
 		t.Views().Files().Focus().Press(config.Keybinding{"c"})
 		t.Views().Menu().IsInvisible()

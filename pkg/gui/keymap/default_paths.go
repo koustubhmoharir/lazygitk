@@ -82,8 +82,6 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("commit.move-down", ">")
 	// / filters in panes without search; no pane offers both. It replaces t f t.
 	add("filter.open", "/")
-	add("commit.mark-cherry-pick", "c y")
-	add("commit.unmark-cherry-pick", "c x")
 	add("commit.cherry-pick", "c p")
 	add("operation.continue-in-progress", "c c")
 	add("commit.combine-selected", "g c")
@@ -215,7 +213,7 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 
 	// Replaced normal routes, and nested copy menus that moved into the flat y
 	// menu, intentionally remain recognized with no path.
-	for _, id := range strings.Fields("file.refresh file.copy-menu history-file.copy-menu commit.copy-attribute-menu commit.copy-for-cherry-pick commit.squash-down commit.mark-fixup commit.set-fixup-message commit.create-fixup-menu commit.autosquash commit.find-fixup-target commit.clear-cherry-pick-selection branch.create-and-checkout branch.reset-menu branch.checkout-by-name filter.options-menu branch.checkout-previous branch.force-checkout file.toggle-stage-all diff.primary-selection diff.discard-selection") {
+	for _, id := range strings.Fields("file.refresh file.copy-menu history-file.copy-menu commit.copy-attribute-menu commit.squash-down commit.mark-fixup commit.set-fixup-message commit.create-fixup-menu commit.autosquash commit.find-fixup-target branch.create-and-checkout branch.reset-menu branch.checkout-by-name filter.options-menu branch.checkout-previous branch.force-checkout file.toggle-stage-all diff.primary-selection diff.discard-selection") {
 		if _, exists := paths[id]; !exists {
 			paths[id] = nil
 		}

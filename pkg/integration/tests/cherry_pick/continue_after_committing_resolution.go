@@ -36,7 +36,7 @@ var ContinueAfterCommittingResolution = NewIntegrationTest(NewIntegrationTestArg
 			NavigateToLine(Contains("topic")).
 			PressEnter()
 
-		t.Views().SubCommits().
+		subCommits := t.Views().SubCommits().
 			IsFocused().
 			Lines(
 				Contains("three").IsSelected(),
@@ -51,19 +51,9 @@ var ContinueAfterCommittingResolution = NewIntegrationTest(NewIntegrationTestArg
 				Contains("two").IsSelected(),
 				Contains("one").IsSelected(),
 				Contains("base"),
-			).
-			Press(keys.Commits.CherryPickCopy)
+			)
 
-		t.Views().Information().Content(Contains("3 commits copied"))
-
-		t.Views().Commits().
-			Focus().
-			TopLines(
-				Contains("main change").IsSelected(),
-			).
-			Press(keys.Commits.PasteCommits)
-
-		t.Common().ChooseMarkedCherryPickSource()
+		t.Common().CherryPickSelection(subCommits)
 		t.Common().ConfirmCherryPickList("refs/heads/master", masterOID,
 			CherryPickReviewRow(1, oneOID, "one"),
 			CherryPickReviewRow(2, twoOID, "two"),

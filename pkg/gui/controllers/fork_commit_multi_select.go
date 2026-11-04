@@ -15,18 +15,17 @@ import (
 // cursor or an index range, so they cannot act on an explicit set. While a set exists,
 // guardCommitSelectionBindings disables them. Classification:
 //
-// Enabled with a set, because they take the set or do not use the selection: c y and
-// c x (mark and unmark the set), g c (combine the set), c p (the set is the source list,
-// in list order), w a and w d (GetSelectedItems), Space, v (inspect the cursor commit), navigation, search, log
-// options, w o, /, g i (the first merge-base commit, not the cursor), autosquash, open
-// PR, c clear, g m n (moves commits to a new branch from the checked-out branch), t l s
-// (moves the cursor and starts a run) and focus-diff (it only shows the main view).
+// Enabled with a set, because they take the set or do not use the selection: g c
+// (combine the set), c p (picks the set, in list order), w a and w d (GetSelectedItems),
+// Space, v (inspect the cursor commit), navigation, search, log options, w o, /, g i (the
+// first merge-base commit, not the cursor), autosquash, open PR, c clear, g m n (moves
+// commits to a new branch from the checked-out branch), t l s (moves the cursor and
+// starts a run) and focus-diff (it only shows the main view).
 //
 // Disabled: the y copy actions of a commit, s d, s c, s h/s m/s s, n b, r, g r b, d w,
-// d p, d c, the external diff key, n (new branch), w b, C (copy for cherry-pick, which
-// copies by index), n t, and the single-commit and range edits (reword, drop, squash,
-// fixup, edit, pick, move, amend, attributes, revert, fixup creation, set fixup message,
-// mark rebase base), and the bisect options.
+// d p, d c, the external diff key, n (new branch), w b, n t, and the single-commit and
+// range edits (reword, drop, squash, fixup, edit, pick, move, amend, attributes, revert,
+// fixup creation, set fixup message, mark rebase base), and the bisect options.
 //
 // The bisect options (g b) are guarded from BisectController, and y i, which is bound in
 // gui/keybindings.go, from getCopySelectedSideContextItemToClipboardDisabledReason. v
@@ -58,7 +57,6 @@ var commitSelectionScoped = map[string]bool{
 	"commit.checkout-detached":                   true,
 	"commit.copy-attribute-menu":                 true,
 	"commit.open-browser":                        true,
-	"commit.copy-for-cherry-pick":                true,
 	"branch.create-and-checkout":                 true,
 	"branch.place-at-selected-commit":            true,
 	"branch.rebase-current-onto-selected-commit": true,

@@ -69,17 +69,18 @@ var ForkCommitsMultiSelectCommands = NewIntegrationTest(NewIntegrationTestArgs{
 		t.ExpectToast(disabled)
 		commits.ExplicitSelection(Contains("foxtrot"), Contains("charlie"))
 
-		// Set-aware commands work on the set: c y marks both commits.
-		commits.Press(config.Keybinding{"c"})
-		t.ExpectPopup().Menu().Title(Equals("c"))
-		t.Views().Menu().Press(config.Keybinding{"y"})
-		t.Views().Information().Content(MatchesRegexp(`(^|[^0-9])2 commits? copied`))
+		// Set-aware commands work on the set: c p reviews both commits, and cancelling
+		// the review keeps the set.
+		t.Common().CherryPickSelectionWithDefaultKeys(commits)
+		t.ExpectPopup().Confirmation().
+			Title(Equals("Cherry-pick")).
+			Content(Contains("foxtrot").Contains("charlie")).
+			Cancel()
 		commits.ExplicitSelection(Contains("foxtrot"), Contains("charlie"))
 
-		// Escape clears the set and keeps the marks. The cursor is on charlie.
+		// Escape clears the set. The cursor is on charlie.
 		commits.Press(esc)
 		commits.ExplicitSelection()
-		t.Views().Information().Content(MatchesRegexp(`(^|[^0-9])2 commits? copied`))
 
 		// With the set gone, a lone Shift range is a range again: Delete drops charlie
 		// and bravo, as upstream does.

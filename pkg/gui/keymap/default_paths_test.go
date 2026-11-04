@@ -26,8 +26,6 @@ func TestDefaultPathsUserRoutes(t *testing.T) {
 		{"branch.checkout", "s c"},
 		{"commit.checkout-menu", "s c"},
 		{"commit.combine-selected", "g c"},
-		{"commit.mark-cherry-pick", "c y"},
-		{"commit.unmark-cherry-pick", "c x"},
 		{"commit.cherry-pick", "c p"},
 		{"operation.continue-in-progress", "c c"},
 		{"file.toggle-stage", "space"},
@@ -116,7 +114,7 @@ func TestDefaultPathsUnknownAndIntentionalEmpty(t *testing.T) {
 	for _, id := range []string{
 		"commit.squash-down", "commit.mark-fixup", "commit.set-fixup-message",
 		"commit.create-fixup-menu", "commit.autosquash", "commit.find-fixup-target",
-		"commit.clear-cherry-pick-selection", "branch.create-and-checkout",
+		"branch.create-and-checkout",
 		"branch.reset-menu",
 		"branch.force-checkout", "file.toggle-stage-all", "diff.primary-selection",
 		"diff.discard-selection",
@@ -149,13 +147,6 @@ func pathString(path []gocui.Key) string {
 		labels = append(labels, strings.Trim(label, "<>"))
 	}
 	return strings.Join(labels, " ")
-}
-
-func TestDefaultCherryCopyToggleHasNoNormalPath(t *testing.T) {
-	paths, known := DefaultPaths("commit.copy-for-cherry-pick")
-	if !known || len(paths) != 0 {
-		t.Fatalf("legacy toggle paths = %v, known %t", paths, known)
-	}
 }
 
 // Palette-only commands have no default key. Being unknown here makes the

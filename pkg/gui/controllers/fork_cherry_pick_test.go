@@ -124,51 +124,6 @@ func TestForkCherryPickSelectedReviewOrdersAndRequiresApproval(t *testing.T) {
 	}
 }
 
-func TestForkCherryPickMarkedAndSelectedAreSeparateChoices(t *testing.T) {
-	c, ui, selection, root, oids := forkCherryPickFixture(t)
-	ui.modes.CherryPicking.MarkCommits([]*models.Commit{historicalTestCommit(oids[1])})
-	selection.items = []*models.Commit{historicalTestCommit(oids[2])}
-	if err := beginForkCherryPick(c); err != nil {
-		t.Fatal(err)
-	}
-	if len(ui.menus) != 1 || len(ui.workers) != 0 {
-		t.Fatal("ambiguous sources were not presented before inspection")
-	}
-	menu := ui.menus[0]
-	if len(menu.Items) != 2 || menu.Items[0].CommandID != "commit.cherry-pick.marked" || menu.Items[1].CommandID != "commit.cherry-pick.selected" {
-		t.Fatal("source choices must keep marks first and selection separate")
-	}
-	ui.modes.CherryPicking.CherryPickedCommits = nil
-	if err := menu.Items[0].OnPress(); err != nil {
-		t.Fatal(err)
-	}
-	if err := ui.runWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
-	confirm := ui.confirmations[0]
-	if !strings.Contains(confirm.Prompt, oids[1]) || strings.Contains(confirm.Prompt, oids[2]) {
-		t.Fatal("source choice silently merged or retargeted marks")
-	}
-	if err := confirm.HandleConfirm(); err != nil {
-		t.Fatal(err)
-	}
-	if err := ui.runWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
-	if selectedRebaseFlowGit(t, root, "show", "HEAD:first") != "first" {
-		t.Fatal("marked pick did not apply")
-	}
-	if ui.modes.CherryPicking.DidPaste {
-		t.Fatal("an unrelated replacement mark buffer was hidden")
-	}
-}
-
 func TestForkCherryPickStaleHeadRequiresFreshReview(t *testing.T) {
 	c, ui, _, root, oids := forkCherryPickFixture(t)
 	confirm := forkCherryPickReview(t, c, ui)
@@ -234,16 +189,20 @@ func TestForkCherryPickRefusesRepositorySwitchAndNativeCollision(t *testing.T) {
 	})
 }
 
-func TestForkCherryPickSuccessClearsCapturedMarks(t *testing.T) {
-	c, ui, selection, _, oids := forkCherryPickFixture(t)
-	c.IGetContexts = ui
-	merge := helpers.NewMergeAndRebaseHelper(c.HelperCommon)
-	c.IGetHelpers = selectedRebaseFlowHelpers{value: &helpers.Helpers{
-		MergeAndRebase: merge, CherryPick: helpers.NewCherryPickHelper(c.HelperCommon, merge),
-	}}
+func TestForkCherryPickDisabledWithoutSelection(t *testing.T) {
+	c, _, selection, _, _ := forkCherryPickFixture(t)
 	selection.items = nil
-	ui.modes.CherryPicking.MarkCommits([]*models.Commit{historicalTestCommit(oids[1])})
+	reason := forkCherryPickDisabledReason(c)
+	if reason == nil || reason.Text != c.Tr.NoCommitsSelected {
+		t.Fatalf("disabled reason = %v, want %q", reason, c.Tr.NoCommitsSelected)
+	}
+}
+
+func TestForkCherryPickSuccessLeavesChangedSelection(t *testing.T) {
+	c, ui, selection, root, oids := forkCherryPickFixture(t)
 	confirm := forkCherryPickReview(t, c, ui)
+	// The selection moved after the review: a successful pick must not clear it.
+	selection.items = []*models.Commit{historicalTestCommit(oids[0])}
 	if err := confirm.HandleConfirm(); err != nil {
 		t.Fatal(err)
 	}
@@ -253,7 +212,10 @@ func TestForkCherryPickSuccessClearsCapturedMarks(t *testing.T) {
 	if err := ui.runUI(t); err != nil {
 		t.Fatal(err)
 	}
-	if ui.modes.CherryPicking.CanPaste() || ui.modes.CherryPicking.DidPaste {
-		t.Fatal("successful marked pick kept a hidden re-paste buffer")
+	if selectedRebaseFlowGit(t, root, "show", "HEAD:first") != "first" {
+		t.Fatal("pick did not apply")
+	}
+	if len(selection.items) != 1 || selection.items[0].Hash() != oids[0] {
+		t.Fatal("successful pick changed a selection the user made since")
 	}
 }

@@ -19,7 +19,6 @@ var ModeSpecificKeybindingSuggestions = NewIntegrationTest(NewIntegrationTestArg
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
 		rebaseSuggestion := "View rebase options: m"
-		cherryPickSuggestion := "Paste (cherry-pick): " + keys.Commits.PasteCommits.String()
 		bisectSuggestion := "View bisect options: b"
 		customPatchSuggestion := "View custom patch options: <ctrl+p>"
 		mergeSuggestion := "View merge options: m"
@@ -35,7 +34,6 @@ var ModeSpecificKeybindingSuggestions = NewIntegrationTest(NewIntegrationTestArg
 				t.Views().Options().Content(
 					DoesNotContain(rebaseSuggestion).
 						DoesNotContain(mergeSuggestion).
-						DoesNotContain(cherryPickSuggestion).
 						DoesNotContain(bisectSuggestion).
 						DoesNotContain(customPatchSuggestion),
 				)
@@ -45,18 +43,6 @@ var ModeSpecificKeybindingSuggestions = NewIntegrationTest(NewIntegrationTestArg
 			Tap(func() {
 				// Confirm the rebase suggestion now appears
 				t.Views().Options().Content(Contains(rebaseSuggestion))
-			}).
-			Press(keys.Commits.CherryPickCopy).
-			Tap(func() {
-				// Confirm the cherry pick suggestion now appears
-				t.Views().Options().Content(Contains(cherryPickSuggestion))
-				// Importantly, we show multiple of these suggestions at once
-				t.Views().Options().Content(Contains(rebaseSuggestion))
-			}).
-			// Cancel the cherry pick
-			PressEscape().
-			Tap(func() {
-				t.Views().Options().Content(DoesNotContain(cherryPickSuggestion))
 			}).
 			// Cancel the rebase
 			Tap(func() {

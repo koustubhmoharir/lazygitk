@@ -6,7 +6,7 @@ import (
 )
 
 var ForkCommitsMultiSelect = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "Real default Commits multi-select: Space builds an explicit set, Shift runs join it, Space toggles runs, w a keeps the set, Escape clears the filter then the set then the marks, and Space in Sub-commits still inspects",
+	Description: "Real default Commits multi-select: Space builds an explicit set, Shift runs join it, Space toggles runs, w a keeps the set, Escape clears the filter then the set, and Space in Sub-commits still inspects",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -100,27 +100,15 @@ var ForkCommitsMultiSelect = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Information().Content(Contains("ancestors of 2 selected commits"))
 
 		// Escape clears the filter first: every commit is back and the set is kept.
-		// Cherry-pick marks made now are cleared by the third Escape.
-		commits.Press(config.Keybinding{"c"})
-		t.ExpectPopup().Menu().Title(Equals("c"))
-		t.Views().Menu().Press(config.Keybinding{"y"})
-
 		commits.Press(config.Keybinding{"<esc>"})
 		commits.LineCount(EqualsInt(7))
 		commits.ExplicitSelection(Contains("echo"), Contains("delta"))
-		// The filter label is gone, so the Information view reports the marks.
-		t.Views().Information().Content(MatchesRegexp(`(^|[^0-9])2 commits? copied`))
 
 		// The second Escape clears the set: the selection is the cursor commit alone.
 		commits.Press(config.Keybinding{"<esc>"})
 		commits.ExplicitSelection()
 		commits.NoMarkedLines()
 		commits.SelectedLines(Contains("echo"))
-		t.Views().Information().Content(MatchesRegexp(`(^|[^0-9])2 commits? copied`))
-
-		// The third Escape clears the cherry-pick marks.
-		commits.Press(config.Keybinding{"<esc>"})
-		t.Views().Information().Content(DoesNotContain("copied"))
 
 		// v still inspects in Commits: the commit's files open, and Escape returns.
 		commits.Press(config.Keybinding{"v"})

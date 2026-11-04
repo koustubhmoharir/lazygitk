@@ -3,12 +3,10 @@ package helpers
 import (
 	"strconv"
 
-	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/modes/cherrypicking"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
-	"github.com/samber/lo"
 )
 
 type CherryPickHelper struct {
@@ -32,44 +30,6 @@ func NewCherryPickHelper(
 
 func (self *CherryPickHelper) getData() *cherrypicking.CherryPicking {
 	return self.c.Modes().CherryPicking
-}
-
-func (self *CherryPickHelper) CopyRange(commitsList []*models.Commit, context types.IListContext) error {
-	startIdx, endIdx := context.GetList().GetSelectionRange()
-
-	if err := self.resetIfNecessary(context); err != nil {
-		return err
-	}
-
-	// After a paste the buffer is hidden but not cleared, so the user
-	// thinks they're starting fresh. Clear it before adding so the new
-	// copy replaces the old one.
-	if self.getData().DidPaste {
-		self.getData().CherryPickedCommits = nil
-		self.getData().DidPaste = false
-	}
-
-	commitSet := self.getData().SelectedHashSet()
-
-	allCommitsCopied := lo.EveryBy(commitsList[startIdx:endIdx+1], func(commit *models.Commit) bool {
-		return commitSet.Includes(commit.Hash())
-	})
-
-	// if all selected commits are already copied, we'll uncopy them
-	if allCommitsCopied {
-		for index := startIdx; index <= endIdx; index++ {
-			commit := commitsList[index]
-			self.getData().Remove(commit, commitsList)
-		}
-	} else {
-		for index := startIdx; index <= endIdx; index++ {
-			commit := commitsList[index]
-			self.getData().Add(commit, commitsList)
-		}
-	}
-
-	self.rerender()
-	return nil
 }
 
 // HandlePasteCommits begins a cherry-pick rebase with the commits the user has copied.
@@ -148,19 +108,6 @@ func (self *CherryPickHelper) Reset() error {
 	self.getData().CherryPickedCommits = nil
 
 	self.rerender()
-	return nil
-}
-
-// you can only copy from one context at a time, because the order and position of commits matter
-func (self *CherryPickHelper) resetIfNecessary(context types.Context) error {
-	oldContextKey := types.ContextKey(self.getData().ContextKey)
-
-	if oldContextKey != context.GetKey() {
-		// need to reset the cherry picking mode
-		self.getData().ContextKey = string(context.GetKey())
-		self.getData().CherryPickedCommits = make([]*models.Commit, 0)
-	}
-
 	return nil
 }
 

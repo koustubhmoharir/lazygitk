@@ -29,29 +29,8 @@ var CherryPickDuringRebase = NewIntegrationTest(NewIntegrationTestArgs{
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
 		threeOID := t.Git().GetCommitHash("second-branch^")
 		var pausedHeadOID string
-		t.Views().Branches().
-			Focus().
-			Lines(
-				Contains("first-branch"),
-				Contains("second-branch"),
-				Contains("master"),
-			).
-			SelectNextItem().
-			PressEnter()
 
-		t.Views().SubCommits().
-			IsFocused().
-			Lines(
-				Contains("four").IsSelected(),
-				Contains("three"),
-				Contains("base"),
-			).
-			// copy commit 'three'
-			SelectNextItem().
-			Press(keys.Commits.CherryPickCopy)
-
-		t.Views().Information().Content(Contains("1 commit copied"))
-
+		// Pause a rebase of first-branch, then pick 'three' into it.
 		t.Views().Commits().
 			Focus().
 			Lines(
@@ -68,33 +47,44 @@ var CherryPickDuringRebase = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("     CI one").IsSelected(),
 				Contains("     CI base"),
 			).
-			Tap(func() { pausedHeadOID = t.Git().GetCommitHash("HEAD") }).
-			Press(keys.Commits.PasteCommits).
-			Tap(func() {
-				t.Common().ChooseMarkedCherryPickSource()
-				t.Common().ConfirmCherryPickList("HEAD (detached)", pausedHeadOID,
-					CherryPickReviewRow(1, threeOID, "three"),
-				)
-			}).
-			Tap(func() {
-				t.Views().Information().Content(DoesNotContain("commit copied"))
-			}).
+			Tap(func() { pausedHeadOID = t.Git().GetCommitHash("HEAD") })
+
+		t.Views().Branches().
+			Focus().
+			NavigateToLine(Contains("second-branch")).
+			PressEnter()
+
+		subCommits := t.Views().SubCommits().
+			IsFocused().
 			Lines(
-				Contains("─── Pending rebase todos"),
-				Contains("pick CI two"),
-				Contains("─── Commits"),
-				Contains("     CI three"),
-				Contains("     CI one").IsSelected(),
-				Contains("     CI base"),
+				Contains("four").IsSelected(),
+				Contains("three"),
+				Contains("base"),
 			).
-			Tap(func() {
-				t.Common().ContinueRebase()
-			}).
-			Lines(
-				Contains("CI two"),
-				Contains("CI three"),
-				Contains("CI one").IsSelected(),
-				Contains("CI base"),
-			)
+			// select 'three'
+			SelectNextItem()
+
+		t.Common().CherryPickSelection(subCommits)
+		t.Common().ConfirmCherryPickList("HEAD (detached)", pausedHeadOID,
+			CherryPickReviewRow(1, threeOID, "three"),
+		)
+
+		t.Views().Commits().Lines(
+			Contains("─── Pending rebase todos"),
+			Contains("pick CI two"),
+			Contains("─── Commits"),
+			Contains("     CI three"),
+			Contains("     CI one").IsSelected(),
+			Contains("     CI base"),
+		)
+
+		t.Common().ContinueRebase()
+
+		t.Views().Commits().Lines(
+			Contains("CI two"),
+			Contains("CI three"),
+			Contains("CI one").IsSelected(),
+			Contains("CI base"),
+		)
 	},
 })

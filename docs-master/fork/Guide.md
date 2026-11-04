@@ -51,7 +51,7 @@ in the [design principles](Design.md). The generated per-pane reference is
 | F5 | Reload all repository state and redraw every pane, drawing the commit graph again; never fetches |
 | `u u`, `u r` | Undo, redo (from the reflog) |
 | `s p` | Switch to the previous branch; the menu names it (not in Status, where `s` is for repositories) |
-| `c p` | Cherry-pick the marked or selected commits, after reviewing the list |
+| `c p` | Cherry-pick the selected commits, after reviewing the list; a successful pick clears the selection, and one that stops on conflicts keeps it |
 | `c c` | Continue the cherry-pick, rebase, merge or revert in progress, from any pane; refuses while files are unmerged |
 | `:` | Run a shell command |
 | `=` or `+`, `-` | Next, previous screen mode (normal, half, full) of the focused area: the side panels, or the main views |
@@ -147,7 +147,6 @@ of a stash entry:
 | `n b` | Create or move a branch here without checking out |
 | `s h`, `s m`, `s s` | Hard, mixed, soft reset of the checked-out branch to this commit |
 | `r` | Rebase the checked-out branch onto this commit |
-| `c y`, `c x` | Mark, unmark for cherry-pick (Escape in that pane clears all marks) |
 | `g c` | Combine the selected commits |
 | `n t`, `n w` | New tag here; new worktree |
 | `o` | Open the commit in the browser |
@@ -160,7 +159,7 @@ Commits only:
 | Keys | Action |
 | --- | --- |
 | Space | Add the commit to the selection, or remove it; on a Shift run, toggle the whole run |
-| Escape | Cancel a lone Shift run; otherwise remove the log filter, then clear the selection, then the cherry-pick marks |
+| Escape | Cancel a lone Shift run; otherwise remove the log filter, then clear the selection |
 | F2, `g e r` | Reword; reword in the editor |
 | `e` | Edit: start an interactive rebase here, or mark for editing during one |
 | Delete | Drop |
@@ -232,7 +231,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 | `d` diff | `w` working tree (HEAD in Files), `p` previous commit, `s` staged version (Files), `c` pasted commit |
 | `s` switch and reset | `c` check out, `d` detached HEAD, `h` `m` `s` hard, mixed, soft reset, `p` previous branch, `w` switch worktree (Worktrees); in Status only `r` recent repositories and `n` open a repository by path |
 | `n` new | `b` branch here, `t` tag, `w` worktree, `r` remote, `f` fork remote, `s` submodule |
-| `c` cherry-pick and continue | `y` mark, `x` unmark, `p` cherry-pick, `c` continue |
+| `c` cherry-pick and continue | `p` cherry-pick the selection, `c` continue |
 | `u` undo | `u` undo, `r` redo |
 | `y` copy | `n` name, `p` path, `f` absolute path, `c` file content, `h` hash, `i` short hash, `s` subject, `m` message, `b` body, `u` URL, `a` author, `t` tags, `d` diff, `w` all files' diff, `r` pull request URL, `y` confirmation text |
 | `g` Git | `c` combine, `l` pull, `f` fast-forward, `t` upstream, `i` interactive rebase, `b` bisect, `o` merge/rebase options, `y` git-flow; `v f`/`v c` restore file, revert commit; `r p`/`r b` pick, rebase base; `m n` move commits to new branch; `e c`/`e n`/`e r`/`e a`/`e h` editor commit, commit without hooks, editor reword, commit attributes, edit hunk; `p c`/`p o`/`p v` pull request; `s s`/`s o`/`s a`/`s p` stash, stash options, apply, pop; `h s`/`h u`/`h t`/`h a`/`h o` stage, unstage, patch toggle, patch all, patch options; `h c`/`h p`/`h b` conflict options, pick hunk, pick both; `u s`/`u i`/`u b` submodule update, init, bulk; `z u`/`z w` upstream reset, working-tree reset |
@@ -310,7 +309,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - `w v` shows the selected branch's, tag's or entry's commit in Commits, from
   Branches (including the detached HEAD entry, whose commit is HEAD's), Remote
   branches, Tags, Reflog and Sub-commits. The commit becomes
-  the only selection (cherry-pick marks stay). A log filter that hides it is
+  the only selection. A log filter that hides it is
   removed without asking; one that shows it stays. If the side panels are in
   normal mode, or the main views are enlarged, the side panels become half
   screen. When the log cannot show the commit at all (no branch, tag or HEAD
@@ -330,8 +329,8 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - Shift with a movement key always selects: the commits the cursor passes
   while Shift is held join the selection when the cursor next moves without
   Shift.
-- While a selection exists, `c y`, `c x`, `c p`, `g c`, `w a` and `w d` act
-  on all the selected commits. Commands that need one commit or a range (for
+- While a selection exists, `c p`, `g c`, `w a` and `w d` act on all the
+  selected commits. Commands that need one commit or a range (for
   example reword, drop, move, reset, copy, `w b`) are disabled until Escape
   clears the selection; mouse drags do not move commits then.
 - The selection is kept by commit, so it survives refreshes and filters. The
@@ -370,11 +369,11 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   stay. The subject comes from that oldest commit and the editable
   description contains every selected commit's full message, oldest first.
   Merges cannot be crossed. This replaces squash and fixup.
-- `c y` and `c x` mark and unmark only the selected commits. `c p` shows the
-  exact commits and destination before cherry-picking; with marks and a
-  different selection it asks which set to use. A successful cherry-pick
-  clears the marks; one that stops on conflicts keeps them. Escape in the pane
-  holding the marks clears them; leaving a sub-pane keeps them.
+- `c p` cherry-picks the selection of the pane it is pressed in: the commits
+  selected in Commits, the Shift range in Sub-commits, or in Reflog. It shows
+  the exact commits and destination before cherry-picking. A successful
+  cherry-pick clears the selection; one that stops on conflicts keeps it, so
+  the pick can be aborted and tried again. There is no separate copy step.
 - Amending an older commit or creating stacked fixups refuses before
   committing if other tracked edits would remain for the rebase.
 
@@ -472,7 +471,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 | `-` previous branch | `s p` |
 | `c` checkout by name | "Checkout by name" in `?`; normally select the branch and `s c` |
 | Squash and fixup keys | `g c` combine |
-| Toggle cherry-pick marks | `c y` mark, `c x` unmark, Escape clears |
+| Copy (`C`) and paste (`V`) commits for cherry-pick | `c p` picks the selection; the selection is the copy |
 | `z` undo, Ctrl+Z redo | `u u`, `u r` |
 | Ctrl+J / Ctrl+K move commit | `>` / `<` |
 | `y` copy menus with submenus | Flat `y` menu |

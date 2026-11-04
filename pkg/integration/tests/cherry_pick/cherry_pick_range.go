@@ -39,48 +39,36 @@ var CherryPickRange = NewIntegrationTest(NewIntegrationTestArgs{
 			SelectNextItem().
 			PressEnter()
 
-		t.Views().SubCommits().
+		subCommits := t.Views().SubCommits().
 			IsFocused().
 			Lines(
 				Contains("four").IsSelected(),
 				Contains("three"),
 				Contains("base"),
 			).
-			// copy commits 'four' and 'three'
+			// select commits 'four' and 'three'
 			Press(keys.Universal.RangeSelectDown).
 			Lines(
 				Contains("four").IsSelected(),
 				Contains("three").IsSelected(),
 				Contains("base"),
-			).
-			Press(keys.Commits.CherryPickCopy)
-
-		t.Views().Information().Content(Contains("2 commits copied"))
-
-		t.Views().Commits().
-			Focus().
-			Lines(
-				Contains("two").IsSelected(),
-				Contains("one"),
-				Contains("base"),
-			).
-			Press(keys.Commits.PasteCommits).
-			Tap(func() {
-				t.Common().ChooseMarkedCherryPickSource()
-				t.Common().ConfirmCherryPickList("refs/heads/first-branch", destinationOID,
-					CherryPickReviewRow(1, threeOID, "three"),
-					CherryPickReviewRow(2, fourOID, "four"),
-				)
-			}).
-			Tap(func() {
-				t.Views().Information().Content(DoesNotContain("commits copied"))
-			}).
-			Lines(
-				Contains("four"),
-				Contains("three"),
-				Contains("two").IsSelected(),
-				Contains("one"),
-				Contains("base"),
 			)
+
+		t.Common().CherryPickSelection(subCommits)
+		t.Common().ConfirmCherryPickList("refs/heads/first-branch", destinationOID,
+			CherryPickReviewRow(1, threeOID, "three"),
+			CherryPickReviewRow(2, fourOID, "four"),
+		)
+
+		// The successful pick cleared the range, leaving the cursor on 'three'.
+		subCommits.SelectedLines(Contains("three"))
+
+		t.Views().Commits().Lines(
+			Contains("four"),
+			Contains("three"),
+			Contains("two").IsSelected(),
+			Contains("one"),
+			Contains("base"),
+		)
 	},
 })

@@ -76,10 +76,6 @@ func (self *OptionsMapMgr) renderContextOptionsMap() {
 
 	// Mode-specific local keybindings
 	if currentContext.GetKey() == context.LOCAL_COMMITS_CONTEXT_KEY {
-		if self.c.Modes().CherryPicking.Active() {
-			optionsMap = appendModeHint(optionsMap, effectiveModeHint(displayBindings, "commit.cherry-pick", self.c.Tr.PasteCommits, self.c.Tr.PasteCommitsPaletteHint, modeHintBindings, style.FgCyan))
-		}
-
 		if self.c.Model().BisectInfo.Started() {
 			optionsMap = appendModeHint(optionsMap, effectiveModeHint(displayBindings, "bisect.options-menu", self.c.Tr.ViewBisectOptions, "View bisect options", modeHintBindings, style.FgGreen))
 		}

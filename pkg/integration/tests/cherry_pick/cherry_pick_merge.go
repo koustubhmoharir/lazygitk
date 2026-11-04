@@ -39,35 +39,24 @@ var CherryPickMerge = NewIntegrationTest(NewIntegrationTestArgs{
 			SelectNextItem().
 			PressEnter()
 
-		t.Views().SubCommits().
+		subCommits := t.Views().SubCommits().
 			IsFocused().
 			Lines(
 				Contains("◎─╮ Merge branch 'second-branch'").IsSelected(),
 				Contains("│ ○ two"),
 				Contains("│ ○ one"),
 				Contains("○ ╯ base"),
-			).
-			// copy the merge commit
-			Press(keys.Commits.CherryPickCopy)
+			)
 
-		t.Views().Information().Content(Contains("1 commit copied"))
+		// cherry-pick the merge commit, the selected one
+		t.Common().CherryPickSelection(subCommits)
+		t.Common().ChooseFirstCherryPickMergeParent()
+		t.Common().ConfirmCherryPickList("refs/heads/first-branch", baseOID,
+			CherryPickReviewRow(1, mergeOID, "Merge branch 'second-branch'")+" (relative to parent 1: "+firstParentOID+")",
+		)
 
 		t.Views().Commits().
 			Focus().
-			Lines(
-				Contains("base").IsSelected(),
-			).
-			Press(keys.Commits.PasteCommits).
-			Tap(func() {
-				t.Common().ChooseMarkedCherryPickSource()
-				t.Common().ChooseFirstCherryPickMergeParent()
-				t.Common().ConfirmCherryPickList("refs/heads/first-branch", baseOID,
-					CherryPickReviewRow(1, mergeOID, "Merge branch 'second-branch'")+" (relative to parent 1: "+firstParentOID+")",
-				)
-			}).
-			Tap(func() {
-				t.Views().Information().Content(DoesNotContain("commit copied"))
-			}).
 			Lines(
 				Contains("Merge branch 'second-branch'"),
 				Contains("base").IsSelected(),

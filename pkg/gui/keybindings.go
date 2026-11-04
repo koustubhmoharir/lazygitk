@@ -164,14 +164,6 @@ func (gui *Gui) GetInitialKeybindings() ([]*types.Binding, []*gocui.ViewMouseBin
 			Description:       gui.c.Tr.CopyAbbreviatedCommitHash,
 		},
 		{
-			ViewName:    "commits",
-			Keys:        opts.GetKeys(opts.Config.Commits.ResetCherryPick),
-			CommandID:   "commit.clear-cherry-pick-selection",
-			Verb:        "clear-cherry-pick-selection",
-			Handler:     gui.helpers.CherryPick.Reset,
-			Description: gui.c.Tr.ResetCherryPick,
-		},
-		{
 			ViewName:          "reflogCommits",
 			Keys:              opts.GetKeys(opts.Config.Universal.CopyToClipboard),
 			CommandID:         "clipboard.copy-commit-hash",

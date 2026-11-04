@@ -40,45 +40,28 @@ var CherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 			SelectNextItem().
 			PressEnter()
 
-		t.Views().SubCommits().
+		subCommits := t.Views().SubCommits().
 			IsFocused().
 			Lines(
 				Contains("four").IsSelected(),
 				Contains("three"),
 				Contains("base"),
 			).
-			// copy commits 'four' and 'three'
-			Press(keys.Commits.CherryPickCopy).
-			Tap(func() {
-				t.Views().Information().Content(Contains("1 commit copied"))
-			}).
-			SelectNextItem().
-			Press(keys.Commits.CherryPickCopy)
+			// select commits 'four' and 'three'
+			Press(keys.Universal.RangeSelectDown).
+			Lines(
+				Contains("four").IsSelected(),
+				Contains("three").IsSelected(),
+				Contains("base"),
+			)
 
-		t.Views().Information().Content(Contains("2 commits copied"))
+		t.Common().CherryPickSelection(subCommits)
+		t.Common().ConfirmCherryPickList("refs/heads/first-branch", firstBranchOID,
+			CherryPickReviewRow(1, threeOID, "three"),
+			CherryPickReviewRow(2, fourOID, "four"),
+		)
 
 		t.Views().Commits().
-			Focus().
-			Lines(
-				Contains("two").IsSelected(),
-				Contains("one"),
-				Contains("base"),
-			).
-			Press(keys.Commits.PasteCommits).
-			Tap(func() {
-				// cherry-picked commits will be deleted after confirmation
-				t.Views().Information().Content(Contains("2 commits copied"))
-			}).
-			Tap(func() {
-				t.Common().ChooseMarkedCherryPickSource()
-				t.Common().ConfirmCherryPickList("refs/heads/first-branch", firstBranchOID,
-					CherryPickReviewRow(1, threeOID, "three"),
-					CherryPickReviewRow(2, fourOID, "four"),
-				)
-			}).
-			Tap(func() {
-				t.Views().Information().Content(DoesNotContain("commits copied"))
-			}).
 			Lines(
 				Contains("four"),
 				Contains("three"),
@@ -87,26 +70,27 @@ var CherryPick = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("base"),
 			)
 
-		// Fork: a successful marked paste clears the marks instead of keeping a
-		// hidden re-paste buffer, so pasting on master reviews only the selection.
+		// The successful pick cleared the selection, so the range is no longer shown.
+		subCommits.SelectedLines(Contains("three"))
+
+		// Pasting on master reviews only the commit selected there.
 		t.Views().Branches().
 			Focus().
 			NavigateToLine(Contains("master")).
 			PressPrimaryAction()
 
-		t.Views().Commits().
+		commits := t.Views().Commits().
 			Focus().
 			Lines(
 				Contains("base").IsSelected(),
-			).
-			Press(keys.Commits.PasteCommits)
+			)
+		t.Common().CherryPickSelection(commits)
 		t.ExpectPopup().Confirmation().
 			Title(Equals("Cherry-pick")).
 			Content(Contains(baseOID).DoesNotContain(threeOID).DoesNotContain(fourOID)).
 			Cancel()
-		t.Views().Commits().
-			Lines(
-				Contains("base").IsSelected(),
-			)
+		commits.Lines(
+			Contains("base").IsSelected(),
+		)
 	},
 })

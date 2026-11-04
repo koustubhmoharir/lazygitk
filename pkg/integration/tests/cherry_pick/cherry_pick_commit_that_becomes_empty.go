@@ -36,7 +36,7 @@ var CherryPickCommitThatBecomesEmpty = NewIntegrationTest(NewIntegrationTestArgs
 			SelectNextItem().
 			PressEnter()
 
-		t.Views().SubCommits().
+		subCommits := t.Views().SubCommits().
 			IsFocused().
 			Lines(
 				Contains("unrelated change").IsSelected(),
@@ -44,28 +44,21 @@ var CherryPickCommitThatBecomesEmpty = NewIntegrationTest(NewIntegrationTestArgs
 				Contains("base"),
 			).
 			Press(keys.Universal.RangeSelectDown).
-			Press(keys.Commits.CherryPickCopy).
-			Tap(func() {
-				t.Views().Information().Content(Contains("2 commits copied"))
-			})
-
-		t.Views().Commits().
-			Focus().
 			Lines(
-				Contains("two changes in one commit").IsSelected(),
+				Contains("unrelated change").IsSelected(),
+				Contains("single change").IsSelected(),
 				Contains("base"),
-			).
-			Press(keys.Commits.PasteCommits).
-			Tap(func() {
-				t.Common().ChooseMarkedCherryPickSource()
-				t.Common().ConfirmCherryPickList("refs/heads/master", twoChangesOID,
-					CherryPickReviewRow(1, singleChangeOID, "single change"),
-					CherryPickReviewRow(2, unrelatedChangeOID, "unrelated change"),
-				)
-			})
+			)
+
+		t.Common().CherryPickSelection(subCommits)
+		t.Common().ConfirmCherryPickList("refs/heads/master", twoChangesOID,
+			CherryPickReviewRow(1, singleChangeOID, "single change"),
+			CherryPickReviewRow(2, unrelatedChangeOID, "unrelated change"),
+		)
 
 		if t.Git().Version().IsAtLeast(2, 45, 0) {
 			t.Views().Commits().
+				Focus().
 				Lines(
 					Contains("unrelated change"),
 					Contains("single change"),
@@ -79,6 +72,7 @@ var CherryPickCommitThatBecomesEmpty = NewIntegrationTest(NewIntegrationTestArgs
 		} else {
 			// Older git versions drop the commit that became empty
 			t.Views().Commits().
+				Focus().
 				Lines(
 					Contains("unrelated change"),
 					Contains("two changes in one commit").IsSelected(),
