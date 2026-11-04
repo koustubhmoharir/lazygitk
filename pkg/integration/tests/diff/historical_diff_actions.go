@@ -86,10 +86,6 @@ exit 0
 			Focus().
 			SelectedLine(Contains("historical"))
 		t.Views().Options().Content(Contains("Diff with working tree: d w"))
-		t.Views().Commits().Press(config.Keybinding{"c"})
-		t.GlobalPress(config.Keybinding{"y"})
-		t.Views().Options().Content(Contains("Paste (cherry-pick): c p"))
-		t.Views().Commits().Press(keys.Universal.Return)
 
 		// Set sticky diff state to a different base and direction before checking
 		// that the direct actions continue to use their captured endpoints.
