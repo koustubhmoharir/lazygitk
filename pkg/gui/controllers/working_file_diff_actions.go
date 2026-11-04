@@ -5,6 +5,7 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/gui/filetree"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/samber/lo"
@@ -109,12 +110,17 @@ func (self *FilesController) diffWorkingFileWithStaged(node *filetree.FileNode) 
 	if reason := self.workingFileStagedDisabledReason(node); reason != nil {
 		return disabledReasonError(reason)
 	}
-	return self.c.RunSubprocessAndRefresh(
-		self.c.Git().Diff.OpenDiffToolCmdObj(git_commands.DiffToolCmdOptions{
-			Filepath:    node.GetPath(),
-			IsDirectory: !node.GetIsFile(),
-		}),
-	)
+	cmd := self.c.Git().Diff.OpenDiffToolCmdObj(git_commands.DiffToolCmdOptions{
+		Filepath:    node.GetPath(),
+		IsDirectory: !node.GetIsFile(),
+	})
+	// Fork: no tool configured asks the user first (fork_external_tool.go).
+	return self.c.Helpers().ExternalTool.WithExternalTool(git_commands.ExternalToolDiff, func(apply func(*oscommands.CmdObj) error) error {
+		if err := apply(cmd); err != nil {
+			return err
+		}
+		return self.c.RunSubprocessAndRefresh(cmd)
+	}, nil)
 }
 
 // promptWorkingFileCommitDiff asks for a commit hash and compares it (left)

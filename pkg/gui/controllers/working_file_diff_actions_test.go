@@ -77,6 +77,8 @@ func newWorkingFileDiffFixture(t *testing.T, files []*models.File, branches []*m
 	run("init", "-q")
 	run("config", "user.name", "Test")
 	run("config", "user.email", "test@example.invalid")
+	// A diff tool is configured, so the external tool chooser launches at once.
+	run("config", "diff.tool", "fake")
 	for _, content := range []string{"before\n", "head\n"} {
 		if err := os.WriteFile(filepath.Join(root, "sample.txt"), []byte(content), 0o600); err != nil {
 			t.Fatal(err)
@@ -106,7 +108,7 @@ func newWorkingFileDiffFixture(t *testing.T, files []*models.File, branches []*m
 		}},
 	}
 	return &workingFileDiffFixture{
-		controller: NewFilesController(NewControllerCommon(helperCommon, nil)),
+		controller: NewFilesController(NewControllerCommon(helperCommon, historicalTestHelpersFor(helperCommon))),
 		ui:         ui,
 		ctx:        ctx,
 		before:     before,

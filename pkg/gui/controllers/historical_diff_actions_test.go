@@ -41,7 +41,20 @@ func historicalTestFileController(t *testing.T, ref models.Ref, files []*models.
 			CommitFiles: fileContext,
 		}},
 	}
-	return &CommitFilesController{c: NewControllerCommon(helperCommon, nil)}, vm
+	return &CommitFilesController{c: NewControllerCommon(helperCommon, historicalTestHelpersFor(helperCommon))}, vm
+}
+
+// historicalTestHelpers gives a test controller the external tool chooser that
+// the difftool paths launch through. It shares the HelperCommon, so a test that
+// later replaces the GUI on it is seen by the chooser too.
+type historicalTestHelpers struct {
+	value *helpers.Helpers
+}
+
+func (h historicalTestHelpers) Helpers() *helpers.Helpers { return h.value }
+
+func historicalTestHelpersFor(helperCommon *helpers.HelperCommon) historicalTestHelpers {
+	return historicalTestHelpers{value: &helpers.Helpers{ExternalTool: helpers.NewExternalToolHelper(helperCommon)}}
 }
 
 func (s *historicalDiffCommitsStub) GetSelectedItems() ([]*models.Commit, int, int) {
@@ -62,7 +75,7 @@ func historicalTestCommit(hash string, parents ...string) *models.Commit {
 func historicalTestBasicController(items []*models.Commit, start, end int) *BasicCommitsController {
 	context := &historicalDiffCommitsStub{items: items, start: start, end: end}
 	common := &helpers.HelperCommon{Common: common.NewDummyCommon()}
-	return &BasicCommitsController{c: NewControllerCommon(common, nil), context: context}
+	return &BasicCommitsController{c: NewControllerCommon(common, historicalTestHelpersFor(common)), context: context}
 }
 
 func TestHistoricalCommitDiffGuard(t *testing.T) {

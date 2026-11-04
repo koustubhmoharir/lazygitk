@@ -1454,17 +1454,22 @@ func (self *FilesController) openDiffTool(node *filetree.FileNode) error {
 		fromCommit = self.c.Modes().Diffing.Ref
 		reverse = self.c.Modes().Diffing.Reverse
 	}
-	return self.c.RunSubprocessAndRefresh(
-		self.c.Git().Diff.OpenDiffToolCmdObj(
-			git_commands.DiffToolCmdOptions{
-				Filepath:    node.GetPath(),
-				FromCommit:  fromCommit,
-				ToCommit:    "",
-				Reverse:     reverse,
-				IsDirectory: !node.IsFile(),
-				Staged:      !node.GetHasUnstagedChanges(),
-			}),
-	)
+	cmd := self.c.Git().Diff.OpenDiffToolCmdObj(
+		git_commands.DiffToolCmdOptions{
+			Filepath:    node.GetPath(),
+			FromCommit:  fromCommit,
+			ToCommit:    "",
+			Reverse:     reverse,
+			IsDirectory: !node.IsFile(),
+			Staged:      !node.GetHasUnstagedChanges(),
+		})
+	// Fork: no tool configured asks the user first (fork_external_tool.go).
+	return self.c.Helpers().ExternalTool.WithExternalTool(git_commands.ExternalToolDiff, func(apply func(*oscommands.CmdObj) error) error {
+		if err := apply(cmd); err != nil {
+			return err
+		}
+		return self.c.RunSubprocessAndRefresh(cmd)
+	}, nil)
 }
 
 func (self *FilesController) switchToMerge() error {

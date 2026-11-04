@@ -6,6 +6,7 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/gui/context/traits"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/samber/lo"
@@ -390,7 +391,7 @@ func (self *BasicCommitsController) checkout(commit *models.Commit) error {
 func (self *BasicCommitsController) openDiffTool(commit *models.Commit) error {
 	to := commit.RefName()
 	from, reverse := self.c.Modes().Diffing.GetFromAndReverseArgsForDiff(commit.ParentRefName())
-	_, err := self.c.RunSubprocess(self.c.Git().Diff.OpenDiffToolCmdObj(
+	cmd := self.c.Git().Diff.OpenDiffToolCmdObj(
 		git_commands.DiffToolCmdOptions{
 			Filepath:    ".",
 			FromCommit:  from,
@@ -398,8 +399,15 @@ func (self *BasicCommitsController) openDiffTool(commit *models.Commit) error {
 			Reverse:     reverse,
 			IsDirectory: true,
 			Staged:      false,
-		}))
-	return err
+		})
+	// Fork: no tool configured asks the user first (fork_external_tool.go).
+	return self.c.Helpers().ExternalTool.WithExternalTool(git_commands.ExternalToolDiff, func(apply func(*oscommands.CmdObj) error) error {
+		if err := apply(cmd); err != nil {
+			return err
+		}
+		_, err := self.c.RunSubprocess(cmd)
+		return err
+	}, nil)
 }
 
 func (self *BasicCommitsController) canSelectCommitsOfCurrentBranch() *types.DisabledReason {

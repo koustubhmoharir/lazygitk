@@ -344,6 +344,15 @@ type TranslationSet struct {
 	PlaceBranchSelectCommit               string
 	PlaceBranchRepositoryChanged          string
 	BranchSyncRepositoryChanged           string
+	ExternalToolChooseDiffTitle           string
+	ExternalToolChooseMergeTitle          string
+	ExternalToolUseTitle                  string
+	ExternalToolUseOnce                   string
+	ExternalToolSaveDiff                  string
+	ExternalToolSaveMerge                 string
+	ExternalToolNotFoundDiff              string
+	ExternalToolNotFoundMerge             string
+	ExternalToolSearching                 string
 	BranchSyncNoLongerCurrent             string
 	BranchSyncInspecting                  string
 	BranchSyncPushMenu                    string
@@ -1867,6 +1876,15 @@ func EnglishTranslationSet() *TranslationSet {
 		PlaceBranchSelectCommit:              "Select exactly one commit to create or move a branch.",
 		PlaceBranchRepositoryChanged:         "The repository changed. Start the branch placement again.",
 		BranchSyncRepositoryChanged:          "The repository changed. Start this action again.",
+		ExternalToolChooseDiffTitle:          "No diff tool is configured",
+		ExternalToolChooseMergeTitle:         "No merge tool is configured",
+		ExternalToolUseTitle:                 "Use %s",
+		ExternalToolUseOnce:                  "Just this time",
+		ExternalToolSaveDiff:                 "Save as Git's diff.tool in your global config, and use it",
+		ExternalToolSaveMerge:                "Save as Git's merge.tool in your global config, and use it",
+		ExternalToolNotFoundDiff:             "No diff tool was found. Install one, or set diff.tool in Git's config.",
+		ExternalToolNotFoundMerge:            "No merge tool was found. Install one, or set merge.tool in Git's config.",
+		ExternalToolSearching:                "Looking for tools Git can use",
 		BranchSyncNoLongerCurrent:            "Branch %q is no longer the checked-out branch. Start the action again.",
 		BranchSyncInspecting:                 "Inspecting branch target",
 		BranchSyncPushMenu:                   "Push selected branch",

@@ -7,6 +7,7 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/commands/patch"
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/modes/diffing"
@@ -20,13 +21,15 @@ type DiffHelper struct {
 	c              *HelperCommon
 	diffLineHelper *DiffLineHelper
 	filesHelper    *FilesHelper
+	externalTool   *ExternalToolHelper
 }
 
-func NewDiffHelper(c *HelperCommon, diffLineHelper *DiffLineHelper, filesHelper *FilesHelper) *DiffHelper {
+func NewDiffHelper(c *HelperCommon, diffLineHelper *DiffLineHelper, filesHelper *FilesHelper, externalTool *ExternalToolHelper) *DiffHelper {
 	return &DiffHelper{
 		c:              c,
 		diffLineHelper: diffLineHelper,
 		filesHelper:    filesHelper,
+		externalTool:   externalTool,
 	}
 }
 
@@ -218,7 +221,7 @@ func (self *DiffHelper) IgnoringWhitespaceSubTitle() string {
 func (self *DiffHelper) OpenDiffToolForRef(selectedRef models.Ref) error {
 	to := selectedRef.RefName()
 	from, reverse := self.c.Modes().Diffing.GetFromAndReverseArgsForDiff("")
-	_, err := self.c.RunSubprocess(self.c.Git().Diff.OpenDiffToolCmdObj(
+	cmd := self.c.Git().Diff.OpenDiffToolCmdObj(
 		git_commands.DiffToolCmdOptions{
 			Filepath:    ".",
 			FromCommit:  from,
@@ -226,8 +229,15 @@ func (self *DiffHelper) OpenDiffToolForRef(selectedRef models.Ref) error {
 			Reverse:     reverse,
 			IsDirectory: true,
 			Staged:      false,
-		}))
-	return err
+		})
+	// Fork: the difftool goes through the external tool chooser (fork_external_tool.go).
+	return self.externalTool.WithExternalTool(git_commands.ExternalToolDiff, func(apply func(*oscommands.CmdObj) error) error {
+		if err := apply(cmd); err != nil {
+			return err
+		}
+		_, err := self.c.RunSubprocess(cmd)
+		return err
+	}, nil)
 }
 
 // EditFilesOfDiff opens files of the diff that the current side panel shows in the

@@ -131,6 +131,10 @@ re-apply it if upstream changes that code.
   `SetClipboardWriter` (OSC 52, `pkg/gui/fork_clipboard.go`, wired right after
   `gui.os = osCommand`). Paste still uses `atotto/clipboard`. Keep the writer
   injected so `oscommands` never imports gocui.
+- `git_commands/fork_external_tool.go`: `ConfiguredExternalTool`,
+  `AvailableExternalTools` (parsed from `--tool-help`), `ApplyExternalTool`
+  (one launch, through `GIT_CONFIG_COUNT`) and `SaveExternalToolGlobally`. Shared
+  by the difftool and, later, the merge tool through `ExternalToolMode`.
 - `git_commands/commit_loader.go`: `GetCommitsOptions` carries the commit
   scope (`ScopeHashes`, `ScopeDescendants`, `ScopeRef`, `ScopeTips`). `GetCommits`
   loads a scoped list with `loadCommitScope` and skips rebase todos for it;
@@ -302,6 +306,36 @@ re-apply it if upstream changes that code.
 - `pkg/gui/controllers.go`: attaches the fork controllers: Files inspection,
   Worktrees commits, and `RefCommitCopyController` for Branches, Remote
   branches and Tags.
+
+### Difftool launches
+
+Every difftool launch goes through `helpers/fork_external_tool.go`
+(`ExternalToolHelper.WithExternalTool`), which asks for a tool when none is
+configured (`docs-master/fork/Design.md`, "Tools are never guessed"). A new
+difftool launch must use it: build the command, then run it from the `launch`
+callback after `apply` has set the tool on it. Pass a `cancel` that releases
+anything the caller holds, since it runs whenever nothing launches. The
+integration points are:
+
+- `controllers/basic_commits_controller.go` `openDiffTool`: a commit against
+  its parent or a range.
+- `controllers/commits_files_controller.go` `openDiffTool`: a commit's file or
+  directory.
+- `controllers/files_controller.go` `openDiffTool`: a Files entry.
+- `controllers/working_file_diff_actions.go` `diffWorkingFileWithStaged`: the
+  index against the working file.
+- `controllers/historical_diff_actions.go` `runHistoricalRevisionDiff`: the
+  revision and directory diffs from commits and Files.
+- `controllers/historical_diff_actions.go` `runPreparedHistoricalFileDiff`: the
+  temporary historical copy of a file, closed exactly once after the tool exits
+  or when nothing launches.
+- `controllers/historical_commit_comparison.go` `prompt`: the pasted-hash
+  comparison, keeping its generation-guarded refresh.
+- `helpers/diff_helper.go` `OpenDiffToolForRef`: branches, remote branches and
+  tags.
+
+These run on the UI thread, where menus open. `git mergetool` is not covered
+here; the merge tool chooser is a separate task.
 
 ### Helpers (replacements)
 

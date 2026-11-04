@@ -53,6 +53,8 @@ type Helpers struct {
 	Search            *SearchHelper
 	Worktree          *WorktreeHelper
 	SubCommits        *SubCommitsHelper
+	// Fork: external difftool and merge tool selection (fork_external_tool.go).
+	ExternalTool *ExternalToolHelper
 }
 
 func NewStubHelpers() *Helpers {
@@ -90,5 +92,6 @@ func NewStubHelpers() *Helpers {
 		Search:            &SearchHelper{},
 		Worktree:          &WorktreeHelper{},
 		SubCommits:        &SubCommitsHelper{},
+		ExternalTool:      &ExternalToolHelper{},
 	}
 }

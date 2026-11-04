@@ -7,6 +7,7 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
 )
@@ -97,9 +98,15 @@ func runHistoricalRevisionDiff(c *ControllerCommon, oid string, previous bool, p
 	if err != nil {
 		return err
 	}
-	_, runErr := c.RunSubprocess(cmd)
-	c.Refresh(types.RefreshOptions{})
-	return runErr
+	// Fork: no tool configured asks the user first (fork_external_tool.go).
+	return c.Helpers().ExternalTool.WithExternalTool(git_commands.ExternalToolDiff, func(apply func(*oscommands.CmdObj) error) error {
+		if err := apply(cmd); err != nil {
+			return err
+		}
+		_, runErr := c.RunSubprocess(cmd)
+		c.Refresh(types.RefreshOptions{})
+		return runErr
+	}, nil)
 }
 
 func (self *CommitFilesController) historicalDiffBindings(opts types.KeybindingsOpts) []*types.Binding {
@@ -254,11 +261,19 @@ func (self *CommitFilesController) runHistoricalFileDiff(oid, path, destination 
 	return self.runPreparedHistoricalFileDiff(prepared)
 }
 
-func (self *CommitFilesController) runPreparedHistoricalFileDiff(prepared *git_commands.HistoricalFileDiff) (resultErr error) {
-	defer func() {
-		resultErr = errors.Join(resultErr, prepared.Close())
-		self.c.Refresh(types.RefreshOptions{})
-	}()
-	_, resultErr = self.c.RunSubprocess(prepared.Command)
-	return resultErr
+// Fork: the temporary source file is closed exactly once: after the tool exits
+// if it launches, or when the chooser cancels or fails before launching.
+func (self *CommitFilesController) runPreparedHistoricalFileDiff(prepared *git_commands.HistoricalFileDiff) error {
+	// Fork: no tool configured asks the user first (fork_external_tool.go).
+	return self.c.Helpers().ExternalTool.WithExternalTool(git_commands.ExternalToolDiff, func(apply func(*oscommands.CmdObj) error) (resultErr error) {
+		defer func() {
+			resultErr = errors.Join(resultErr, prepared.Close())
+			self.c.Refresh(types.RefreshOptions{})
+		}()
+		if err := apply(prepared.Command); err != nil {
+			return err
+		}
+		_, resultErr = self.c.RunSubprocess(prepared.Command)
+		return resultErr
+	}, prepared.Close)
 }

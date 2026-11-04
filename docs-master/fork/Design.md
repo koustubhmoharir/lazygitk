@@ -20,6 +20,9 @@ recorded here or in the user guide.
 - **Meaningful choices are presented, not made silently.** Where an operation
   has real alternatives, a menu or confirmation offers them with a sensible
   default. The application never quietly picks one.
+- **Tools are never guessed.** With no difftool configured, lazygitk lists the
+  tools Git reports and asks which to use. The choice applies to one launch
+  unless the user saves it to Git's global config. Escape launches nothing.
 - **Risks are shown; the user's choice is respected.** A risk the user has not
   yet seen is shown in a review before anything runs, and that review selects
   the action the user chose, with Cancel (and Escape) beside it. A risk

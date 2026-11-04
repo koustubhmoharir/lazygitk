@@ -7,6 +7,7 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/commands/patch"
 	"github.com/jesseduffield/lazygit/pkg/constants"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
@@ -504,7 +505,7 @@ func (self *CommitFilesController) canEditFiles(nodes []*filetree.CommitFileNode
 func (self *CommitFilesController) openDiffTool(node *filetree.CommitFileNode) error {
 	from, to := self.context().GetFromAndToForDiff()
 	from, reverse := self.c.Modes().Diffing.GetFromAndReverseArgsForDiff(from)
-	_, err := self.c.RunSubprocess(self.c.Git().Diff.OpenDiffToolCmdObj(
+	cmd := self.c.Git().Diff.OpenDiffToolCmdObj(
 		git_commands.DiffToolCmdOptions{
 			Filepath:    node.GetPath(),
 			FromCommit:  from,
@@ -512,8 +513,15 @@ func (self *CommitFilesController) openDiffTool(node *filetree.CommitFileNode) e
 			Reverse:     reverse,
 			IsDirectory: !node.IsFile(),
 			Staged:      false,
-		}))
-	return err
+		})
+	// Fork: no tool configured asks the user first (fork_external_tool.go).
+	return self.c.Helpers().ExternalTool.WithExternalTool(git_commands.ExternalToolDiff, func(apply func(*oscommands.CmdObj) error) error {
+		if err := apply(cmd); err != nil {
+			return err
+		}
+		_, err := self.c.RunSubprocess(cmd)
+		return err
+	}, nil)
 }
 
 func (self *CommitFilesController) toggleForPatch(selectedNodes []*filetree.CommitFileNode) error {

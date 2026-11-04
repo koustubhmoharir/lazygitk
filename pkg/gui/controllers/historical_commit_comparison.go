@@ -6,6 +6,7 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
+	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 )
 
@@ -80,11 +81,17 @@ func (target *historicalCommitComparisonTarget) prompt() {
 			if err != nil {
 				return err
 			}
-			_, runErr := target.c.RunSubprocess(cmd)
-			if target.c.Git() == target.git && target.c.State().GetRepoGeneration() == target.generation {
-				target.c.Refresh(types.RefreshOptions{})
-			}
-			return runErr
+			// Fork: no tool configured asks the user first (fork_external_tool.go).
+			return target.c.Helpers().ExternalTool.WithExternalTool(git_commands.ExternalToolDiff, func(apply func(*oscommands.CmdObj) error) error {
+				if err := apply(cmd); err != nil {
+					return err
+				}
+				_, runErr := target.c.RunSubprocess(cmd)
+				if target.c.Git() == target.git && target.c.State().GetRepoGeneration() == target.generation {
+					target.c.Refresh(types.RefreshOptions{})
+				}
+				return runErr
+			}, nil)
 		})
 }
 

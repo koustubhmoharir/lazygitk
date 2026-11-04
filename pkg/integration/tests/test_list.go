@@ -257,6 +257,8 @@ var tests = []*components.IntegrationTest{
 	diff.DiffCommits,
 	diff.DiffNonStickyRange,
 	diff.DiffRendererMetadata,
+	diff.ExternalToolChooserCancel,
+	diff.ExternalToolChooserOnce,
 	diff.HistoricalDiffActions,
 	diff.IgnoreWhitespace,
 	diff.RenameSimilarityThresholdChange,

@@ -256,6 +256,12 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   commit, file or directory: against the working tree, against the previous
   commit (first parent for a merge), or against a commit whose full or partial
   hash you paste. They do not use or change the sticky diff mode (`t d c`).
+- With no `diff.tool` (or `merge.tool`, which the difftool falls back to)
+  configured, these comparisons and `t d e` first list the tools Git reports
+  as available, instead of Git's "not configured" message and a guess. Choose
+  one, then `Just this time` (the default) or `Save as Git's diff.tool in your
+  global config, and use it`. Escape at either step launches nothing. A
+  configured tool launches at once, with no menu.
 - In Files, `d w`, `d s` and `d c` compare the working file with HEAD, the
   index or a pasted commit, base on the left. Untracked files have no base, so
   they are disabled.

@@ -33,6 +33,12 @@ func (gui *historicalInvocationGui) RunSubprocess(cmd *oscommands.CmdObj) (bool,
 
 func (gui *historicalInvocationGui) Refresh(types.RefreshOptions) { gui.refreshes++ }
 
+// State is read by the external tool chooser, which captures the repository
+// generation before it launches.
+func (gui *historicalInvocationGui) State() types.IStateAccessor {
+	return &historicalComparisonState{}
+}
+
 func historicalInvocationGit(t *testing.T, root string) (*commands.GitCommand, *oscommands.FakeCmdObjRunner) {
 	t.Helper()
 	runner := oscommands.NewFakeRunner(t)
@@ -85,6 +91,8 @@ func TestHistoricalFileDiffInvocationArguments(t *testing.T) {
 			controller.c.IGuiCommon = gui
 			runner.ExpectGitArgs([]string{"rev-parse", "--verify", "--end-of-options", oid + "^{commit}"}, oid, nil)
 			runner.ExpectGitArgs([]string{"rev-list", "--parents", "-n", "1", oid, "--"}, oid+" "+parent, nil)
+			// diff.tool is configured, so the chooser launches without a menu.
+			runner.ExpectGitArgs([]string{"config", "--get", "diff.tool"}, "fake", nil)
 			var err error
 			if tc.handler == "previous" {
 				err = controller.diffHistoricalFileWithPrevious()
@@ -143,6 +151,7 @@ func TestHistoricalFileDiffInvocationGuardsAndFailureRefresh(t *testing.T) {
 	controller.c.IGuiCommon = gui
 	runner.ExpectGitArgs([]string{"rev-parse", "--verify", "--end-of-options", oid + "^{commit}"}, oid, nil)
 	runner.ExpectGitArgs([]string{"rev-list", "--parents", "-n", "1", oid, "--"}, oid+" "+parent, nil)
+	runner.ExpectGitArgs([]string{"config", "--get", "diff.tool"}, "fake", nil)
 	err := controller.diffHistoricalFileWithWorktree()
 	if !errors.Is(err, sentinel) {
 		t.Fatalf("error = %v, want terminal error %v", err, sentinel)

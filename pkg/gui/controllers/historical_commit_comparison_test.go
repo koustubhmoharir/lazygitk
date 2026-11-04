@@ -45,6 +45,11 @@ func (ui *historicalComparisonUI) RunSubprocess(cmd *oscommands.CmdObj) (bool, e
 }
 func (ui *historicalComparisonUI) Refresh(types.RefreshOptions) {}
 
+func historicalComparisonController(ui *historicalComparisonUI) *ControllerCommon {
+	hc := &helpers.HelperCommon{Common: common.NewDummyCommon(), IGuiCommon: ui}
+	return NewControllerCommon(hc, historicalTestHelpersFor(hc))
+}
+
 func historicalComparisonRepo(t *testing.T) (*commands.GitCommand, string, string) {
 	t.Helper()
 	root := t.TempDir()
@@ -59,6 +64,8 @@ func historicalComparisonRepo(t *testing.T) (*commands.GitCommand, string, strin
 	run("init", "-q")
 	run("config", "user.name", "Test")
 	run("config", "user.email", "test@example.invalid")
+	// A diff tool is configured, so the external tool chooser launches at once.
+	run("config", "diff.tool", "fake")
 	if err := os.WriteFile(filepath.Join(root, "one"), []byte("one"), 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -79,7 +86,7 @@ func historicalComparisonRepo(t *testing.T) (*commands.GitCommand, string, strin
 func TestHistoricalCommitComparisonPromptCancellationAndCapturedTarget(t *testing.T) {
 	git, left, right := historicalComparisonRepo(t)
 	ui := &historicalComparisonUI{git: git, state: &historicalComparisonState{}}
-	c := NewControllerCommon(&helpers.HelperCommon{Common: common.NewDummyCommon(), IGuiCommon: ui}, nil)
+	c := historicalComparisonController(ui)
 	paths := []string{"old-name"}
 	target, err := newHistoricalCommitComparisonTarget(c, left, paths, false)
 	if err != nil {
@@ -111,7 +118,7 @@ func TestHistoricalCommitComparisonPromptCancellationAndCapturedTarget(t *testin
 func TestHistoricalCommitComparisonRejectsRepositoryChange(t *testing.T) {
 	git, left, right := historicalComparisonRepo(t)
 	ui := &historicalComparisonUI{git: git, state: &historicalComparisonState{}}
-	c := NewControllerCommon(&helpers.HelperCommon{Common: common.NewDummyCommon(), IGuiCommon: ui}, nil)
+	c := historicalComparisonController(ui)
 	target, err := newHistoricalCommitComparisonTarget(c, left, []string{"."}, true)
 	if err != nil {
 		t.Fatal(err)
@@ -170,7 +177,7 @@ func TestHistoricalCommitComparisonSelectedOIDCannotBeShadowedByRef(t *testing.T
 		t.Fatalf("create hex ref: %v: %s", err, output)
 	}
 	ui := &historicalComparisonUI{git: git, state: &historicalComparisonState{}}
-	c := NewControllerCommon(&helpers.HelperCommon{Common: common.NewDummyCommon(), IGuiCommon: ui}, nil)
+	c := historicalComparisonController(ui)
 	target, err := newHistoricalCommitComparisonTarget(c, left, []string{"."}, true)
 	if err != nil {
 		t.Fatal(err)
