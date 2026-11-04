@@ -134,7 +134,13 @@ re-apply it if upstream changes that code.
 - `git_commands/fork_external_tool.go`: `ConfiguredExternalTool`,
   `AvailableExternalTools` (parsed from `--tool-help`), `ApplyExternalTool`
   (one launch, through `GIT_CONFIG_COUNT`) and `SaveExternalToolGlobally`. Shared
-  by the difftool and, later, the merge tool through `ExternalToolMode`.
+  by the difftool and the merge tool through `ExternalToolMode`.
+- `git_commands/fork_merge_tool.go`: `MergeToolCmdObj` builds
+  `git --literal-pathspecs mergetool --no-prompt -- <paths>` and adds
+  `-c mergetool.keepBackup=false` only while that key is unset. It reads the key
+  fresh on each call and refuses an empty path list.
+- `git_commands/working_tree.go` (replacement): `OpenMergeToolCmdObj`, which ran
+  `git mergetool` with no paths, is removed.
 - `git_commands/commit_loader.go`: `GetCommitsOptions` carries the commit
   scope (`ScopeHashes`, `ScopeDescendants`, `ScopeRef`, `ScopeTips`). `GetCommits`
   loads a scoped list with `loadCommitScope` and skips rebase todos for it;
@@ -334,8 +340,24 @@ integration points are:
 - `helpers/diff_helper.go` `OpenDiffToolForRef`: branches, remote branches and
   tags.
 
-These run on the UI thread, where menus open. `git mergetool` is not covered
-here; the merge tool chooser is a separate task.
+These run on the UI thread, where menus open. The merge tool has its own
+launch, described under "Merge tool" below.
+
+### Merge tool
+
+- `helpers/working_tree_helper.go` `OpenMergeTool` (replacement): upstream ran
+  `git mergetool` with no paths, which guesses a tool. It now takes the paths
+  and launches through `WithExternalTool(ExternalToolMerge, ...)`, then
+  `RunSubprocessAndRefresh`. `CreateMergeConflictMenu` passes the files the
+  menu was opened on. The helper takes the `ExternalToolHelper` as a
+  constructor argument, wired in `pkg/gui/controllers.go`; a test fixture that
+  builds the helper passes nil, which is safe as long as it does not launch.
+- `controllers/fork_merge_tool.go`: the `conflict.open-merge-tool-selected`
+  bindings for Files (flattened selection, conflicted files only, disabled as
+  inapplicable with none) and for the conflicts view (the file being resolved).
+  `controllers/files_controller.go` and `merge_conflicts_controller.go` each
+  append one line to `GetKeybindings` to include them.
+- `keymap/default_paths.go`: `d m` routes to that command.
 
 ### Helpers (replacements)
 
@@ -513,7 +535,7 @@ In `pkg/gui/controllers/`: `bisect_controller.go`,
 `tags_controller.go`, `undo_controller.go`, `workspace_reset_controller.go`,
 `worktrees_controller.go`. In `helpers/`: `branches_helper.go`,
 `commits_helper.go`, `diff_line_file_menu.go`, `refresh_helper.go`,
-`repos_helper.go`, `working_tree_helper.go`, `worktree_helper.go`. Also
+`repos_helper.go`, `worktree_helper.go`. Also
 `pkg/gui/extras_panel.go` and
 `pkg/gui/services/custom_commands/keybinding_creator.go`.
 `go run new-features/inventory/check_annotations.go -base <commit> <files…>`

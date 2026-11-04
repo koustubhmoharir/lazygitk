@@ -222,6 +222,7 @@ type TranslationSet struct {
 	ToggleTreeViewTooltip                 string
 	OpenDiffTool                          string
 	OpenMergeTool                         string
+	OpenMergeToolSelected                 string
 	Refresh                               string
 	RefreshTooltip                        string
 	Push                                  string
@@ -1361,6 +1362,7 @@ type TranslationSet struct {
 	ViewMergeConflictOptions                 string
 	ViewMergeConflictOptionsTooltip          string
 	NoFilesWithMergeConflicts                string
+	NoConflictedFilesSelected                string
 	MergeConflictOptionsTitle                string
 	UseCurrentChanges                        string
 	UseIncomingChanges                       string
@@ -1754,6 +1756,7 @@ func EnglishTranslationSet() *TranslationSet {
 		ToggleTreeViewTooltip:                "Toggle file view between flat and tree layout. Flat layout shows all file paths in a single list, tree layout groups files by directory.\n\nThe default can be changed in the config file with the key 'gui.showFileTree'.",
 		OpenDiffTool:                         "Open external diff tool (git difftool)",
 		OpenMergeTool:                        "Open external merge tool",
+		OpenMergeToolSelected:                "Open merge tool",
 		Refresh:                              "Refresh",
 		RefreshTooltip:                       "Refresh the git state (i.e. run `git status`, `git branch`, etc in background to update the contents of panels). This does not run `git fetch`.",
 		Push:                                 "Push",
@@ -2889,6 +2892,7 @@ func EnglishTranslationSet() *TranslationSet {
 		ViewMergeConflictOptions:                 "View merge conflict options",
 		ViewMergeConflictOptionsTooltip:          "View options for resolving merge conflicts.",
 		NoFilesWithMergeConflicts:                "There are no files with merge conflicts.",
+		NoConflictedFilesSelected:                "No conflicted files selected",
 		MergeConflictOptionsTitle:                "Resolve merge conflicts",
 		UseCurrentChanges:                        "Use current changes",
 		UseIncomingChanges:                       "Use incoming changes",

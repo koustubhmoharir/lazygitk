@@ -33,10 +33,6 @@ func NewWorkingTreeCommands(
 	}
 }
 
-func (self *WorkingTreeCommands) OpenMergeToolCmdObj() *oscommands.CmdObj {
-	return self.cmd.New(NewGitCmd("mergetool").ToArgv())
-}
-
 // StageFile stages a file
 func (self *WorkingTreeCommands) StageFile(path string) error {
 	return self.StageFiles([]string{path}, nil)

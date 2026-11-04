@@ -111,6 +111,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` o `` | 開啟檔案 | 使用預設軟體開啟 |
 | `` g h c `` | 檢視合併衝突選項 | 檢視用於解決合併衝突的選項。 |
 | `` <esc> `` | 返回檔案面板 |  |
+| `` d m `` | Open merge tool |  |
 
 ## 功能表
 
@@ -417,6 +418,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d w `` | Diff with HEAD |  |
 | `` d s `` | Diff with staged version |  |
 | `` d c `` | Diff with commit… |  |
+| `` d m `` | Open merge tool |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
 | `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |

@@ -294,6 +294,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` o `` | Otwórz plik | Otwórz plik w domyślnej aplikacji. |
 | `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
 | `` <esc> `` | Wróć do panelu plików |  |
+| `` d m `` | Open merge tool |  |
 
 ## Panel potwierdzenia
 
@@ -335,6 +336,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d w `` | Diff with HEAD |  |
 | `` d s `` | Diff with staged version |  |
 | `` d c `` | Diff with commit… |  |
+| `` d m `` | Open merge tool |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
 | `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |

@@ -41,7 +41,6 @@ Conflict flow and external tools. Agreed with the user on 2026-11-04.
 
 ## Remaining tasks
 
-- `d m` and the merge tool chooser.
 - Replace message history with draft recall in the commit message box.
 
 ## How this tracker works

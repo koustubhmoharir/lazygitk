@@ -98,7 +98,7 @@ func (gui *Gui) resetHelpersAndControllers() {
 		Bisect:          bisectHelper,
 		Suggestions:     suggestionsHelper,
 		Files:           filesHelper,
-		WorkingTree:     helpers.NewWorkingTreeHelper(helperCommon, refsHelper, commitsHelper, gpgHelper, rebaseHelper),
+		WorkingTree:     helpers.NewWorkingTreeHelper(helperCommon, refsHelper, commitsHelper, gpgHelper, rebaseHelper, externalToolHelper),
 		Tags:            helpers.NewTagsHelper(helperCommon, commitsHelper, gpgHelper),
 		BranchesHelper:  helpers.NewBranchesHelper(helperCommon, worktreeHelper),
 		GPG:             helpers.NewGpgHelper(helperCommon),

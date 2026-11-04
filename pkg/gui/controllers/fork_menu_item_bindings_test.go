@@ -111,7 +111,7 @@ func flatCopyFilesController(t *testing.T) *FilesController {
 		}},
 	}
 	helpersStub := flatCopyTestHelpers{helpers: &helpers.Helpers{
-		WorkingTree: helpers.NewWorkingTreeHelper(helperCommon, nil, nil, nil, nil),
+		WorkingTree: helpers.NewWorkingTreeHelper(helperCommon, nil, nil, nil, nil, nil),
 	}}
 	return NewFilesController(NewControllerCommon(helperCommon, helpersStub))
 }

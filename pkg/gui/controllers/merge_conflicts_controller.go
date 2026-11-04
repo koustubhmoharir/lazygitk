@@ -136,6 +136,7 @@ func (self *MergeConflictsController) GetKeybindings(opts types.KeybindingsOpts)
 		},
 	}
 
+	bindings = append(bindings, self.mergeToolBindings()...)
 	return bindings
 }
 

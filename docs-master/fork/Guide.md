@@ -91,6 +91,7 @@ switching to it) or a submodule (Escape returns to the parent repository).
 | `i` | Ignore or exclude |
 | `e`, `o` | Edit, open |
 | `d w`, `d s`, `d c` | Difftool against HEAD, the staged version, or a pasted commit hash |
+| `d m` | Merge tool for the selected conflicted files |
 | `g e c`, `g e n` | Commit with the Git editor; commit without hooks |
 | `g s s`, `g s o` | Stash all changes; stash options |
 | `g h c` | Merge conflict options |
@@ -134,6 +135,7 @@ of a stash entry:
 | `u u` | Undo the last pick |
 | `e`, `o` | Edit, open the file |
 | `g h c` | Conflict options |
+| `d m` | Merge tool for this file |
 | Escape | Back to Files |
 
 ### Commits, Reflog and Sub-commits
@@ -228,7 +230,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 
 | Group | Entries |
 | --- | --- |
-| `d` diff | `w` working tree (HEAD in Files), `p` previous commit, `s` staged version (Files), `c` pasted commit |
+| `d` diff and merge | `w` working tree (HEAD in Files), `p` previous commit, `s` staged version (Files), `c` pasted commit; `m` merge tool (Files, conflicts view) |
 | `s` switch and reset | `c` check out, `d` detached HEAD, `h` `m` `s` hard, mixed, soft reset, `p` previous branch, `w` switch worktree (Worktrees); in Status only `r` recent repositories and `n` open a repository by path |
 | `n` new | `b` branch here, `t` tag, `w` worktree, `r` remote, `f` fork remote, `s` submodule |
 | `c` cherry-pick and continue | `p` cherry-pick the selection, `c` continue |
@@ -269,6 +271,24 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   choose, including untracked, ignored or renamed ones. The historical version
   is a temporary read-only copy, removed when the tool exits. The difftool
   should return 0 on success; detached GUI tools must wait for their window.
+
+### Merge tool
+
+- `d m`, in Files and in the conflicts view, opens the merge tool (`git
+  mergetool`) on the selected conflicted files. The item Open external merge
+  tool in `g h c` does the same. Delete/modify and add/add conflicts count. In
+  Files, selected files without a conflict are ignored, and with no conflicted
+  file selected `d m` does nothing. In the conflicts view it acts on the file
+  being resolved.
+- Git runs the tool without its per-file prompt. Git stages a file it considers
+  resolved, as `git mergetool` does; a file the tool leaves unresolved stays
+  conflicted. Git's `.orig` backups are not kept unless `mergetool.keepBackup`
+  is set in Git's config; an explicit setting of either value is respected.
+- With no `merge.tool` configured, the tools Git reports are listed first, as
+  for the difftool above, and `Just this time` (the default) or `Save as Git's
+  merge.tool in your global config, and use it` follows. Escape at either step
+  launches nothing.
+- Files refreshes when the tool exits.
 
 ### Branches and checkout
 

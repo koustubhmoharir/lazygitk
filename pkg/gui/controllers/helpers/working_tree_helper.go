@@ -9,6 +9,7 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/style"
@@ -23,6 +24,7 @@ type WorkingTreeHelper struct {
 	commitsHelper        *CommitsHelper
 	gpgHelper            *GpgHelper
 	mergeAndRebaseHelper *MergeAndRebaseHelper
+	externalTool         *ExternalToolHelper
 }
 
 func NewWorkingTreeHelper(
@@ -31,6 +33,7 @@ func NewWorkingTreeHelper(
 	commitsHelper *CommitsHelper,
 	gpgHelper *GpgHelper,
 	mergeAndRebaseHelper *MergeAndRebaseHelper,
+	externalTool *ExternalToolHelper,
 ) *WorkingTreeHelper {
 	return &WorkingTreeHelper{
 		c:                    c,
@@ -38,6 +41,7 @@ func NewWorkingTreeHelper(
 		commitsHelper:        commitsHelper,
 		gpgHelper:            gpgHelper,
 		mergeAndRebaseHelper: mergeAndRebaseHelper,
+		externalTool:         externalTool,
 	}
 }
 
@@ -147,11 +151,23 @@ func (self *WorkingTreeHelper) CantStageNestedRepository(file *models.File) *typ
 	}
 }
 
-func (self *WorkingTreeHelper) OpenMergeTool() error {
-	self.c.LogAction(self.c.Tr.Actions.OpenMergeTool)
-	return self.c.RunSubprocessAndRefresh(
-		self.c.Git().WorkingTree.OpenMergeToolCmdObj(),
-	)
+// OpenMergeTool runs the merge tool on the given paths. Fork: it replaces
+// upstream's `git mergetool` with no paths, which walks every conflicted file
+// and guesses a tool. The launch goes through WithExternalTool, so a tool is
+// asked for when merge.tool is unset (see fork_merge_tool.go and
+// docs-master/fork/Guide.md).
+func (self *WorkingTreeHelper) OpenMergeTool(paths []string) error {
+	return self.externalTool.WithExternalTool(git_commands.ExternalToolMerge, func(apply func(*oscommands.CmdObj) error) error {
+		cmd, err := self.c.Git().WorkingTree.MergeToolCmdObj(paths)
+		if err != nil {
+			return err
+		}
+		if err := apply(cmd); err != nil {
+			return err
+		}
+		self.c.LogAction(self.c.Tr.Actions.OpenMergeTool)
+		return self.c.RunSubprocessAndRefresh(cmd)
+	}, nil)
 }
 
 func (self *WorkingTreeHelper) HandleCommitPressWithMessage(initialMessage string, forceSkipHooks bool) error {
@@ -448,8 +464,10 @@ func (self *WorkingTreeHelper) CreateMergeConflictMenu(selectedFilepaths []strin
 				},
 				CommandID: "conflict.open-mergetool",
 				Verb:      "open-mergetool",
-				OnPress:   self.OpenMergeTool,
-				Keys:      menuKey('m'),
+				// Fork: passes the files this menu was opened on, rather than
+				// letting `git mergetool` pick every conflicted file.
+				OnPress: func() error { return self.OpenMergeTool(selectedFilepaths) },
+				Keys:    menuKey('m'),
 			},
 		},
 	})

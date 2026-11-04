@@ -41,6 +41,7 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("diff.commit.previous diff.history-file.previous", "d p")
 	add("diff.working-file.staged", "d s")
 	add("diff.commit.selected-commit diff.history-file.selected-commit diff.working-file.selected-commit", "d c")
+	add("conflict.open-merge-tool-selected", "d m")
 	add("tag.push branch.push-current branch.push-selected", "p")
 	add("remote.fetch repo.fetch", "f")
 	add("branch.rename stash.rename commit.reword", "f2")
