@@ -25,6 +25,18 @@ type MergeAndRebaseHelper struct {
 	// externally), so the user isn't left with a stale prompt. Only accessed on
 	// the UI thread.
 	continueRebasePromptShowing bool
+
+	// Fork: runs once, on the UI thread, when the operation that a pick stopped on
+	// conflicts left in progress ends by continue or skip (see settleOperationFinished).
+	// Only accessed on the UI thread.
+	onOperationFinished func() error
+}
+
+// SetOnOperationFinished sets the callback that runs once the operation in progress
+// ends by continue or skip. A later call replaces an earlier one. Call it on the UI
+// thread.
+func (self *MergeAndRebaseHelper) SetOnOperationFinished(callback func() error) {
+	self.onOperationFinished = callback
 }
 
 func NewMergeAndRebaseHelper(
@@ -149,6 +161,7 @@ func (self *MergeAndRebaseHelper) genericMergeCommandImpl(command string, showWa
 			CommitSelection: commitSelectionAfterMerge(success && selectHeadCommitOnSuccess),
 		}, calledFromWorker)
 		self.RecordWhetherMergeOrRebaseStartedInLazygit()
+		self.settleOperationFinished(command, err)
 		return err
 	}
 
@@ -157,6 +170,7 @@ func (self *MergeAndRebaseHelper) genericMergeCommandImpl(command string, showWa
 	// CheckMergeOrRebaseWithRefreshOptions, which already runs on one.
 	runAction := func() error {
 		result := self.c.Git().Rebase.GenericMergeOrRebaseAction(commandType, command)
+		self.settleOperationFinished(command, result)
 		return self.CheckMergeOrRebaseWithRefreshOptions(result,
 			types.RefreshOptions{
 				CommitSelection: commitSelectionAfterMerge(result == nil && selectHeadCommitOnSuccess),
@@ -169,6 +183,35 @@ func (self *MergeAndRebaseHelper) genericMergeCommandImpl(command string, showWa
 		})
 	}
 	return runAction()
+}
+
+// settleOperationFinished runs after a continue, skip or abort. Once the operation
+// has ended, a continue or skip that succeeded runs the callback that a pick stopped
+// on conflicts registered. An abort drops that callback without running it, so the
+// pick's selection stays. A step that leaves the operation in progress, such as a
+// continue that stops on another conflict, keeps the callback.
+func (self *MergeAndRebaseHelper) settleOperationFinished(command string, result error) {
+	ended := self.c.Git().Status.WorkingTreeState().None()
+	if command == REBASE_OPTION_ABORT {
+		if ended {
+			self.c.OnUIThread(func() error {
+				self.onOperationFinished = nil
+				return nil
+			})
+		}
+		return
+	}
+	if result != nil || !ended {
+		return
+	}
+	self.c.OnUIThread(func() error {
+		callback := self.onOperationFinished
+		self.onOperationFinished = nil
+		if callback == nil {
+			return nil
+		}
+		return callback()
+	})
 }
 
 // commitSelectionAfterMerge maps whether a merge/rebase/pull created a new

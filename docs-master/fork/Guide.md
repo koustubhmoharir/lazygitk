@@ -372,8 +372,11 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - `c p` cherry-picks the selection of the pane it is pressed in: the commits
   selected in Commits, the Shift range in Sub-commits, or in Reflog. It shows
   the exact commits and destination before cherry-picking. A successful
-  cherry-pick clears the selection; one that stops on conflicts keeps it, so
-  the pick can be aborted and tried again. There is no separate copy step.
+  cherry-pick clears the selection. One that stops on conflicts keeps it while
+  the operation is in progress, so an abort leaves it for a retry; continuing
+  the operation to its end (`c c`, or the continue menu) clears it. Finishing
+  the last pick with Enter does not clear it: Escape does.
+  There is no separate copy step.
 - Amending an older commit or creating stacked fixups refuses before
   committing if other tracked edits would remain for the rebase.
 

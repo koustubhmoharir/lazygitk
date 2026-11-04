@@ -199,9 +199,15 @@ func (flow *forkCherryPickFlow) apply(plan git_commands.CherryPickPlan) error {
 		if handled != nil {
 			return handled
 		}
-		// A pick that stops on conflicts has a non-nil result, so it keeps the selection.
 		if result == nil {
 			flow.c.OnUIThread(flow.clearPickedSelection)
+		} else if flow.c.Git().Status.WorkingTreeState().Any() {
+			// A pick that stops on conflicts keeps the selection until the operation it
+			// left is continued or skipped to its end; an abort keeps it (see settleOperationFinished).
+			flow.c.OnUIThread(func() error {
+				flow.c.Helpers().MergeAndRebase.SetOnOperationFinished(flow.clearPickedSelection)
+				return nil
+			})
 		}
 		return nil
 	})

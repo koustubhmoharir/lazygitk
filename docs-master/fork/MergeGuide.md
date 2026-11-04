@@ -310,6 +310,12 @@ re-apply it if upstream changes that code.
   `MergeRefIntoCheckedOutBranch` and related functions delegate to
   `captured_merge*.go` and `captured_rebase*.go`. While `SequencePaused`, its
   skip item stays in the menu, disabled with `SkipCommittedPickDisabled`.
+  Fork: `SetOnOperationFinished` holds a callback, which `fork_cherry_pick.go`
+  registers when a pick stops on conflicts. `genericMergeCommandImpl` calls
+  `settleOperationFinished` after each continue, skip or abort, in both its
+  subprocess and worker paths, so the auto-skip is covered. A continue or skip
+  that ends the operation runs the callback once; an abort drops it. Upstream
+  changes to these functions must keep that call.
 - `helpers/refs_helper.go`: checkout of remote branches, the reset menu,
   the checkout menu, new branch and move-commits-to-new-branch use captured
   selections (`captured_reset.go`, `named_checkout.go`,
