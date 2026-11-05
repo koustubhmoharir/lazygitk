@@ -990,7 +990,8 @@ func (self *LocalCommitsController) handleReword(summary string, description str
 	}, func(gocui.Task) error {
 		err := self.c.Git().Rebase.RewordCommit(commits, selectedIdx, summary, description)
 		if err != nil {
-			return err
+			// Fork: the rebase may be left stopped, and the text is kept as a draft.
+			return self.rewordFailure(err)
 		}
 		// Fork: the reword has succeeded.
 		reportSuccess()

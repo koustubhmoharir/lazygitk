@@ -23,7 +23,7 @@ var DraftKeptWhenRewordOfOlderCommitFails = NewIntegrationTest(NewIntegrationTes
 			InitialText(Equals("commit 2")).
 			Type(" new text").
 			Confirm()
-		t.ExpectPopup().Alert().Title(Equals("Error")).Content(Contains("exit status 1")).Confirm()
+		t.ExpectPopup().Alert().Title(Equals("Error")).Content(Contains("Rewording failed: exit status 1").Contains("rebase is still stopped").Contains("g o").Contains("Press Up")).Confirm()
 		t.FileSystem().PathPresent(".git/LAZYGITK_COMMIT_DRAFTS")
 
 		// The failure leaves the rebase stopped, so abort it first.

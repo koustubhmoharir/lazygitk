@@ -435,6 +435,9 @@ drafts, instead of earlier commits' messages. The behaviour is in the
   `SaveCommitDraftIfChanged`, `CancelCommitMessagePanel`,
   `RecallOlderCommitDraft`, `RecallNewerCommitDraft` and
   `TakeCommitMessageSubmitReporter` are fork code.
+- `controllers/local_commits_controller.go`: `handleReword` passes a rebase-path
+  failure to `rewordFailure` (`controllers/fork_reword_failure.go`), which explains
+  the stopped rebase. Re-apply this if upstream changes that error path.
 - Submissions that finish on a worker: a panel opened with
   `OpenCommitMessagePanelOpts.ReportsSubmitResult` writes the text as a draft
   before `OnConfirm`, and its `OnConfirm` takes a reporter with

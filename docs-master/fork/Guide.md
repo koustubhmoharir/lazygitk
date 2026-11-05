@@ -433,8 +433,8 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
 - A submitted commit, reword, amend commit or commit moved from a patch stays a
   draft until it succeeds. If it fails, for example because of a hook, reopen
   the box and press Up to get the text back. A reword of an older commit that
-  fails leaves the rebase stopped; abort it first. A tag or combine message is
-  used up as soon as its box closes.
+  fails leaves the rebase stopped, and the error says how to abort or continue
+  it. A tag or combine message is used up as soon as its box closes.
 - The description box still moves its own cursor with Up and Down.
 
 ### Sync

@@ -655,6 +655,10 @@ type TranslationSet struct {
 	RecallOlderCommitDraft                string
 	RecallNewerCommitDraft                string
 	CommitDraftPosition                   string
+	RewordFailed                          string
+	RewordFailedRebaseStopped             string
+	RewordFailedRebaseStoppedNoKey        string
+	RewordFailedMessageKept               string
 	CommitHooksDisabledSubTitle           string
 	LocalBranchesTitle                    string
 	SearchTitle                           string
@@ -2194,6 +2198,10 @@ func EnglishTranslationSet() *TranslationSet {
 		RecallOlderCommitDraft:               "Recall older cancelled message",
 		RecallNewerCommitDraft:               "Recall newer cancelled message",
 		CommitDraftPosition:                  "Draft {{.index}} of {{.total}}",
+		RewordFailed:                         "Rewording failed: {{.error}}",
+		RewordFailedRebaseStopped:            "The rebase is still stopped. Press {{.key}} to abort or continue it before you try again.",
+		RewordFailedRebaseStoppedNoKey:       "The rebase is still stopped. Abort or continue it before you try again.",
+		RewordFailedMessageKept:              "Your message is saved. Press Up in the message box to get it back.",
 		CommitHooksDisabledSubTitle:          "(hooks disabled)",
 		LocalBranchesTitle:                   "Local branches",
 		SearchTitle:                          "Search",
