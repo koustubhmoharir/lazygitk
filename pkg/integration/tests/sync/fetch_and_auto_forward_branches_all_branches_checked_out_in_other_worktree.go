@@ -80,6 +80,7 @@ var FetchAndAutoForwardBranchesAllBranchesCheckedOutInOtherWorktree = NewIntegra
 			Focus().
 			NavigateToLine(Contains("linked-worktree")).
 			PressPrimaryAction()
+		t.ExpectToast(Equals("Opened repo"))
 
 		t.Views().Files().
 			Focus().
@@ -90,6 +91,7 @@ var FetchAndAutoForwardBranchesAllBranchesCheckedOutInOtherWorktree = NewIntegra
 			Focus().
 			NavigateToLine(Contains("rebasing-worktree")).
 			PressPrimaryAction()
+		t.ExpectToast(Equals("Opened repo"))
 
 		t.Views().Commits().
 			Lines(

@@ -51,6 +51,7 @@ var FetchAndAutoForwardBranchesWorktreeAddedAfterStartup = NewIntegrationTest(Ne
 			Focus().
 			NavigateToLine(Contains("linked-worktree")).
 			PressPrimaryAction()
+		t.ExpectToast(Equals("Opened repo"))
 
 		t.Views().Files().
 			Focus().

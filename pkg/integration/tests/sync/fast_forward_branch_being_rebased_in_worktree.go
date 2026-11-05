@@ -40,6 +40,7 @@ var FastForwardBranchBeingRebasedInWorktree = NewIntegrationTest(NewIntegrationT
 		}
 		t.Shell().RunShellCommand("cmp .git/index .git/fast-forward-rebase-main-index && cmp \"$(git -C ../linked-worktree rev-parse --path-format=absolute --git-path index)\" .git/fast-forward-rebase-linked-index && cmp file .git/fast-forward-rebase-main-file && cmp ../linked-worktree/file .git/fast-forward-rebase-linked-file")
 		t.Views().Worktrees().Focus().NavigateToLine(Contains("linked-worktree")).Press(keys.Universal.Select)
+		t.ExpectToast(Equals("Opened repo"))
 		t.Views().Information().Content(Contains("Rebasing"))
 		t.Views().Commits().Lines(
 			Contains("─── Pending rebase todos"),
