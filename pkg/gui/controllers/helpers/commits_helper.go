@@ -20,6 +20,13 @@ type CommitsHelper struct {
 	getCommitDescription          func() string
 	getUnwrappedCommitDescription func() string
 	setCommitDescription          func(string)
+
+	// Fork: whether the open panel's OnConfirm reports its result through
+	// TakeCommitMessageSubmitReporter. See OpenCommitMessagePanelOpts.
+	submitReportsResult bool
+	// Fork: takes the drafts used by the submission in progress, for OnConfirm to
+	// claim with TakeCommitMessageSubmitReporter.
+	pendingDraftUse func()
 }
 
 func NewCommitsHelper(
@@ -112,6 +119,9 @@ func (self *CommitsHelper) SwitchToEditor() error {
 		return err
 	}
 
+	// Fork: the text that Up replaced would otherwise be lost.
+	self.c.Contexts().CommitMessage.KeepTypedCommitDraftOnSwitchToEditor()
+
 	self.CloseCommitMessagePanel()
 
 	return self.c.Contexts().CommitMessage.SwitchToEditor(filepath)
@@ -119,7 +129,7 @@ func (self *CommitsHelper) SwitchToEditor() error {
 
 type OpenCommitMessagePanelOpts struct {
 	// Fork: no longer drives anything. Up and Down recall the worktree's
-	// cancelled draft, not earlier commits' messages; see fork_commit_draft.go.
+	// cancelled drafts, not earlier commits' messages; see fork_commit_draft.go.
 	// Kept so that upstream call sites are unchanged.
 	CommitIndex      int
 	SummaryTitle     string
@@ -128,6 +138,10 @@ type OpenCommitMessagePanelOpts struct {
 	OnConfirm        func(summary string, description string) error
 	OnSwitchToEditor func(string) error
 	InitialMessage   string
+	// Fork: OnConfirm's work finishes later, and it reports success through
+	// CommitsHelper.TakeCommitMessageSubmitReporter. Until
+	// then the text stays a draft, so a failed submission is not lost.
+	ReportsSubmitResult bool
 
 	// The following two fields are only for the display of the "(hooks
 	// disabled)" display in the commit message panel. They have no effect on
@@ -139,6 +153,9 @@ type OpenCommitMessagePanelOpts struct {
 }
 
 func (self *CommitsHelper) OpenCommitMessagePanel(opts *OpenCommitMessagePanelOpts) {
+	// Fork: see OpenCommitMessagePanelOpts.ReportsSubmitResult.
+	self.submitReportsResult = opts.ReportsSubmitResult
+
 	onConfirm := func(summary string, description string) error {
 		self.CloseCommitMessagePanel()
 
@@ -174,6 +191,8 @@ func (self *CommitsHelper) OpenCommitMessagePanel(opts *OpenCommitMessagePanelOp
 	} else {
 		self.SetMessageAndDescriptionInView(initialMessage)
 	}
+	// Fork: taken from the box, because initialMessage may be in another format.
+	self.c.Contexts().CommitMessage.SetCommitDraftOpenedText(self.JoinCommitMessageAndUnwrappedDescription())
 
 	self.c.Context().Push(self.c.Contexts().CommitMessage, types.OnFocusOpts{})
 }
@@ -189,24 +208,48 @@ func (self *CommitsHelper) HandleCommitConfirm() error {
 		return errors.New(self.c.Tr.CommitWithoutMessageErr)
 	}
 
-	// Fork: OnConfirm closes the panel, which resets showingDraft, so read the
-	// draft state before it runs.
+	// Fork: OnConfirm closes the panel, which ends the draft session, so take what
+	// the session knows before it runs.
 	commitMessage := self.c.Contexts().CommitMessage
-	joined := self.JoinCommitMessageAndUnwrappedDescription()
-	showingDraft := commitMessage.GetShowingDraft()
-	draftUsed := showingDraft || joined == commitMessage.GetCommitDraftAndLogError()
+	text := self.JoinCommitMessageAndUnwrappedDescription()
+	useDrafts := commitMessage.CommitDraftsUsedBy(text)
+
+	// Fork: when the result is reported later, the text is kept as a draft until
+	// it succeeds, so that a failure does not lose it. Keeping it here, before
+	// OnConfirm, also keeps the text that Up replaced.
+	if self.submitReportsResult {
+		commitMessage.KeepCommitDraftsOnCancel(text)
+		self.pendingDraftUse = useDrafts
+	}
 
 	err := commitMessage.OnConfirm(summary, description)
+	self.pendingDraftUse = nil
 	if err != nil {
 		return err
 	}
 
-	// Fork: submitting the draft uses it up. Submitting anything else keeps it.
-	if draftUsed {
-		commitMessage.SetCommitDraftAndLogError("")
+	if !self.submitReportsResult {
+		useDrafts()
 	}
 
 	return nil
+}
+
+// Fork: the OnConfirm of a panel opened with ReportsSubmitResult calls this before
+// it starts its work, and calls the returned function once that has succeeded,
+// from any goroutine. Taking it up front ties it to this submission, even if
+// another box is submitted while the work runs.
+func (self *CommitsHelper) TakeCommitMessageSubmitReporter() func() {
+	useDrafts := self.pendingDraftUse
+	self.pendingDraftUse = nil
+	return func() {
+		if useDrafts != nil {
+			self.c.OnUIThread(func() error {
+				useDrafts()
+				return nil
+			})
+		}
+	}
 }
 
 func (self *CommitsHelper) PreserveCommitMessage() {
@@ -218,15 +261,10 @@ func (self *CommitsHelper) PreserveCommitMessage() {
 	}
 }
 
-// Fork: Escape and quit. The text becomes the worktree's draft if it is not
-// blank and differs from what the panel opened with. Confirming and switching
-// to the editor do not save it; see docs-master/fork/Guide.md.
+// Fork: Escape and quit keep the text as a draft. Confirming and switching to
+// the editor do not; see docs-master/fork/Guide.md.
 func (self *CommitsHelper) SaveCommitDraftIfChanged() {
-	commitMessage := self.c.Contexts().CommitMessage
-	message := self.JoinCommitMessageAndUnwrappedDescription()
-	if strings.TrimSpace(message) != "" && message != commitMessage.GetInitialMessage() {
-		commitMessage.SetCommitDraftAndLogError(message)
-	}
+	self.c.Contexts().CommitMessage.KeepCommitDraftsOnCancel(self.JoinCommitMessageAndUnwrappedDescription())
 }
 
 // Fork: Escape in either box. Unlike CloseCommitMessagePanel, which confirm
@@ -236,45 +274,29 @@ func (self *CommitsHelper) CancelCommitMessagePanel() {
 	self.CloseCommitMessagePanel()
 }
 
-// Fork: Up in the summary box. Shows the draft in place of the text being
-// edited, keeping that text so that Down can put it back. Does nothing if the
-// draft is already shown, or there is no draft, or it equals the text.
-func (self *CommitsHelper) RecallCommitDraft() error {
-	commitMessage := self.c.Contexts().CommitMessage
-	if commitMessage.GetShowingDraft() {
-		return nil
+// Fork: Up in the summary box.
+func (self *CommitsHelper) RecallOlderCommitDraft() error {
+	text, ok := self.c.Contexts().CommitMessage.StepToOlderCommitDraft(self.JoinCommitMessageAndUnwrappedDescription())
+	if ok {
+		self.SetPreservedMessageInView(text)
 	}
-	draft := commitMessage.GetCommitDraftAndLogError()
-	current := self.JoinCommitMessageAndUnwrappedDescription()
-	if strings.TrimSpace(draft) == "" || draft == current {
-		return nil
-	}
-	commitMessage.SetHistoryMessage(current)
-	self.SetPreservedMessageInView(draft)
-	commitMessage.SetShowingDraft(true)
 	return nil
 }
 
-// Fork: Down in the summary box. Writes the text on screen back to the draft,
-// so edits to the draft are kept for the next Up, then puts back the text that
-// Up replaced. Does nothing if the draft is not shown.
-func (self *CommitsHelper) ReturnFromCommitDraft() error {
-	commitMessage := self.c.Contexts().CommitMessage
-	if !commitMessage.GetShowingDraft() {
-		return nil
+// Fork: Down in the summary box.
+func (self *CommitsHelper) RecallNewerCommitDraft() error {
+	text, ok := self.c.Contexts().CommitMessage.StepToNewerCommitDraft(self.JoinCommitMessageAndUnwrappedDescription())
+	if ok {
+		self.SetPreservedMessageInView(text)
 	}
-	commitMessage.SetCommitDraftAndLogError(self.JoinCommitMessageAndUnwrappedDescription())
-	self.SetPreservedMessageInView(commitMessage.GetHistoryMessage())
-	commitMessage.SetShowingDraft(false)
 	return nil
 }
 
 func (self *CommitsHelper) CloseCommitMessagePanel() {
 	self.PreserveCommitMessage()
 
-	// Fork: the draft state is per opening of the panel.
-	self.c.Contexts().CommitMessage.SetShowingDraft(false)
-	self.c.Contexts().CommitMessage.SetHistoryMessage("")
+	// Fork: the draft session is per opening of the panel.
+	self.c.Contexts().CommitMessage.EndCommitDraftSession()
 
 	self.c.Views().CommitMessage.Visible = false
 	self.c.Views().CommitDescription.Visible = false

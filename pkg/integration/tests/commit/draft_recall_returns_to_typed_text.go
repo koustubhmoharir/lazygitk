@@ -20,7 +20,7 @@ var DraftRecallReturnsToTypedText = NewIntegrationTest(NewIntegrationTestArgs{
 			InitialText(Equals("commit 2")).
 			Type(" draft").
 			Cancel()
-		t.FileSystem().PathPresent(".git/LAZYGITK_COMMIT_DRAFT")
+		t.FileSystem().PathPresent(".git/LAZYGITK_COMMIT_DRAFTS")
 
 		t.Views().Commits().Focus().NavigateToLine(Contains("commit 2")).Press(config.Keybinding{"<f2>"})
 		t.ExpectPopup().CommitMessagePanel().

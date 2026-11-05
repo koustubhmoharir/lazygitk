@@ -161,8 +161,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 |-----|--------|-------------|
 | `` <enter> `` | Bevestig |  |
 | `` <esc> `` | Sluiten |  |
-| `` <up>, k `` | Recall cancelled message |  |
-| `` <down>, j `` | Return to the message being edited |  |
+| `` <up>, k `` | Recall older cancelled message |  |
+| `` <down>, j `` | Recall newer cancelled message |  |
 
 ## Commit bestanden
 

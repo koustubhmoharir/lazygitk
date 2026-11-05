@@ -930,8 +930,10 @@ func (self *LocalCommitsController) reword(commit *models.Commit) error {
 			SummaryTitle:     self.c.Tr.Actions.RewordCommit,
 			DescriptionTitle: self.c.Tr.CommitDescriptionTitle,
 			PreserveMessage:  false,
-			OnConfirm:        self.handleReword,
-			OnSwitchToEditor: self.switchFromCommitMessagePanelToEditor,
+			// Fork: handleReword reports success; see TakeCommitMessageSubmitReporter.
+			ReportsSubmitResult: true,
+			OnConfirm:           self.handleReword,
+			OnSwitchToEditor:    self.switchFromCommitMessagePanelToEditor,
 		},
 	)
 
@@ -966,13 +968,20 @@ func (self *LocalCommitsController) switchFromCommitMessagePanelToEditor(filepat
 }
 
 func (self *LocalCommitsController) handleReword(summary string, description string) error {
+	// Fork: see TakeCommitMessageSubmitReporter.
+	reportSuccess := self.c.Helpers().Commits.TakeCommitMessageSubmitReporter()
 	commits := self.c.Model().Commits
 	selectedIdx := self.c.Contexts().LocalCommits.GetSelectedLineIdx()
 	if models.IsHeadCommit(commits, selectedIdx) {
 		// we've selected the top commit so no rebase is required
 		return self.c.Helpers().GPG.WithGpgHandling(self.c.Git().Commit.RewordLastCommit(summary, description),
 			git_commands.CommitGpgSign,
-			self.c.Tr.RewordingStatus, nil, nil)
+			self.c.Tr.RewordingStatus,
+			// Fork: the reword has succeeded.
+			func() error {
+				reportSuccess()
+				return nil
+			}, nil)
 	}
 
 	return self.c.WithWaitingStatusBlockingInput(types.WaitingStatusOpts{
@@ -983,6 +992,8 @@ func (self *LocalCommitsController) handleReword(summary string, description str
 		if err != nil {
 			return err
 		}
+		// Fork: the reword has succeeded.
+		reportSuccess()
 		self.c.RefreshFromWorker(types.RefreshOptions{})
 		return nil
 	})
@@ -1579,7 +1590,11 @@ func (self *LocalCommitsController) createAmendCommit(commit *models.Commit, inc
 			SummaryTitle:     self.c.Tr.CreateAmendCommit,
 			DescriptionTitle: self.c.Tr.CommitDescriptionTitle,
 			PreserveMessage:  false,
+			// Fork: the amend reports success; see TakeCommitMessageSubmitReporter.
+			ReportsSubmitResult: true,
 			OnConfirm: func(summary string, description string) error {
+				// Fork: see TakeCommitMessageSubmitReporter.
+				reportSuccess := self.c.Helpers().Commits.TakeCommitMessageSubmitReporter()
 				self.c.LogAction(self.c.Tr.Actions.CreateFixupCommit)
 				selectedIdx := self.context().GetSelectedLineIdx()
 				commits := self.c.Model().Commits
@@ -1595,6 +1610,8 @@ func (self *LocalCommitsController) createAmendCommit(commit *models.Commit, inc
 						return err
 					}
 
+					// Fork: the amend has succeeded.
+					reportSuccess()
 					self.c.RefreshFromWorker(types.RefreshOptions{BatchUIUpdates: true})
 					return nil
 				})

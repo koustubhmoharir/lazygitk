@@ -28,7 +28,7 @@ const NoCommitIndex = -1
 
 type CommitMessageViewModel struct {
 	// Fork: no longer drives anything. Up and Down recall the worktree's cancelled
-	// draft (see fork_commit_draft.go), not earlier commits' messages. The field
+	// drafts (see fork_commit_draft.go), not earlier commits' messages. The field
 	// and the index parameters that set it stay so that upstream call sites are
 	// unchanged. It was: -1 is 'no commit', 0 is the HEAD commit, 1 is the prior
 	// commit, and so on.
@@ -48,13 +48,11 @@ type CommitMessageViewModel struct {
 	forceSkipHooks  bool
 	skipHooksPrefix string
 
-	// Fork: the text that Up replaced with the draft, which Down puts back. It is
-	// kept apart from the preserved message, which is specifically for committing
-	// staged files and must not be affected by recalling the draft. Reset when the
-	// panel opens and closes.
-	historyMessage string
-	// Fork: true while Up shows the draft in place of the text being edited.
-	showingDraft bool
+	// Fork: where Up and Down are among the cancelled drafts. It is kept apart from
+	// the preserved message, which is specifically for committing staged files and
+	// must not be affected by recalling a draft. Reset when the panel opens and
+	// closes.
+	drafts commitDraftSession
 }
 
 func NewCommitMessageContext(
@@ -138,26 +136,6 @@ func (self *CommitMessageContext) GetInitialMessage() string {
 	return self.viewModel.initialMessage
 }
 
-// Fork: returns the text that Up replaced with the draft; see historyMessage.
-func (self *CommitMessageContext) GetHistoryMessage() string {
-	return self.viewModel.historyMessage
-}
-
-// Fork: see GetHistoryMessage.
-func (self *CommitMessageContext) SetHistoryMessage(message string) {
-	self.viewModel.historyMessage = message
-}
-
-// Fork: whether Up is showing the draft; see showingDraft.
-func (self *CommitMessageContext) GetShowingDraft() bool {
-	return self.viewModel.showingDraft
-}
-
-// Fork: see GetShowingDraft.
-func (self *CommitMessageContext) SetShowingDraft(showing bool) {
-	self.viewModel.showingDraft = showing
-}
-
 func (self *CommitMessageContext) OnConfirm(summary string, description string) error {
 	return self.viewModel.onConfirm(summary, description)
 }
@@ -175,8 +153,7 @@ func (self *CommitMessageContext) SetPanelState(
 ) {
 	// Fork: index no longer drives anything; see selectedindex.
 	self.viewModel.selectedindex = index
-	self.viewModel.historyMessage = ""
-	self.viewModel.showingDraft = false
+	self.resetCommitDraftSession()
 	self.viewModel.preserveMessage = preserveMessage
 	self.viewModel.initialMessage = initialMessage
 	self.viewModel.onConfirm = onConfirm
@@ -199,8 +176,18 @@ func (self *CommitMessageContext) RenderSubtitle() {
 	skipHookPrefix := self.viewModel.skipHooksPrefix
 	subject := self.c.Views().CommitMessage.TextArea.GetContent()
 	var subtitle string
+	// Fork: which draft Up and Down have reached.
+	if index, total := self.commitDraftPosition(); index > 0 {
+		subtitle = " " + utils.ResolvePlaceholderString(self.c.Tr.CommitDraftPosition, map[string]string{
+			"index": strconv.Itoa(index),
+			"total": strconv.Itoa(total),
+		}) + " "
+	}
 	if self.viewModel.forceSkipHooks || (skipHookPrefix != "" && strings.HasPrefix(subject, skipHookPrefix)) {
-		subtitle = self.c.Tr.CommitHooksDisabledSubTitle
+		if subtitle != "" {
+			subtitle += "─"
+		}
+		subtitle += self.c.Tr.CommitHooksDisabledSubTitle
 	}
 	if self.c.UserConfig().Gui.CommitLength.Show {
 		if subtitle != "" {

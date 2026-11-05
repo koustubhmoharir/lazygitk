@@ -39,19 +39,19 @@ func (self *CommitMessageController) GetKeybindings(opts types.KeybindingsOpts) 
 			CommandID:   "commit-editor.cancel",
 			Verb:        "cancel",
 		},
-		// Fork: Up and Down recall the cancelled draft, not earlier commits'
+		// Fork: Up and Down recall the cancelled drafts, not earlier commits'
 		// messages. See docs-master/fork/Guide.md.
 		{
 			Keys:        opts.GetKeys(opts.Config.Universal.PrevItem),
-			Handler:     self.handleRecallDraft,
-			Description: self.c.Tr.RecallCancelledCommitMessage,
+			Handler:     self.handleRecallOlderDraft,
+			Description: self.c.Tr.RecallOlderCommitDraft,
 			CommandID:   "commit-editor.message.previous",
 			Verb:        "previous-message",
 		},
 		{
 			Keys:        opts.GetKeys(opts.Config.Universal.NextItem),
-			Handler:     self.handleReturnFromDraft,
-			Description: self.c.Tr.ReturnToEditedCommitMessage,
+			Handler:     self.handleRecallNewerDraft,
+			Description: self.c.Tr.RecallNewerCommitDraft,
 			CommandID:   "commit-editor.message.next",
 			Verb:        "next-message",
 		},
@@ -111,14 +111,14 @@ func (self *CommitMessageController) context() *context.CommitMessageContext {
 	return self.c.Contexts().CommitMessage
 }
 
-// Fork: Up shows the cancelled draft; see CommitsHelper.RecallCommitDraft.
-func (self *CommitMessageController) handleRecallDraft() error {
-	return self.c.Helpers().Commits.RecallCommitDraft()
+// Fork: see CommitsHelper.RecallOlderCommitDraft.
+func (self *CommitMessageController) handleRecallOlderDraft() error {
+	return self.c.Helpers().Commits.RecallOlderCommitDraft()
 }
 
-// Fork: Down returns to the text Up replaced; see CommitsHelper.ReturnFromCommitDraft.
-func (self *CommitMessageController) handleReturnFromDraft() error {
-	return self.c.Helpers().Commits.ReturnFromCommitDraft()
+// Fork: see CommitsHelper.RecallNewerCommitDraft.
+func (self *CommitMessageController) handleRecallNewerDraft() error {
+	return self.c.Helpers().Commits.RecallNewerCommitDraft()
 }
 
 func (self *CommitMessageController) switchToCommitDescription() error {

@@ -409,26 +409,33 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 ### Commit message box
 
 The box for a commit, reword, combine or tag message does not step through
-earlier commits' messages. Up and Down in its summary line swap the text with
-the worktree's one cancelled draft:
+earlier commits' messages. Up and Down in its summary line step through the
+worktree's cancelled drafts, and nothing you type is lost by doing so:
 
-- Escape in the summary or the description saves the text as the draft if it
-  is not blank and differs from what the box opened with. Confirming, and
-  switching to the editor, do not save. Quitting lazygitk with the box open
-  saves it too. The draft is one per worktree, kept in its git directory, so it
-  survives a restart.
-- Up shows the draft in place of the text, and keeps that text. Down writes the
-  text on screen back to the draft, so edits to the draft are kept for the next
-  Up, and puts the kept text back.
-- Up does nothing when there is no draft, when the draft equals the text, or
-  when the draft is already shown.
-- Submitting while the draft is shown, or with text equal to it, clears the
-  draft; submitting anything else keeps it. A submit that fails, such as a
-  commit refused because of a missing message, keeps it.
-- Escape while the draft is shown saves the draft's text. The text that Up
-  replaced is kept only until then: press Down before Escape to keep it too.
-- A new commit's box still reopens with its cancelled text, separately from
-  the draft. The description box still moves its own cursor with Up and Down.
+- Escape in the summary or the description saves the text as the newest draft
+  if it is not blank and differs from what the box opened with. Quitting
+  lazygitk with the box open saves it too. Drafts are kept per worktree, in its
+  git directory, so they survive a restart. The newest 25 are kept.
+- Up shows the next older draft, and Down the next newer one, then the text you
+  were typing. Neither does anything at the end of the list. The box's subtitle
+  says which draft is shown, as in "Draft 2 of 3". A draft equal to the text you
+  were typing is skipped.
+- Edits to a shown draft are kept when you step away from it or press Escape.
+  Clearing all its text deletes it.
+- Escape while a draft is shown keeps the draft and the text you were typing.
+- Enter uses up the shown draft and keeps the text you were typing as a draft.
+  Switching to the editor also keeps that text, but keeps the draft too.
+- A draft is also used up if you submit text equal to it. Submitting anything
+  else leaves the drafts alone.
+- A new commit's box reopens with its cancelled text, which is also a draft. The
+  box then works on that draft: editing and cancelling replaces it, and
+  submitting uses it up.
+- A submitted commit, reword, amend commit or commit moved from a patch stays a
+  draft until it succeeds. If it fails, for example because of a hook, reopen
+  the box and press Up to get the text back. A reword of an older commit that
+  fails leaves the rebase stopped; abort it first. A tag or combine message is
+  used up as soon as its box closes.
+- The description box still moves its own cursor with Up and Down.
 
 ### Sync
 
@@ -524,7 +531,7 @@ the worktree's one cancelled draft:
 | `-` previous branch | `s p` |
 | `c` checkout by name | "Checkout by name" in `?`; normally select the branch and `s c` |
 | Squash and fixup keys | `g c` combine |
-| Up and Down in the commit message box step through earlier commits' messages | Up and Down swap the text with the one cancelled draft; see the commit message box above |
+| Up and Down in the commit message box step through earlier commits' messages | Up and Down step through the cancelled drafts; see the commit message box above |
 | Copy (`C`) and paste (`V`) commits for cherry-pick | `c p` picks the selection; the selection is the copy |
 | `z` undo, Ctrl+Z redo | `u u`, `u r` |
 | Ctrl+J / Ctrl+K move commit | `>` / `<` |

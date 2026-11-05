@@ -179,6 +179,8 @@ func (self *WorkingTreeHelper) HandleCommitPressWithMessage(initialMessage strin
 				SummaryTitle:     self.c.Tr.CommitSummaryTitle,
 				DescriptionTitle: self.c.Tr.CommitDescriptionTitle,
 				PreserveMessage:  true,
+				// Fork: handleCommit reports success; see TakeCommitMessageSubmitReporter.
+				ReportsSubmitResult: true,
 				OnConfirm: func(summary string, description string) error {
 					return self.handleCommit(summary, description, forceSkipHooks)
 				},
@@ -195,6 +197,8 @@ func (self *WorkingTreeHelper) HandleCommitPressWithMessage(initialMessage strin
 }
 
 func (self *WorkingTreeHelper) handleCommit(summary string, description string, forceSkipHooks bool) error {
+	// Fork: see TakeCommitMessageSubmitReporter.
+	reportSuccess := self.commitsHelper.TakeCommitMessageSubmitReporter()
 	cmdObj := self.c.Git().Commit.CommitCmdObj(summary, description, forceSkipHooks)
 	self.c.LogAction(self.c.Tr.Actions.Commit)
 	return self.gpgHelper.WithGpgHandlingAndSelectHeadCommit(cmdObj, git_commands.CommitGpgSign, self.c.Tr.CommittingStatus,
@@ -205,6 +209,8 @@ func (self *WorkingTreeHelper) handleCommit(summary string, description string, 
 				self.commitsHelper.ClearPreservedCommitMessage()
 				return nil
 			})
+			// Fork: the commit has succeeded, so the drafts it used can go.
+			reportSuccess()
 			return nil
 		})
 }

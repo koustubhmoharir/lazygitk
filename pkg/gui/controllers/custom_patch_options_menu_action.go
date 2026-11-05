@@ -185,7 +185,11 @@ func (self *CustomPatchOptionsMenuAction) handlePullPatchIntoNewCommit() error {
 			SummaryTitle:     self.c.Tr.CommitSummaryTitle,
 			DescriptionTitle: self.c.Tr.CommitDescriptionTitle,
 			PreserveMessage:  false,
+			// Fork: the pull reports success; see TakeCommitMessageSubmitReporter.
+			ReportsSubmitResult: true,
 			OnConfirm: func(summary string, description string) error {
+				// Fork: see TakeCommitMessageSubmitReporter.
+				reportSuccess := self.c.Helpers().Commits.TakeCommitMessageSubmitReporter()
 				commits := self.c.Model().Commits
 				self.c.Helpers().Commits.CloseCommitMessagePanel()
 				return self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(gocui.Task) error {
@@ -194,6 +198,8 @@ func (self *CustomPatchOptionsMenuAction) handlePullPatchIntoNewCommit() error {
 					if err := self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err); err != nil {
 						return err
 					}
+					// Fork: the new commit exists.
+					reportSuccess()
 					self.c.OnUIThread(func() error {
 						self.c.Context().Push(self.c.Contexts().LocalCommits, types.OnFocusOpts{})
 						return nil
@@ -218,7 +224,11 @@ func (self *CustomPatchOptionsMenuAction) handlePullPatchIntoNewCommitBefore() e
 			SummaryTitle:     self.c.Tr.CommitSummaryTitle,
 			DescriptionTitle: self.c.Tr.CommitDescriptionTitle,
 			PreserveMessage:  false,
+			// Fork: the pull reports success; see TakeCommitMessageSubmitReporter.
+			ReportsSubmitResult: true,
 			OnConfirm: func(summary string, description string) error {
+				// Fork: see TakeCommitMessageSubmitReporter.
+				reportSuccess := self.c.Helpers().Commits.TakeCommitMessageSubmitReporter()
 				commits := self.c.Model().Commits
 				self.c.Helpers().Commits.CloseCommitMessagePanel()
 				return self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(gocui.Task) error {
@@ -227,6 +237,8 @@ func (self *CustomPatchOptionsMenuAction) handlePullPatchIntoNewCommitBefore() e
 					if err := self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err); err != nil {
 						return err
 					}
+					// Fork: the new commit exists.
+					reportSuccess()
 					self.c.OnUIThread(func() error {
 						self.c.Context().Push(self.c.Contexts().LocalCommits, types.OnFocusOpts{})
 						return nil

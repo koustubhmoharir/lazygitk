@@ -405,32 +405,45 @@ Commit scope filters (`w a`, `w d`, `w b`) are a third kind of filtering mode:
 - Upstream code that tests `Filtering.Active()` to mean a path or author
   filter should use `HasPathOrAuthorFilter` or `GetPath`.
 
-### Commit message draft
+### Commit message drafts
 
-Up and Down in the commit message box recall the worktree's cancelled draft,
-instead of stepping through earlier commits' messages. The behaviour is in the
+Up and Down in the commit message box step through the worktree's cancelled
+drafts, instead of earlier commits' messages. The behaviour is in the
 [user guide](Guide.md#commit-message-box).
 
 - `controllers/commit_message_controller.go` and
   `commit_description_controller.go`: Escape calls
-  `Commits.CancelCommitMessagePanel`, which saves the draft and then closes the
+  `Commits.CancelCommitMessagePanel`, which saves the drafts and then closes the
   panel. `GetOnQuit` also calls `SaveCommitDraftIfChanged`. Up and Down are
-  `handleRecallDraft` and `handleReturnFromDraft`, and carry the descriptions
-  `RecallCancelledCommitMessage` and `ReturnToEditedCommitMessage`
+  `handleRecallOlderDraft` and `handleRecallNewerDraft`, and carry the
+  descriptions `RecallOlderCommitDraft` and `RecallNewerCommitDraft`
   (`i18n/english.go`), so the palette lists them. Their CommandIDs and keys are
   upstream's. Upstream's `handleCommitIndexChange` and
   `setCommitMessageAtIndex` are removed; re-apply that removal if upstream
   changes them.
-- `helpers/commits_helper.go`: `HandleCommitConfirm` reads the joined text and
-  the draft state before `OnConfirm`, because `OnConfirm` closes the panel,
-  which resets that state. `CloseCommitMessagePanel` resets it too; confirm and
-  switch to editor reach it without saving. `SaveCommitDraftIfChanged`,
-  `CancelCommitMessagePanel`, `RecallCommitDraft` and
-  `ReturnFromCommitDraft` are fork code.
-- `context/fork_commit_draft.go` (new): the draft file,
-  `LAZYGITK_COMMIT_DRAFT`, beside `LAZYGIT_PENDING_COMMIT`. In
-  `context/commit_message_context.go`, `historyMessage` now holds the text that
-  Up replaced, `showingDraft` is new, and both are reset by `SetPanelState`.
+- `helpers/commits_helper.go`: `HandleCommitConfirm` takes the draft session's
+  state before `OnConfirm`, because `OnConfirm` closes the panel, which ends the
+  session. `CloseCommitMessagePanel` ends it too. `OpenCommitMessagePanel` records
+  the text the box shows as the session's opened text, after setting it in the
+  view. `SwitchToEditor` keeps the text that Up replaced.
+  `SaveCommitDraftIfChanged`, `CancelCommitMessagePanel`,
+  `RecallOlderCommitDraft`, `RecallNewerCommitDraft` and
+  `TakeCommitMessageSubmitReporter` are fork code.
+- Submissions that finish on a worker: a panel opened with
+  `OpenCommitMessagePanelOpts.ReportsSubmitResult` writes the text as a draft
+  before `OnConfirm`, and its `OnConfirm` takes a reporter with
+  `TakeCommitMessageSubmitReporter` and calls it on success. Those call sites are
+  `helpers/working_tree_helper.go` (`HandleCommitPressWithMessage`,
+  `handleCommit`), `controllers/local_commits_controller.go` (`reword`,
+  `handleReword`, `createAmendCommit`) and
+  `controllers/custom_patch_options_menu_action.go` (both
+  `handlePullPatchIntoNewCommit` functions). A new upstream panel whose work runs
+  on a worker should do the same, or a failure there loses its text.
+- `context/fork_commit_draft.go` (new): the drafts file,
+  `LAZYGITK_COMMIT_DRAFTS` (a JSON list, newest first), beside
+  `LAZYGIT_PENDING_COMMIT`, and `commitDraftSession`. In
+  `context/commit_message_context.go`, the view model's `drafts` field holds the
+  session, `SetPanelState` resets it, and `RenderSubtitle` shows the position.
 - Retained on purpose: `OpenCommitMessagePanelOpts.CommitIndex`, the index
   parameter of `SetPanelState` and the `selectedindex` field. Upstream's call
   sites (local commits, custom patch options, working tree) still pass indexes,
@@ -439,7 +452,7 @@ instead of stepping through earlier commits' messages. The behaviour is in the
 - `git_commands/commit.go`: `GetCommitMessageFromHistory` and
   `ErrInvalidCommitIndex` are removed, with `TestGetCommitMessageFromHistory`.
   `TryRemoveHardLineBreaks` stays; other callers use it.
-- Generated: `docs-master/keybindings` lists the two new descriptions. Run
+- Generated: `docs-master/keybindings` lists the two descriptions. Run
   `go generate ./...` after merges.
 
 ### Dormant upstream cherry-pick marks

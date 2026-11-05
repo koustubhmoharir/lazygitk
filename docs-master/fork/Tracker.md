@@ -22,7 +22,9 @@ No work is in progress.
 
 ## Verification notes
 
-`just` is unavailable; use the equivalent commands in `justfile`. Clear
+`just` is unavailable; use the equivalent commands in `justfile`. Run the full
+integration suite with `-parallel 4` as the `e2e` recipe does: at the default
+parallelism, slow scenarios hit the 40-second watchdog in `pkg/gui/test_mode.go`. Clear
 `NO_COLOR` for color-sensitive tests. Headless invocations share
 `/tmp/lazygit/test_lazygit` and fixture directories: serialize their builds and
 runs. Use bounded eventual checks for background events, not immediate UI

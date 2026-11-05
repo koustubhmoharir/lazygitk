@@ -22,7 +22,7 @@ var DraftSurvivesNewCommitPrefill = NewIntegrationTest(NewIntegrationTestArgs{
 			Type("my commit message").
 			Cancel()
 		t.FileSystem().PathPresent(".git/LAZYGIT_PENDING_COMMIT")
-		t.FileSystem().PathPresent(".git/LAZYGITK_COMMIT_DRAFT")
+		t.FileSystem().PathPresent(".git/LAZYGITK_COMMIT_DRAFTS")
 
 		t.Views().Files().
 			Focus().
@@ -34,6 +34,6 @@ var DraftSurvivesNewCommitPrefill = NewIntegrationTest(NewIntegrationTestArgs{
 			Content(Equals("my commit message")).
 			Confirm()
 		t.FileSystem().PathNotPresent(".git/LAZYGIT_PENDING_COMMIT")
-		t.FileSystem().PathNotPresent(".git/LAZYGITK_COMMIT_DRAFT")
+		t.FileSystem().PathNotPresent(".git/LAZYGITK_COMMIT_DRAFTS")
 	},
 })
