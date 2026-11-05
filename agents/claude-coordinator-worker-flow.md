@@ -96,7 +96,7 @@ Workers must not use `claude --resume`/`--continue`, prior worker context, or an
 
 ## Launcher/runtime facts
 
-`codex` launches an ephemeral `codex exec` context with `gpt-5.6-luna` at medium reasoning effort, `workspace-write`, and `approval_policy="never"`. `agy` launches noninteractive `gemini-3.8-flash-medium` with unattended permissions. The launcher opens a zellij pane, blocks until the selected CLI exits, and closes the pane.
+`codex` launches an ephemeral `codex exec` context with `gpt-6.1-sol` at medium reasoning effort, `workspace-write`, and `approval_policy="never"`. `agy` launches noninteractive `gemini-3.8-flash-medium` with unattended permissions. The launcher opens a zellij pane, blocks until the selected CLI exits, and closes the pane.
 
 The launcher renders structured CLI events through `./format-codex-exec.py`. Per-command output is limited to 40 lines and 6000 characters with a truncation marker.
 

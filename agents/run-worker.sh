@@ -85,7 +85,7 @@ case "$backend" in
       "$script_dir/format-codex-exec.py"
       "$raw_jsonl"
       --ephemeral
-      --model gpt-5.6-luna
+      --model gpt-6.1-sol
       -c model_reasoning_effort=medium
       -c 'approval_policy="never"'
       -C "$repo_root"
