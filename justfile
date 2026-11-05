@@ -23,7 +23,7 @@ print-log: build
     ./lazygit --logs
 
 unit-test:
-    go test ./... -short
+    go test ./... -short -timeout 30m
 
 # Run both unit tests and integration tests.
 [unix]
@@ -44,8 +44,7 @@ lint:
     ./scripts/gofumpt-check.sh
     ./scripts/golangci-lint-shim.sh run
 
-# Limit parallel scenarios: at higher load, slow scenarios hit the 40-second watchdog in pkg/gui/test_mode.go.
-e2e-test-command := "go test -parallel 4 -timeout 60m pkg/integration/clients/*.go"
+e2e-test-command := "go test -timeout 60m pkg/integration/clients/*.go"
 
 # Run integration tests headlessly: no args runs all tests, a test name (or path) runs just that one. Use e2e-cli for a visible UI.
 e2e *args:

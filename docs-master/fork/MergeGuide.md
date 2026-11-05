@@ -405,6 +405,12 @@ Commit scope filters (`w a`, `w d`, `w b`) are a third kind of filtering mode:
 - Upstream code that tests `Filtering.Active()` to mean a path or author
   filter should use `HasPathOrAuthorFilter` or `GetPath`.
 
+### Integration test watchdog
+
+`gui/test_mode.go` allows 120 seconds per scenario, not upstream's 40. Slow
+scenarios take over 40 seconds when other work is using the machine, whatever
+the test parallelism. Keep this value when upstream changes that line.
+
 ### Commit message drafts
 
 Up and Down in the commit message box step through the worktree's cancelled

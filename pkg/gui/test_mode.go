@@ -46,7 +46,10 @@ func (gui *Gui) handleTestMode() {
 		})
 
 		if os.Getenv(components.WAIT_FOR_DEBUGGER_ENV_VAR) == "" {
-			timeout := 40 * time.Second * testTimeoutMultiplier
+			// Fork: 120 seconds instead of upstream's 40. Slow scenarios take over 40
+			// seconds when other work is using the machine, and this is only here to
+			// catch hangs.
+			timeout := 120 * time.Second * testTimeoutMultiplier
 			go utils.Safe(func() {
 				time.Sleep(timeout)
 				// Dump all goroutine stacks before dying, so a hung test shows

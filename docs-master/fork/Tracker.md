@@ -22,9 +22,10 @@ No work is in progress.
 
 ## Verification notes
 
-`just` is unavailable; use the equivalent commands in `justfile`. Run the full
-integration suite with `-parallel 4` as the `e2e` recipe does: at the default
-parallelism, slow scenarios hit the 40-second watchdog in `pkg/gui/test_mode.go`. Clear
+`just` is unavailable; use the equivalent commands in `justfile`. Test times
+depend heavily on what else the machine is running: `branch/delete` took 7.5s
+to 30s alone. Use the `-timeout` values in `justfile`, because the unit tests can
+exceed Go's default of 10 minutes per package. Clear
 `NO_COLOR` for color-sensitive tests. Headless invocations share
 `/tmp/lazygit/test_lazygit` and fixture directories: serialize their builds and
 runs. Use bounded eventual checks for background events, not immediate UI
