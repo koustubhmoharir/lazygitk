@@ -67,6 +67,7 @@ var tests = []*components.IntegrationTest{
 	branch.OpenPullRequestNoUpstream,
 	branch.OpenPullRequestSelectRemoteAndTargetBranch,
 	branch.OpenWithCliArg,
+	branch.PlaceAtAnnotatedTag,
 	branch.PlaceAtCommit,
 	branch.PlaceAtCommitChanged,
 	branch.PlaceAtCommitOtherContexts,

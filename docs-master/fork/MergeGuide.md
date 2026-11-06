@@ -421,6 +421,11 @@ re-apply it if upstream changes that code.
 - `controllers/branches_controller.go`, `remote_branches_controller.go` and
   `tags_controller.go`: `GetKeybindings` adds `w b`
   (`fork_branch_scope_filter.go`, `fork_ref_scope_filter.go`).
+- `controllers/tags_controller.go`: `GetKeybindings` adds the captured-ref
+  placement binding `branch.place-at-selected-commit` (`branchPlacementBinding`
+  in `branch_placement_refs.go`, the same hook Branches and Remote branches
+  use). `ResolveBranchActionCommit` peels an annotated tag to its commit. If
+  upstream adds its own binding with that command ID, keep one.
 - `controllers/branches_controller.go`, `remote_branches_controller.go`,
   `tags_controller.go`, `reflog_commits_controller.go` and
   `sub_commits_controller.go`: `GetKeybindings` adds `w v` show in Commits

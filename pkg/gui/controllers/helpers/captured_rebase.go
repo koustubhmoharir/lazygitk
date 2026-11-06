@@ -172,12 +172,9 @@ func (flow *capturedRebaseFlow) prepare(choice capturedRebaseChoice) error {
 			if err := flow.checkReview(); err != nil {
 				return err
 			}
-			review := &capturedRebaseReview{flow: flow, plan: plan, choice: choice}
-			c.Confirm(types.ConfirmOpts{
-				Title: flow.title(), Prompt: flow.prompt(choice.source, choice.label),
-				HandleConfirm: review.reviewIgnored, HandleClose: flow.repository.checkRepository,
-			})
-			return nil
+			// The mode menu already names the source, the mode and the base, so a rebase
+			// runs from it; only ignored-file risks ask again.
+			return (&capturedRebaseReview{flow: flow, plan: plan, choice: choice}).reviewIgnored()
 		})
 		return nil
 	})

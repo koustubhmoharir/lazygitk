@@ -31,6 +31,17 @@ func (self *RemoteBranchesController) branchPlacementBinding() *types.Binding {
 	}
 }
 
+func (self *TagsController) branchPlacementBinding() *types.Binding {
+	return &types.Binding{
+		CommandID: "branch.place-at-selected-commit", Verb: "place-branch",
+		Handler:           self.withItem(self.beginPlacementAtTag),
+		GetDisabledReason: self.require(self.singleItemSelected()),
+		Description:       self.c.Tr.CreateMoveBranchHere,
+		Tooltip:           self.c.Tr.PlaceBranchTooltip,
+		OpensMenu:         true,
+	}
+}
+
 func (self *BranchesController) beginPlacementAtLocalBranch(branch *models.Branch) error {
 	ref := branch.FullRefName()
 	if branch.DetachedHead && !isFullSelectedCommitOID(ref) {
@@ -41,6 +52,11 @@ func (self *BranchesController) beginPlacementAtLocalBranch(branch *models.Branc
 
 func (self *RemoteBranchesController) beginPlacementAtRemoteBranch(branch *models.RemoteBranch) error {
 	return beginBranchPlacementAtRef(self.c, branch.FullRefName())
+}
+
+// Annotated tags are peeled to their commit by ResolveBranchActionCommit.
+func (self *TagsController) beginPlacementAtTag(tag *models.Tag) error {
+	return beginBranchPlacementAtRef(self.c, tag.FullRefName())
 }
 
 type branchPlacementRefTarget struct {

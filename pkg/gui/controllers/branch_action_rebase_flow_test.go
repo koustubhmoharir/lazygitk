@@ -164,16 +164,11 @@ func TestBranchActionRebaseFlowCapturedRefAndModes(t *testing.T) {
 	if menu.Items[2].DisabledReason == nil {
 		t.Fatal("base choice should start disabled when main branches are unavailable")
 	}
-	branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
-	confirmation := ui.confirms[0]
-	if !strings.Contains(confirmation.Prompt, head) || !strings.Contains(confirmation.Prompt, "refs/heads/topic") || !strings.Contains(confirmation.Prompt, f.sourceOID) {
-		t.Fatalf("confirmation omitted captured identities: %q", confirmation.Prompt)
-	}
-	if err := ui.confirms[0].HandleClose(); err != nil {
+	if err := menu.OnCancel(); err != nil {
 		t.Fatal(err)
 	}
-	if ui.subprocessCalls != 0 {
-		t.Fatal("closing confirmation ran rebase")
+	if ui.subprocessCalls != 0 || len(ui.confirms) != 0 {
+		t.Fatal("cancelling the rebase menu ran rebase or confirmed")
 	}
 }
 
@@ -189,8 +184,8 @@ func TestBranchActionRebaseFlowRebasesOnlyCurrentAndPreservesOtherRefs(t *testin
 	other := branchActionRebaseGit(t, f.root, "rev-parse", "refs/heads/topic")
 	menu := branchActionRebaseStart(t, f, ui)
 	branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
-	if err := ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
+	if len(ui.confirms) != 0 {
+		t.Fatal("simple rebase asked for a second confirmation")
 	}
 	if err := ui.runBlockingWorker(t); err != nil {
 		t.Fatal(err)
@@ -234,8 +229,8 @@ func TestBranchActionRebaseFlowInteractiveChoiceUsesCapturedPlan(t *testing.T) {
 	f, ui := branchActionRebaseFixture(t)
 	menu := branchActionRebaseStart(t, f, ui)
 	branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.interactive")
-	if err := ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
+	if len(ui.confirms) != 0 {
+		t.Fatal("interactive rebase asked for a second confirmation")
 	}
 	if err := ui.runBlockingWorker(t); err != nil {
 		t.Fatal(err)
@@ -280,9 +275,15 @@ func TestBranchActionRebaseFlowInteractiveChoiceUsesCapturedPlan(t *testing.T) {
 func TestBranchActionRebaseFlowRejectsChangedMarkedBaseAndReplay(t *testing.T) {
 	f, ui := branchActionRebaseFixture(t)
 	menu := branchActionRebaseStart(t, f, ui)
-	branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
+	if err := menuItem(t, menu, "branch.rebase-current-onto-selected.simple").OnPress(); err != nil {
+		t.Fatal(err)
+	}
+	if err := ui.runWorker(t); err != nil {
+		t.Fatal(err)
+	}
+	// The simple rebase's review is queued for the UI thread; the base changes before it runs.
 	ui.modes.MarkedBaseCommit.SetHash(f.sourceOID)
-	if err := ui.confirms[0].HandleConfirm(); !errors.Is(err, git_commands.ErrBranchActionChanged) {
+	if err := ui.runUI(t); !errors.Is(err, git_commands.ErrBranchActionChanged) {
 		t.Fatalf("marked base change error=%v", err)
 	}
 	if ui.subprocessCalls != 0 {
@@ -348,9 +349,6 @@ func TestBranchActionRebaseFlowRejectsChangedSourceAtPreflight(t *testing.T) {
 	menu := branchActionRebaseStart(t, f, ui)
 	branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
 	branchSyncPushGit(t, f.root, "update-ref", "refs/heads/topic", "refs/heads/main")
-	if err := ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
-	}
 	if err := ui.runBlockingWorker(t); !errors.Is(err, git_commands.ErrBranchActionChanged) {
 		t.Fatalf("preflight error=%v, want stale captured source", err)
 	}
@@ -366,9 +364,6 @@ func TestBranchActionRebaseFlowRejectsChangedSourceAtTerminalBoundary(t *testing
 	f, ui := branchActionRebaseFixture(t)
 	menu := branchActionRebaseStart(t, f, ui)
 	branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
-	if err := ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
-	}
 	if err := ui.runBlockingWorker(t); err != nil {
 		t.Fatal(err)
 	}
@@ -386,9 +381,6 @@ func TestBranchActionRebaseFlowRejectsHeadIdentityChangeAtPreflight(t *testing.T
 	menu := branchActionRebaseStart(t, f, ui)
 	branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
 	branchActionRebaseGit(t, f.root, "branch", "same-tip")
-	if err := ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
-	}
 	branchActionRebaseGit(t, f.root, "checkout", "-q", "same-tip")
 	if err := ui.runBlockingWorker(t); !errors.Is(err, git_commands.ErrBranchActionChanged) {
 		t.Fatalf("same-OID HEAD identity error=%v", err)
@@ -402,9 +394,6 @@ func TestBranchActionRebaseFlowRejectsCurrentTipChangeAtPreflight(t *testing.T) 
 	f, ui := branchActionRebaseFixture(t)
 	menu := branchActionRebaseStart(t, f, ui)
 	branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
-	if err := ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
-	}
 	branchActionRebaseGit(t, f.root, "update-ref", "refs/heads/main", "refs/heads/topic")
 	if err := ui.runBlockingWorker(t); !errors.Is(err, git_commands.ErrBranchActionChanged) {
 		t.Fatalf("changed current tip error=%v", err)
@@ -421,9 +410,6 @@ func TestBranchActionRebaseFlowRepositorySwapAtPreflightAndTerminal(t *testing.T
 				f, ui := branchActionRebaseFixture(t)
 				menu := branchActionRebaseStart(t, f, ui)
 				branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
-				if err := ui.confirms[0].HandleConfirm(); err != nil {
-					t.Fatal(err)
-				}
 				if boundary == "terminal" {
 					if err := ui.runBlockingWorker(t); err != nil {
 						t.Fatal(err)
@@ -452,43 +438,12 @@ func TestBranchActionRebaseFlowRepositorySwapAtPreflightAndTerminal(t *testing.T
 	}
 }
 
-func TestBranchActionRebaseFlowConsumesConfirmationOnce(t *testing.T) {
-	f, ui := branchActionRebaseFixture(t)
-	menu := branchActionRebaseStart(t, f, ui)
-	branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
-	confirmation := ui.confirms[0]
-	if err := confirmation.HandleConfirm(); err != nil {
-		t.Fatal(err)
-	}
-	if err := ui.runBlockingWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := ui.runBlockingWorker(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := ui.runUI(t); err != nil {
-		t.Fatal(err)
-	}
-	if err := confirmation.HandleConfirm(); !errors.Is(err, git_commands.ErrBranchActionChanged) {
-		t.Fatalf("replayed confirmation error=%v", err)
-	}
-	if ui.subprocessCalls != 1 || len(ui.blockingWorkers) != 0 {
-		t.Fatal("replayed confirmation queued another execution")
-	}
-}
-
 func TestBranchActionRebaseFlowRepositorySwapBeforeFinish(t *testing.T) {
 	for _, swap := range []string{"generation", "git-pointer"} {
 		t.Run(swap, func(t *testing.T) {
 			f, ui := branchActionRebaseFixture(t)
 			menu := branchActionRebaseStart(t, f, ui)
 			branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
-			if err := ui.confirms[0].HandleConfirm(); err != nil {
-				t.Fatal(err)
-			}
 			if err := ui.runBlockingWorker(t); err != nil {
 				t.Fatal(err)
 			}
@@ -519,9 +474,6 @@ func TestBranchActionRebaseFlowRepositorySwapBeforeRefreshThen(t *testing.T) {
 			f, ui := branchActionRebaseFixture(t)
 			menu := branchActionRebaseStart(t, f, ui)
 			branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
-			if err := ui.confirms[0].HandleConfirm(); err != nil {
-				t.Fatal(err)
-			}
 			if err := ui.runBlockingWorker(t); err != nil {
 				t.Fatal(err)
 			}
@@ -562,9 +514,6 @@ func TestBranchActionRebaseFlowNativeIndexLockErrorIsPreserved(t *testing.T) {
 	f, ui := branchActionRebaseFixture(t)
 	menu := branchActionRebaseStart(t, f, ui)
 	branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
-	if err := ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
-	}
 	if err := ui.runBlockingWorker(t); err != nil {
 		t.Fatal(err)
 	}
@@ -600,9 +549,6 @@ func TestBranchActionRebaseFlowSigningFailureLeavesExplicitPausedRebase(t *testi
 	ui.modes.MarkedBaseCommit.SetHash(base)
 	menu := branchActionRebaseStart(t, f, ui)
 	branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
-	if err := ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
-	}
 	if err := ui.runBlockingWorker(t); err != nil {
 		t.Fatal(err)
 	}
@@ -664,9 +610,6 @@ func branchActionRebaseConflictMenu(t *testing.T) (*branchSyncPushFixture, *bran
 	mainTip := branchActionRebaseGit(t, f.root, "rev-parse", "HEAD")
 	menu := branchActionRebaseStart(t, f, ui)
 	branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
-	if err := ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
-	}
 	if err := ui.runBlockingWorker(t); err != nil {
 		t.Fatal(err)
 	}
@@ -799,9 +742,6 @@ func TestBranchActionRebaseFlowIgnoredBytesRequireFreshApproval(t *testing.T) {
 	}
 	menu := branchActionRebaseStart(t, f, ui)
 	branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
-	if err := ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
-	}
 	if len(f.ui.menus) < 2 {
 		t.Fatal("ignored collision did not open approval menu")
 	}
@@ -854,9 +794,6 @@ func TestBranchActionRebaseFlowChangedIgnoredBytesAfterApprovalRejects(t *testin
 	}
 	menu := branchActionRebaseStart(t, f, ui)
 	branchActionRebaseChoose(t, ui, menu, "branch.rebase-current-onto-selected.simple")
-	if err := ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
-	}
 	risk := f.ui.menus[len(f.ui.menus)-1]
 	if err := menuItem(t, risk, "branch.rebase-current-onto-selected.simple.approve-ignored-overwrite").OnPress(); err != nil {
 		t.Fatal(err)

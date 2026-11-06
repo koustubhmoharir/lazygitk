@@ -43,7 +43,6 @@ var RebaseDoesNotAutosquash = NewIntegrationTest(NewIntegrationTestArgs{
 			Title(Equals("Rebase 'my-branch'")).
 			Select(Contains("Simple rebase")).
 			Confirm()
-		t.Common().ReviewBranchRebase()
 
 		t.Views().Commits().Lines(
 			Contains("fixup! branch commit"),

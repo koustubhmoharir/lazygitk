@@ -460,9 +460,24 @@
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
     },
     {
+      "kind": "Binding",
+      "file": "pkg/gui/controllers/branch_placement_refs.go",
+      "line": 35,
+      "owner": "TagsController.branchPlacementBinding",
+      "fields": {
+        "CommandID": "\"branch.place-at-selected-commit\"",
+        "Description": "self.c.Tr.CreateMoveBranchHere",
+        "GetDisabledReason": "self.require(self.singleItemSelected())",
+        "Handler": "self.withItem(self.beginPlacementAtTag)",
+        "OpensMenu": "true",
+        "Verb": "\"place-branch\""
+      },
+      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
+    },
+    {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 124,
+      "line": 125,
       "owner": "branchSyncUpdateFlow.presentIntegrationChoices",
       "fields": {
         "CommandID": "\"branch.pull-current.\" + pullIntegrationLeaf(choice.method)",
@@ -475,7 +490,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 236,
+      "line": 237,
       "owner": "branchSyncTarget.reviewIgnoredApproval",
       "fields": {
         "CommandID": "\"branch.pull-current.approve-ignored-risk\"",
@@ -488,7 +503,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 236,
+      "line": 237,
       "owner": "branchSyncTarget.reviewIgnoredApproval",
       "fields": {
         "CommandID": "\"branch.pull-current.cancel-ignored-risk\"",
@@ -501,7 +516,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 239,
+      "line": 240,
       "owner": "branchSyncTarget.reviewIgnoredApproval",
       "fields": {
         "CommandID": "\"branch.pull-current.inspect-ignored-path\"",
@@ -689,60 +704,6 @@
         "Verb": "\"push-destination\""
       },
       "enclosingCondition": "(errors.Is(err, git_commands.ErrBranchPushMultipleURLs))",
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/branch_sync_stack_push_flow.go",
-      "line": 98,
-      "owner": "branchStackPushFlow.reviewBatch",
-      "fields": {
-        "CommandID": "\"branch.push-stack.execute\"",
-        "Label": "batch.target.c.Tr.BranchSyncStackPushExecute",
-        "OnPress": "batch.execute",
-        "Verb": "\"push-stack\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/branch_sync_stack_push_flow.go",
-      "line": 99,
-      "owner": "branchStackPushFlow.reviewBatch",
-      "fields": {
-        "CommandID": "\"branch.push-stack.cancel\"",
-        "Label": "batch.target.c.Tr.Cancel",
-        "OnPress": "batch.target.checkRepository",
-        "Verb": "\"cancel\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/branch_sync_stack_push_flow.go",
-      "line": 104,
-      "owner": "branchStackPushFlow.reviewBatch",
-      "fields": {
-        "CommandID": "\"branch.push-stack.inspect-plan\"",
-        "Label": "fmt.Sprintf(\"%q %s → %q %q\", plan.Name(), plan.SourceOID(), options.Remote, options.DestinationRef)",
-        "OnPress": "func() error {\n\tif err := batch.target.checkRepository(); err != nil {\n\t\treturn err\n\t}\n\treturn batch.target.c.Menu(types.CreateMenuOptions{\n\t\tTitle: batch.target.c.Tr.BranchSyncReviewTitle, Prompt: prompt,\n\t\tItems:    []*types.MenuItem{{CommandID: \"branch.push-stack.back\", Verb: \"back\", Label: batch.target.c.Tr.Close, OpensMenu: true, OnPress: batch.reviewBatch}},\n\t\tOnCancel: batch.reviewBatch,\n\t})\n}",
-        "OpensMenu": "true",
-        "Verb": "\"inspect\""
-      },
-      "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
-    },
-    {
-      "kind": "MenuItem",
-      "file": "pkg/gui/controllers/branch_sync_stack_push_flow.go",
-      "line": 113,
-      "owner": "branchStackPushFlow.reviewBatch",
-      "fields": {
-        "CommandID": "\"branch.push-stack.back\"",
-        "Label": "batch.target.c.Tr.Close",
-        "OnPress": "batch.reviewBatch",
-        "OpensMenu": "true",
-        "Verb": "\"back\""
-      },
       "classificationEvidence": "explicit types.Binding/types.MenuItem or elided keyed literal in typed collection"
     },
     {
@@ -3999,7 +3960,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/captured_merge.go",
-      "line": 215,
+      "line": 218,
       "owner": "capturedMergeReview.reviewStaged",
       "fields": {
         "CommandID": "review.choice.id + \".approve-staged\"",
@@ -4012,7 +3973,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/captured_merge.go",
-      "line": 219,
+      "line": 222,
       "owner": "capturedMergeReview.reviewStaged",
       "fields": {
         "CommandID": "review.choice.id + \".cancel-staged-risk\"",
@@ -4025,7 +3986,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/captured_merge.go",
-      "line": 223,
+      "line": 226,
       "owner": "capturedMergeReview.reviewStaged",
       "fields": {
         "CommandID": "review.choice.id + \".inspect-staged-path\"",
@@ -4039,7 +4000,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/captured_merge.go",
-      "line": 242,
+      "line": 245,
       "owner": "capturedMergeReview.reviewIgnored",
       "fields": {
         "CommandID": "review.choice.id + \".approve-ignored\"",
@@ -4052,7 +4013,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/captured_merge.go",
-      "line": 245,
+      "line": 248,
       "owner": "capturedMergeReview.reviewIgnored",
       "fields": {
         "CommandID": "review.choice.id + \".cancel-ignored-risk\"",
@@ -4065,7 +4026,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/captured_merge.go",
-      "line": 249,
+      "line": 252,
       "owner": "capturedMergeReview.reviewIgnored",
       "fields": {
         "CommandID": "review.choice.id + \".inspect-ignored-path\"",
@@ -4123,7 +4084,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/captured_rebase.go",
-      "line": 213,
+      "line": 210,
       "owner": "capturedRebaseReview.reviewIgnored",
       "fields": {
         "CommandID": "review.choice.id + \".approve-ignored-overwrite\"",
@@ -4137,7 +4098,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/captured_rebase.go",
-      "line": 217,
+      "line": 214,
       "owner": "capturedRebaseReview.reviewIgnored",
       "fields": {
         "CommandID": "review.choice.id + \".cancel-risk\"",
@@ -4150,7 +4111,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/captured_rebase.go",
-      "line": 221,
+      "line": 218,
       "owner": "capturedRebaseReview.reviewIgnored",
       "fields": {
         "CommandID": "review.choice.id + \".inspect-ignored-path\"",
@@ -7587,7 +7548,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/tags_controller.go",
-      "line": 46,
+      "line": 48,
       "owner": "TagsController.GetKeybindings",
       "fields": {
         "CommandID": "\"tag.checkout\"",
@@ -7603,7 +7564,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/tags_controller.go",
-      "line": 56,
+      "line": 58,
       "owner": "TagsController.GetKeybindings",
       "fields": {
         "CommandID": "\"tag.create-at-current\"",
@@ -7618,7 +7579,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/tags_controller.go",
-      "line": 65,
+      "line": 67,
       "owner": "TagsController.GetKeybindings",
       "fields": {
         "CommandID": "\"worktree.create-menu\"",
@@ -7633,7 +7594,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/tags_controller.go",
-      "line": 73,
+      "line": 75,
       "owner": "TagsController.GetKeybindings",
       "fields": {
         "CommandID": "\"tag.delete-menu\"",
@@ -7650,7 +7611,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/tags_controller.go",
-      "line": 84,
+      "line": 86,
       "owner": "TagsController.GetKeybindings",
       "fields": {
         "CommandID": "\"tag.push\"",
@@ -7666,7 +7627,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/tags_controller.go",
-      "line": 94,
+      "line": 96,
       "owner": "TagsController.GetKeybindings",
       "fields": {
         "CommandID": "\"branch.reset-menu\"",
@@ -7683,7 +7644,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/tags_controller.go",
-      "line": 105,
+      "line": 107,
       "owner": "TagsController.GetKeybindings",
       "fields": {
         "CommandID": "\"diff.ref.external\"",
@@ -7698,7 +7659,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/tags_controller.go",
-      "line": 297,
+      "line": 299,
       "owner": "TagsController.delete",
       "fields": {
         "CommandID": "\"tag.delete-local\"",
@@ -7712,7 +7673,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/tags_controller.go",
-      "line": 306,
+      "line": 308,
       "owner": "TagsController.delete",
       "fields": {
         "CommandID": "\"tag.delete-remote\"",
@@ -7727,7 +7688,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/tags_controller.go",
-      "line": 316,
+      "line": 318,
       "owner": "TagsController.delete",
       "fields": {
         "CommandID": "\"tag.delete-local-and-remote\"",
@@ -10763,7 +10724,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 147,
+      "line": 148,
       "owner": "pullIntegrationLeaf",
       "fields": {
         "key": "git_commands.PullIntegrationDefault"
@@ -10772,7 +10733,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 149,
+      "line": 150,
       "owner": "pullIntegrationLeaf",
       "fields": {
         "key": "git_commands.PullIntegrationFastForwardOnly"
@@ -10781,7 +10742,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 151,
+      "line": 152,
       "owner": "pullIntegrationLeaf",
       "fields": {
         "key": "git_commands.PullIntegrationMerge"
@@ -10790,7 +10751,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 153,
+      "line": 154,
       "owner": "pullIntegrationLeaf",
       "fields": {
         "key": "git_commands.PullIntegrationMergeNoFF"
@@ -10799,7 +10760,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 155,
+      "line": 156,
       "owner": "pullIntegrationLeaf",
       "fields": {
         "key": "git_commands.PullIntegrationRebase"
@@ -10808,7 +10769,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 157,
+      "line": 158,
       "owner": "pullIntegrationLeaf",
       "fields": {
         "key": "git_commands.PullIntegrationRebaseMerges"
@@ -10817,7 +10778,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 159,
+      "line": 160,
       "owner": "pullIntegrationLeaf",
       "fields": {
         "key": "git_commands.PullIntegrationRebaseInteractive"
@@ -10826,7 +10787,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 251,
+      "line": 252,
       "owner": "branchSyncUpdateFlow.integrationMethodLabel",
       "fields": {
         "key": "git_commands.PullIntegrationFastForwardOnly"
@@ -10835,7 +10796,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 253,
+      "line": 254,
       "owner": "branchSyncUpdateFlow.integrationMethodLabel",
       "fields": {
         "key": "git_commands.PullIntegrationMergeNoFF"
@@ -10844,7 +10805,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 255,
+      "line": 256,
       "owner": "branchSyncUpdateFlow.integrationMethodLabel",
       "fields": {
         "key": "git_commands.PullIntegrationRebase"
@@ -10853,7 +10814,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 257,
+      "line": 258,
       "owner": "branchSyncUpdateFlow.integrationMethodLabel",
       "fields": {
         "key": "git_commands.PullIntegrationRebaseMerges"
@@ -10862,7 +10823,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 259,
+      "line": 260,
       "owner": "branchSyncUpdateFlow.integrationMethodLabel",
       "fields": {
         "key": "git_commands.PullIntegrationRebaseInteractive"
@@ -10871,7 +10832,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/branch_sync_current_pull_flow.go",
-      "line": 261,
+      "line": 262,
       "owner": "branchSyncUpdateFlow.integrationMethodLabel",
       "fields": {
         "key": "git_commands.PullIntegrationConfiguredMerge"

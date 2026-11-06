@@ -106,8 +106,8 @@ func (flow *capturedMergeFlow) menu() error {
 		{id: "branch.merge.regular", label: c.Tr.BranchActionMergeConfigured, verb: "merge", mode: git_commands.BranchActionMergeConfigured, key: 'm'},
 		{id: "branch.merge.ff", label: c.Tr.BranchActionMergeAllowFF, verb: "merge", mode: git_commands.BranchActionMergeAllowFF, key: 'f'},
 		{id: "branch.merge.no-ff", label: c.Tr.BranchActionMergeNoFF, verb: "merge", mode: git_commands.BranchActionMergeNoFF, key: 'n'},
-		{id: "branch.merge.squash-uncommitted", label: c.Tr.SquashMergeUncommitted, verb: "squash-merge", mode: git_commands.BranchActionMergeSquash, key: 's'},
-		{id: "branch.merge.squash-committed", label: c.Tr.SquashMergeCommitted, verb: "squash-merge", mode: git_commands.BranchActionMergeSquashAndCommit, key: 'S'},
+		{id: "branch.merge.squash-uncommitted", label: c.Tr.SquashMergeUncommitted, verb: "squash-merge", mode: git_commands.BranchActionMergeSquash, key: 'u'},
+		{id: "branch.merge.squash-committed", label: c.Tr.SquashMergeCommitted, verb: "squash-merge", mode: git_commands.BranchActionMergeSquashAndCommit, key: 's'},
 	}
 	items := make([]*types.MenuItem, 0, len(choices))
 	for _, choice := range choices {
@@ -174,10 +174,13 @@ func (flow *capturedMergeFlow) prepare(choice capturedMergeChoice, message strin
 					SkipHooks: flow.skipHookPrefix != "" && strings.HasPrefix(message, flow.skipHookPrefix),
 				},
 			}
-			prompt := flow.prompt(choice)
-			if choice.mode == git_commands.BranchActionMergeSquashAndCommit {
-				prompt += "\n\n" + fmt.Sprintf(c.Tr.BranchActionMergeChosenMessage, message)
+			// The mode menu already names both branches and the mode, so only a
+			// squash-and-commit asks again, to review the message it typed; the other
+			// modes run from the menu and only staged or ignored-file risks ask.
+			if choice.mode != git_commands.BranchActionMergeSquashAndCommit {
+				return review.reviewRisks()
 			}
+			prompt := flow.prompt(choice) + "\n\n" + fmt.Sprintf(c.Tr.BranchActionMergeChosenMessage, message)
 			c.Confirm(types.ConfirmOpts{Title: c.Tr.Merge, Prompt: prompt, HandleClose: flow.check, HandleConfirm: review.reviewRisks})
 			return nil
 		})

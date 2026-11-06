@@ -200,7 +200,7 @@ Commits only:
 | `v`, Space | Show the commits |
 | `s c` | Switch to the branch; for a remote branch, to its local branch, creating it to track the remote one if needed. On a tag, the name prompt as for a commit |
 | `s d` | Check out its commit as a detached HEAD |
-| `n b` | Create or move a branch at its commit without checking out |
+| `n b` | Create or move a branch at its commit without checking out; on a tag, at the commit it points to (an annotated tag is peeled) |
 | `r`, `m` | Rebase the checked-out branch onto it; merge it into the checked-out branch |
 | `s h`, `s m`, `s s` | Reset the checked-out branch to it (Branches) |
 | `n w` | New worktree |
@@ -419,9 +419,15 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 ### Rebase, merge, reset
 
 - `r` rebases the checked-out branch onto the selected commit or branch;
-  `m` merges the selected branch into it. The review names the current branch,
-  the source and the commits involved, and offers the variants (simple,
-  interactive or onto the base branch; regular or squash merge).
+  `m` merges the selected branch into it. The menu names the current branch,
+  the source and the commits involved. Its keys are `s` simple, `i`
+  interactive and `b` onto the base branch for a rebase; `m` configured
+  options, `f` allow fast-forward, `n` no fast-forward, `u` squash and leave
+  uncommitted, and `s` squash and commit for a merge. Choosing an entry runs it
+  straight from the menu, since the menu already names the branches and the
+  mode. What still asks: ignored files that the action would overwrite, which
+  are listed for review, and staged changes for a squash-and-commit merge. A
+  squash-and-commit merge also asks for its message and then confirms it.
 - Rebases need no staged or unstaged tracked changes. Untracked files are fine
   and Git refuses real collisions. Nothing offers or performs autostash, even
   if Git's configuration enables it, and other branches' refs are not updated.

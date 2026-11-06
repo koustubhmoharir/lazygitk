@@ -36,7 +36,6 @@ var MergeNonFastForward = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("Squash merge and commit"),
 			).
 			Select(MatchesRegexp(`^[[:space:]]*n Merge \(no fast-forward\)`)).Confirm()
-		t.Common().ReviewBranchMerge("original-branch", "branch2", "Merge (no fast-forward)")
 
 		t.Views().Commits().EventuallyContent(Contains(`Merge branch "branch2" into "original-branch"`)).ContainsLines(
 			Contains(`Merge branch "branch2" into "original-branch"`).IsSelected(),
@@ -44,14 +43,16 @@ var MergeNonFastForward = NewIntegrationTest(NewIntegrationTestArgs{
 		)
 
 		t.Views().Branches().Focus().NavigateToLine(Contains("branch1")).Press(keys.Branches.MergeIntoCurrentBranch)
-		t.ExpectPopup().Menu().Title(Equals("Merge")).
-			Select(MatchesRegexp(`^[[:space:]]*m Merge using configured options`)).Confirm()
-		t.Common().ReviewBranchMerge("original-branch", "branch1", "Merge using configured options")
+		// m runs the configured ordinary merge straight from the menu: the merge
+		// commit appears without a second confirmation.
+		t.ExpectPopup().Menu().Title(Equals("Merge"))
+		t.Views().Menu().Press(config.Keybinding{"m"})
 
 		t.Views().Commits().EventuallyContent(Contains(`Merge branch "branch1" into "original-branch"`)).ContainsLines(
 			Contains(`Merge branch "branch1" into "original-branch"`).IsSelected(),
 			Contains("branch1"),
 			Contains(`Merge branch "branch2" into "original-branch"`),
 		)
+		t.Views().Confirmation().IsInvisible()
 	},
 })

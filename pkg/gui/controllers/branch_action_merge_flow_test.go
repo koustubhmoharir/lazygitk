@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
+	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 )
@@ -70,20 +71,26 @@ func TestBranchActionMergeFlowCapturesFullRefsAndCancelDoesNotMutate(t *testing.
 			t.Fatalf("choice %d ID=%q, want %q", i, menu.Items[i].CommandID, id)
 		}
 	}
+	// u squashes without committing and s squashes and commits; no other item uses u.
+	wantKeys := map[string]rune{
+		"branch.merge.regular": 'm', "branch.merge.ff": 'f', "branch.merge.no-ff": 'n',
+		"branch.merge.squash-uncommitted": 'u', "branch.merge.squash-committed": 's',
+	}
+	for _, item := range menu.Items {
+		if len(item.Keys) != 1 || item.Keys[0] != gocui.NewKeyRune(wantKeys[item.CommandID]) {
+			t.Fatalf("%s key=%v, want %q", item.CommandID, item.Keys, wantKeys[item.CommandID])
+		}
+	}
 	if !strings.Contains(menu.Prompt, "refs/heads/topic") || !strings.Contains(menu.Prompt, head) {
 		t.Fatalf("menu omitted captured full source/current identities: %q", menu.Prompt)
 	}
-	branchActionMergeChoose(t, ui, menu, "branch.merge.regular")
-	if len(f.ui.confirms) != 1 || !strings.Contains(f.ui.confirms[0].Prompt, "refs/heads/topic") || !strings.Contains(f.ui.confirms[0].Prompt, head) {
-		t.Fatalf("confirmation omitted captured full identities: %+v", f.ui.confirms)
-	}
 	before := branchSyncCurrentPullReadSnapshot(t, f)
-	if err := f.ui.confirms[0].HandleClose(); err != nil {
+	if err := menu.OnCancel(); err != nil {
 		t.Fatal(err)
 	}
 	after := branchSyncCurrentPullReadSnapshot(t, f)
-	if string(before.head) != string(after.head) || string(before.index) != string(after.index) || string(before.tracked) != string(after.tracked) || ui.subprocessCalls != 0 {
-		t.Fatal("canceling merge confirmation mutated the repository or ran a subprocess")
+	if string(before.head) != string(after.head) || string(before.index) != string(after.index) || string(before.tracked) != string(after.tracked) || ui.subprocessCalls != 0 || len(f.ui.confirms) != 0 {
+		t.Fatal("canceling the merge menu mutated the repository, ran a subprocess or confirmed")
 	}
 }
 
@@ -98,8 +105,8 @@ func TestBranchActionMergeFlowMergesOnlyCurrentAndUsesNativeArgs(t *testing.T) {
 	source := branchActionMergeGit(t, f.root, "rev-parse", "refs/heads/topic")
 	menu := branchActionMergeStart(t, f, ui)
 	branchActionMergeChoose(t, ui, menu, "branch.merge.no-ff")
-	if err := f.ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
+	if len(f.ui.confirms) != 0 {
+		t.Fatal("ordinary merge asked for a second confirmation")
 	}
 	if err := ui.runBlockingWorker(t); err != nil {
 		t.Fatal(err)
@@ -132,9 +139,6 @@ func TestBranchActionMergeFlowRejectsChangedSourceBeforeNativeCommand(t *testing
 	menu := branchActionMergeStart(t, f, ui)
 	branchActionMergeChoose(t, ui, menu, "branch.merge.regular")
 	branchActionMergeGit(t, f.root, "update-ref", "refs/heads/topic", "refs/heads/main")
-	if err := f.ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
-	}
 	if err := ui.runBlockingWorker(t); !errors.Is(err, git_commands.ErrBranchActionChanged) {
 		t.Fatalf("changed source preflight error=%v", err)
 	}
@@ -143,8 +147,8 @@ func TestBranchActionMergeFlowRejectsChangedSourceBeforeNativeCommand(t *testing
 	}
 }
 
-func TestBranchActionMergeFlowRejectsRepositoryReplacementBeforeMenuAndConfirmation(t *testing.T) {
-	for _, boundary := range []string{"menu", "confirmation"} {
+func TestBranchActionMergeFlowRejectsRepositoryReplacementBeforeMenuAndReview(t *testing.T) {
+	for _, boundary := range []string{"menu", "review"} {
 		for _, swap := range []string{"generation", "backend"} {
 			t.Run(boundary+"/"+swap, func(t *testing.T) {
 				f, ui := branchActionMergeFixture(t)
@@ -158,10 +162,8 @@ func TestBranchActionMergeFlowRejectsRepositoryReplacementBeforeMenuAndConfirmat
 					if err := menuItem(t, menu, "branch.merge.regular").OnPress(); err != nil {
 						t.Fatal(err)
 					}
+					// The prepared review is queued for the UI thread; it runs after the swap.
 					if err := ui.runWorker(t); err != nil {
-						t.Fatal(err)
-					}
-					if err := ui.runUI(t); err != nil {
 						t.Fatal(err)
 					}
 				}
@@ -181,8 +183,8 @@ func TestBranchActionMergeFlowRejectsRepositoryReplacementBeforeMenuAndConfirmat
 					if len(f.ui.menus) != 0 {
 						t.Fatal("stale menu was presented")
 					}
-				} else if err := f.ui.confirms[0].HandleConfirm(); err == nil || !strings.Contains(err.Error(), f.sync.c.Tr.BranchSyncRepositoryChanged) {
-					t.Fatalf("confirmation accepted repository replacement: %v", err)
+				} else if err := ui.runUI(t); err == nil || !strings.Contains(err.Error(), f.sync.c.Tr.BranchSyncRepositoryChanged) {
+					t.Fatalf("review callback accepted repository replacement: %v", err)
 				}
 				if ui.subprocessCalls != 0 || len(ui.refresh) != 0 {
 					t.Fatal("repository replacement reached native merge or refresh")
@@ -199,9 +201,6 @@ func TestBranchActionMergeFlowRejectsRepositoryReplacementAtTerminalBoundary(t *
 			f, ui := branchActionMergeFixture(t)
 			menu := branchActionMergeStart(t, f, ui)
 			branchActionMergeChoose(t, ui, menu, "branch.merge.regular")
-			if err := f.ui.confirms[0].HandleConfirm(); err != nil {
-				t.Fatal(err)
-			}
 			if err := ui.runBlockingWorker(t); err != nil {
 				t.Fatal(err)
 			}
@@ -230,9 +229,6 @@ func TestBranchActionMergeFlowRejectsRepositoryReplacementAfterNativeMerge(t *te
 				f, ui := branchActionMergeFixture(t)
 				menu := branchActionMergeStart(t, f, ui)
 				branchActionMergeChoose(t, ui, menu, "branch.merge.regular")
-				if err := f.ui.confirms[0].HandleConfirm(); err != nil {
-					t.Fatal(err)
-				}
 				if err := ui.runBlockingWorker(t); err != nil {
 					t.Fatal(err)
 				}
@@ -388,9 +384,6 @@ func TestBranchActionMergeFlowRegularAndSquashConflictsDoNotAutocommit(t *testin
 			branchActionMergeGit(t, f.root, "commit", "-qm", "current conflicting change")
 			menu := branchActionMergeStart(t, f, ui)
 			branchActionMergeChoose(t, ui, menu, mode)
-			if err := f.ui.confirms[0].HandleConfirm(); err != nil {
-				t.Fatal(err)
-			}
 			if err := ui.runBlockingWorker(t); err != nil {
 				t.Fatal(err)
 			}
@@ -544,9 +537,6 @@ func branchActionMergeCreateRegularConflict(t *testing.T) (*branchSyncPushFixtur
 	branchActionMergeGit(t, f.root, "commit", "-qm", "current conflicting change")
 	menu := branchActionMergeStart(t, f, ui)
 	branchActionMergeChoose(t, ui, menu, "branch.merge.regular")
-	if err := f.ui.confirms[0].HandleConfirm(); err != nil {
-		t.Fatal(err)
-	}
 	if err := ui.runBlockingWorker(t); err != nil {
 		t.Fatal(err)
 	}

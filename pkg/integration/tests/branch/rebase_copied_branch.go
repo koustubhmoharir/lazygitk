@@ -45,7 +45,6 @@ var RebaseCopiedBranch = NewIntegrationTest(NewIntegrationTestArgs{
 					Title(Equals("Rebase 'branch2'")).
 					Select(Contains("Simple rebase")).
 					Confirm()
-				t.Common().ReviewBranchRebase()
 			})
 
 		t.Views().Commits().Lines(

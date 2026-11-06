@@ -41,7 +41,6 @@ var RebaseOntoBaseBranch = NewIntegrationTest(NewIntegrationTestArgs{
 			Title(Equals("Rebase 'feature'")).
 			Select(Contains("Rebase onto base branch (master)")).
 			Confirm()
-		t.Common().ReviewBranchRebase()
 
 		t.Views().Commits().Lines(
 			Contains("feature 2"),

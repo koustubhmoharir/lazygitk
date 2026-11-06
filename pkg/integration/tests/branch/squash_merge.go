@@ -40,7 +40,7 @@ var SquashMerge = NewIntegrationTest(NewIntegrationTestArgs{
 			Contains("Merge (no fast-forward)"),
 			Contains("Squash merge and leave uncommitted"),
 			Contains("Squash merge and commit"),
-		).Select(MatchesRegexp(`^[[:space:]]*S Squash merge and commit`)).Confirm()
+		).Select(MatchesRegexp(`^[[:space:]]*s Squash merge and commit`)).Confirm()
 
 		t.ExpectPopup().Prompt().Title(Equals("Squash commit message")).
 			InitialText(Equals("Squash merge change-commit-branch into original-branch")).Confirm()
@@ -56,8 +56,7 @@ var SquashMerge = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().Branches().Focus().NavigateToLine(Contains("change-worktree-branch")).Press(keys.Branches.MergeIntoCurrentBranch)
 		t.ExpectPopup().Menu().Title(Equals("Merge")).
-			Select(MatchesRegexp(`^[[:space:]]*s Squash merge and leave uncommitted`)).Confirm()
-		t.Common().ReviewBranchMerge("original-branch", "change-worktree-branch", "Squash merge and leave uncommitted")
+			Select(MatchesRegexp(`^[[:space:]]*u Squash merge and leave uncommitted`)).Confirm()
 
 		t.Views().Files().Focus().EventuallyContent(Contains("work")).Lines(Contains("work"))
 	},

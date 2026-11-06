@@ -91,7 +91,6 @@ var ModeSpecificKeybindingSuggestions = NewIntegrationTest(NewIntegrationTestArg
 					Title(Equals("Merge")).
 					Select(MatchesRegexp(`^[[:space:]]*n Merge \(no fast-forward\)`)).
 					Confirm()
-				t.Common().ReviewBranchMerge("first-change-branch", "second-change-branch", "Merge (no fast-forward)")
 
 				t.Common().AcknowledgeConflicts()
 

@@ -45,10 +45,6 @@ var ForkDefaultHistoryOperationsRebaseMerge = NewIntegrationTest(NewIntegrationT
 			Title(Equals("Rebase 'topic'")).
 			Select(Contains("Simple rebase onto 'master'")).
 			Confirm()
-		t.ExpectPopup().Confirmation().
-			Title(Equals("Rebase 'topic'")).
-			Content(Contains("topic").Contains("onto selected source").Contains("master").Contains("Mode:")).
-			Confirm()
 
 		commits := t.Views().Commits()
 		commits.TopLines(Contains("t1"))
@@ -60,10 +56,6 @@ var ForkDefaultHistoryOperationsRebaseMerge = NewIntegrationTest(NewIntegrationT
 		t.ExpectPopup().Menu().
 			Title(Equals("Merge")).
 			Select(MatchesRegexp(`^[[:space:]]*m Merge using configured options`)).
-			Confirm()
-		t.ExpectPopup().Confirmation().
-			Title(Equals("Merge")).
-			Content(Contains(`Current branch: "topic"`).Contains(`Selected source: "side"`).Contains("Mode: Merge using configured options")).
 			Confirm()
 
 		commits.TopLines(Contains(`Merge branch "side" into "topic"`))

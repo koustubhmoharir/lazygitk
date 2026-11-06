@@ -35,7 +35,6 @@ var RebaseWithCommitThatBecomesEmpty = NewIntegrationTest(NewIntegrationTestArgs
 			Title(Equals("Rebase 'branch'")).
 			Select(Contains("Simple rebase")).
 			Confirm()
-		t.Common().ReviewBranchRebase()
 		t.ExpectPopup().Alert().Title(Equals("Error")).
 			Content(Contains("rebase is paused").Contains("continue, skip or abort")).Confirm()
 		if t.Git().GetCommitHash("refs/heads/branch") != originalTip {

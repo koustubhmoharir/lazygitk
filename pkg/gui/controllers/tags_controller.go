@@ -39,6 +39,8 @@ func NewTagsController(
 
 func (self *TagsController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
+		// Fork: n b creates or moves a branch at the tag's commit (see branch_placement_refs.go).
+		self.branchPlacementBinding(),
 		// Fork: w b shows the tag with its history (see fork_ref_scope_filter.go).
 		self.refScopeFilterBinding(),
 		// Fork: w v shows the tag's commit in Commits (see fork_show_in_commits.go).
