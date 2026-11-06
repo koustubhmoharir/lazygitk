@@ -645,3 +645,72 @@ func TestBranchPushDestinationDivergence(t *testing.T) {
 		assert.False(t, diverged)
 	})
 }
+
+// branchPushSplitDestination creates a separate bare destination whose selected
+// branch is at base, and routes origin pushes there with pushurl or with
+// pushInsteadOf. Fetches still read the history bare.
+func branchPushSplitDestination(t *testing.T, h branchPushHistory, routing string) string {
+	t.Helper()
+	bare := filepath.Join(t.TempDir(), "push.git")
+	gitTest(t, filepath.Dir(bare), "init", "--bare", "-q", bare)
+	gitTest(t, h.root, "push", "-q", bare, h.base+":refs/heads/selected")
+	switch routing {
+	case "pushurl":
+		gitTest(t, h.root, "config", "remote.origin.pushurl", bare)
+	case "pushInsteadOf":
+		gitTest(t, h.root, "config", "url."+bare+".pushInsteadOf", h.bare)
+	default:
+		t.Fatalf("unknown routing %q", routing)
+	}
+	return bare
+}
+
+func TestBranchPushSplitPushURLDoesNotUseFetchTrackingVeto(t *testing.T) {
+	for _, routing := range []string{"pushurl", "pushInsteadOf"} {
+		t.Run(routing+" plain push is not refused and reaches the push URL", func(t *testing.T) {
+			h := branchPushTestHistory(t)
+			pushBare := branchPushSplitDestination(t, h, routing)
+			// The fetched tracking ref has commits the local branch lacks, but it
+			// describes fetch.git, not the push destination.
+			gitTest(t, h.root, "update-ref", "refs/remotes/origin/selected", h.mastertip)
+			commands := branchSyncTestCommands(t, h.root)
+			_, diverged, err := commands.BranchPushDestinationDiverged(h.selected, "origin", "refs/heads/selected")
+			branchPushRequireNoError(t, err)
+			assert.False(t, diverged)
+			plan, err := commands.PrepareBranchPush("selected", h.selected, h.options())
+			branchPushRequireNoError(t, err)
+			assert.False(t, plan.LeaseFromUnmatchedTracking())
+			output, err := runBranchPush(t, commands, plan)
+			branchPushRequireNoError(t, err, string(output))
+			assert.Equal(t, h.selected, branchPushGit(t, pushBare, "rev-parse", "refs/heads/selected"))
+		})
+		t.Run(routing+" default lease from fetched tracking is refused by a different destination", func(t *testing.T) {
+			h := branchPushTestHistory(t)
+			pushBare := branchPushSplitDestination(t, h, routing)
+			gitTest(t, h.root, "update-ref", "refs/remotes/origin/selected", h.mastertip)
+			commands := branchSyncTestCommands(t, h.root)
+			opts := h.options()
+			opts.ForceWithLease = true
+			plan, err := commands.PrepareBranchPush("selected", h.selected, opts)
+			branchPushRequireNoError(t, err)
+			assert.Equal(t, "refs/remotes/origin/selected", plan.LeaseRef())
+			assert.Equal(t, h.mastertip, plan.LeaseOID())
+			assert.True(t, plan.LeaseFromUnmatchedTracking())
+			output, err := runBranchPush(t, commands, plan)
+			assert.Error(t, err, string(output))
+			assert.Equal(t, h.base, branchPushGit(t, pushBare, "rev-parse", "refs/heads/selected"))
+		})
+	}
+	t.Run("shared URL keeps the divergence veto and the tracking lease", func(t *testing.T) {
+		h := branchPushTestHistory(t)
+		gitTest(t, h.root, "update-ref", "refs/remotes/origin/selected", h.mastertip)
+		commands := branchSyncTestCommands(t, h.root)
+		_, err := commands.PrepareBranchPush("selected", h.selected, h.options())
+		assert.ErrorIs(t, err, ErrBranchPushDiverged)
+		opts := h.options()
+		opts.ForceWithLease = true
+		plan, err := commands.PrepareBranchPush("selected", h.selected, opts)
+		branchPushRequireNoError(t, err)
+		assert.False(t, plan.LeaseFromUnmatchedTracking())
+	})
+}

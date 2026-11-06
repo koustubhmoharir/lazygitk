@@ -85,6 +85,10 @@ var ErrPullIgnoredApprovalRequired = errors.New("ignored files may be overwritte
 
 var ErrPullIntegrationChoiceRequired = errors.New("no pull reconciliation policy is configured; choose fast-forward only, merge, or rebase explicitly")
 
+// ErrPullConfiguredDefaultUnusable means a configured pull setting holds a value
+// that cannot select a default method. Explicit methods remain available.
+var ErrPullConfiguredDefaultUnusable = errors.New("the configured default pull method cannot be used")
+
 // PrepareCurrentPullReview must precede the fetch. trackingRef is the explicit
 // local upstream/tracking ref whose reflog may contain the previous upstream.
 // An empty value means there is no known tracking history, not a guessed ref.
@@ -337,12 +341,14 @@ func (self *SyncCommands) resolvePullReviewMethod(name, sourceOID, targetOID str
 		}
 		return requested, isPullReviewRebase(requested), nil
 	}
-	rebaseValue, rebaseFound, err := self.pullReviewConfig("branch." + name + ".rebase")
+	rebaseKey := "branch." + name + ".rebase"
+	rebaseValue, rebaseFound, err := self.pullReviewConfig(rebaseKey)
 	if err != nil {
 		return 0, false, err
 	}
 	if !rebaseFound {
-		rebaseValue, rebaseFound, err = self.pullReviewConfig("pull.rebase")
+		rebaseKey = "pull.rebase"
+		rebaseValue, rebaseFound, err = self.pullReviewConfig(rebaseKey)
 		if err != nil {
 			return 0, false, err
 		}
@@ -357,14 +363,14 @@ func (self *SyncCommands) resolvePullReviewMethod(name, sourceOID, targetOID str
 	case "interactive", "i":
 		rebaseMethod = PullIntegrationRebaseInteractive
 	default:
-		return 0, false, fmt.Errorf("unsupported configured pull rebase mode %q; choose a method explicitly", rebaseValue)
+		return 0, false, fmt.Errorf("%w: unsupported %s value %q; choose a method explicitly", ErrPullConfiguredDefaultUnusable, rebaseKey, rebaseValue)
 	}
 	ff, ffFound, err := self.pullReviewConfig("pull.ff")
 	if err != nil {
 		return 0, false, err
 	}
 	if ffFound && ff != "true" && ff != "false" && ff != "only" {
-		return 0, false, fmt.Errorf("invalid configured pull.ff value %q", ff)
+		return 0, false, fmt.Errorf("%w: invalid pull.ff value %q; choose a method explicitly", ErrPullConfiguredDefaultUnusable, ff)
 	}
 	clean := isPullReviewRebase(rebaseMethod)
 	if ff == "only" {

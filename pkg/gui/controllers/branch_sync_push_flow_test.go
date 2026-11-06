@@ -1114,3 +1114,51 @@ func TestBranchSyncPushSoleRemotePrefillsChooseRemote(t *testing.T) {
 		t.Fatalf("Choose remote did not open a prompt prefilled with origin: %+v", f.ui.prompts)
 	}
 }
+
+func TestBranchSyncPushForceLeaseReviewNamesUnmatchedTracking(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		pushURL   bool
+		wantNotes bool
+	}{
+		{name: "split push URL names the fetched tracking lease", pushURL: true, wantNotes: true},
+		{name: "shared URL does not add the note"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newBranchSyncPushFixture(t)
+			if tc.pushURL {
+				push := filepath.Join(t.TempDir(), "push.git")
+				branchSyncPushGit(t, t.TempDir(), "init", "--bare", "-q", push)
+				branchSyncPushGit(t, f.root, "config", "remote.origin.pushurl", push)
+			}
+			branchSyncPushGit(t, f.root, "update-ref", "refs/remotes/origin/topic", "refs/heads/main")
+			info, err := f.git.Sync.InspectBranchSync("topic")
+			if err != nil {
+				t.Fatal(err)
+			}
+			flow := &branchSyncPushFlow{
+				target: newBranchSyncTarget(f.sync.c, branchSyncSource{name: "topic", selected: true}),
+				info:   info,
+				opts:   git_commands.BranchPushOptions{Remote: "origin", DestinationRef: "refs/heads/topic"},
+			}
+			if err := flow.prepare(true); err != nil {
+				t.Fatal(err)
+			}
+			if err := f.ui.runWorker(t); err != nil {
+				t.Fatal(err)
+			}
+			if err := f.ui.runUI(t); err != nil {
+				t.Fatal(err)
+			}
+			prompt := f.ui.menus[len(f.ui.menus)-1].Prompt
+			if !strings.Contains(prompt, "using lease \"refs/remotes/origin/topic\"") {
+				t.Fatalf("lease review does not name the tracking lease: %s", prompt)
+			}
+			note := f.sync.c.Tr.BranchSyncLeaseUnmatchedTracking
+			note = note[:strings.Index(note, "%q")]
+			if got := strings.Contains(prompt, note); got != tc.wantNotes {
+				t.Fatalf("unmatched tracking note present = %t, want %t: %s", got, tc.wantNotes, prompt)
+			}
+		})
+	}
+}

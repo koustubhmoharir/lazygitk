@@ -3,6 +3,7 @@ package git_commands
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
@@ -35,6 +36,9 @@ type BranchPushPlan struct {
 	reservation                                      BranchSyncReservation
 	options                                          BranchPushOptions
 	prepared, multipleURLsApproved                   bool
+	// leaseFromUnmatchedTracking records that the default lease is the fetched
+	// tracking ref while the push URLs differ from the fetch URLs.
+	leaseFromUnmatchedTracking bool
 }
 
 func (plan BranchPushPlan) Name() string                       { return plan.name }
@@ -44,6 +48,10 @@ func (plan BranchPushPlan) LeaseRef() string                   { return plan.lea
 func (plan BranchPushPlan) LeaseOID() string                   { return plan.leaseOID }
 func (plan BranchPushPlan) PreviousRemote() string             { return plan.previousRemote }
 func (plan BranchPushPlan) Reservation() BranchSyncReservation { return plan.reservation }
+
+// LeaseFromUnmatchedTracking reports whether the lease was defaulted from the
+// fetched tracking ref although the push destination is not the fetched one.
+func (plan BranchPushPlan) LeaseFromUnmatchedTracking() bool { return plan.leaseFromUnmatchedTracking }
 
 func (plan BranchPushPlan) ConfiguredPushURLs() []string {
 	if plan.configuredURLs == "" {
@@ -77,7 +85,9 @@ var (
 // BranchPushDestinationDiverged reports whether the preferred local tracking
 // ref for remote and destinationRef holds commits that sourceOID does not
 // contain. It reads local refs only and never fetches. It returns the tracking
-// ref it checked when diverged is true.
+// ref it checked when diverged is true. When the push URLs differ from the
+// fetch URLs the tracking ref does not describe the destination, so it never
+// reports divergence.
 func (self *SyncCommands) BranchPushDestinationDiverged(sourceOID, remote, destinationRef string) (trackingRef string, diverged bool, err error) {
 	if err := validateObjectID(sourceOID); err != nil {
 		return "", false, err
@@ -93,7 +103,45 @@ func (self *SyncCommands) BranchPushDestinationDiverged(sourceOID, remote, desti
 	if err != nil {
 		return "", false, err
 	}
+	fetched, err := self.branchPushDestinationFetched(remote)
+	if err != nil {
+		return "", false, err
+	}
+	if !fetched {
+		return "", false, nil
+	}
 	return self.branchPushDivergedFromMapping(sourceOID, mapping)
+}
+
+// branchPushDestinationFetched reports whether the remote pushes to the same
+// effective URLs that it fetches from, after insteadOf and pushInsteadOf
+// rewriting. Only then does a fetched tracking ref describe the push
+// destination. Otherwise Git's own fast-forward check is authoritative.
+// It reads configuration only and never contacts a remote.
+func (self *SyncCommands) branchPushDestinationFetched(remote string) (bool, error) {
+	fetchURLs, err := self.branchSyncEffectiveURLs(remote, false)
+	if err != nil {
+		return false, err
+	}
+	pushURLs, err := self.branchSyncEffectiveURLs(remote, true)
+	if err != nil {
+		return false, err
+	}
+	return slices.Equal(fetchURLs, pushURLs), nil
+}
+
+func (self *SyncCommands) branchSyncEffectiveURLs(remote string, push bool) ([]string, error) {
+	// Credential-bearing URLs appear in this output, so the query is not logged.
+	stdout, _, err := self.cmd.New(NewGitCmd("remote").Arg("get-url").ArgIf(push, "--push").Arg("--all", remote).ToArgv()).
+		SetWd(self.repoPaths.WorktreePath()).DontLog().RunWithOutputs()
+	if err != nil {
+		return nil, fmt.Errorf("inspect remote URLs: %w", err)
+	}
+	stdout = trimTerminalLineEnding(stdout)
+	if stdout == "" {
+		return nil, nil
+	}
+	return strings.Split(stdout, "\n"), nil
 }
 
 func (self *SyncCommands) branchPushDivergedFromMapping(sourceOID string, mapping branchSyncTrackingMapping) (string, bool, error) {
@@ -169,7 +217,11 @@ func (self *SyncCommands) PrepareBranchPush(name, expectedOID string, opts Branc
 			return BranchPushPlan{}, err
 		}
 	}
-	if !opts.ForceWithLease {
+	fetched, err := self.branchPushDestinationFetched(opts.Remote)
+	if err != nil {
+		return BranchPushPlan{}, err
+	}
+	if !opts.ForceWithLease && fetched {
 		trackingRef, diverged, err := self.branchPushDivergedFromMapping(info.OID, mapping)
 		if err != nil {
 			return BranchPushPlan{}, err
@@ -195,6 +247,7 @@ func (self *SyncCommands) PrepareBranchPush(name, expectedOID string, opts Branc
 				return BranchPushPlan{}, ErrBranchPushLeaseChoice
 			}
 			plan.leaseRef = mapping.preferred
+			plan.leaseFromUnmatchedTracking = !fetched
 		}
 		if !strings.HasPrefix(plan.leaseRef, "refs/") {
 			return BranchPushPlan{}, fmt.Errorf("choose a full, locally reviewed lease reference")

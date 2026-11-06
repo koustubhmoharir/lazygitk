@@ -281,6 +281,7 @@ type ForkTranslationSet struct {
 	BranchSyncLeasePrompt                 string
 	BranchSyncLeaseConfirmTitle           string
 	BranchSyncLeaseConfirmPrompt          string
+	BranchSyncLeaseUnmatchedTracking      string
 	BranchSyncMultipleURLsTitle           string
 	BranchSyncMultipleURLsPrompt          string
 	BranchSyncApproveMultipleURLs         string
@@ -691,6 +692,7 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		BranchSyncLeasePrompt:                 "Full locally available lease reference",
 		BranchSyncLeaseConfirmTitle:           "Confirm force with lease",
 		BranchSyncLeaseConfirmPrompt:          "Force push source %q at %s to %q using lease %q at %s?\n\nCancel to leave the remote unchanged.",
+		BranchSyncLeaseUnmatchedTracking:      "\n\nThe lease comes from the fetched tracking branch %q. This remote pushes to different URLs than it fetches from, so that tracking branch may not describe the push destination. Git refuses the push unless the destination is at the lease.",
 		BranchSyncMultipleURLsTitle:           "Approve multiple push destinations",
 		BranchSyncMultipleURLsPrompt:          "The reviewed push will contact every destination shown below. Git may partially succeed when some destinations fail. No extra heads or tags are included.",
 		BranchSyncApproveMultipleURLs:         "Approve push to all listed destinations",

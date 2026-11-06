@@ -449,6 +449,9 @@ func (flow *branchSyncPushFlow) planReviewPrompt(plan git_commands.BranchPushPla
 	}
 	if options.ForceWithLease {
 		prompt += fmt.Sprintf(flow.target.c.Tr.BranchSyncLeaseConfirmPrompt, plan.Name(), plan.SourceOID(), options.DestinationRef, plan.LeaseRef(), plan.LeaseOID())
+		if plan.LeaseFromUnmatchedTracking() {
+			prompt += fmt.Sprintf(flow.target.c.Tr.BranchSyncLeaseUnmatchedTracking, plan.LeaseRef())
+		}
 	}
 	return prompt
 }

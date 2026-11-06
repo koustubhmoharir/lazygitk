@@ -523,8 +523,13 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
   remote uses the repository's only remote without prompting.
 - When the destination's remote-tracking branch, as last fetched, has commits
   the branch lacks, **Push this branch** is crossed out and says why; Force
-  with reviewed lease remains. The check reads local refs only and never
-  fetches. The force-with-lease review selects the push by default.
+  with reviewed lease remains. The check applies only when pushes and fetches
+  use the same URLs. When a `pushurl` or a `pushInsteadOf` rewrite makes them
+  differ, the fetched branch may not describe the push destination, so **Push
+  this branch** stays enabled and Git's own fast-forward check decides. The
+  check reads local refs only and never fetches. The force-with-lease review
+  selects the push by default; with differing URLs it also says that the lease
+  comes from the fetched tracking branch.
 - **Fetch** (`f`) fetches `origin`, or the repository's only remote, from any
   pane. With several remotes and no `origin`, it opens a menu of the remotes
   and **Fetch all remotes**. In Remotes, `f` fetches the selected remote. The
@@ -541,7 +546,10 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
   left alone; diverged ones, ones without an upstream and ones checked out in
   another worktree are listed in one alert at the end.
 - **Pull** (`g l`) fetches first, then shows exactly what came in and the
-  integration choice before changing files.
+  integration choice before changing files. When the configured default cannot
+  be used, such as an unsupported `pull.rebase` or `branch.<name>.rebase` value
+  or an invalid `pull.ff`, **Use Git's configured pull method** is crossed out
+  and names the setting and its value. The explicit methods stay available.
 
 ### Copying
 

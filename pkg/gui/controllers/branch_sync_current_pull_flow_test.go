@@ -413,6 +413,31 @@ func TestBranchSyncCurrentPullUnconfiguredDivergenceKeepsAlternatives(t *testing
 	}
 }
 
+func TestBranchSyncCurrentPullUnusableConfiguredDefaultKeepsAlternatives(t *testing.T) {
+	for _, tc := range []struct{ key, value, reason string }{
+		{"pull.rebase", "bogus", `unsupported pull.rebase value "bogus"`},
+		{"pull.ff", "bogus", `invalid pull.ff value "bogus"`},
+	} {
+		t.Run(tc.key+"="+tc.value, func(t *testing.T) {
+			f, _ := newBranchSyncCurrentPullFixture(t)
+			clone := setupBranchSyncCurrentPullRemote(t, f)
+			branchSyncCurrentPullDivergeLocally(t, f)
+			branchSyncCurrentPullRemoteCommit(t, clone, map[string]string{"remote-file": "remote\n"})
+			branchSyncPushGit(t, f.root, "config", tc.key, tc.value)
+			choices := branchSyncCurrentPullToChoices(t, f)
+			defaultItem := menuItem(t, choices, "branch.pull-current.default")
+			if defaultItem.DisabledReason == nil || !strings.Contains(defaultItem.DisabledReason.Text, tc.reason) {
+				t.Fatalf("default disabled reason = %#v", defaultItem.DisabledReason)
+			}
+			for _, id := range []string{"ff-only", "merge", "merge-no-ff", "rebase", "rebase-merges", "rebase-interactive"} {
+				if menuItem(t, choices, "branch.pull-current."+id).DisabledReason != nil {
+					t.Errorf("explicit choice %s disabled", id)
+				}
+			}
+		})
+	}
+}
+
 func TestBranchSyncCurrentPullPolicyChangeBeforeChoicesReinspectsWithoutRefetch(t *testing.T) {
 	f, ui := newBranchSyncCurrentPullFixture(t)
 	clone := setupBranchSyncCurrentPullRemote(t, f)

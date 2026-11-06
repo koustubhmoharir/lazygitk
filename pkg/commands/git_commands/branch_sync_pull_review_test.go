@@ -539,3 +539,27 @@ func TestCurrentPullReviewIgnoredApprovalAndChangedCollision(t *testing.T) {
 		assert.Equal(t, "changed since approval\n", string(mustRead(t, filepath.Join(root, "ignored"))))
 	})
 }
+
+func TestCurrentPullReviewUnusableConfiguredDefaultsKeepExplicitChoices(t *testing.T) {
+	cases := []struct {
+		name, key, value, reason string
+	}{
+		{"pull.rebase", "pull.rebase", "bogus", `unsupported pull.rebase value "bogus"`},
+		{"branch rebase", "branch.master.rebase", "bogus", `unsupported branch.master.rebase value "bogus"`},
+		{"pull.ff", "pull.ff", "bogus", `invalid pull.ff value "bogus"`},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			root, bare, _ := currentPullFixture(t)
+			gitTest(t, root, "config", tc.key, tc.value)
+			local := branchPlacementTestCommit(t, root, "local-only", "local\n", "local divergence")
+			advanceCurrentPullRemote(t, bare, "remote-only", "remote\n")
+			commands, review, tip := fetchCurrentPullReview(t, root, local, "")
+			_, err := commands.PrepareCurrentPullIntegration(review, tip, PullIntegrationDefault)
+			assert.ErrorIs(t, err, ErrPullConfiguredDefaultUnusable)
+			assert.ErrorContains(t, err, tc.reason)
+			_, err = commands.PrepareCurrentPullIntegration(review, tip, PullIntegrationMerge)
+			pullReviewNoError(t, err)
+		})
+	}
+}

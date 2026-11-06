@@ -100,7 +100,8 @@ func (flow *branchSyncUpdateFlow) chooseIntegration(review git_commands.CurrentP
 func isUnavailableCurrentPullDefault(err error) bool {
 	return errors.Is(err, git_commands.ErrPullIntegrationChoiceRequired) ||
 		errors.Is(err, git_commands.ErrRebaseRequiresClean) ||
-		errors.Is(err, git_commands.ErrBranchSyncDiverged)
+		errors.Is(err, git_commands.ErrBranchSyncDiverged) ||
+		errors.Is(err, git_commands.ErrPullConfiguredDefaultUnusable)
 }
 
 func (flow *branchSyncUpdateFlow) presentIntegrationChoices(review git_commands.CurrentPullReview, targetOID string, defaultPlan git_commands.CurrentPullIntegrationPlan, defaultErr error) error {
