@@ -408,7 +408,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   edits, custom-patch moves and removals, and discarding changes from a commit. For amend-to and
   for placing a fixup, the review comes before the commit is created, so Cancel
   creates nothing. The approval is selected; choose Cancel or press Escape to
-  stop. Cancel keeps a reword's message as a draft.
+  stop. Cancel keeps a reword's message as a draft. The rebase review also lists ignored files where Git's rename detection may place replayed files.
 - `g m n` moves the unpushed commits of the checked-out branch to a new
   branch. Its menu offers two variants: a new branch stacked on the current
   branch, or a new branch off the base branch with the commits cherry-picked

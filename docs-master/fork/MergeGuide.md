@@ -135,10 +135,56 @@ re-apply it if upstream changes that code.
   and `RebaseRiskAfterCommit` stops a retry after the fixup exists.
   `RebaseCommands` gained the field `ignoredRebaseApproval`. Upstream's clean
   check stays in front of it.
-- `git_commands/rebase_ignored_files.go` (fork-owned): `rebaseIgnoredPaths` now
-  delegates to `rebaseCandidateRisks`, which also takes extra paths and an
-  optional destination. The selected-commit and branch-action reviews are
-  unchanged.
+- `git_commands/rebase_ignored_files.go` (fork-owned): `rebaseIgnoredPaths`
+  delegates to `rebaseCandidateRisks(rebaseReplay)`. Its candidates are the
+  destination tree, the replayed paths, the extras and the paths predicted by
+  `predictedRebaseCandidates`. The selected-commit and branch-action reviews use
+  it unchanged.
+- `git_commands/rebase_ignored_prediction.go` (new, fork-owned): the extra
+  paths that Git's merge backend creates by directory-rename detection (07-F1).
+  - Mirrored-path rule: a directory rename moves a replayed `old/<rest>` to
+    `new/<rest>`. Renames come from the fork point (`merge-base(upstream, head)`)
+    to the destination, from the replayed range and from the staged extras. Each
+    rename `a/b/c/f -> x/y/c/f` implies `a/b/c -> x/y/c`, then `a/b -> x/y` while
+    the trailing components keep matching. A replayed or staged path under an old
+    directory gives a candidate FILE path in the new directory. No directory is
+    ever a candidate. A new directory that is the root is allowed. The diffs pass
+    `diff.renameLimit` set to `merge.renameLimit` (default 7000), so detection
+    finds at least what the merge backend finds. It runs no merge drivers.
+  - Gate: the mirrored candidates are checked against the ignored files first. If
+    none collides, nothing is added and the merge-tree chain is skipped. Git's
+    merge drivers, which the chain can run, then do not run at all.
+  - Chain: when the gate passes, a linear replay onto a destination (Git 2.40 or
+    later, within `rebaseMergeTreeChainLimit` = 200 commits, not reordered) runs
+    `merge-tree --write-tree --merge-base=<commit>^` and `commit-tree` for each
+    commit. Its intermediate trees' paths replace the mirrored candidates, since
+    they are exact. A conflicted step continues from its conflicted tree, so a
+    manual resolution is not predicted. The chain runs in private object storage
+    and changes no repository objects, refs, index or worktree files. A failure
+    is logged at debug level and falls back to the mirrored candidates.
+  - Trade-off: the gate assumes the mirrored rule covers every path that Git's
+    directory-rename detection can create. The raised rename limit is what makes
+    that assumption reasonable. Any change to the detection needs a new look here.
+  - Merge commits, root rebases, Git older than 2.40 and reordered replays use the
+    mirrored candidates. A reordered replay never runs the chain, because its
+    order is not known here.
+  - Counter: `mergeTreeChainRuns` counts chain starts, for the gate test only.
+- `git_commands/private_object_store.go` (new, fork-owned): `privateObjectStore`,
+  the temporary `GIT_OBJECT_DIRECTORY` whose alternate is the repository's objects,
+  with `writeMergeTreeInStore`, `commitTreeInStore` and `treePaths`. The isolated
+  merge preview (`PreviewBranchActionOrtMerge` in `branch_action_merge_preview.go`)
+  uses the same helpers. Keep them shared, and check the preview tests after a
+  change to either side.
+- Replay order by caller (`rebase_ignored_start.go`). `rebaseStartReplay` builds
+  the replay for every guard. The selected-commit rebase, the branch-action rebase
+  (plain or marked base) and generic starts without a moving instruction use the
+  original order, which is the order Git replays. `instructionMovesCommits` marks
+  `MoveFixupCommitDown` and `MoveTodosUp`/`MoveTodosDown` starts reordered. `AmendTo`
+  and fixup placement (`CheckCompoundRebaseIgnoredRisks`) and squash-above
+  (`--autosquash`) are reordered too. No caller passes a computed order. The
+  mirrored candidates cover a reordered replay.
+  `CheckCompoundRebaseIgnoredRisks` adds the staged paths and the renames of the
+  staged changes (`parseNameStatus`).
 - `controllers/fork_rebase_ignored_review.go` (new): `runWithIgnoredRebaseReview`
   wraps every generic start in the GUI. A refusal opens the selected-commit
   review menu, and approval retries the start under the reviewed fingerprint.

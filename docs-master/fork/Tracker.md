@@ -29,10 +29,9 @@ triage as its batch lands.
 
 Each task is one subagent batch, reviewed and committed before the next.
 
-- Batch J: ignored-file protection. Probe done; J1 (history-editing starts)
-  done. J2: rebase risks add merge-tree-chain predicted paths (07-F1), with
-  all ignored files at risk for merges, Git < 2.40 or non-ort strategies. J3:
-  undo/redo of rebases and the hard-reset review (J-U).
+- Batch J3: undo/redo of rebases and redo of a commit use the captured hard
+  reset (no autostash; refuse with tracked changes), and the hard-reset review
+  (also `s h`) lists the untracked and ignored paths it would overwrite (J-U).
 - Batch C: cross-instance file locking.
 - Batch D: commit list state, with U2 (10-F1).
 - Batch P: fetch per U1 (05-F4).

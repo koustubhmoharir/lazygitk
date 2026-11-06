@@ -21,18 +21,42 @@ func (self *RebaseCommands) selectedCommitRebaseIgnoredPaths(target, head string
 // The destination tree and replay range can differ for a marked-base --onto
 // rebase. Keep the existing collision/fingerprint policy shared by both flows.
 func (self *RebaseCommands) rebaseIgnoredPaths(target, replayBase, head string) ([]string, string, error) {
-	return self.rebaseCandidateRisks(target, []string{replayBase + "^{commit}" + ".." + head + "^{commit}"}, nil)
+	return self.rebaseCandidateRisks(rebaseReplay{
+		destination: target,
+		upstream:    replayBase,
+		head:        head,
+		logRevs:     []string{replayBase + "^{commit}" + ".." + head + "^{commit}"},
+	})
+}
+
+// rebaseReplay describes the replay that a rebase start runs. It is the input of
+// rebaseCandidateRisks and of the prediction in rebase_ignored_prediction.go.
+type rebaseReplay struct {
+	// destination is the commit the range is replayed onto, or "" for a root rebase,
+	// which rewinds to an empty tree.
+	destination string
+	// upstream is the commit that the replayed range excludes, or "" for --root.
+	upstream string
+	// head is the tip that is replayed.
+	head string
+	// logRevs are the revisions of the replayed range, as git log reads them.
+	logRevs []string
+	// reordered is set when the todo may move commits, so the replay order may
+	// differ from the order that the prediction reads.
+	reordered bool
+	// extra adds paths that the rebase will create, such as a commit made before
+	// the rebase starts. extraRenames are the renames of that commit.
+	extra        []string
+	extraRenames []renamePair
 }
 
 // rebaseCandidateRisks lists the ignored files that collide with the candidate
-// paths of a rebase. target is the destination tree, or "" for none (a root
-// rebase rewinds to an empty tree). logRevs are the revisions whose changed paths
-// are replayed. extra adds paths that the rebase will create, such as a commit
-// made before the rebase starts.
-func (self *RebaseCommands) rebaseCandidateRisks(target string, logRevs []string, extra []string) ([]string, string, error) {
+// paths of a rebase: the destination tree, the replayed paths, the extras and the
+// paths that Git's merge backend may create during replay.
+func (self *RebaseCommands) rebaseCandidateRisks(replay rebaseReplay) ([]string, string, error) {
 	candidates := make(map[string]struct{})
-	if target != "" {
-		targetTree, err := self.selectedRebaseGitOutput(NewGitCmd("ls-tree").Arg("-r", "-z", "--name-only", target+"^{commit}").ToArgv())
+	if replay.destination != "" {
+		targetTree, err := self.selectedRebaseGitOutput(NewGitCmd("ls-tree").Arg("-r", "-z", "--name-only", replay.destination+"^{commit}").ToArgv())
 		if err != nil {
 			return nil, "", fmt.Errorf("list rebase target paths: %w", err)
 		}
@@ -40,14 +64,22 @@ func (self *RebaseCommands) rebaseCandidateRisks(target string, logRevs []string
 			candidates[path] = struct{}{}
 		}
 	}
-	replayed, err := self.selectedRebaseGitOutput(NewGitCmd("log").Arg("--format=", "--name-only", "--no-renames", "--root", "-m", "-z").Arg(logRevs...).Arg("--").ToArgv())
+	replayed, err := self.selectedRebaseGitOutput(NewGitCmd("log").Arg("--format=", "--name-only", "--no-renames", "--root", "-m", "-z").Arg(replay.logRevs...).Arg("--").ToArgv())
 	if err != nil {
 		return nil, "", fmt.Errorf("list replayed rebase paths: %w", err)
 	}
 	for _, path := range nulPaths(replayed) {
 		candidates[path] = struct{}{}
 	}
-	for _, path := range extra {
+	for _, path := range replay.extra {
+		candidates[path] = struct{}{}
+	}
+	known := append(nulPaths(replayed), replay.extra...)
+	predicted, err := self.predictedRebaseCandidates(replay, known)
+	if err != nil {
+		return nil, "", err
+	}
+	for path := range predicted {
 		candidates[path] = struct{}{}
 	}
 	return self.ignoredRisksForPaths(candidates)
@@ -56,13 +88,26 @@ func (self *RebaseCommands) rebaseCandidateRisks(target string, logRevs []string
 // Share collision and content-fingerprint policy with other captured history
 // operations. Callers supply exactly the paths their native operation may touch.
 func (self *RebaseCommands) ignoredRisksForPaths(candidates map[string]struct{}) ([]string, string, error) {
+	paths, err := self.collidingIgnoredPaths(candidates)
+	if err != nil {
+		return nil, "", err
+	}
+	fingerprint, err := fingerprintIgnoredPaths(self.repoPaths.WorktreePath(), paths)
+	if err != nil {
+		return nil, "", fmt.Errorf("fingerprint ignored rebase risks: %w", err)
+	}
+	return paths, fingerprint, nil
+}
+
+// collidingIgnoredPaths lists, sorted, the ignored files that collide with candidates.
+func (self *RebaseCommands) collidingIgnoredPaths(candidates map[string]struct{}) ([]string, error) {
 	ignoredOutput, err := self.selectedRebaseGitOutput(NewGitCmd("ls-files").Arg("--others", "--ignored", "--exclude-standard", "-z").ToArgv())
 	if err != nil {
-		return nil, "", fmt.Errorf("list ignored files: %w", err)
+		return nil, fmt.Errorf("list ignored files: %w", err)
 	}
 	ignoreCase, err := self.selectedRebaseIgnoreCase()
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
 	candidateSet := make(map[string]struct{}, len(candidates))
 	candidatePaths := make([]string, 0, len(candidates))
@@ -83,11 +128,7 @@ func (self *RebaseCommands) ignoredRisksForPaths(candidates map[string]struct{})
 		paths = append(paths, path)
 	}
 	sort.Strings(paths)
-	fingerprint, err := fingerprintIgnoredPaths(self.repoPaths.WorktreePath(), paths)
-	if err != nil {
-		return nil, "", fmt.Errorf("fingerprint ignored rebase risks: %w", err)
-	}
-	return paths, fingerprint, nil
+	return paths, nil
 }
 
 func (self *RebaseCommands) selectedRebaseGitOutput(args []string) ([]byte, error) {
@@ -139,6 +180,10 @@ func rebasePathKey(path string, ignoreCase bool) string {
 
 func rebaseCandidatePathCollides(path string, candidates map[string]struct{}, sortedCandidates []string) bool {
 	if _, exists := candidates[path]; exists {
+		return true
+	}
+	// The empty candidate is the root directory. It holds every top-level path.
+	if _, exists := candidates[""]; exists && strings.IndexByte(path, '/') < 0 {
 		return true
 	}
 	for slash := strings.IndexByte(path, '/'); slash >= 0; {

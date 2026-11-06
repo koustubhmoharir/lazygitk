@@ -180,6 +180,7 @@ var tests = []*components.IntegrationTest{
 	commit.PasteCommitMessageOverExisting,
 	commit.PreserveCommitMessage,
 	commit.PreserveCommitMessageWhitespace,
+	commit.RebaseOntoDirectoryRenameIgnoredFile,
 	commit.RebaseOntoSelectedCommit,
 	commit.RebaseOntoSelectedCommitConflict,
 	commit.ResetAuthor,

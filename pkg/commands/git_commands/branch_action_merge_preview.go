@@ -3,7 +3,6 @@ package git_commands
 import (
 	"errors"
 	"fmt"
-	"os"
 	"slices"
 	"strconv"
 	"strings"
@@ -43,58 +42,28 @@ func (self *BranchCommands) PreviewBranchActionOrtMerge(target BranchActionTarge
 		}
 		return paths, nil
 	}
-	output, err := self.cmd.New(NewGitCmd("rev-parse").Arg("--path-format=absolute", "--git-path", "objects").ToArgv()).
-		SetWd(self.repoPaths.WorktreePath()).DontLog().RunWithOutput()
-	if err != nil {
-		return nil, err
-	}
-	objects := trimTerminalLineEnding(output)
-	if objects == "" {
-		return nil, fmt.Errorf("Git returned an empty object directory")
-	}
-	store, err := os.MkdirTemp("", "lazygitk-merge-objects-")
+	store, err := self.newPrivateObjectStore()
 	if err != nil {
 		return nil, err
 	}
 	defer func() {
-		if err := os.RemoveAll(store); err != nil {
+		if err := store.remove(); err != nil {
 			runErr = errors.Join(runErr, fmt.Errorf("remove merge preview object storage: %w", err))
 		}
 	}()
-	objectEnvironment := func(cmd *oscommands.CmdObj) *oscommands.CmdObj {
-		alternates := quoteMergeAlternate(objects)
-		// Inspect the command's effective environment, not just this process:
-		// the builder may already supply repository-specific object stores.
-		var inherited string
-		for _, entry := range cmd.GetCmd().Environ() {
-			if value, found := strings.CutPrefix(entry, "GIT_ALTERNATE_OBJECT_DIRECTORIES="); found {
-				inherited = value
-			}
-		}
-		if inherited != "" {
-			alternates += string(os.PathListSeparator) + inherited
-		}
-		return cmd.RemoveEnvVar("GIT_OBJECT_DIRECTORY").RemoveEnvVar("GIT_ALTERNATE_OBJECT_DIRECTORIES").
-			AddEnvVars("GIT_OBJECT_DIRECTORY="+store, "GIT_ALTERNATE_OBJECT_DIRECTORIES="+alternates).
-			SetWd(self.repoPaths.WorktreePath()).DontLog().DisableLockRetries()
-	}
 	args := NewGitCmd("merge-tree").Arg("--write-tree", "--no-messages", "-z").
 		ArgIf(opts.AllowUnrelatedHistories, "--allow-unrelated-histories")
 	for _, option := range options {
 		args.Arg("--strategy-option=" + option)
 	}
 	args.Arg(target.HeadOID()+"^{commit}", target.SourceOID()+"^{commit}")
-	stdout, _, err := objectEnvironment(self.cmd.New(args.ToArgv())).RunWithOutputs()
-	if err != nil && !commandExitedWithOne(err) {
-		return nil, fmt.Errorf("Git could not produce the required merge preview: %w", err)
-	}
 	// Exit 1 denotes conflicts, not a failed preview. Its result tree still
 	// describes checkout paths; looking only at conflict names would miss data.
-	tree, parseErr := mergePreviewTreeID(stdout, err != nil)
-	if parseErr != nil {
-		return nil, errors.Join(parseErr, err)
+	tree, err := self.writeMergeTreeInStore(store, args)
+	if err != nil {
+		return nil, fmt.Errorf("Git could not produce the required merge preview: %w", err)
 	}
-	paths, err := self.branchActionTreePaths(tree, objectEnvironment)
+	paths, err := self.branchActionTreePaths(tree, store.environment)
 	if err != nil {
 		return nil, err
 	}
@@ -136,19 +105,7 @@ func mergePreviewTreeID(output string, conflicted bool) (string, error) {
 }
 
 func (self *BranchCommands) branchActionTreePaths(tree string, environment func(*oscommands.CmdObj) *oscommands.CmdObj) ([]string, error) {
-	cmd := self.cmd.New(NewGitCmd("ls-tree").Arg("-r", "-z", "--name-only", tree).ToArgv()).
-		SetWd(self.repoPaths.WorktreePath()).DontLog()
-	if environment != nil {
-		cmd = environment(cmd)
-	}
-	stdout, _, err := cmd.RunWithOutputs()
-	if err != nil {
-		return nil, err
-	}
-	if stdout != "" && !strings.HasSuffix(stdout, "\x00") {
-		return nil, fmt.Errorf("Git returned unterminated merge preview paths")
-	}
-	return nulPaths([]byte(stdout)), nil
+	return self.treePaths(tree, environment)
 }
 
 // Git's alternate-path list accepts C-quoted entries. Encode bytes with octal

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/jesseduffield/lazygit/pkg/app/daemon"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 )
 
@@ -69,11 +70,23 @@ func (self *RebaseCommands) requireIgnoredRebaseStart(opts PrepareInteractiveReb
 		// A root rebase without --onto rewinds to an empty tree.
 		destination = ""
 	}
-	paths, fingerprint, err := self.rebaseStartIgnoredRisks(destination, opts.baseHashOrRoot, nil)
+	replay := rebaseStartReplay(destination, opts.baseHashOrRoot)
+	replay.reordered = instructionMovesCommits(opts.instruction)
+	paths, fingerprint, err := self.rebaseCandidateRisks(replay)
 	if err != nil {
 		return err
 	}
 	return requireIgnoredRebaseApproval(paths, fingerprint, opts.approvedIgnoredFingerprint, self.currentIgnoredRebaseApproval())
+}
+
+// instructionMovesCommits reports whether an instruction moves todo commits, so
+// that Git replays them in an order the start guard does not know.
+func instructionMovesCommits(instruction daemon.Instruction) bool {
+	switch instruction.(type) {
+	case *daemon.MoveFixupCommitDownInstruction, *daemon.MoveTodosUpInstruction, *daemon.MoveTodosDownInstruction:
+		return true
+	}
+	return false
 }
 
 // requireIgnoredRebaseSquashAbove is the guard of SquashAllAboveFixupCommits, which
@@ -84,7 +97,10 @@ func (self *RebaseCommands) requireIgnoredRebaseSquashAbove(baseHashOrRoot strin
 	if baseHashOrRoot == "--root" {
 		destination = ""
 	}
-	paths, fingerprint, err := self.rebaseStartIgnoredRisks(destination, baseHashOrRoot, nil)
+	replay := rebaseStartReplay(destination, baseHashOrRoot)
+	// --autosquash moves each fixup commit next to its target.
+	replay.reordered = true
+	paths, fingerprint, err := self.rebaseCandidateRisks(replay)
 	if err != nil {
 		return err
 	}
@@ -98,33 +114,39 @@ func (self *RebaseCommands) requireIgnoredRebaseSquashAbove(baseHashOrRoot strin
 // holds the staged changes, which the rebase then replays.
 func (self *RebaseCommands) CheckCompoundRebaseIgnoredRisks(commits []*models.Commit, commitIndex int, commitStagedChanges bool) error {
 	baseHashOrRoot := getBaseHashOrRoot(commits, commitIndex+1)
-	var extra []string
-	if commitStagedChanges {
-		staged, err := self.selectedRebaseGitOutput(NewGitCmd("diff").Arg("--cached", "--name-only", "--no-renames", "-z", "HEAD", "--").ToArgv())
-		if err != nil {
-			return fmt.Errorf("list staged paths before rebase: %w", err)
-		}
-		extra = nulPaths(staged)
-	}
 	destination := baseHashOrRoot
 	if baseHashOrRoot == "--root" {
 		destination = ""
 	}
-	paths, fingerprint, err := self.rebaseStartIgnoredRisks(destination, baseHashOrRoot, extra)
+	replay := rebaseStartReplay(destination, baseHashOrRoot)
+	// A fixup placement moves the commit it creates, so the order is not the list order.
+	replay.reordered = true
+	if commitStagedChanges {
+		output, err := self.selectedRebaseGitOutput(NewGitCmd("diff").Arg("--cached", "--name-status", "-M", "-z", "HEAD", "--").ToArgv())
+		if err != nil {
+			return fmt.Errorf("list staged paths before rebase: %w", err)
+		}
+		replay.extra, replay.extraRenames = parseNameStatus(output)
+	}
+	paths, fingerprint, err := self.rebaseCandidateRisks(replay)
 	if err != nil {
 		return err
 	}
 	return requireIgnoredRebaseApproval(paths, fingerprint, "", self.currentIgnoredRebaseApproval())
 }
 
-// rebaseStartIgnoredRisks lists the risks of rebasing HEAD's range above
-// baseHashOrRoot, onto destination. An empty destination means an empty tree.
-func (self *RebaseCommands) rebaseStartIgnoredRisks(destination, baseHashOrRoot string, extra []string) ([]string, string, error) {
-	logRevs := []string{"HEAD^{commit}"}
-	if baseHashOrRoot != "--root" {
-		logRevs = []string{baseHashOrRoot + "^{commit}" + ".." + "HEAD^{commit}"}
+// rebaseStartReplay describes HEAD's range above baseHashOrRoot, replayed onto
+// destination. An empty destination means an empty tree. A --root start replays
+// all of HEAD's history.
+func rebaseStartReplay(destination, baseHashOrRoot string) rebaseReplay {
+	replay := rebaseReplay{destination: destination, head: "HEAD"}
+	if baseHashOrRoot == "--root" {
+		replay.logRevs = []string{"HEAD^{commit}"}
+	} else {
+		replay.upstream = baseHashOrRoot + "^{commit}"
+		replay.logRevs = []string{replay.upstream + ".." + "HEAD^{commit}"}
 	}
-	return self.rebaseCandidateRisks(destination, logRevs, extra)
+	return replay
 }
 
 // requireIgnoredRebaseApproval accepts risks only when the approval fingerprint
