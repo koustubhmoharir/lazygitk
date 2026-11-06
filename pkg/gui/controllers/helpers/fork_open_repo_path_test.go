@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/jesseduffield/lazygit/pkg/gocui"
+	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
@@ -185,4 +187,67 @@ func TestCompleteRepoPathMatchesKeepsRunesWhole(t *testing.T) {
 	completed, ok = completeRepoPathMatches("", "", []string{"éa", "éb"})
 	assert.True(t, ok)
 	assert.Equal(t, "é", completed)
+}
+
+func TestRepoPathTabIsCurrent(t *testing.T) {
+	tab := repoPathTab{seq: 3, input: "/src/pro"}
+	assert.True(t, repoPathTabIsCurrent(tab, 3, true, "/src/pro"))
+
+	// The input changed since Tab was pressed.
+	assert.False(t, repoPathTabIsCurrent(tab, 3, true, "/src/prog"))
+	// A later Tab press, or a reopening of the prompt, supersedes this one.
+	assert.False(t, repoPathTabIsCurrent(tab, 4, true, "/src/pro"))
+	// The prompt was closed.
+	assert.False(t, repoPathTabIsCurrent(tab, 3, false, "/src/pro"))
+}
+
+// repoPathTabUI stands in for the GUI. Workers and UI-thread work are queued
+// and run only when the test runs them, so the test can change the prompt
+// while a completion is in flight.
+type repoPathTabUI struct {
+	types.IGuiCommon
+	input   string
+	workers []func(gocui.Task) error
+	uiQueue []func() error
+	views   types.Views
+}
+
+func (u *repoPathTabUI) GetPromptInput() string            { return u.input }
+func (u *repoPathTabUI) OnWorker(f func(gocui.Task) error) { u.workers = append(u.workers, f) }
+func (u *repoPathTabUI) OnUIThread(f func() error)         { u.uiQueue = append(u.uiQueue, f) }
+func (u *repoPathTabUI) Views() types.Views                { return u.views }
+
+// repoPathTabContexts supplies the contexts that an open repo path prompt uses.
+type repoPathTabContexts struct{ tree *context.ContextTree }
+
+func (c repoPathTabContexts) Contexts() *context.ContextTree { return c.tree }
+
+func TestRepoPathTabCompletionRunsOnWorkerAndIsDroppedWhenInputChanges(t *testing.T) {
+	root := makeRepoPathTree(t, "project-a", "project-b")
+	sep := string(filepath.Separator)
+	ui := &repoPathTabUI{
+		input: root + sep + "proj",
+		views: types.Views{Prompt: gocui.NewView("prompt", 0, 0, 40, 2, gocui.OutputNormal)},
+	}
+	tree := &context.ContextTree{Prompt: &context.PromptContext{State: context.ConfirmationContextState{
+		HandleTab: func() (bool, error) { return true, nil },
+	}}}
+	h := &ReposHelper{c: &HelperCommon{IGuiCommon: ui, IGetContexts: repoPathTabContexts{tree}}}
+
+	handled, err := h.completeRepoPathInput(root)
+	assert.NoError(t, err)
+	assert.True(t, handled)
+	// Tab only queues the directory work; nothing has been applied yet.
+	assert.Len(t, ui.workers, 1)
+	assert.Empty(t, ui.uiQueue)
+
+	// The worker reads the directory and hands the result back to the UI thread.
+	assert.NoError(t, ui.workers[0](nil))
+	assert.Len(t, ui.uiQueue, 1)
+
+	// The user types before the result arrives, so the result is dropped and
+	// the prompt keeps what was typed.
+	ui.input = root + sep + "project-"
+	assert.NoError(t, ui.uiQueue[0]())
+	assert.Empty(t, ui.views.Prompt.TextArea.GetContent())
 }

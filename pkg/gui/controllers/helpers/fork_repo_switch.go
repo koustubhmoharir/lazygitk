@@ -1,6 +1,9 @@
 package helpers
 
 import (
+	"os"
+	"strings"
+
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/samber/lo"
@@ -48,9 +51,24 @@ func (self *ReposHelper) showRepoSwitchLoading() {
 	gui.ForceFlushViewsContentOnly(views)
 }
 
-// restoreCurrentRepoPanes renders the panes of the repo we stayed in after a
-// switch failed before it took effect. The models still hold that repo's data.
-func (self *ReposHelper) restoreCurrentRepoPanes() {
+// notAGitRepoError is what a switch returns when git cannot open the directory
+// as a repository. The repository path prompt keeps its text for this error;
+// any other failure of a switch is shown as an error and the prompt closes.
+type notAGitRepoError struct{ err error }
+
+func (e notAGitRepoError) Error() string { return e.err.Error() }
+func (e notAGitRepoError) Unwrap() error { return e.err }
+
+// restoreCurrentRepo puts back what a failed switch changed before the new repo
+// took effect: the working directory and the process environment (which the
+// switch's direnv load and location variables set), then the panes. The
+// models still hold the repo we stayed in, so its panes are rendered again.
+func (self *ReposHelper) restoreCurrentRepo(originalDir string, originalEnv []string) {
+	if err := os.Chdir(originalDir); err != nil {
+		self.c.Log.WithError(err).Error("could not return to the current repository's directory")
+	}
+	restoreProcessEnv(originalEnv)
+
 	for _, ctx := range repoSwitchPaneContexts(self.c.Contexts().Flatten()) {
 		ctx.HandleRender()
 	}
@@ -58,4 +76,27 @@ func (self *ReposHelper) restoreCurrentRepoPanes() {
 	// The status pane has no context to render it: refresh draws it from the
 	// models, as the refresh of any other repo state does.
 	self.c.Refresh(types.RefreshOptions{Scope: []types.RefreshableView{types.STATUS}})
+}
+
+// restoreProcessEnv makes the process environment match a snapshot taken with
+// os.Environ: variables added since are removed, and changed ones set back.
+func restoreProcessEnv(snapshot []string) {
+	saved := make(map[string]string, len(snapshot))
+	for _, entry := range snapshot {
+		if name, value, ok := strings.Cut(entry, "="); ok {
+			saved[name] = value
+		}
+	}
+	for _, entry := range os.Environ() {
+		if name, _, ok := strings.Cut(entry, "="); ok {
+			if _, wasSet := saved[name]; !wasSet {
+				_ = os.Unsetenv(name)
+			}
+		}
+	}
+	for name, value := range saved {
+		if current, ok := os.LookupEnv(name); !ok || current != value {
+			_ = os.Setenv(name, value)
+		}
+	}
 }

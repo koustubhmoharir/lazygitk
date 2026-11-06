@@ -28,6 +28,7 @@ type ReposHelper struct {
 	c                     *HelperCommon
 	recordDirectoryHelper *RecordDirectoryHelper
 	onNewRepo             onNewRepoFn
+	repoPathSeq           uint64 // Fork: see repoPathTab (fork_open_repo_path.go)
 }
 
 func NewRecentReposHelper(
@@ -382,13 +383,16 @@ func (self *ReposHelper) switchToLocation(location types.RepoLocation, errMsg st
 		return nil
 	}
 
-	// Fork: blank the panes now, and restore this repo's panes if the switch
-	// fails before the new repo is in place (fork_repo_switch.go).
+	// Fork: blank the panes now, and if the switch fails before the new repo
+	// is in place, put back this repo's directory, environment and panes
+	// (fork_repo_switch.go). Upstream restored these only for the first two
+	// failures below, not for a failure of onNewRepo.
 	self.showRepoSwitchLoading()
+	originalEnv := os.Environ()
 	switched := false
 	defer func() {
 		if err != nil && !switched {
-			self.restoreCurrentRepoPanes()
+			self.restoreCurrentRepo(originalPath, originalEnv)
 		}
 	}()
 
@@ -413,19 +417,21 @@ func (self *ReposHelper) switchToLocation(location types.RepoLocation, errMsg st
 			return err
 		}
 
-		return err
+		return notAGitRepoError{err} // Fork: see fork_repo_switch.go
 	}
 
 	direnvResult := self.logDirenvResult(direnv.Load(self.c.OS().Cmd))
-
-	if err := self.recordDirectoryHelper.RecordCurrentDirectory(); err != nil {
-		self.c.Log.Errorf("error recording current directory: %v", err)
-	}
 
 	if err := self.onNewRepo(appTypes.StartArgs{}, contextKey); err != nil {
 		return err
 	}
 	switched = true
+
+	// Fork: the shell hand-off directory is recorded only for a switch that
+	// succeeded. Upstream recorded it before onNewRepo.
+	if err := self.recordDirectoryHelper.RecordCurrentDirectory(); err != nil {
+		self.c.Log.Errorf("error recording current directory: %v", err)
+	}
 
 	if direnvResult.Blocked {
 		self.promptDirenvApproval(direnvResult.EnvrcPath)

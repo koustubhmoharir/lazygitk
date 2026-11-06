@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"errors"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -9,6 +10,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
@@ -36,6 +38,7 @@ func (self *ReposHelper) OpenRepoPathPrompt() error {
 }
 
 func (self *ReposHelper) openRepoPathPrompt(repoRoot string, initialContent string) {
+	self.repoPathSeq++ // Fork: a Tab completion from an earlier opening is dropped (see repoPathTab)
 	self.c.Prompt(types.PromptOpts{
 		Title:               self.c.Tr.RepoPathPrompt,
 		InitialContent:      initialContent,
@@ -69,12 +72,12 @@ func (self *ReposHelper) confirmRepoPath(repoRoot string, input string) error {
 		return self.reopenRepoPathPrompt(repoRoot, input, "")
 	}
 
-	originalDir, _ := os.Getwd()
 	if err := self.DispatchSwitchTo(path, self.c.Tr.ErrRepositoryMovedOrDeleted, context.NO_CONTEXT); err != nil {
-		// Before the switch changes directory, a failure leaves us in the
-		// current repository. The only failure that gets that far for a
-		// directory we already checked is that git can't open it.
-		if cwd, _ := os.Getwd(); cwd == originalDir {
+		// Fork: only a directory git cannot open keeps the prompt open with its
+		// text. Other failures, such as a repo config that does not load, are
+		// shown as errors (notAGitRepoError, fork_repo_switch.go).
+		var notRepo notAGitRepoError
+		if errors.As(err, &notRepo) {
 			self.c.Log.WithError(err).Warn("repository path is not a Git repository")
 			return self.reopenRepoPathPrompt(repoRoot, input,
 				utils.ResolvePlaceholderString(self.c.Tr.ErrRepoPathNotGitRepo, map[string]string{"path": path}))
@@ -84,16 +87,59 @@ func (self *ReposHelper) confirmRepoPath(repoRoot string, input string) error {
 	return nil
 }
 
-// completeRepoPathInput is the prompt's Tab hook. It returns handled false when
-// Tab can't complete anything, so that focus moves to the suggestions.
+// repoPathTab is one Tab press in the repository path prompt. Its completion
+// is computed on a worker and applied on the UI thread only while the press is
+// still the latest, the prompt is still open and its input is unchanged.
+type repoPathTab struct {
+	seq   uint64 // the value of ReposHelper.repoPathSeq when Tab was pressed
+	input string // the prompt's input when Tab was pressed
+}
+
+// repoPathTabIsCurrent reports whether a completion for tab may still be
+// applied: no later Tab or opening of the prompt has happened, the prompt is
+// still open, and the input is what it was when Tab was pressed.
+func repoPathTabIsCurrent(tab repoPathTab, latestSeq uint64, promptOpen bool, currentInput string) bool {
+	return tab.seq == latestSeq && promptOpen && tab.input == currentInput
+}
+
+// completeRepoPathInput is the prompt's Tab hook. The directory reads run on a
+// worker, so Tab does not hold the UI thread on a slow or large directory. Tab
+// is always handled here: when the completion arrives and finds nothing to
+// complete, focus moves to the suggestions, as a Tab that cannot complete
+// always did.
 func (self *ReposHelper) completeRepoPathInput(repoRoot string) (bool, error) {
+	self.repoPathSeq++
+	tab := repoPathTab{seq: self.repoPathSeq, input: self.c.GetPromptInput()}
+	input := normalizeRepoPathInput(tab.input, repoRoot)
 	home := userHomeDir()
-	input := normalizeRepoPathInput(self.c.GetPromptInput(), repoRoot)
-	dirText, prefix := splitRepoPathInput(input)
-	names := matchRepoPathDirs(resolveRepoPath(dirText, repoRoot, home), prefix)
-	completed, ok := completeRepoPathMatches(dirText, prefix, names)
+	self.c.OnWorker(func(_ gocui.Task) error {
+		completed, ok := completeRepoPathText(input, repoRoot, home)
+		self.c.OnUIThread(func() error {
+			self.applyRepoPathCompletion(tab, completed, ok)
+			return nil
+		})
+		return nil
+	})
+	return true, nil
+}
+
+// applyRepoPathCompletion runs on the UI thread. It drops the completion unless
+// repoPathTabIsCurrent holds for it.
+func (self *ReposHelper) applyRepoPathCompletion(tab repoPathTab, completed string, ok bool) {
+	// The prompt's Tab hook is set only while this prompt is open.
+	promptOpen := self.c.Contexts().Prompt.State.HandleTab != nil
+	if !repoPathTabIsCurrent(tab, self.repoPathSeq, promptOpen, self.c.GetPromptInput()) {
+		return
+	}
+
 	if !ok {
-		return false, nil
+		// Same as the prompt's own Tab fallback: focus the suggestions, if any.
+		// The repo path prompt has no delete action, so the subtitle is empty.
+		if len(self.c.Contexts().Suggestions.State.Suggestions) > 0 {
+			self.c.Views().Suggestions.Subtitle = ""
+			self.c.Context().Replace(self.c.Contexts().Suggestions)
+		}
+		return
 	}
 
 	textArea := self.c.Views().Prompt.TextArea
@@ -101,7 +147,6 @@ func (self *ReposHelper) completeRepoPathInput(repoRoot string) (bool, error) {
 	textArea.TypeString(completed)
 	self.c.Views().Prompt.RenderTextArea()
 	self.c.Contexts().Suggestions.RefreshSuggestions()
-	return true, nil
 }
 
 // repoPathDefaultInput is the initial prompt text: the repository's parent
@@ -199,6 +244,15 @@ func repoPathSuggestionsFunc(repoRoot string) func(string) []*types.Suggestion {
 	return func(input string) []*types.Suggestion {
 		return repoPathSuggestions(input, repoRoot, home)
 	}
+}
+
+// completeRepoPathText returns the input after one Tab press, and whether Tab
+// can make progress. It reads every matching directory, not just the ones
+// suggested, because the common prefix must cover all of them.
+func completeRepoPathText(input string, repoRoot string, home string) (string, bool) {
+	dirText, prefix := splitRepoPathInput(input)
+	names := matchRepoPathDirs(resolveRepoPath(dirText, repoRoot, home), prefix)
+	return completeRepoPathMatches(dirText, prefix, names)
 }
 
 // repoPathSuggestions lists up to repoPathSuggestionLimit subdirectories of the

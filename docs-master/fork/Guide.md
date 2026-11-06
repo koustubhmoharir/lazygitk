@@ -595,7 +595,8 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
   content never shows under the new one. The panes fill together, and a toast
   "Opened <repo>" says the switch is complete. Keys pressed meanwhile run
   after it. If the switch fails, the current repository's panes come back
-  with the error.
+  with the error, and Git commands keep acting on that repository. A failed
+  switch does not change the directory the shell is returned to on exit.
 
 ### Appearance
 

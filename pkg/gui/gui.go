@@ -389,9 +389,11 @@ func (gui *Gui) onSwitchToNewRepo(startArgs appTypes.StartArgs, contextKey types
 }
 
 func (gui *Gui) onNewRepo(startArgs appTypes.StartArgs, contextKey types.ContextKey) error {
-	// Don't assign to gui.git until we know we have one: this also runs when
-	// switching repos, and leaving the field nil would take down the repo we
-	// were in before, which is where the error puts us back.
+	// Fork: this also runs when switching repos, so nothing is published until
+	// the new repo's Git command and config are loaded and checked. Then the
+	// config and gui.git are published together, and the repo we were in keeps
+	// both if anything fails before that (fork_repo_switch.go). Upstream
+	// assigned gui.git first and loaded the config after it.
 	git, err := commands.NewGitCommand(
 		gui.Common,
 		gui.gitVersion,
@@ -402,13 +404,18 @@ func (gui *Gui) onNewRepo(startArgs appTypes.StartArgs, contextKey types.Context
 	if err != nil {
 		return err
 	}
-	gui.git = git
 
-	err = gui.Config.ReloadUserConfigForRepo(gui.getPerRepoConfigFiles())
+	prepared, err := gui.Config.PrepareRepoUserConfig(gui.getPerRepoConfigFiles(git))
 	if err != nil {
 		return err
 	}
+	if err := gui.checkRepoSwitchLanguage(prepared.UserConfig().Gui.Language); err != nil {
+		return err
+	}
+	gui.Config.CommitRepoUserConfig(prepared)
+	gui.git = git
 
+	// Fork: the language was checked above, so this cannot fail on it.
 	err = gui.onUserConfigLoaded()
 	if err != nil {
 		return err
@@ -527,19 +534,22 @@ func (gui *Gui) onNewRepo(startArgs appTypes.StartArgs, contextKey types.Context
 	return nil
 }
 
-func (gui *Gui) getPerRepoConfigFiles() []*config.ConfigFile {
+// getPerRepoConfigFiles lists the repo config files of the repo that git
+// works on. It takes that repo's Git command, which is not yet gui.git when
+// the repo is being switched to (see onNewRepo).
+func (gui *Gui) getPerRepoConfigFiles(git *commands.GitCommand) []*config.ConfigFile {
 	repoConfigFiles := []*config.ConfigFile{
-		// TODO: add filepath.Join(gui.git.RepoPaths.RepoPath(), ".lazygit.yml"),
+		// TODO: add filepath.Join(git.RepoPaths.RepoPath(), ".lazygit.yml"),
 		// with trust prompt
 		// Fork: these replace upstream's lazygit.yml and .lazygit.yml so the
 		// fork does not read upstream's per-repo config files.
 		{
-			Path:   filepath.Join(gui.git.RepoPaths.RepoGitDirPath(), config.RepoConfigFileName),
+			Path:   filepath.Join(git.RepoPaths.RepoGitDirPath(), config.RepoConfigFileName),
 			Policy: config.ConfigFilePolicySkipIfMissing,
 		},
 	}
 
-	prevDir := gui.c.Git().RepoPaths.RepoPath()
+	prevDir := git.RepoPaths.RepoPath()
 	dir := filepath.Dir(prevDir)
 	for dir != prevDir {
 		repoConfigFiles = utils.Prepend(repoConfigFiles, &config.ConfigFile{

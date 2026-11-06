@@ -791,6 +791,7 @@ var tests = []*components.IntegrationTest{
 	ui.ForkPrefixEdgeCases,
 	ui.ForkPrefixOverrides,
 	ui.ForkRepoSwitchFeedback,
+	ui.ForkRepoSwitchInvalidRepoConfig,
 	ui.ForkScreenModeFocusMain,
 	ui.ForkScreenModeFullSideFocusMain,
 	ui.ForkSearchListNoSideScroll,

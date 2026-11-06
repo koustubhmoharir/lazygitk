@@ -96,8 +96,14 @@ re-apply it if upstream changes that code.
   settings per file (`fork_ignore_key_config.go`: one capture before the file
   loop, one discard before `Validate`). Keep new upstream path logic on
   `AppDirName`.
-- `pkg/gui/gui.go` `getPerRepoConfigFiles`: `lazygitk.yml` names. New upstream
-  scenarios that write `lazygit.yml` must write `lazygitk.yml`.
+- `pkg/config/app_config.go` `AppConfigurer` (addition): `PrepareRepoUserConfig`
+  and `CommitRepoUserConfig` (`fork_repo_user_config.go`). A repo switch loads
+  the new repo's config, checks it, and only then makes it current. Keep both
+  methods on the interface; `ReloadUserConfigForRepo` stays as upstream.
+- `pkg/gui/gui.go` `getPerRepoConfigFiles`: `lazygitk.yml` names. It takes the
+  repo's Git command as an argument, because `onNewRepo` calls it before
+  `gui.git` is assigned. New upstream scenarios that write `lazygit.yml` must
+  write `lazygitk.yml`.
 - `pkg/config/user_config_validation.go`: validates `commandBindings` and
   custom command IDs.
 - `pkg/config/theme_config.go`: `ThemeForBackground` merges
@@ -454,7 +460,10 @@ re-apply it if upstream changes that code.
 - `controllers/prompt_controller.go`, `helpers/confirmation_helper.go`,
   `context/confirmation_context.go`, `types/common.go`: the optional
   `HandleTab` prompt hook used by `s n`. Keep the pass-throughs when upstream
-  changes prompt options.
+  changes prompt options. The `s n` hook returns handled at once and does its
+  directory reads on a worker (`helpers/fork_open_repo_path.go`); when the
+  result arrives, focus moves to the suggestions if nothing completed, as the
+  prompt's own fallback does. Keep that in mind if the hook contract changes.
 - Default checkout routes: `projectForkBinding`, for a binding the user has
   not set explicitly, replaces the handlers of `branch.checkout`,
   `remote-branch.checkout`, `tag.checkout` and `commit.checkout-menu` with
@@ -841,13 +850,25 @@ the removed commands.
   `forkFetchGuard` field on `BackgroundRoutineMgr` holds that notice's state.
 - `helpers/repos_helper.go` `switchToLocation`: shows "Loading…" in every
   side and main pane and draws it with `ForceFlushViewsContentOnly` before
-  the synchronous switch, and renders the current repo again if the switch
-  fails before `onNewRepo` succeeds (`helpers/fork_repo_switch.go`). Keep the
-  named error result the deferred restore relies on.
+  the synchronous switch. If the switch fails before the new repo is in place
+  (including a failure of `onNewRepo`), the deferred restore puts back the
+  working directory and process environment it snapshotted, and renders the
+  current repo again (`restoreCurrentRepo`, `helpers/fork_repo_switch.go`).
+  Keep the named error result the deferred restore relies on. The
+  `RecordCurrentDirectory` call (the shell hand-off file,
+  `LAZYGIT_NEW_DIR_FILE`) runs after `onNewRepo` succeeds; upstream ran it
+  before. The not-a-repo VerifyInGitRepo failure returns `notAGitRepoError`,
+  which the `s n` prompt checks with `errors.As` (`fork_open_repo_path.go`).
+  The `ReposHelper.repoPathSeq` field belongs to `s n`.
 - `pkg/gui/gui.go` `loadNewRepo`: a switch's refresh sets
   `ThenIfRepoUnchanged` to the "Opened <repo>" toast (`fork_repo_switch.go`).
   Integration tests that switch repos must expect that toast.
-- `pkg/gui/gui.go` `onNewRepo`: queues the startup notices in a fixed order
+- `pkg/gui/gui.go` `onNewRepo`: nothing is published until the new repo's Git
+  command and config are loaded (`PrepareRepoUserConfig`) and the language is
+  checked (`checkRepoSwitchLanguage`, `pkg/gui/fork_repo_switch_check.go`, which
+  uses `onUserConfigLoaded`'s own condition and call). Then the config
+  (`CommitRepoUserConfig`) and `gui.git` are published together. Keep that
+  order when merging. The function also queues the startup notices in a fixed order
   (`queueForkUsageResetNotice`, `showForkIgnoredKeyConfigNotices`,
   `queueForkDiffRendererFallbackNotice`). They are shown one after another, each
   for its full time, by the queue in `fork_startup_notices.go`, which does not

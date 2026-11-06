@@ -48,6 +48,10 @@ type AppConfigurer interface {
 	GetUserConfigPaths() []string
 	GetUserConfigDir() string
 	ReloadUserConfigForRepo(repoConfigFiles []*ConfigFile) error
+	// Fork: load a repo's config without making it current, then commit it
+	// (fork_repo_user_config.go).
+	PrepareRepoUserConfig(repoConfigFiles []*ConfigFile) (*PreparedRepoUserConfig, error)
+	CommitRepoUserConfig(prepared *PreparedRepoUserConfig)
 	ReloadChangedUserConfigFiles() (error, bool)
 	GetTempDir() string
 
