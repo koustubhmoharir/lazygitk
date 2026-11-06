@@ -89,9 +89,17 @@ func TestRebaseCommitPreflight(t *testing.T) {
 		hash := "abc123"
 		runner := oscommands.NewFakeRunner(t).
 			ExpectGitArgs([]string{"diff", "--quiet", "--no-ext-diff", "--ignore-submodules=untracked", "--"}, "", nil).
+			// The ignored-file preflight before the fixup, then the start guard before the rebase.
+			ExpectGitArgs([]string{"diff", "--cached", "--name-only", "--no-renames", "-z", "HEAD", "--"}, "", nil).
+			ExpectGitArgs([]string{"log", "--format=", "--name-only", "--no-renames", "--root", "-m", "-z", "HEAD^{commit}", "--"}, "", nil).
+			ExpectGitArgs([]string{"ls-files", "--others", "--ignored", "--exclude-standard", "-z"}, "", nil).
+			ExpectGitArgs([]string{"config", "--type=bool", "--get", "core.ignoreCase"}, "false\n", nil).
 			ExpectGitArgs([]string{"commit", "--fixup=" + hash}, "", nil).
 			ExpectGitArgs([]string{"rev-parse", "--verify", "HEAD"}, "fixup123\n", nil).
 			ExpectGitArgs([]string{"status", "--porcelain=v1", "-z", "--untracked-files=no", "--ignore-submodules=untracked"}, "", nil).
+			ExpectGitArgs([]string{"log", "--format=", "--name-only", "--no-renames", "--root", "-m", "-z", "HEAD^{commit}", "--"}, "", nil).
+			ExpectGitArgs([]string{"ls-files", "--others", "--ignored", "--exclude-standard", "-z"}, "", nil).
+			ExpectGitArgs([]string{"config", "--type=bool", "--get", "core.ignoreCase"}, "false\n", nil).
 			ExpectFunc("interactive rebase", func(cmdObj *oscommands.CmdObj) bool {
 				assert.Equal(t, []string{"git", "rebase", "--interactive", "--no-autostash", "--keep-empty", "--no-autosquash", "--rebase-merges", "--root"}, cmdObj.Args())
 				return true

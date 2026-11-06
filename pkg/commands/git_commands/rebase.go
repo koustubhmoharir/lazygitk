@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/go-errors/errors"
 	"github.com/jesseduffield/lazygit/pkg/app/daemon"
@@ -20,6 +21,11 @@ type RebaseCommands struct {
 	workingTree *WorkingTreeCommands
 
 	onSuccessfulContinue func() error
+
+	// Fork: the ignored-file risks approved for the rebase starts run inside
+	// ApproveIgnoredRebaseRisks. The mutex guards the field; see rebase_ignored_start.go.
+	ignoredRebaseApproval   string
+	ignoredRebaseApprovalMu sync.Mutex
 }
 
 func NewRebaseCommands(
@@ -209,6 +215,9 @@ type PrepareInteractiveRebaseCommandOpts struct {
 	overrideEditor             bool
 	keepCommitsThatBecomeEmpty bool
 	disableUpdateRefs          bool
+	// Fork: the fingerprint of ignored-file risks the caller has approved. See
+	// IgnoredRebaseRiskError and rebase_ignored_start.go.
+	approvedIgnoredFingerprint string
 }
 
 // PrepareInteractiveRebaseCommand returns the cmd for an interactive rebase
@@ -216,6 +225,11 @@ type PrepareInteractiveRebaseCommandOpts struct {
 // lazygit instructions what to do with the todo file
 func (self *RebaseCommands) PrepareInteractiveRebaseCommand(opts PrepareInteractiveRebaseCommandOpts) (*oscommands.CmdObj, error) {
 	if err := self.requireCleanRebaseStart(); err != nil {
+		return nil, err
+	}
+	// Fork: every generic history-editing start reviews ignored files that Git's
+	// rewind could overwrite. The guard is in rebase_ignored_start.go.
+	if err := self.requireIgnoredRebaseStart(opts); err != nil {
 		return nil, err
 	}
 
@@ -323,6 +337,10 @@ func (self *RebaseCommands) AmendTo(commits []*models.Commit, commitIndex int) e
 	if err := self.requireCleanAfterIndexCommitForRebase(); err != nil {
 		return err
 	}
+	// Fork: the ignored-file review must pass before the fixup commit is created.
+	if err := self.CheckCompoundRebaseIgnoredRisks(commits, commitIndex, true); err != nil {
+		return err
+	}
 
 	if err := self.commit.CreateFixupCommit(commit.Hash()); err != nil {
 		return err
@@ -333,11 +351,12 @@ func (self *RebaseCommands) AmendTo(commits []*models.Commit, commitIndex int) e
 		return err
 	}
 
-	return self.runInteractiveRebase(PrepareInteractiveRebaseCommandOpts{
+	// Fork: the fixup exists by now, so a refusal here is not retried; see RebaseRiskAfterCommit.
+	return RebaseRiskAfterCommit(self.runInteractiveRebase(PrepareInteractiveRebaseCommandOpts{
 		baseHashOrRoot: getBaseHashOrRoot(commits, commitIndex+1),
 		overrideEditor: true,
 		instruction:    daemon.NewMoveFixupCommitDownInstruction(commit.Hash(), fixupHash, true),
-	})
+	}))
 }
 
 func (self *RebaseCommands) MoveFixupCommitDown(commits []*models.Commit, targetCommitIndex int) error {
@@ -419,6 +438,11 @@ func (self *RebaseCommands) SquashAllAboveFixupCommits(commit *models.Commit) er
 	}
 
 	if err := self.requireCleanRebaseStart(); err != nil {
+		return err
+	}
+	// Fork: this command is built here, not by PrepareInteractiveRebaseCommand, so it
+	// runs the same ignored-file review explicitly; see rebase_ignored_start.go.
+	if err := self.requireIgnoredRebaseSquashAbove(hashOrRoot); err != nil {
 		return err
 	}
 

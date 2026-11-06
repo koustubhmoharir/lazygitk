@@ -31,6 +31,10 @@ func TestRebaseRebaseBranch(t *testing.T) {
 			gitVersion: &GitVersion{2, 26, 0, ""},
 			runner: oscommands.NewFakeRunner(t).
 				ExpectGitArgs([]string{"status", "--porcelain=v1", "-z", "--untracked-files=no", "--ignore-submodules=untracked"}, "", nil).
+				ExpectGitArgs([]string{"ls-tree", "-r", "-z", "--name-only", "master^{commit}"}, "", nil).
+				ExpectGitArgs([]string{"log", "--format=", "--name-only", "--no-renames", "--root", "-m", "-z", "master^{commit}..HEAD^{commit}", "--"}, "", nil).
+				ExpectGitArgs([]string{"ls-files", "--others", "--ignored", "--exclude-standard", "-z"}, "", nil).
+				ExpectGitArgs([]string{"config", "--type=bool", "--get", "core.ignoreCase"}, "false\n", nil).
 				ExpectGitArgs([]string{"rebase", "--interactive", "--no-autostash", "--keep-empty", "--no-autosquash", "--rebase-merges", "master"}, "", nil),
 			test: func(err error) {
 				assert.NoError(t, err)
@@ -42,6 +46,10 @@ func TestRebaseRebaseBranch(t *testing.T) {
 			gitVersion: &GitVersion{2, 26, 0, ""},
 			runner: oscommands.NewFakeRunner(t).
 				ExpectGitArgs([]string{"status", "--porcelain=v1", "-z", "--untracked-files=no", "--ignore-submodules=untracked"}, "", nil).
+				ExpectGitArgs([]string{"ls-tree", "-r", "-z", "--name-only", "master^{commit}"}, "", nil).
+				ExpectGitArgs([]string{"log", "--format=", "--name-only", "--no-renames", "--root", "-m", "-z", "master^{commit}..HEAD^{commit}", "--"}, "", nil).
+				ExpectGitArgs([]string{"ls-files", "--others", "--ignored", "--exclude-standard", "-z"}, "", nil).
+				ExpectGitArgs([]string{"config", "--type=bool", "--get", "core.ignoreCase"}, "false\n", nil).
 				ExpectGitArgs([]string{"rebase", "--interactive", "--no-autostash", "--keep-empty", "--no-autosquash", "--rebase-merges", "master"}, "", errors.New("error")),
 			test: func(err error) {
 				assert.Error(t, err)
@@ -53,6 +61,10 @@ func TestRebaseRebaseBranch(t *testing.T) {
 			gitVersion: &GitVersion{2, 25, 5, ""},
 			runner: oscommands.NewFakeRunner(t).
 				ExpectGitArgs([]string{"status", "--porcelain=v1", "-z", "--untracked-files=no", "--ignore-submodules=untracked"}, "", nil).
+				ExpectGitArgs([]string{"ls-tree", "-r", "-z", "--name-only", "master^{commit}"}, "", nil).
+				ExpectGitArgs([]string{"log", "--format=", "--name-only", "--no-renames", "--root", "-m", "-z", "master^{commit}..HEAD^{commit}", "--"}, "", nil).
+				ExpectGitArgs([]string{"ls-files", "--others", "--ignored", "--exclude-standard", "-z"}, "", nil).
+				ExpectGitArgs([]string{"config", "--type=bool", "--get", "core.ignoreCase"}, "false\n", nil).
 				ExpectGitArgs([]string{"rebase", "--interactive", "--no-autostash", "--keep-empty", "--no-autosquash", "--rebase-merges", "master"}, "", nil),
 			test: func(err error) {
 				assert.NoError(t, err)
@@ -142,6 +154,10 @@ func TestRebaseDiscardOldFileChanges(t *testing.T) {
 			fileName:    []string{"test999.txt"},
 			runner: oscommands.NewFakeRunner(t).
 				ExpectGitArgs([]string{"status", "--porcelain=v1", "-z", "--untracked-files=no", "--ignore-submodules=untracked"}, "", nil).
+				ExpectGitArgs([]string{"ls-tree", "-r", "-z", "--name-only", "abcdef^{commit}"}, "", nil).
+				ExpectGitArgs([]string{"log", "--format=", "--name-only", "--no-renames", "--root", "-m", "-z", "abcdef^{commit}..HEAD^{commit}", "--"}, "", nil).
+				ExpectGitArgs([]string{"ls-files", "--others", "--ignored", "--exclude-standard", "-z"}, "", nil).
+				ExpectGitArgs([]string{"config", "--type=bool", "--get", "core.ignoreCase"}, "false\n", nil).
 				ExpectGitArgs([]string{"rebase", "--interactive", "--no-autostash", "--keep-empty", "--no-autosquash", "--rebase-merges", "abcdef"}, "", nil).
 				ExpectGitArgs([]string{"ls-tree", "--name-only", "HEAD^", "--", "test999.txt"}, "test999.txt\n", nil).
 				ExpectGitArgs([]string{"checkout", "HEAD^", "--", "test999.txt"}, "", nil).

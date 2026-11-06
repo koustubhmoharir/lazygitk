@@ -90,6 +90,10 @@ func TestPrepareInteractiveRebaseCommandCleanPolicy(t *testing.T) {
 	t.Run("clean status starts with explicit no-autostash and disables lock retries", func(t *testing.T) {
 		runner := oscommands.NewFakeRunner(t).
 			ExpectGitArgs(statusArgs, "", nil).
+			ExpectGitArgs([]string{"ls-tree", "-r", "-z", "--name-only", "base^{commit}"}, "", nil).
+			ExpectGitArgs([]string{"log", "--format=", "--name-only", "--no-renames", "--root", "-m", "-z", "base^{commit}..HEAD^{commit}", "--"}, "", nil).
+			ExpectGitArgs([]string{"ls-files", "--others", "--ignored", "--exclude-standard", "-z"}, "", nil).
+			ExpectGitArgs([]string{"config", "--type=bool", "--get", "core.ignoreCase"}, "false\n", nil).
 			ExpectFunc("rebase command", func(cmdObj *oscommands.CmdObj) bool {
 				assert.Equal(t, rebaseArgs, cmdObj.Args()[1:])
 				assert.True(t, cmdObj.LockRetriesDisabled())

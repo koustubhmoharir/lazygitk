@@ -276,8 +276,10 @@ func (self *CommitDiffActions) DiscardSelection(pane types.DiffPaneContext, firs
 				HideWorkingTreeState: true,
 			}, func(gocui.Task) error {
 				self.c.LogAction(self.c.Tr.Actions.RemovePatchFromCommit)
-				err := self.c.Git().Patch.DeletePatchesFromCommit(commits, commitIndex)
-				return self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err)
+				// Fork: the start is reviewed for ignored files; see fork_rebase_ignored_review.go.
+				return runWithIgnoredRebaseReview(self.c, func(_ *git_commands.RebaseCommands) error {
+					return self.c.Git().Patch.DeletePatchesFromCommit(commits, commitIndex)
+				}, self.c.Helpers().MergeAndRebase.CheckMergeOrRebase)
 			})
 		},
 	})

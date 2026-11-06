@@ -208,6 +208,9 @@ type ForkTranslationSet struct {
 	SelectedRebaseIgnoredTitle            string
 	SelectedRebaseIgnoredPrompt           string
 	SelectedRebaseApproveIgnored          string
+	RebaseIgnoredChangedNote              string
+	RebaseIgnoredApprovalRequired         string
+	RebaseRiskAfterCommit                 string
 	NamedCheckoutNamePrompt               string
 	NamedCheckoutTooltip                  string
 	NamedCheckoutMoveTitle                string
@@ -589,6 +592,9 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		SelectedRebaseIgnoredTitle:            "Ignored files may be overwritten",
 		SelectedRebaseIgnoredPrompt:           "Git may overwrite the ignored files listed below while checking out the target or replaying commits. This conservative list can include files Git leaves unchanged. Scroll to review all paths. Cancel to move or back up files first; approval explicitly accepts this risk.",
 		SelectedRebaseApproveIgnored:          "Approve ignored-file overwrite risk and rebase",
+		RebaseIgnoredChangedNote:              "The ignored-file risks of this rebase changed. Review the fresh list; previous approvals no longer apply.",
+		RebaseIgnoredApprovalRequired:         "Ignored files may be overwritten by this rebase. Review them and approve the risk before the rebase can start. Nothing was changed.",
+		RebaseRiskAfterCommit:                 "The new commit was created but was not moved: placing it would overwrite ignored files, so it stays where it was made. Review the ignored files, then move the commit yourself. Nothing else was changed.",
 		CheckoutAsBranch:                      "Checkout as branch",
 		NamedCheckoutNamePrompt:               "Local branch name for checkout at %s",
 		NamedCheckoutTooltip:                  "Check out the selected commit under a literal new or existing local branch name. Git carries dirty changes when safe; files are never forced and changes are never stashed. Coordinate with other Git writers while checkout runs.",

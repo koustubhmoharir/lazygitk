@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
+
 	"github.com/jesseduffield/generics/set"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
@@ -157,8 +159,10 @@ func (self *CustomPatchOptionsMenuAction) handleDeletePatchFromCommit() error {
 	}
 	return self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(gocui.Task) error {
 		self.c.LogAction(self.c.Tr.Actions.RemovePatchFromCommit)
-		err := self.c.Git().Patch.DeletePatchesFromCommit(commits, commitIndex)
-		return self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err)
+		// Fork: the start is reviewed for ignored files; see fork_rebase_ignored_review.go.
+		return runWithIgnoredRebaseReview(self.c, func(_ *git_commands.RebaseCommands) error {
+			return self.c.Git().Patch.DeletePatchesFromCommit(commits, commitIndex)
+		}, self.c.Helpers().MergeAndRebase.CheckMergeOrRebase)
 	})
 }
 
@@ -172,8 +176,10 @@ func (self *CustomPatchOptionsMenuAction) handleMovePatchToSelectedCommit() erro
 	toCommitIndex := self.c.Contexts().LocalCommits.GetSelectedLineIdx()
 	return self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(gocui.Task) error {
 		self.c.LogAction(self.c.Tr.Actions.MovePatchToSelectedCommit)
-		err := self.c.Git().Patch.MovePatchToSelectedCommit(commits, commitIndex, toCommitIndex)
-		return self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err)
+		// Fork: the start is reviewed for ignored files; see fork_rebase_ignored_review.go.
+		return runWithIgnoredRebaseReview(self.c, func(_ *git_commands.RebaseCommands) error {
+			return self.c.Git().Patch.MovePatchToSelectedCommit(commits, commitIndex, toCommitIndex)
+		}, self.c.Helpers().MergeAndRebase.CheckMergeOrRebase)
 	})
 }
 
@@ -188,8 +194,10 @@ func (self *CustomPatchOptionsMenuAction) handleMovePatchIntoWorkingTree() error
 	// reports that changes must be committed before patch movement can rebase.
 	return self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(gocui.Task) error {
 		self.c.LogAction(self.c.Tr.Actions.MovePatchIntoIndex)
-		err := self.c.Git().Patch.MovePatchIntoIndex(commits, commitIndex)
-		return self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err)
+		// Fork: the start is reviewed for ignored files; see fork_rebase_ignored_review.go.
+		return runWithIgnoredRebaseReview(self.c, func(_ *git_commands.RebaseCommands) error {
+			return self.c.Git().Patch.MovePatchIntoIndex(commits, commitIndex)
+		}, self.c.Helpers().MergeAndRebase.CheckMergeOrRebase)
 	})
 }
 
@@ -217,17 +225,21 @@ func (self *CustomPatchOptionsMenuAction) handlePullPatchIntoNewCommit() error {
 				self.c.Helpers().Commits.CloseCommitMessagePanel()
 				return self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(gocui.Task) error {
 					self.c.LogAction(self.c.Tr.Actions.MovePatchIntoNewCommit)
-					err := self.c.Git().Patch.PullPatchIntoNewCommit(commits, commitIndex, summary, description)
-					if err := self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err); err != nil {
-						return err
-					}
-					// Fork: the new commit exists.
-					reportSuccess()
-					self.c.OnUIThread(func() error {
-						self.c.Context().Push(self.c.Contexts().LocalCommits, types.OnFocusOpts{})
+					// Fork: the start is reviewed for ignored files; see fork_rebase_ignored_review.go.
+					return runWithIgnoredRebaseReview(self.c, func(_ *git_commands.RebaseCommands) error {
+						return self.c.Git().Patch.PullPatchIntoNewCommit(commits, commitIndex, summary, description)
+					}, func(err error) error {
+						if err := self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err); err != nil {
+							return err
+						}
+						// Fork: the new commit exists.
+						reportSuccess()
+						self.c.OnUIThread(func() error {
+							self.c.Context().Push(self.c.Contexts().LocalCommits, types.OnFocusOpts{})
+							return nil
+						})
 						return nil
 					})
-					return nil
 				})
 			},
 		},
@@ -260,17 +272,21 @@ func (self *CustomPatchOptionsMenuAction) handlePullPatchIntoNewCommitBefore() e
 				self.c.Helpers().Commits.CloseCommitMessagePanel()
 				return self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(gocui.Task) error {
 					self.c.LogAction(self.c.Tr.Actions.MovePatchIntoNewCommit)
-					err := self.c.Git().Patch.PullPatchIntoNewCommitBefore(commits, commitIndex, summary, description)
-					if err := self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err); err != nil {
-						return err
-					}
-					// Fork: the new commit exists.
-					reportSuccess()
-					self.c.OnUIThread(func() error {
-						self.c.Context().Push(self.c.Contexts().LocalCommits, types.OnFocusOpts{})
+					// Fork: the start is reviewed for ignored files; see fork_rebase_ignored_review.go.
+					return runWithIgnoredRebaseReview(self.c, func(_ *git_commands.RebaseCommands) error {
+						return self.c.Git().Patch.PullPatchIntoNewCommitBefore(commits, commitIndex, summary, description)
+					}, func(err error) error {
+						if err := self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err); err != nil {
+							return err
+						}
+						// Fork: the new commit exists.
+						reportSuccess()
+						self.c.OnUIThread(func() error {
+							self.c.Context().Push(self.c.Contexts().LocalCommits, types.OnFocusOpts{})
+							return nil
+						})
 						return nil
 					})
-					return nil
 				})
 			},
 		},

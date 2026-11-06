@@ -90,6 +90,10 @@ func (self *RebaseCommands) BranchActionRebaseCommand(plan BranchActionRebasePla
 		baseHashOrRoot:    plan.target.SourceOID() + "^{commit}",
 		disableUpdateRefs: true,
 	}
+	if plan.ignoredApproved {
+		// Fork: the captured review above already approved this exact risk snapshot.
+		opts.approvedIgnoredFingerprint = plan.ignoredFingerprint
+	}
 	if plan.baseOID != "" {
 		opts.baseHashOrRoot = plan.baseOID + "^{commit}"
 		opts.onto = plan.target.SourceOID() + "^{commit}"

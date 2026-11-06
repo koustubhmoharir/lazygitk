@@ -21,19 +21,34 @@ func (self *RebaseCommands) selectedCommitRebaseIgnoredPaths(target, head string
 // The destination tree and replay range can differ for a marked-base --onto
 // rebase. Keep the existing collision/fingerprint policy shared by both flows.
 func (self *RebaseCommands) rebaseIgnoredPaths(target, replayBase, head string) ([]string, string, error) {
-	targetTree, err := self.selectedRebaseGitOutput(NewGitCmd("ls-tree").Arg("-r", "-z", "--name-only", target+"^{commit}").ToArgv())
-	if err != nil {
-		return nil, "", fmt.Errorf("list rebase target paths: %w", err)
+	return self.rebaseCandidateRisks(target, []string{replayBase + "^{commit}" + ".." + head + "^{commit}"}, nil)
+}
+
+// rebaseCandidateRisks lists the ignored files that collide with the candidate
+// paths of a rebase. target is the destination tree, or "" for none (a root
+// rebase rewinds to an empty tree). logRevs are the revisions whose changed paths
+// are replayed. extra adds paths that the rebase will create, such as a commit
+// made before the rebase starts.
+func (self *RebaseCommands) rebaseCandidateRisks(target string, logRevs []string, extra []string) ([]string, string, error) {
+	candidates := make(map[string]struct{})
+	if target != "" {
+		targetTree, err := self.selectedRebaseGitOutput(NewGitCmd("ls-tree").Arg("-r", "-z", "--name-only", target+"^{commit}").ToArgv())
+		if err != nil {
+			return nil, "", fmt.Errorf("list rebase target paths: %w", err)
+		}
+		for _, path := range nulPaths(targetTree) {
+			candidates[path] = struct{}{}
+		}
 	}
-	replayed, err := self.selectedRebaseGitOutput(NewGitCmd("log").Arg("--format=", "--name-only", "--no-renames", "--root", "-m", "-z", replayBase+"^{commit}"+".."+head+"^{commit}", "--").ToArgv())
+	replayed, err := self.selectedRebaseGitOutput(NewGitCmd("log").Arg("--format=", "--name-only", "--no-renames", "--root", "-m", "-z").Arg(logRevs...).Arg("--").ToArgv())
 	if err != nil {
 		return nil, "", fmt.Errorf("list replayed rebase paths: %w", err)
 	}
-	candidates := make(map[string]struct{})
-	for _, raw := range [][]byte{targetTree, replayed} {
-		for _, path := range nulPaths(raw) {
-			candidates[path] = struct{}{}
-		}
+	for _, path := range nulPaths(replayed) {
+		candidates[path] = struct{}{}
+	}
+	for _, path := range extra {
+		candidates[path] = struct{}{}
 	}
 	return self.ignoredRisksForPaths(candidates)
 }

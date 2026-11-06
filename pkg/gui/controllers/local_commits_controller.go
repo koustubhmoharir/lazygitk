@@ -5,7 +5,9 @@ import (
 	"time"
 
 	"github.com/go-errors/errors"
+	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/context/traits"
@@ -954,17 +956,22 @@ func (self *LocalCommitsController) doRewordEditor() error {
 		return self.c.RunSubprocessAndRefresh(self.c.Git().Commit.RewordLastCommitInEditorCmdObj())
 	}
 
-	subProcess, err := self.c.Git().Rebase.RewordCommitInEditor(
-		self.c.Model().Commits, self.context().GetSelectedLineIdx(),
-	)
-	if err != nil {
+	// Fork: the start is reviewed for ignored files; see fork_rebase_ignored_review.go.
+	commits := self.c.Model().Commits
+	commitIdx := self.context().GetSelectedLineIdx()
+	var subProcess *oscommands.CmdObj
+	return runWithIgnoredRebaseReview(self.c, func(rebase *git_commands.RebaseCommands) error {
+		var err error
+		subProcess, err = rebase.RewordCommitInEditor(commits, commitIdx)
 		return err
-	}
-	if subProcess != nil {
-		return self.c.RunSubprocessAndRefresh(subProcess)
-	}
-
-	return nil
+	}, func(err error) error {
+		if err != nil || subProcess == nil {
+			return err
+		}
+		// Fork: the editor is a subprocess, which runs on the UI thread.
+		self.c.OnUIThread(func() error { return self.c.RunSubprocessAndRefresh(subProcess) })
+		return nil
+	})
 }
 
 func (self *LocalCommitsController) rewordEditor(commit *models.Commit) error {
@@ -1040,8 +1047,10 @@ func (self *LocalCommitsController) drop(selectedCommits []*models.Commit, start
 }
 
 func (self *LocalCommitsController) dropMergeCommit(commits []*models.Commit, commitIdx int) error {
-	err := self.c.Git().Rebase.DropMergeCommit(commits, commitIdx)
-	return self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err)
+	// Fork: the start is reviewed for ignored files; see fork_rebase_ignored_review.go.
+	return runWithIgnoredRebaseReview(self.c, func(rebase *git_commands.RebaseCommands) error {
+		return rebase.DropMergeCommit(commits, commitIdx)
+	}, self.c.Helpers().MergeAndRebase.CheckMergeOrRebase)
 }
 
 func (self *LocalCommitsController) edit(selectedCommits []*models.Commit, startIdx int, endIdx int) error {
@@ -1055,9 +1064,13 @@ func (self *LocalCommitsController) edit(selectedCommits []*models.Commit, start
 			Message:              self.c.Tr.RebasingStatus,
 			HideWorkingTreeState: true,
 		}, func(gocui.Task) error {
-			err := self.c.Git().Rebase.InteractiveRebase(commits, startIdx, endIdx, todo.Edit, "")
-			return self.c.Helpers().MergeAndRebase.CheckMergeOrRebaseWithRefreshOptions(
-				err, types.RefreshOptions{BatchUIUpdates: true})
+			// Fork: the start is reviewed for ignored files; see fork_rebase_ignored_review.go.
+			return runWithIgnoredRebaseReview(self.c, func(rebase *git_commands.RebaseCommands) error {
+				return rebase.InteractiveRebase(commits, startIdx, endIdx, todo.Edit, "")
+			}, func(err error) error {
+				return self.c.Helpers().MergeAndRebase.CheckMergeOrRebaseWithRefreshOptions(
+					err, types.RefreshOptions{BatchUIUpdates: true})
+			})
 		})
 	}
 
@@ -1081,22 +1094,26 @@ func (self *LocalCommitsController) startInteractiveRebaseWithEdit(
 		HideWorkingTreeState: true,
 	}, func(gocui.Task) error {
 		self.c.LogAction(self.c.Tr.Actions.EditCommit)
-		err := self.c.Git().Rebase.EditRebase(commitsToEdit[len(commitsToEdit)-1].Hash())
-		return self.c.Helpers().MergeAndRebase.CheckMergeOrRebaseWithRefreshOptions(
-			err,
-			types.RefreshOptions{BatchUIUpdates: true, Then: func() error {
-				todos := make([]*models.Commit, 0, len(commitsToEdit)-1)
-				for _, c := range commitsToEdit[:len(commitsToEdit)-1] {
-					// Merge commits can't be set to "edit", so just skip them
-					if !c.IsMerge() {
-						todos = append(todos, models.NewCommit(self.c.Model().HashPool, models.NewCommitOpts{Hash: c.Hash(), Action: todo.Pick}))
+		// Fork: the start is reviewed for ignored files; see fork_rebase_ignored_review.go.
+		return runWithIgnoredRebaseReview(self.c, func(rebase *git_commands.RebaseCommands) error {
+			return rebase.EditRebase(commitsToEdit[len(commitsToEdit)-1].Hash())
+		}, func(err error) error {
+			return self.c.Helpers().MergeAndRebase.CheckMergeOrRebaseWithRefreshOptions(
+				err,
+				types.RefreshOptions{BatchUIUpdates: true, Then: func() error {
+					todos := make([]*models.Commit, 0, len(commitsToEdit)-1)
+					for _, c := range commitsToEdit[:len(commitsToEdit)-1] {
+						// Merge commits can't be set to "edit", so just skip them
+						if !c.IsMerge() {
+							todos = append(todos, models.NewCommit(self.c.Model().HashPool, models.NewCommitOpts{Hash: c.Hash(), Action: todo.Pick}))
+						}
 					}
-				}
-				if len(todos) > 0 {
-					return self.updateTodos(todo.Edit, todos)
-				}
-				return nil
-			}})
+					if len(todos) > 0 {
+						return self.updateTodos(todo.Edit, todos)
+					}
+					return nil
+				}})
+		})
 	})
 }
 
@@ -1129,9 +1146,10 @@ func (self *LocalCommitsController) interactiveRebase(commits []*models.Commit, 
 }
 
 func (self *LocalCommitsController) interactiveRebaseWithFlag(commits []*models.Commit, action todo.TodoCommand, startIdx int, endIdx int, flag string) error {
-	err := self.c.Git().Rebase.InteractiveRebase(commits, startIdx, endIdx, action, flag)
-
-	return self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err)
+	// Fork: the start is reviewed for ignored files; see fork_rebase_ignored_review.go.
+	return runWithIgnoredRebaseReview(self.c, func(rebase *git_commands.RebaseCommands) error {
+		return rebase.InteractiveRebase(commits, startIdx, endIdx, action, flag)
+	}, self.c.Helpers().MergeAndRebase.CheckMergeOrRebase)
 }
 
 // selectRebaseResultCommit selects the commit that a drop/fixup/squash starting
@@ -1233,24 +1251,28 @@ func (self *LocalCommitsController) move(
 		} else {
 			self.c.LogAction(self.c.Tr.Actions.MoveCommitUp)
 		}
-		err := self.c.Git().Rebase.MoveCommits(commits, startIdx, endIdx, offset)
-		return self.c.Helpers().MergeAndRebase.CheckMergeOrRebaseWithRefreshOptions(
-			err, types.RefreshOptions{
-				BatchUIUpdates:  true,
-				CommitSelection: types.KeepCommitSelectionIndex,
-				// Move the selection to follow the moved commit, in Then so it
-				// lands in the same frame as the refreshed commit list.
-				Then: func() error {
-					if err == nil {
-						self.context().MoveSelection(offset)
-						self.context().HandleFocus(types.OnFocusOpts{})
-					}
-					if onComplete != nil {
-						return onComplete()
-					}
-					return nil
-				},
-			})
+		// Fork: the start is reviewed for ignored files; see fork_rebase_ignored_review.go.
+		return runWithIgnoredRebaseReview(self.c, func(rebase *git_commands.RebaseCommands) error {
+			return rebase.MoveCommits(commits, startIdx, endIdx, offset)
+		}, func(err error) error {
+			return self.c.Helpers().MergeAndRebase.CheckMergeOrRebaseWithRefreshOptions(
+				err, types.RefreshOptions{
+					BatchUIUpdates:  true,
+					CommitSelection: types.KeepCommitSelectionIndex,
+					// Move the selection to follow the moved commit, in Then so it
+					// lands in the same frame as the refreshed commit list.
+					Then: func() error {
+						if err == nil {
+							self.context().MoveSelection(offset)
+							self.context().HandleFocus(types.OnFocusOpts{})
+						}
+						if onComplete != nil {
+							return onComplete()
+						}
+						return nil
+					},
+				})
+		})
 	})
 }
 
@@ -1277,8 +1299,10 @@ func (self *LocalCommitsController) amendTo(commit *models.Commit) error {
 					HideWorkingTreeState: true,
 				}, func(gocui.Task) error {
 					self.c.LogAction(self.c.Tr.Actions.AmendCommit)
-					err := self.c.Git().Rebase.AmendTo(commits, selectedIdx)
-					return self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err)
+					// Fork: AmendTo reviews ignored files before it creates the fixup; see fork_rebase_ignored_review.go.
+					return runWithIgnoredRebaseReview(self.c, func(rebase *git_commands.RebaseCommands) error {
+						return rebase.AmendTo(commits, selectedIdx)
+					}, self.c.Helpers().MergeAndRebase.CheckMergeOrRebase)
 				})
 			})
 		}
@@ -1342,18 +1366,25 @@ func (self *LocalCommitsController) amendAttribute(_ []*models.Commit, start, en
 	})
 }
 
+// refreshAfterAmendOrError is the author edits' finish: a failure is returned, and a success refreshes.
+func (self *LocalCommitsController) refreshAfterAmendOrError(err error) error {
+	if err != nil {
+		return err
+	}
+	self.c.RefreshFromWorker(types.RefreshOptions{})
+	return nil
+}
+
 func (self *LocalCommitsController) resetAuthor(commits []*models.Commit, start, end int) error {
 	return self.c.WithWaitingStatusBlockingInput(types.WaitingStatusOpts{
 		Message:              self.c.Tr.AmendingStatus,
 		HideWorkingTreeState: true,
 	}, func(gocui.Task) error {
 		self.c.LogAction(self.c.Tr.Actions.ResetCommitAuthor)
-		if err := self.c.Git().Rebase.ResetCommitAuthor(commits, start, end); err != nil {
-			return err
-		}
-
-		self.c.RefreshFromWorker(types.RefreshOptions{})
-		return nil
+		// Fork: the rewrite is reviewed for ignored files; see fork_rebase_ignored_review.go.
+		return runWithIgnoredRebaseReview(self.c, func(rebase *git_commands.RebaseCommands) error {
+			return rebase.ResetCommitAuthor(commits, start, end)
+		}, self.refreshAfterAmendOrError)
 	})
 }
 
@@ -1367,12 +1398,10 @@ func (self *LocalCommitsController) setAuthor(commits []*models.Commit, start, e
 				HideWorkingTreeState: true,
 			}, func(gocui.Task) error {
 				self.c.LogAction(self.c.Tr.Actions.SetCommitAuthor)
-				if err := self.c.Git().Rebase.SetCommitAuthor(commits, start, end, value); err != nil {
-					return err
-				}
-
-				self.c.RefreshFromWorker(types.RefreshOptions{})
-				return nil
+				// Fork: the rewrite is reviewed for ignored files; see fork_rebase_ignored_review.go.
+				return runWithIgnoredRebaseReview(self.c, func(rebase *git_commands.RebaseCommands) error {
+					return rebase.SetCommitAuthor(commits, start, end, value)
+				}, self.refreshAfterAmendOrError)
 			})
 		},
 	})
@@ -1390,11 +1419,10 @@ func (self *LocalCommitsController) addCoAuthor(commits []*models.Commit, start,
 				HideWorkingTreeState: true,
 			}, func(gocui.Task) error {
 				self.c.LogAction(self.c.Tr.Actions.AddCommitCoAuthor)
-				if err := self.c.Git().Rebase.AddCommitCoAuthor(commits, start, end, value); err != nil {
-					return err
-				}
-				self.c.RefreshFromWorker(types.RefreshOptions{})
-				return nil
+				// Fork: the rewrite is reviewed for ignored files; see fork_rebase_ignored_review.go.
+				return runWithIgnoredRebaseReview(self.c, func(rebase *git_commands.RebaseCommands) error {
+					return rebase.AddCommitCoAuthor(commits, start, end, value)
+				}, self.refreshAfterAmendOrError)
 			})
 		},
 	})
@@ -1482,15 +1510,14 @@ func (self *LocalCommitsController) createFixupCommit(commit *models.Commit) err
 							Message:              self.c.Tr.CreatingFixupCommitStatus,
 							HideWorkingTreeState: true,
 						}, func(gocui.Task) error {
-							// Fork: preflight stacked placement before creating the fixup.
-							if err := self.createCommitWithFixupPlacement(commit, selectedIdx, commits, branches, true, func() error {
-								return self.c.Git().Commit.CreateFixupCommit(commit.Hash())
-							}); err != nil {
-								return err
-							}
-
-							self.c.RefreshFromWorker(types.RefreshOptions{BatchUIUpdates: true})
-							return nil
+							// Fork: placement is reviewed before the fixup is created; see fixup_placement.go.
+							return runWithIgnoredRebaseReview(self.c, func(_ *git_commands.RebaseCommands) error {
+								return self.createCommitWithFixupPlacement(commit, selectedIdx, commits, branches, true, func() error {
+									return self.c.Git().Commit.CreateFixupCommit(commit.Hash())
+								})
+							}, func(err error) error {
+								return self.finishAfterFixupPlacement(err, nil)
+							})
 						})
 					})
 				},
@@ -1551,17 +1578,16 @@ func (self *LocalCommitsController) createAmendCommit(commit *models.Commit, inc
 					Message:              self.c.Tr.CreatingFixupCommitStatus,
 					HideWorkingTreeState: true,
 				}, func(gocui.Task) error {
-					// Fork: message-only amendments leave staged changes untouched.
-					if err := self.createCommitWithFixupPlacement(commit, selectedIdx, commits, branches, includeFileChanges, func() error {
-						return self.c.Git().Commit.CreateAmendCommit(originalSubject, summary, description, includeFileChanges)
-					}); err != nil {
-						return err
-					}
-
-					// Fork: the amend has succeeded.
-					reportSuccess()
-					self.c.RefreshFromWorker(types.RefreshOptions{BatchUIUpdates: true})
-					return nil
+					// Fork: message-only amendments leave staged changes untouched. Placement is
+					// reviewed before the amend is created; see fixup_placement.go.
+					return runWithIgnoredRebaseReview(self.c, func(_ *git_commands.RebaseCommands) error {
+						return self.createCommitWithFixupPlacement(commit, selectedIdx, commits, branches, includeFileChanges, func() error {
+							return self.c.Git().Commit.CreateAmendCommit(originalSubject, summary, description, includeFileChanges)
+						})
+					}, func(err error) error {
+						// Fork: the amend has succeeded, or its commit exists but was not moved.
+						return self.finishAfterFixupPlacement(err, reportSuccess)
+					})
 				})
 			},
 			OnSwitchToEditor: nil,
@@ -1621,22 +1647,26 @@ func (self *LocalCommitsController) squashFixupsImpl(commit *models.Commit, reba
 		HideWorkingTreeState: true,
 	}, func(gocui.Task) error {
 		self.c.LogAction(self.c.Tr.Actions.SquashAllAboveFixupCommits)
-		err := self.c.Git().Rebase.SquashAllAboveFixupCommits(commit)
-		return self.c.Helpers().MergeAndRebase.CheckMergeOrRebaseWithRefreshOptions(
-			err, types.RefreshOptions{
-				BatchUIUpdates: true,
-				// Set the selection in Then so it lands in the same frame as the
-				// refreshed commit list. It has to be an absolute index: the new
-				// list is shorter, so a relative move from the (clamped) old index
-				// could overshoot. PostRefreshUpdate repaints the moved selection.
-				Then: func() error {
-					if err == nil {
-						self.context().SetSelectedLineIdx(targetIdx)
-						self.c.PostRefreshUpdate(self.context())
-					}
-					return nil
-				},
-			})
+		// Fork: the rebase is reviewed for ignored files; see fork_rebase_ignored_review.go.
+		return runWithIgnoredRebaseReview(self.c, func(_ *git_commands.RebaseCommands) error {
+			return self.c.Git().Rebase.SquashAllAboveFixupCommits(commit)
+		}, func(err error) error {
+			return self.c.Helpers().MergeAndRebase.CheckMergeOrRebaseWithRefreshOptions(
+				err, types.RefreshOptions{
+					BatchUIUpdates: true,
+					// Set the selection in Then so it lands in the same frame as the
+					// refreshed commit list. It has to be an absolute index: the new
+					// list is shorter, so a relative move from the (clamped) old index
+					// could overshoot. PostRefreshUpdate repaints the moved selection.
+					Then: func() error {
+						if err == nil {
+							self.context().SetSelectedLineIdx(targetIdx)
+							self.c.PostRefreshUpdate(self.context())
+						}
+						return nil
+					},
+				})
+		})
 	})
 }
 

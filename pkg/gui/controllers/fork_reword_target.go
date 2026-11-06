@@ -104,23 +104,33 @@ func (target *rewordTarget) submit(summary string, description string) error {
 		Message:              target.lc.c.Tr.RewordingStatus,
 		HideWorkingTreeState: true,
 	}, func(gocui.Task) error {
-		// The rebase is the write, so verify again on the worker just before it.
-		if err := target.verify(); err != nil {
+		// Fork: the rebase start is reviewed for ignored files; see fork_rebase_ignored_review.go.
+		// The target is verified again inside each attempt, so an approval given later never
+		// rewrites a commit that has moved since.
+		rebaseStarted := false
+		return runWithIgnoredRebaseReview(target.lc.c, func(rebase *git_commands.RebaseCommands) error {
+			// The rebase is the write, so verify again on the worker just before it.
+			if err := target.verify(); err != nil {
+				return err
+			}
+			rebaseStarted = true
+			return rebase.RewordCommit(target.commits, target.index, summary, description)
+		}, func(err error) error {
+			if err != nil {
+				// Fork: the rebase may be left stopped, and the text is kept as a draft. Refresh
+				// first, as on success, so that the model shows the stopped rebase before input
+				// is released; see fork_reword_failure.go. A verification refusal starts nothing.
+				target.lc.c.RefreshFromWorker(types.RefreshOptions{})
+				if rebaseStarted {
+					return target.lc.rewordFailure(err)
+				}
+				return err
+			}
+			// Fork: the reword has succeeded.
+			reportSuccess()
 			target.lc.c.RefreshFromWorker(types.RefreshOptions{})
-			return err
-		}
-		err := target.git.Rebase.RewordCommit(target.commits, target.index, summary, description)
-		if err != nil {
-			// Fork: the rebase may be left stopped, and the text is kept as a draft. Refresh
-			// first, as on success, so that the model shows the stopped rebase before input
-			// is released; see fork_reword_failure.go.
-			target.lc.c.RefreshFromWorker(types.RefreshOptions{})
-			return target.lc.rewordFailure(err)
-		}
-		// Fork: the reword has succeeded.
-		reportSuccess()
-		target.lc.c.RefreshFromWorker(types.RefreshOptions{})
-		return nil
+			return nil
+		})
 	})
 }
 
@@ -139,24 +149,34 @@ func (target *rewordTarget) switchToEditor(filepath string) error {
 			target.git.Commit.RewordLastCommitInEditorWithMessageFileCmdObj(filepath))
 	}
 
-	err := target.git.Rebase.BeginInteractiveRebaseForCommit(target.commits, target.index, false)
-	if err != nil {
-		return err
-	}
-	reportSuccess()
+	// Fork: the rebase start is reviewed for ignored files, and the editor and the continue
+	// run after the review on the UI thread, which the subprocess needs.
+	return runWithIgnoredRebaseReview(target.lc.c, func(rebase *git_commands.RebaseCommands) error {
+		if err := target.verify(); err != nil {
+			return err
+		}
+		return rebase.BeginInteractiveRebaseForCommit(target.commits, target.index, false)
+	}, func(err error) error {
+		if err != nil {
+			return err
+		}
+		reportSuccess()
+		target.lc.c.OnUIThread(func() error {
+			// now the selected commit should be our head so we'll amend it with the new message
+			err := target.lc.c.RunSubprocessAndRefresh(
+				target.git.Commit.RewordLastCommitInEditorWithMessageFileCmdObj(filepath))
+			if err != nil {
+				return err
+			}
 
-	// now the selected commit should be our head so we'll amend it with the new message
-	err = target.lc.c.RunSubprocessAndRefresh(
-		target.git.Commit.RewordLastCommitInEditorWithMessageFileCmdObj(filepath))
-	if err != nil {
-		return err
-	}
+			err = target.git.Rebase.ContinueRebase()
+			if err != nil {
+				return err
+			}
 
-	err = target.git.Rebase.ContinueRebase()
-	if err != nil {
-		return err
-	}
-
-	target.lc.c.Refresh(types.RefreshOptions{})
-	return nil
+			target.lc.c.Refresh(types.RefreshOptions{})
+			return nil
+		})
+		return nil
+	})
 }

@@ -403,8 +403,12 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   and Git refuses real collisions. Nothing offers or performs autostash, even
   if Git's configuration enables it, and other branches' refs are not updated.
 - If a rebase could overwrite ignored files, a separate menu lists them before
-  anything runs. The approval is selected; choose Cancel or press Escape to
-  stop.
+  anything runs. This covers reword (in the message box or the editor), move up
+  and down, drop, squash, fixup, squash fixups above, edit, amend-to, author
+  edits, custom-patch moves and removals, and discarding changes from a commit. For amend-to and
+  for placing a fixup, the review comes before the commit is created, so Cancel
+  creates nothing. The approval is selected; choose Cancel or press Escape to
+  stop. Cancel keeps a reword's message as a draft.
 - `g m n` moves the unpushed commits of the checked-out branch to a new
   branch. Its menu offers two variants: a new branch stacked on the current
   branch, or a new branch off the base branch with the commits cherry-picked

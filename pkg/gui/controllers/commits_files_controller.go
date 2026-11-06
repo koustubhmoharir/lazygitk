@@ -421,11 +421,6 @@ func (self *CommitFilesController) discard(selectedNodes []*filetree.CommitFileN
 				var filePaths []string
 				selectedNodes = normalisedSelectedCommitFileNodes(selectedNodes)
 
-				// Reset the current patch if there is one.
-				if self.c.Git().Patch.PatchBuilder.Active() {
-					self.c.Git().Patch.PatchBuilder.Reset()
-				}
-
 				for _, node := range selectedNodes {
 					_ = node.ForEachFile(func(file *models.CommitFile) error {
 						// For a rename we discard both the new and the old path,
@@ -436,19 +431,28 @@ func (self *CommitFilesController) discard(selectedNodes []*filetree.CommitFileN
 					})
 				}
 
-				err := self.c.Git().Rebase.DiscardOldFileChanges(commits, selectedLineIdx, filePaths)
-				if err := self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err); err != nil {
-					return err
-				}
-
-				self.c.OnUIThread(func() error {
-					if self.context().RangeSelectEnabled() {
-						self.context().GetList().CancelRangeSelect()
+				// Fork: the start is reviewed for ignored files; see fork_rebase_ignored_review.go.
+				// The patch is reset in finish, after the start, so that a refusal keeps it.
+				return runWithIgnoredRebaseReview(self.c, func(_ *git_commands.RebaseCommands) error {
+					return self.c.Git().Rebase.DiscardOldFileChanges(commits, selectedLineIdx, filePaths)
+				}, func(err error) error {
+					// Reset the current patch if there is one.
+					if self.c.Git().Patch.PatchBuilder.Active() {
+						self.c.Git().Patch.PatchBuilder.Reset()
 					}
+					if err := self.c.Helpers().MergeAndRebase.CheckMergeOrRebase(err); err != nil {
+						return err
+					}
+
+					self.c.OnUIThread(func() error {
+						if self.context().RangeSelectEnabled() {
+							self.context().GetList().CancelRangeSelect()
+						}
+						return nil
+					})
+
 					return nil
 				})
-
-				return nil
 			})
 		},
 	})

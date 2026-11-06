@@ -125,6 +125,43 @@ re-apply it if upstream changes that code.
   `rebase.updateRefs=false` and disables lock retries. Every start site goes
   through `runInteractiveRebase`. `SquashAllAboveFixupCommits` and `AmendTo`
   have clean-tree preflights. New upstream rebase starts must use the wrapper.
+  The same function calls `requireIgnoredRebaseStart` after the clean check
+  (`git_commands/rebase_ignored_start.go`, new), which refuses with
+  `IgnoredRebaseRiskError` when Git's rewind could overwrite ignored files.
+  Approval reaches it through `PrepareInteractiveRebaseCommandOpts.approvedIgnoredFingerprint`
+  (set by `BranchActionRebaseCommand` from its own review) or through the
+  scope `RebaseCommands.ApproveIgnoredRebaseRisks`, which the GUI uses.
+  `AmendTo` runs `CheckCompoundRebaseIgnoredRisks` before it creates the fixup,
+  and `RebaseRiskAfterCommit` stops a retry after the fixup exists.
+  `RebaseCommands` gained the field `ignoredRebaseApproval`. Upstream's clean
+  check stays in front of it.
+- `git_commands/rebase_ignored_files.go` (fork-owned): `rebaseIgnoredPaths` now
+  delegates to `rebaseCandidateRisks`, which also takes extra paths and an
+  optional destination. The selected-commit and branch-action reviews are
+  unchanged.
+- `controllers/fork_rebase_ignored_review.go` (new): `runWithIgnoredRebaseReview`
+  wraps every generic start in the GUI. A refusal opens the selected-commit
+  review menu, and approval retries the start under the reviewed fingerprint.
+  Wrapped call sites: `local_commits_controller.go` (reword in the editor,
+  drop merge commit, edit, squash/fixup/drop, move, amend-to, the three author
+  edits, the fixup placement paths), `fork_reword_target.go` (both reword
+  submit paths), `custom_patch_options_menu_action.go` and `commit_diff_actions.go`
+  (custom-patch moves and removals), and `commits_files_controller.go` (discard
+  from a commit). `fixup_placement.go` (fork-owned) runs the placement
+  preflight before the commit, and `placementRiskAfterCommit` stops a retry
+  after it.
+- `SquashAllAboveFixupCommits` builds its own `--autosquash` command, so it runs
+  `requireIgnoredRebaseSquashAbove` itself before the command. Its GUI entry is
+  wrapped in `squashFixupsImpl`.
+- The approval scope is protected by `RebaseCommands.ignoredRebaseApprovalMu`,
+  which guards the field only. Overlapping scopes can see each other's approval,
+  which is harmless because each start still compares fresh fingerprints.
+- Sentinel refusals reach the user as fork strings: `runWithIgnoredRebaseReview`
+  maps `ErrRebaseRiskAfterCommit` and `ErrRebaseIgnoredApprovalRequired` through
+  `mapIgnoredRebaseError` (`controllers/fork_rebase_ignored_review.go`). Fixup and
+  amend flows that refuse after their commit use `finishAfterFixupPlacement`
+  (`controllers/fixup_placement.go`), which keeps the amend message out of the draft
+  and refreshes, so a resubmit cannot create a second commit.
   `BeginInteractiveRebaseForCommit` and `BeginInteractiveRebaseForCommitRange`
   refuse an index outside the commits list, from either bound, through
   `requireCommitIndex` (`git_commands/fork_commit_index.go`).
