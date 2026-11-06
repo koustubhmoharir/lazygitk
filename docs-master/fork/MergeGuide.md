@@ -242,10 +242,13 @@ re-apply it if upstream changes that code.
   `SetClipboardWriter` (OSC 52, `pkg/gui/fork_clipboard.go`, wired right after
   `gui.os = osCommand`). Paste still uses `atotto/clipboard`. Keep the writer
   injected so `oscommands` never imports gocui.
-- `git_commands/fork_external_tool.go`: `ConfiguredExternalTool`,
-  `AvailableExternalTools` (parsed from `--tool-help`), `ApplyExternalTool`
-  (one launch, through `GIT_CONFIG_COUNT`) and `SaveExternalToolGlobally`. Shared
-  by the difftool and the merge tool through `ExternalToolMode`.
+- `git_commands/fork_external_tool.go`: `ConfiguredExternalTool` (keys in Git's
+  order, with the GUI keys first in GUI mode, as `get_configured_merge_tool` in
+  `git-mergetool--lib`; GUI mode follows `GIT_MERGETOOL_GUI`, then the mode's
+  `guiDefault`, where `auto` means `DISPLAY` is set), `AvailableExternalTools`
+  (parsed from `--tool-help`), `ApplyExternalTool` (inserts `--tool=<name>`
+  after the subcommand, so Git never guesses) and `SaveExternalToolGlobally`.
+  Shared by the difftool and the merge tool through `ExternalToolMode`.
 - `git_commands/fork_merge_tool.go`: `MergeToolCmdObj` builds
   `git --literal-pathspecs mergetool --no-prompt -- <paths>` and adds
   `-c mergetool.keepBackup=false` only while that key is unset. It reads the key
@@ -507,9 +510,9 @@ Every difftool launch goes through `helpers/fork_external_tool.go`
 (`ExternalToolHelper.WithExternalTool`), which asks for a tool when none is
 configured (`docs-master/fork/Design.md`, "Tools are never guessed"). A new
 difftool launch must use it: build the command, then run it from the `launch`
-callback after `apply` has set the tool on it. Pass a `cancel` that releases
-anything the caller holds, since it runs whenever nothing launches. The
-integration points are:
+callback after `apply` has set the tool on it (`--tool=<name>`, on every
+launch). Pass a `cancel` that releases anything the caller holds, since it runs
+whenever nothing launches. The integration points are:
 
 - `controllers/basic_commits_controller.go` `openDiffTool`: a commit against
   its parent or a range.

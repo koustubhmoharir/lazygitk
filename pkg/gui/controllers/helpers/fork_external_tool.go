@@ -12,11 +12,13 @@ import (
 
 // Fork: every difftool launch goes through WithExternalTool (see
 // docs-master/fork/MergeGuide.md). With no tool configured for the mode, Git
-// would print "... is not configured" and guess one, so the user is asked. The
-// chosen tool is applied to this launch only, unless the user saves it to Git's
-// global config. Nothing is launched and cancel runs on Escape, on a missing
-// tool, on a changed repository and on a failed save, so that a temporary file
-// held by the caller is released exactly once.
+// would print "... is not configured" and guess one, so the user is asked. Every
+// launch pins its tool with --tool=<name>, so Git never guesses: an unknown
+// configured tool fails with Git's error. The chosen tool is applied to this
+// launch only, unless the user saves it to Git's global config. Nothing is
+// launched and cancel runs on Escape, on a missing tool, on a changed repository
+// and on a failed save, so that a temporary file held by the caller is released
+// exactly once.
 
 // ExternalToolHelper launches external tools for the fork's difftool paths.
 type ExternalToolHelper struct {
@@ -31,9 +33,9 @@ func NewExternalToolHelper(c *HelperCommon) *ExternalToolHelper {
 // that tool on the command launch runs, and launch must run the command and
 // return its error. cancel, if not nil, runs once when nothing is launched.
 //
-// A configured tool launches at once with no change, since Git's answer stands.
-// Otherwise a menu lists the tools Git reports, then offers "Just this time" or
-// saving the tool to Git's global config. The repository is captured when this
+// A configured tool launches at once, pinned to that tool. Otherwise a menu lists
+// the tools Git reports, then offers "Just this time" or saving the tool to Git's
+// global config. The repository is captured when this
 // is called and checked before each step, so a repository switch while a menu
 // is open refuses the launch instead of running it in the wrong repository.
 //
@@ -66,7 +68,12 @@ type externalToolTexts struct {
 	searching   string
 }
 
-func noExternalToolChange(*oscommands.CmdObj) error { return nil }
+// pinTo returns the apply function that makes this launch use tool.
+func (flow *externalToolFlow) pinTo(tool string) func(*oscommands.CmdObj) error {
+	return func(cmd *oscommands.CmdObj) error {
+		return git_commands.ApplyExternalTool(cmd, flow.mode, tool)
+	}
+}
 
 func (flow *externalToolFlow) texts() externalToolTexts {
 	tr := flow.c.Tr
@@ -121,7 +128,7 @@ func (flow *externalToolFlow) start() error {
 		return flow.abort(err)
 	}
 	if configured != "" {
-		return flow.launchWith(noExternalToolChange)
+		return flow.launchWith(flow.pinTo(configured))
 	}
 	// git difftool --tool-help probes for each tool and can take over a second,
 	// so it runs on a worker. The menu opens on the UI thread, after the
@@ -187,14 +194,12 @@ func (flow *externalToolFlow) useOnce(tool git_commands.ExternalTool) error {
 	if err := flow.repository.checkRepository(); err != nil {
 		return flow.abort(err)
 	}
-	return flow.launchWith(func(cmd *oscommands.CmdObj) error {
-		return git_commands.ApplyExternalTool(cmd, flow.mode, tool.Name)
-	})
+	return flow.launchWith(flow.pinTo(tool.Name))
 }
 
-// saveAndUse writes the tool to Git's global config, then launches without any
-// change to the command, since Git now reads the tool itself. If the save fails,
-// nothing launches and the save's error is returned.
+// saveAndUse writes the tool to Git's global config, then launches pinned to it,
+// as useOnce does. If the save fails, nothing launches and the save's error is
+// returned.
 func (flow *externalToolFlow) saveAndUse(tool git_commands.ExternalTool) error {
 	if err := flow.repository.checkRepository(); err != nil {
 		return flow.abort(err)
@@ -202,5 +207,5 @@ func (flow *externalToolFlow) saveAndUse(tool git_commands.ExternalTool) error {
 	if err := flow.repository.git.Diff.SaveExternalToolGlobally(flow.mode, tool.Name); err != nil {
 		return flow.abort(err)
 	}
-	return flow.launchWith(noExternalToolChange)
+	return flow.launchWith(flow.pinTo(tool.Name))
 }

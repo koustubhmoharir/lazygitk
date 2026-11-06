@@ -2,7 +2,8 @@ package git_commands
 
 import (
 	"fmt"
-	"strconv"
+	"os"
+	"slices"
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
@@ -10,11 +11,10 @@ import (
 
 // Fork: when no diff tool is configured, git difftool prints "... is not
 // configured" and guesses one. lazygitk asks the user instead (see
-// docs-master/fork/Design.md). The helpers here read the configured and the
-// available tools, apply a chosen tool to a single launch through the
-// environment, and save a choice to Git's global config. The difftool
-// builders keep their arguments. The mode parameter is shared with the merge
-// tool, which uses the same helpers with ExternalToolMerge.
+// docs-master/fork/Design.md). The helpers here read the tool Git would use,
+// pin a tool to a single launch with --tool=<name>, and save a choice to Git's
+// global config. The mode parameter is shared with the merge tool, which uses
+// the same helpers with ExternalToolMerge.
 
 // ExternalToolMode selects the Git tool a launch uses: git difftool reads
 // diff.tool, falling back to merge.tool, and git mergetool reads merge.tool.
@@ -33,12 +33,36 @@ func (mode ExternalToolMode) configKey() string {
 	return "diff.tool"
 }
 
+// guiDefaultKey is the key that chooses GUI or terminal tools for the mode.
+func (mode ExternalToolMode) guiDefaultKey() string {
+	if mode == ExternalToolMerge {
+		return "mergetool.guiDefault"
+	}
+	return "difftool.guiDefault"
+}
+
 // subcommand is the Git command whose --tool-help lists the mode's tools.
 func (mode ExternalToolMode) subcommand() string {
 	if mode == ExternalToolMerge {
 		return "mergetool"
 	}
 	return "difftool"
+}
+
+// toolKeys lists the keys Git reads for the mode, in precedence order, as
+// get_configured_merge_tool in git-mergetool--lib does. GUI mode reads the
+// *.guitool keys first.
+func (mode ExternalToolMode) toolKeys(gui bool) []string {
+	switch {
+	case mode == ExternalToolMerge && gui:
+		return []string{"merge.guitool", "merge.tool"}
+	case mode == ExternalToolMerge:
+		return []string{"merge.tool"}
+	case gui:
+		return []string{"diff.guitool", "merge.guitool", "diff.tool", "merge.tool"}
+	default:
+		return []string{"diff.tool", "merge.tool"}
+	}
 }
 
 // ExternalTool is a tool that Git reports as available, with the description
@@ -48,15 +72,17 @@ type ExternalTool struct {
 	Description string
 }
 
-// ConfiguredExternalTool returns the tool Git uses for the mode, or "" when none
-// is configured. A missing key is not an error. Like git difftool, the diff
-// mode falls back to merge.tool when diff.tool is unset.
+// ConfiguredExternalTool returns the tool Git would use for the mode, or "" when
+// none is configured. A missing key is not an error. The keys follow Git's GUI
+// selection (see guiMode), so a tool in diff.guitool or merge.guitool wins in
+// GUI mode. The name is not checked against the known tools: a name Git does
+// not know is returned as configured, and a launch pinned to it fails in Git.
 func (self *DiffCommands) ConfiguredExternalTool(mode ExternalToolMode) (string, error) {
-	keys := []string{mode.configKey()}
-	if mode == ExternalToolDiff {
-		keys = append(keys, ExternalToolMerge.configKey())
+	gui, err := self.guiMode(mode)
+	if err != nil {
+		return "", err
 	}
-	for _, key := range keys {
+	for _, key := range mode.toolKeys(gui) {
 		value, err := self.configuredValue(key)
 		if err != nil {
 			return "", err
@@ -66,6 +92,26 @@ func (self *DiffCommands) ConfiguredExternalTool(mode ExternalToolMode) (string,
 		}
 	}
 	return "", nil
+}
+
+// guiMode reports whether Git runs the mode in GUI mode, as gui_mode in
+// git-mergetool--lib does. A non-empty GIT_MERGETOOL_GUI (set by --gui and
+// --no-gui) decides first, and only "true" means GUI. Otherwise the mode's
+// guiDefault decides: "auto" is GUI when DISPLAY is set in the environment Git
+// gets, and a bad boolean is an error, as it is for Git.
+func (self *DiffCommands) guiMode(mode ExternalToolMode) (bool, error) {
+	if override := os.Getenv("GIT_MERGETOOL_GUI"); override != "" {
+		return override == "true", nil
+	}
+	key := mode.guiDefaultKey()
+	value, err := self.configuredValue(key)
+	if err != nil || value == "" {
+		return false, err
+	}
+	if strings.EqualFold(value, "auto") {
+		return os.Getenv("DISPLAY") != "", nil
+	}
+	return self.configuredBool(key)
 }
 
 // configuredValue reads a key from the current config, bypassing the cache, so
@@ -81,6 +127,17 @@ func (self *DiffCommands) configuredValue(key string) (string, error) {
 		return "", err
 	}
 	return strings.TrimSpace(output), nil
+}
+
+// configuredBool reads a boolean key the way Git does: yes, on and 1 are true,
+// and a value that is not a boolean is an error.
+func (self *DiffCommands) configuredBool(key string) (bool, error) {
+	output, err := self.cmd.New(NewGitCmd("config").Arg("--bool", "--get", key).ToArgv()).
+		SetWd(self.repoPaths.WorktreePath()).DontLog().RunWithOutput()
+	if err != nil {
+		return false, err
+	}
+	return strings.TrimSpace(output) == "true", nil
 }
 
 // AvailableExternalTools lists the tools Git reports for the mode, in Git's
@@ -131,28 +188,34 @@ func parseExternalToolHelp(output string) []ExternalTool {
 	return tools
 }
 
-// ApplyExternalTool makes Git use tool for the single command cmd, by setting
-// the key through GIT_CONFIG_COUNT and GIT_CONFIG_KEY_n / GIT_CONFIG_VALUE_n.
-// Any entries already in the environment are kept, and the new one is appended
-// as the last. Nothing is written to the repository or the global config.
+// ApplyExternalTool pins tool for the single command cmd by inserting
+// --tool=<tool> right after the mode's subcommand. Git then uses exactly that
+// tool. It ignores the configured and GUI choices, and it never guesses: a name
+// it does not know fails with Git's own error. Nothing is written to the
+// repository or the global config.
 func ApplyExternalTool(cmd *oscommands.CmdObj, mode ExternalToolMode, tool string) error {
-	count := 0
-	for _, entry := range cmd.GetEnvVars() {
-		if value, ok := strings.CutPrefix(entry, "GIT_CONFIG_COUNT="); ok {
-			parsed, err := strconv.Atoi(value)
-			if err != nil || parsed < 0 {
-				return fmt.Errorf("cannot add a tool to the environment: GIT_CONFIG_COUNT is %q", value)
-			}
-			count = parsed // Go keeps the last duplicate, so the last value wins.
+	execCmd := cmd.GetCmd()
+	index := subcommandIndex(execCmd.Args, mode.subcommand())
+	if index < 0 {
+		return fmt.Errorf("cannot pin the %s tool: the command is not git %s", mode.subcommand(), mode.subcommand())
+	}
+	execCmd.Args = slices.Insert(execCmd.Args, index+1, "--tool="+tool)
+	return nil
+}
+
+// subcommandIndex returns the index of subcommand in argv, or -1. Only the words
+// before the "--" that ends the options are searched, so a path is never taken
+// for the subcommand.
+func subcommandIndex(argv []string, subcommand string) int {
+	for index, arg := range argv {
+		if arg == "--" {
+			break
+		}
+		if arg == subcommand {
+			return index
 		}
 	}
-	cmd.RemoveEnvVar("GIT_CONFIG_COUNT")
-	cmd.AddEnvVars(
-		fmt.Sprintf("GIT_CONFIG_COUNT=%d", count+1),
-		fmt.Sprintf("GIT_CONFIG_KEY_%d=%s", count, mode.configKey()),
-		fmt.Sprintf("GIT_CONFIG_VALUE_%d=%s", count, tool),
-	)
-	return nil
+	return -1
 }
 
 // SaveExternalToolGlobally sets the mode's key in Git's global config, so that

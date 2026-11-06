@@ -261,12 +261,20 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   commit, file or directory: against the working tree, against the previous
   commit (first parent for a merge), or against a commit whose full or partial
   hash you paste. They do not use or change the sticky diff mode (`t d c`).
-- With no `diff.tool` (or `merge.tool`, which the difftool falls back to)
-  configured, these comparisons and `t d e` first list the tools Git reports
-  as available, instead of Git's "not configured" message and a guess. Choose
-  one, then `Just this time` (the default) or `Save as Git's diff.tool in your
-  global config, and use it`. Escape at either step launches nothing. A
-  configured tool launches at once, with no menu.
+- The tool is the one Git would use. In GUI mode (`difftool.guiDefault`:
+  `true`, or `auto` with a `DISPLAY` set; `--gui` and `--no-gui` override it)
+  that is `diff.guitool`, then `merge.guitool`, then `diff.tool`, then
+  `merge.tool`. Otherwise it is `diff.tool`, then `merge.tool`, as Git's
+  difftool falls back to it. A configured tool launches at once, with no menu.
+- With no tool configured, these comparisons and `t d e` first list the tools
+  Git reports as available, instead of Git's "not configured" message and a
+  guess. Choose one, then `Just this time` (the default) or `Save as Git's
+  diff.tool in your global config, and use it`. Escape at either step launches
+  nothing.
+- Every launch names its tool to Git, so Git runs exactly that tool and never
+  guesses another. A configured name that Git does not know fails with Git's
+  own error in the terminal, and nothing else runs; set the tool with `git
+  config` to one of the names `git difftool --tool-help` lists.
 - In Files, `d w`, `d s` and `d c` compare the working file with HEAD, the
   index or a pasted commit, base on the left. Untracked files have no base, so
   they are disabled.
@@ -287,10 +295,12 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   resolved, as `git mergetool` does; a file the tool leaves unresolved stays
   conflicted. Git's `.orig` backups are not kept unless `mergetool.keepBackup`
   is set in Git's config; an explicit setting of either value is respected.
-- With no `merge.tool` configured, the tools Git reports are listed first, as
+- The merge tool is `merge.guitool` (in GUI mode, `mergetool.guiDefault`), then
+  `merge.tool`. With none configured, the tools Git reports are listed first, as
   for the difftool above, and `Just this time` (the default) or `Save as Git's
   merge.tool in your global config, and use it` follows. Escape at either step
-  launches nothing.
+  launches nothing. A configured tool is named to Git on every launch, and an
+  unknown one fails with Git's own error, as for the difftool.
 - Files refreshes when the tool exits, whether it succeeds or fails, so a file
   the tool resolved before it failed shows its new state.
 

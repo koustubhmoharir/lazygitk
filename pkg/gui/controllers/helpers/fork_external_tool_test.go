@@ -5,7 +5,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"testing"
 
 	"github.com/jesseduffield/lazygit/pkg/commands"
@@ -29,13 +28,14 @@ func (u *externalToolUI) Menu(opts types.CreateMenuOptions) error {
 }
 
 type externalToolFixture struct {
-	t        *testing.T
-	root     string
-	global   string
-	ui       *externalToolUI
-	c        *HelperCommon
-	cancels  int
-	launches [][]string
+	t          *testing.T
+	root       string
+	global     string
+	ui         *externalToolUI
+	c          *HelperCommon
+	cancels    int
+	subcommand string
+	launches   [][]string
 }
 
 func newExternalToolFixture(t *testing.T) *externalToolFixture {
@@ -49,6 +49,9 @@ func newExternalToolFixture(t *testing.T) *externalToolFixture {
 	// Every test that saves reads and writes this file, never the user's config.
 	t.Setenv("GIT_CONFIG_GLOBAL", global)
 	t.Setenv("GIT_CONFIG_NOSYSTEM", "1")
+	// GUI selection starts from a known state: no GIT_MERGETOOL_GUI, no DISPLAY.
+	t.Setenv("GIT_MERGETOOL_GUI", "")
+	t.Setenv("DISPLAY", "")
 	paths := git_commands.MockRepoPaths(root)
 	osCmd := oscommands.NewDummyOSCommand()
 	cmn := git_commands.NewGitCommon(common.NewDummyCommon(), nil, osCmd.Cmd, osCmd, paths, nil, nil)
@@ -63,14 +66,14 @@ func newExternalToolFixture(t *testing.T) *externalToolFixture {
 	}
 }
 
-// launch records the environment the command would run with, after apply.
+// launch records the arguments the command would run with, after apply.
 func (f *externalToolFixture) launch(apply func(*oscommands.CmdObj) error) error {
-	cmd := oscommands.NewDummyOSCommand().Cmd.New([]string{"git", "difftool"})
+	cmd := oscommands.NewDummyOSCommand().Cmd.New([]string{"git", f.subcommand})
 	cmd.SetEnviron([]string{"PATH=/bin"})
 	if err := apply(cmd); err != nil {
 		return err
 	}
-	f.launches = append(f.launches, cmd.GetEnvVars())
+	f.launches = append(f.launches, cmd.Args())
 	return nil
 }
 
@@ -82,6 +85,10 @@ func (f *externalToolFixture) cancel() error {
 // run starts the flow and then runs what it queued, as the GUI would: the
 // tool listing on its worker, then the UI callback that opens the menu.
 func (f *externalToolFixture) run(mode git_commands.ExternalToolMode) error {
+	f.subcommand = "difftool"
+	if mode == git_commands.ExternalToolMerge {
+		f.subcommand = "mergetool"
+	}
 	if err := (&ExternalToolHelper{c: f.c}).WithExternalTool(mode, f.launch, f.cancel); err != nil {
 		return err
 	}
@@ -134,16 +141,17 @@ func findToolItem(t *testing.T, opts types.CreateMenuOptions, name string) *type
 	return nil
 }
 
-func hasEnv(env []string, entry string) bool {
-	for _, value := range env {
-		if value == entry {
+func hasArg(args []string, arg string) bool {
+	for _, value := range args {
+		if value == arg {
 			return true
 		}
 	}
 	return false
 }
 
-func TestExternalToolConfiguredLaunchesWithoutMenuOrEnvChange(t *testing.T) {
+// A configured tool launches at once, pinned to that tool with --tool.
+func TestExternalToolConfiguredLaunchesPinnedWithoutMenu(t *testing.T) {
 	f := newExternalToolFixture(t)
 	namedCheckoutGit(t, f.root, "config", "diff.tool", "configured")
 
@@ -153,10 +161,74 @@ func TestExternalToolConfiguredLaunchesWithoutMenuOrEnvChange(t *testing.T) {
 	if len(f.ui.menus) != 0 || f.cancels != 0 || len(f.launches) != 1 {
 		t.Fatalf("menus=%d cancels=%d launches=%d", len(f.ui.menus), f.cancels, len(f.launches))
 	}
-	for _, entry := range f.launches[0] {
-		if strings.HasPrefix(entry, "GIT_CONFIG_") {
-			t.Fatalf("configured launch changed the environment: %q", entry)
-		}
+	if !hasArg(f.launches[0], "--tool=configured") {
+		t.Fatalf("configured launch is not pinned: %q", f.launches[0])
+	}
+}
+
+// Only a GUI tool is configured, and GUI mode is off: Git would use no tool, so
+// the chooser opens. This is the control for the GUI-mode tests below.
+func TestExternalToolGuiToolOnlyOpensChooserWhenNotGui(t *testing.T) {
+	f := newExternalToolFixture(t)
+	namedCheckoutGit(t, f.root, "config", "diff.guitool", "fake")
+
+	if err := f.run(git_commands.ExternalToolDiff); err != nil {
+		t.Fatal(err)
+	}
+	if len(f.ui.menus) != 1 || len(f.launches) != 0 {
+		t.Fatalf("menus=%d launches=%d", len(f.ui.menus), len(f.launches))
+	}
+}
+
+// In GUI mode the configured GUI tool is the one Git uses, so it launches at
+// once, pinned, with no chooser.
+func TestExternalToolConfiguredGuiToolLaunchesPinnedWithoutMenu(t *testing.T) {
+	f := newExternalToolFixture(t)
+	namedCheckoutGit(t, f.root, "config", "difftool.guiDefault", "true")
+	namedCheckoutGit(t, f.root, "config", "diff.guitool", "fake")
+
+	if err := f.run(git_commands.ExternalToolDiff); err != nil {
+		t.Fatal(err)
+	}
+	if len(f.ui.menus) != 0 || len(f.launches) != 1 {
+		t.Fatalf("menus=%d launches=%d", len(f.ui.menus), len(f.launches))
+	}
+	if !hasArg(f.launches[0], "--tool=fake") {
+		t.Fatalf("GUI launch is not pinned: %q", f.launches[0])
+	}
+}
+
+func TestExternalToolAutoGuiMergeToolLaunchesPinnedWithoutMenu(t *testing.T) {
+	f := newExternalToolFixture(t)
+	t.Setenv("DISPLAY", ":0")
+	namedCheckoutGit(t, f.root, "config", "mergetool.guiDefault", "auto")
+	namedCheckoutGit(t, f.root, "config", "merge.guitool", "fake")
+
+	if err := f.run(git_commands.ExternalToolMerge); err != nil {
+		t.Fatal(err)
+	}
+	if len(f.ui.menus) != 0 || len(f.launches) != 1 {
+		t.Fatalf("menus=%d launches=%d", len(f.ui.menus), len(f.launches))
+	}
+	if f.launches[0][1] != "mergetool" || !hasArg(f.launches[0], "--tool=fake") {
+		t.Fatalf("merge GUI launch is not pinned: %q", f.launches[0])
+	}
+}
+
+// A configured name that Git does not know still skips the chooser. The launch
+// is pinned to it, so Git fails with its own error rather than guessing.
+func TestExternalToolUnknownConfiguredToolIsPinnedNotGuessed(t *testing.T) {
+	f := newExternalToolFixture(t)
+	namedCheckoutGit(t, f.root, "config", "diff.tool", "definitely-not-a-real-tool")
+
+	if err := f.run(git_commands.ExternalToolDiff); err != nil {
+		t.Fatal(err)
+	}
+	if len(f.ui.menus) != 0 || len(f.launches) != 1 {
+		t.Fatalf("menus=%d launches=%d", len(f.ui.menus), len(f.launches))
+	}
+	if !hasArg(f.launches[0], "--tool=definitely-not-a-real-tool") {
+		t.Fatalf("unknown tool is not pinned: %q", f.launches[0])
 	}
 }
 
@@ -199,8 +271,8 @@ func TestExternalToolJustThisTimeAppliesToolForOneLaunch(t *testing.T) {
 	if len(f.launches) != 1 || f.cancels != 0 {
 		t.Fatalf("launches=%d cancels=%d", len(f.launches), f.cancels)
 	}
-	if !hasEnv(f.launches[0], "GIT_CONFIG_COUNT=1") || !hasEnv(f.launches[0], "GIT_CONFIG_KEY_0=diff.tool") || !hasEnv(f.launches[0], "GIT_CONFIG_VALUE_0=fake") {
-		t.Fatalf("launch env does not select the tool: %q", f.launches[0])
+	if !hasArg(f.launches[0], "--tool=fake") {
+		t.Fatalf("launch does not pin the tool: %q", f.launches[0])
 	}
 	if got, _ := os.ReadFile(f.global); len(got) != 0 {
 		t.Fatalf("just this time wrote the global config: %q", got)
@@ -234,7 +306,7 @@ func TestExternalToolEscapeCancelsAtEitherStep(t *testing.T) {
 	}
 }
 
-func TestExternalToolSaveWritesGlobalConfigAndLaunchesUnchanged(t *testing.T) {
+func TestExternalToolSaveWritesGlobalConfigAndLaunchesPinned(t *testing.T) {
 	f := newExternalToolFixture(t)
 	namedCheckoutGit(t, f.root, "config", "difftool.fake.cmd", "true")
 	if err := f.run(git_commands.ExternalToolDiff); err != nil {
@@ -253,10 +325,8 @@ func TestExternalToolSaveWritesGlobalConfigAndLaunchesUnchanged(t *testing.T) {
 	if len(f.launches) != 1 || f.cancels != 0 {
 		t.Fatalf("launches=%d cancels=%d", len(f.launches), f.cancels)
 	}
-	for _, entry := range f.launches[0] {
-		if strings.HasPrefix(entry, "GIT_CONFIG_") {
-			t.Fatalf("save launch changed the environment: %q", entry)
-		}
+	if !hasArg(f.launches[0], "--tool=fake") {
+		t.Fatalf("save launch does not pin the saved tool: %q", f.launches[0])
 	}
 }
 
@@ -352,7 +422,7 @@ func TestExternalToolMergeModeUsesMergeKeys(t *testing.T) {
 	if err := f.lastMenu().Items[0].OnPress(); err != nil {
 		t.Fatal(err)
 	}
-	if len(f.launches) != 1 || !hasEnv(f.launches[0], "GIT_CONFIG_KEY_0=merge.tool") {
-		t.Fatalf("merge launch env = %q", f.launches)
+	if len(f.launches) != 1 || f.launches[0][1] != "mergetool" || !hasArg(f.launches[0], "--tool=fake") {
+		t.Fatalf("merge launch args = %q", f.launches)
 	}
 }
