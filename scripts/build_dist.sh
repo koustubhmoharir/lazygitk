@@ -5,8 +5,9 @@
 #   e.g. scripts/build_dist.sh linux/arm64 darwin/arm64
 # With no arguments, builds linux/amd64 and windows/amd64. Builds use a
 # temporary GOCACHE that is removed on exit (including Ctrl-C), so no build
-# cache is left behind. Binaries are built with buildSource=forkDist, which
-# disables upstream's self-updater (see pkg/updates/updates.go).
+# cache is left behind. Binaries are built with buildSource=forkDist; only
+# buildBinary builds may self-update, so upstream's updater stays off (see
+# CanSelfUpdate in pkg/updates/updates.go).
 
 set -euo pipefail
 

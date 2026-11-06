@@ -6,8 +6,8 @@
 #   e.g. scripts/build_dist.ps1 -Targets windows/amd64,windows/arm64
 # With no arguments, builds windows/amd64. Builds use a temporary GOCACHE that
 # is removed afterwards, so no build cache is left behind. Binaries are built
-# with buildSource=forkDist, which disables upstream's self-updater (see
-# pkg/updates/updates.go).
+# with buildSource=forkDist; only buildBinary builds may self-update, so
+# upstream's updater stays off (see CanSelfUpdate in pkg/updates/updates.go).
 
 param(
     [string[]]$Targets = @('windows/amd64')

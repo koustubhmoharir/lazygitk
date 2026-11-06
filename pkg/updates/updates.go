@@ -138,9 +138,22 @@ func (u *Updater) checkForNewUpdate() (string, error) {
 	return newVersion, nil
 }
 
+// Fork: CanSelfUpdate reports whether this build may check for and install
+// updates. Only goreleaser builds may: upstream's releases are what the
+// updater downloads, and a lazygitk build replaced with one would no longer be
+// lazygitk.
+func (u *Updater) CanSelfUpdate() bool {
+	return u.Config.GetBuildSource() == "buildBinary"
+}
+
 // CheckForNewUpdate checks if there is an available update
 func (u *Updater) CheckForNewUpdate(onFinish func(string, error) error, userRequested bool) {
 	if !userRequested && u.skipUpdateCheck() {
+		return
+	}
+	// Fork: enforced here even for manual checks, which skip skipUpdateCheck.
+	if !u.CanSelfUpdate() {
+		u.Log.Info("Binary is not built with the buildBinary flag so we won't check for an update")
 		return
 	}
 
@@ -235,7 +248,12 @@ func (u *Updater) getBinaryUrl(newVersion string) string {
 }
 
 // Update downloads the latest binary and replaces the current binary with it
+// Fork: refuses for builds that cannot self-update, so the install boundary
+// holds even when reached without CheckForNewUpdate.
 func (u *Updater) Update(newVersion string) error {
+	if !u.CanSelfUpdate() {
+		return errors.New(u.Tr.ForkCannotSelfUpdate)
+	}
 	return u.update(newVersion)
 }
 

@@ -70,9 +70,10 @@ func build() {
 		} else {
 			gui.SetEditKeybindings(left, right, backspace, delete)
 		}
+		gui.SetCommandKeybinding(root, handler)
 	}
 }`)
-	if got, want := len(inv.LowLevelCalls), 2; got != want {
+	if got, want := len(inv.LowLevelCalls), 3; got != want {
 		t.Fatalf("got %d low-level calls, want %d", got, want)
 	}
 	if got, want := inv.LowLevelCalls[0].Condition, "(ready) && (permitted)"; got != want {
@@ -80,6 +81,14 @@ func build() {
 	}
 	if got, want := inv.LowLevelCalls[1].Condition, "(ready) && !(permitted)"; got != want {
 		t.Errorf("else condition = %q, want %q", got, want)
+	}
+	// Fork: SetCommandKeybinding registers the compiled command roots, so the
+	// audit must list it alongside the other low-level calls.
+	if got, want := inv.LowLevelCalls[2].Kind, "SetCommandKeybinding"; got != want {
+		t.Errorf("kind = %q, want %q", got, want)
+	}
+	if got, want := inv.LowLevelCalls[2].Condition, "(ready)"; got != want {
+		t.Errorf("command condition = %q, want %q", got, want)
 	}
 }
 

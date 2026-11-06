@@ -516,6 +516,8 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
   is migrated. `CONFIG_DIR` and `LG_CONFIG_FILE` work as upstream.
 - `scripts/build_dist.sh` (or `just dist`) and `scripts/build_dist.ps1` build
   portable `lazygitk` binaries into `dist/`.
+- lazygitk never checks for or installs updates; upstream's updater would
+  replace it with lazygit. `t a u` says so. Rebuild from source to update.
 
 ## Coming from upstream lazygit
 

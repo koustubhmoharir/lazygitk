@@ -24,8 +24,8 @@ expansion. Main review must inspect dynamic/context-dependent targets and
 confirm behavior, aliases, availability, semantic verb, and dispatch
 precedence before assigning identities.
 
-The inventory separately lists direct `SetKeybinding` and
-`SetEditKeybindings` calls. `hardcodedDispatchCases` contains all Go `case`
+The inventory separately lists direct `SetKeybinding`, `SetEditKeybindings`
+and `SetCommandKeybinding` calls. `hardcodedDispatchCases` contains all Go `case`
 labels in the scanned source, including labels that are not key dispatch;
 these are intentionally broad leads for review, not semantic classification.
 Other hardcoded keys may be expressed through conditionals or helper code

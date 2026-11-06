@@ -40,6 +40,11 @@ func (self *UpdateHelper) CheckForUpdateInBackground() {
 }
 
 func (self *UpdateHelper) CheckForUpdateInForeground() error {
+	// Fork: lazygitk builds cannot update themselves, so report that instead of
+	// checking upstream releases. See updates.Updater.CanSelfUpdate.
+	if !self.updater.CanSelfUpdate() {
+		return errors.New(self.c.Tr.ForkCannotSelfUpdate)
+	}
 	return self.c.WithWaitingStatus(self.c.Tr.CheckingForUpdates, func(gocui.Task) error {
 		self.updater.CheckForNewUpdate(func(newVersion string, err error) error {
 			if err != nil {

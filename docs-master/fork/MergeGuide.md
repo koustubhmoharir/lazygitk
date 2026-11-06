@@ -576,8 +576,11 @@ the removed commands.
   every merge and keep the fork's file, folding in relevant upstream technical
   constraints deliberately.
 - `justfile` `dist` recipe and `/dist/` in `.gitignore`; the build scripts set
-  `buildSource=forkDist` so upstream's self-updater never replaces a fork
-  build.
+  `buildSource=forkDist`. Only `buildBinary` builds may self-update, so
+  `pkg/updates/updates.go` `CanSelfUpdate` gates both the update check (also
+  for manual checks, which skip `skipUpdateCheck`) and `Update`, and
+  `update_helper.go` `CheckForUpdateInForeground` reports the refusal instead
+  of checking. Keep these gates when merging the updater.
 - `test/default_test_config/config.yml`: commented legacy key overrides for
   scenarios.
 

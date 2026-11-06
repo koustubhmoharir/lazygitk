@@ -134,7 +134,7 @@ func collect(fs *token.FileSet, path string, f *ast.File, inv *inventory) {
 	seen := map[token.Pos]bool{}
 	ast.Inspect(f, func(n ast.Node) bool {
 		if c, ok := n.(*ast.CallExpr); ok {
-			if s, ok := c.Fun.(*ast.SelectorExpr); ok && (s.Sel.Name == "SetKeybinding" || s.Sel.Name == "SetEditKeybindings") {
+			if s, ok := c.Fun.(*ast.SelectorExpr); ok && (s.Sel.Name == "SetKeybinding" || s.Sel.Name == "SetEditKeybindings" || s.Sel.Name == "SetCommandKeybinding") {
 				inv.LowLevelCalls = append(inv.LowLevelCalls, record{Kind: s.Sel.Name, File: path, Line: fs.Position(c.Pos()).Line, Owner: ownerAt(c.Pos()), Condition: conditionAt(c), Fields: map[string]string{"arguments": formatExpr(fs, c)}})
 			}
 		}

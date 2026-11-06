@@ -216,12 +216,27 @@ func TestGetExternalDiffCommand(t *testing.T) {
 }
 
 func TestCurrentDiffRendererNameWithoutDiffRenderers(t *testing.T) {
-	config := NewDiffRendererConfigManager(func() *UserConfig { return &UserConfig{} })
-
 	// Fork: an empty list is the fork default, delta or else git's own diff
 	// named "default" (fork_diff_renderers.go), so this is no longer "(default)".
-	tr := i18n.EnglishTranslationSet()
-	assert.Equal(t, "default", config.CurrentDiffRendererName(tr))
+	tests := []struct {
+		name       string
+		deltaFound bool
+		expected   string
+	}{
+		{name: "delta not on PATH", deltaFound: false, expected: "default"},
+		{name: "delta on PATH", deltaFound: true, expected: "delta"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Fork: stub the lookup so the result does not depend on the machine's PATH.
+			setForkLookPath(t, tt.deltaFound)
+			config := NewDiffRendererConfigManager(func() *UserConfig { return &UserConfig{} })
+
+			tr := i18n.EnglishTranslationSet()
+			assert.Equal(t, tt.expected, config.CurrentDiffRendererName(tr))
+		})
+	}
 }
 
 func TestCycleDiffRenderers(t *testing.T) {

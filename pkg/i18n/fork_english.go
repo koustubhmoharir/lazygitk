@@ -351,6 +351,7 @@ type ForkTranslationSet struct {
 	ErrRepoPathNotDirectory               string
 	ErrRepoPathNotGitRepo                 string
 	NoConflictedFilesSelected             string
+	ForkCannotSelfUpdate                  string
 }
 
 // forkIntroPopupMessage is the fork's first-run popup. It only says that this is
@@ -707,6 +708,7 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		ErrRepoPathNotDirectory:               "Not a directory: {{.path}}",
 		ErrRepoPathNotGitRepo:                 "Not a Git repository: {{.path}}",
 		NoConflictedFilesSelected:             "No conflicted files selected",
+		ForkCannotSelfUpdate:                  "This build of lazygitk cannot update itself. Rebuild it from source to update.",
 	}
 	set.MustExitFilterModePrompt = "Command not available while the commit log is filtered. Exit filter mode?"
 	set.IntroPopupMessage = forkIntroPopupMessage
