@@ -166,7 +166,8 @@ func (self *WorkingTreeHelper) OpenMergeTool(paths []string) error {
 			return err
 		}
 		self.c.LogAction(self.c.Tr.Actions.OpenMergeTool)
-		return self.c.RunSubprocessAndRefresh(cmd)
+		// Fork: Files refreshes after a failed tool too; see runMergeTool.
+		return self.runMergeTool(cmd)
 	}, nil)
 }
 

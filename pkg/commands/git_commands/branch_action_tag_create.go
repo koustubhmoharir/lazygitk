@@ -52,23 +52,42 @@ func (self *TagCommands) PrepareBranchActionTagCreate(target BranchActionTarget,
 	if err != nil {
 		return BranchActionTagCreatePlan{}, err
 	}
-	value, err := self.cmd.New(NewGitCmd("config").Arg("--type=bool", "--get", "tag.gpgSign").ToArgv()).SetWd(self.repoPaths.WorktreePath()).DontLog().RunWithOutput()
-	sign := false
-	if err == nil {
-		switch strings.TrimSpace(value) {
-		case "true":
-			sign = true
-		case "false":
-		default:
-			return BranchActionTagCreatePlan{}, fmt.Errorf("Git returned an invalid tag.gpgSign boolean")
-		}
-	} else if !commandExitedWithOne(err) {
+	sign, err := self.tagBoolConfig("tag.gpgSign")
+	if err != nil {
 		return BranchActionTagCreatePlan{}, err
 	}
+	// Fork: with tag.forceSignAnnotated, Git signs an annotated tag, which is one with a
+	// message, even when tag.gpgSign is off. The plan must say so, so that the tag is
+	// created in the terminal, where a signing prompt can be answered. Lightweight tags
+	// are not signed.
+	forceSignAnnotated, err := self.tagBoolConfig("tag.forceSignAnnotated")
+	if err != nil {
+		return BranchActionTagCreatePlan{}, err
+	}
+	signed := sign || (forceSignAnnotated && description != "")
 	if state.symbolic != "" {
 		return BranchActionTagCreatePlan{}, fmt.Errorf("tag destination is a symbolic ref")
 	}
-	return BranchActionTagCreatePlan{owner: self.GitCommon, target: target, name: name, description: description, configSignature: config, oldOID: state.oid, exists: state.exists, annotated: description != "" || sign, signed: sign, prepared: true}, nil
+	return BranchActionTagCreatePlan{owner: self.GitCommon, target: target, name: name, description: description, configSignature: config, oldOID: state.oid, exists: state.exists, annotated: description != "" || sign, signed: signed, prepared: true}, nil
+}
+
+// tagBoolConfig reads a boolean Git config key, which is false when the key is unset.
+func (self *TagCommands) tagBoolConfig(key string) (bool, error) {
+	value, err := self.cmd.New(NewGitCmd("config").Arg("--type=bool", "--get", key).ToArgv()).SetWd(self.repoPaths.WorktreePath()).DontLog().RunWithOutput()
+	if commandExitedWithOne(err) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	switch strings.TrimSpace(value) {
+	case "true":
+		return true, nil
+	case "false":
+		return false, nil
+	default:
+		return false, fmt.Errorf("Git returned an invalid %s boolean", key)
+	}
 }
 
 // BranchActionTagCreateCommand revalidates the reviewed snapshot before making one native Git command.

@@ -1727,19 +1727,9 @@ func (self *RefreshHelper) refreshStatus(env refreshEnv) {
 // read to decide that. The caller writes the bisect info to the model (in its
 // bounce) rather than refForLog doing it, so the model write stays on the UI
 // thread.
+// Fork: the decision is BisectCommands.LogRef, which the w v reachability check also uses.
 func (self *RefreshHelper) refForLog(env refreshEnv) (string, *git_commands.BisectInfo) {
-	bisectInfo := env.git.Bisect.GetInfo()
-
-	if !bisectInfo.Started() {
-		return "HEAD", bisectInfo
-	}
-
-	// need to see if our bisect's current commit is reachable from our 'new' ref.
-	if bisectInfo.Bisecting() && !env.git.Bisect.ReachableFromStart(bisectInfo) {
-		return bisectInfo.GetNewHash(), bisectInfo
-	}
-
-	return bisectInfo.GetStartHash(), bisectInfo
+	return env.git.Bisect.LogRef()
 }
 
 func (self *RefreshHelper) refreshView(context types.Context, env refreshEnv) {

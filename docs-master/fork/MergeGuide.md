@@ -125,8 +125,16 @@ re-apply it if upstream changes that code.
   `rebase.updateRefs=false` and disables lock retries. Every start site goes
   through `runInteractiveRebase`. `SquashAllAboveFixupCommits` and `AmendTo`
   have clean-tree preflights. New upstream rebase starts must use the wrapper.
+  `BeginInteractiveRebaseForCommit` and `BeginInteractiveRebaseForCommitRange`
+  refuse an index outside the commits list, from either bound, through
+  `requireCommitIndex` (`git_commands/fork_commit_index.go`).
 - `git_commands/patch.go` (replacement): `MovePatchIntoIndex` lost its stash
-  parameter and autostash; `MovePatchToSelectedCommit` uses the wrapper.
+  parameter and autostash; `MovePatchToSelectedCommit` uses the wrapper and
+  checks both indexes first; `PullPatchIntoNewCommitBefore` checks its index
+  before it adds one.
+- `git_commands/fork_bisect_log_ref.go` (new): `BisectCommands.LogRef` is the
+  ref the unfiltered Commits log walks. `helpers/refresh_helper.go` `refForLog`
+  and `IsCommitInCommitsLog` (`w v`) both use it.
 - `git_commands/sync.go`: `Pull` resolves `effectivePullRebasePolicy`; a
   rebasing pull checks for a clean start and passes `--no-autostash`.
 - `git_cmd_obj_runner.go` and `oscommands/cmd_obj.go`: `DisableLockRetries`
@@ -290,7 +298,9 @@ re-apply it if upstream changes that code.
   identities for Space and `x`; `x` confirms discards except the staged-side
   unstage.
 - `controllers/custom_patch_options_menu_action.go` (replacement): no stash
-  confirmation; the backend refuses a dirty tree.
+  confirmation; the backend refuses a dirty tree. The source-editing items are
+  disabled, and their handlers refuse, when the patch's source commit is not in
+  the commits list (`controllers/fork_patch_source.go`).
 - `controllers/stash_controller.go`: a new branch from a stash uses the
   entry's hash, not its shifting index.
 - `controllers/prompt_controller.go`, `helpers/confirmation_helper.go`,
@@ -353,7 +363,9 @@ launch, described under "Merge tool" below.
 - `helpers/working_tree_helper.go` `OpenMergeTool` (replacement): upstream ran
   `git mergetool` with no paths, which guesses a tool. It now takes the paths
   and launches through `WithExternalTool(ExternalToolMerge, ...)`, then
-  `RunSubprocessAndRefresh`. `CreateMergeConflictMenu` passes the files the
+  `runMergeTool` (`helpers/fork_merge_tool.go`), which refreshes Files whether
+  the tool succeeds or fails; upstream `RunSubprocessAndRefresh` skips the
+  refresh on failure. `CreateMergeConflictMenu` passes the files the
   menu was opened on. The helper takes the `ExternalToolHelper` as a
   constructor argument, wired in `pkg/gui/controllers.go`; a test fixture that
   builds the helper passes nil, which is safe as long as it does not launch.
@@ -387,6 +399,8 @@ launch, described under "Merge tool" below.
   refresh's updates (and a batch's single-frame apply), before input is
   unblocked, and only if no repo switch happened meanwhile. Unlike `Then`, it
   may be combined with `DontBlockRepoSwitch`.
+- `helpers/refresh_helper.go` `refForLog` delegates to `BisectCommands.LogRef`;
+  keep it and the `w v` check (`IsCommitInCommitsLog`) on that one decision.
 
 Upstream changes to these menus should be ported into the captured flows, not
 restored.
@@ -442,7 +456,9 @@ drafts, instead of earlier commits' messages. The behaviour is in the
   `TakeCommitMessageSubmitReporter` are fork code.
 - `controllers/local_commits_controller.go`: `handleReword` passes a rebase-path
   failure to `rewordFailure` (`controllers/fork_reword_failure.go`), which explains
-  the stopped rebase. Re-apply this if upstream changes that error path.
+  the stopped rebase. It refreshes the repository state first, as the success
+  path does, so the stopped rebase shows before input is released. Re-apply this
+  if upstream changes that error path.
 - Submissions that finish on a worker: a panel opened with
   `OpenCommitMessagePanelOpts.ReportsSubmitResult` writes the text as a draft
   before `OnConfirm`, and its `OnConfirm` takes a reporter with
@@ -628,6 +644,10 @@ the same way:
 - Per-repo config scenarios write `lazygitk.yml`.
 - Scenarios that press Space in Commits to open a commit's files press `v`
   instead; Space toggles the selection there.
+- `controllers/fork_daemon_main_test.go` adds a `TestMain` to the controllers
+  package. It handles the daemon invocation, because a test that starts a real
+  interactive rebase runs the test binary as the sequence editor. Keep one
+  `TestMain` per package when upstream adds its own.
 - `TestBackgroundDefaultsAreDerivedFromTheBackgroundColor` calls
   `themeDefaults` directly; `TestCurrentDiffRendererNameWithoutDiffRenderers`
   expects `default`.

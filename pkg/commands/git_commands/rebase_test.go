@@ -172,3 +172,27 @@ func TestRebaseDiscardOldFileChanges(t *testing.T) {
 		})
 	}
 }
+
+// A commit index outside the commits list must be refused with an error, from both
+// bounds, before any Git command runs. The runner has no expectations, so a command
+// that reached Git would fail the test.
+func TestRebaseCommitIndexOutsideCommitsIsRejected(t *testing.T) {
+	pool := &utils.StringPool{}
+	commits := []*models.Commit{
+		models.NewCommit(pool, models.NewCommitOpts{Hash: "1111111111111111111111111111111111111111"}),
+		models.NewCommit(pool, models.NewCommitOpts{Hash: "2222222222222222222222222222222222222222"}),
+	}
+	deps := commonDeps{runner: oscommands.NewFakeRunner(t), gitConfig: git_config.NewFakeGitConfig(nil)}
+	rebase := buildRebaseCommands(deps)
+
+	for _, index := range []int{-1, len(commits)} {
+		t.Run("BeginInteractiveRebaseForCommit "+strconv.Itoa(index), func(t *testing.T) {
+			assert.Error(t, rebase.BeginInteractiveRebaseForCommit(commits, index, false))
+		})
+	}
+	for _, span := range [][2]int{{-1, 0}, {0, -1}, {-1, -1}, {0, len(commits)}, {len(commits), len(commits)}} {
+		t.Run("BeginInteractiveRebaseForCommitRange "+strconv.Itoa(span[0])+".."+strconv.Itoa(span[1]), func(t *testing.T) {
+			assert.Error(t, rebase.BeginInteractiveRebaseForCommitRange(commits, span[0], span[1], false))
+		})
+	}
+}

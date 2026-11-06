@@ -434,7 +434,11 @@ func (self *RebaseCommands) SquashAllAboveFixupCommits(commit *models.Commit) er
 func (self *RebaseCommands) BeginInteractiveRebaseForCommit(
 	commits []*models.Commit, commitIndex int, keepCommitsThatBecomeEmpty bool,
 ) error {
-	if commitIndex < len(commits) && commits[commitIndex].IsMerge() {
+	// Fork: see requireCommitIndex. Both bounds are checked before commits is read.
+	if err := requireCommitIndex(commits, commitIndex); err != nil {
+		return err
+	}
+	if commits[commitIndex].IsMerge() {
 		if self.config.NeedsGpgSubprocessForCommit() {
 			return errors.New(self.Tr.DisabledForGPG)
 		}
@@ -452,8 +456,12 @@ func (self *RebaseCommands) BeginInteractiveRebaseForCommit(
 func (self *RebaseCommands) BeginInteractiveRebaseForCommitRange(
 	commits []*models.Commit, start, end int, keepCommitsThatBecomeEmpty bool,
 ) error {
-	if len(commits)-1 < end {
-		return errors.New("index outside of range of commits")
+	// Fork: see requireCommitIndex. Upstream checked only end, so a start below zero panicked.
+	if err := requireCommitIndex(commits, start); err != nil {
+		return err
+	}
+	if err := requireCommitIndex(commits, end); err != nil {
+		return err
 	}
 
 	// we can make this GPG thing possible it just means we need to do this in two parts:

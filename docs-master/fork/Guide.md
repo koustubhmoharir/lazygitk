@@ -288,7 +288,8 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   for the difftool above, and `Just this time` (the default) or `Save as Git's
   merge.tool in your global config, and use it` follows. Escape at either step
   launches nothing.
-- Files refreshes when the tool exits.
+- Files refreshes when the tool exits, whether it succeeds or fails, so a file
+  the tool resolved before it failed shows its new state.
 
 ### Branches and checkout
 
@@ -338,9 +339,10 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   the only selection. A log filter that hides it is
   removed without asking; one that shows it stays. If the side panels are in
   normal mode, or the main views are enlarged, the side panels become half
-  screen. When the log cannot show the commit at all (no branch, tag or HEAD
-  reaches it, as with some reflog entries), nothing changes and a message says
-  so.
+  screen. When the log cannot show the commit at all (no branch, tag, or the
+  ref the log walks reaches it, as with some reflog entries), nothing changes
+  and a message says so. The log walks HEAD, or during a bisect the bisect's
+  start ref, or its new ref when the start is not reachable from it.
 - While the log is filtered, commands that rewrite history offer to leave the
   filter first, as upstream's path filter does. Unlike upstream, applying or
   clearing any log filter, including a path or author filter, never changes

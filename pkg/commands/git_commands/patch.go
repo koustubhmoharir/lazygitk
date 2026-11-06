@@ -202,6 +202,14 @@ func (self *PatchCommands) DeletePatchesFromCommit(commits []*models.Commit, com
 }
 
 func (self *PatchCommands) MovePatchToSelectedCommit(commits []*models.Commit, sourceCommitIdx int, destinationCommitIdx int) error {
+	// Fork: both indexes are checked first. A source of -1 (see requireCommitIndex) must
+	// not reach the forward branch, which would apply the patch to the destination.
+	if err := requireCommitIndex(commits, sourceCommitIdx); err != nil {
+		return err
+	}
+	if err := requireCommitIndex(commits, destinationCommitIdx); err != nil {
+		return err
+	}
 	if sourceCommitIdx < destinationCommitIdx {
 		// Passing true for keepCommitsThatBecomeEmpty: if the moved-from
 		// commit becomes empty, we want to keep it, mainly for consistency with
@@ -229,10 +237,6 @@ func (self *PatchCommands) MovePatchToSelectedCommit(commits []*models.Commit, s
 
 		// continue
 		return self.rebase.ContinueRebase()
-	}
-
-	if len(commits)-1 < sourceCommitIdx {
-		return errors.New("index outside of range of commits")
 	}
 
 	// we can make this GPG thing possible it just means we need to do this in two parts:
@@ -399,6 +403,10 @@ func (self *PatchCommands) PullPatchIntoNewCommitBefore(
 	commitSummary string,
 	commitDescription string,
 ) error {
+	// Fork: checked before commitIdx+1, which would otherwise turn -1 into a valid index 0.
+	if err := requireCommitIndex(commits, commitIdx); err != nil {
+		return err
+	}
 	if err := self.rebase.BeginInteractiveRebaseForCommit(commits, commitIdx+1, true); err != nil {
 		return err
 	}

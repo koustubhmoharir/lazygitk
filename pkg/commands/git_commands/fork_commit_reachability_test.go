@@ -76,3 +76,44 @@ func TestIsCommitInCommitsLogErrors(t *testing.T) {
 	_, err = commands.IsCommitInCommitsLog(missing, true)
 	assert.Error(t, err)
 }
+
+// During a bisect the unfiltered Commits log walks the bisect start ref, not HEAD. HEAD
+// is at a midpoint, so with whole graph disabled, a tip that only the start ref reaches
+// is shown in the log and must not be refused.
+func TestIsCommitInCommitsLogFollowsBisectStart(t *testing.T) {
+	root := initHistoricalRepo(t)
+	base := branchPlacementTestCommit(t, root, "tracked", "base\n", "base")
+	branchPlacementTestCommit(t, root, "tracked", "middle\n", "middle")
+	tip := branchPlacementTestCommit(t, root, "tracked", "tip\n", "tip")
+	branch := gitTest(t, root, "symbolic-ref", "--short", "HEAD")
+
+	// A commit on a side branch that the bisect does not reach.
+	gitTest(t, root, "checkout", "-q", "-b", "side", base)
+	side := branchPlacementTestCommit(t, root, "side", "side\n", "side")
+	gitTest(t, root, "checkout", "-q", branch)
+
+	gitTest(t, root, "bisect", "start", branch, base)
+	if head := gitTest(t, root, "rev-parse", "HEAD"); head == tip {
+		t.Fatal("bisect did not move HEAD to a midpoint")
+	}
+	commands := reachabilityTestCommands(t, root)
+
+	scenarios := []struct {
+		name       string
+		hash       string
+		wholeGraph bool
+		expected   bool
+	}{
+		{name: "start ref tip, without whole graph", hash: tip, wholeGraph: false, expected: true},
+		{name: "ancestor of start ref, without whole graph", hash: base, wholeGraph: false, expected: true},
+		{name: "side branch not reached by start ref, without whole graph", hash: side, wholeGraph: false, expected: false},
+		{name: "side branch with whole graph", hash: side, wholeGraph: true, expected: true},
+	}
+	for _, s := range scenarios {
+		t.Run(s.name, func(t *testing.T) {
+			inLog, err := commands.IsCommitInCommitsLog(s.hash, s.wholeGraph)
+			assert.NoError(t, err)
+			assert.Equal(t, s.expected, inLog)
+		})
+	}
+}

@@ -54,38 +54,45 @@ func (self *CustomPatchOptionsMenuAction) Call() error {
 	}
 
 	if self.c.Git().Patch.PatchBuilder.CanRebase && self.c.Git().Status.WorkingTreeState().None() {
+		// Fork: the source-editing items are disabled when the source is not in the list;
+		// see fork_patch_source.go.
+		sourceReason := self.patchSourceDisabledReason()
 		menuItems = append(menuItems, []*types.MenuItem{
 			{
-				CommandID: "patch.remove-from-source-commit",
-				Verb:      "remove-patch-from-commit",
-				Label:     fmt.Sprintf(self.c.Tr.RemovePatchFromOriginalCommit, utils.ShortHash(self.c.Git().Patch.PatchBuilder.To)),
-				Tooltip:   self.c.Tr.RemovePatchFromOriginalCommitTooltip,
-				OnPress:   self.handleDeletePatchFromCommit,
-				Keys:      menuKey('d'),
+				CommandID:      "patch.remove-from-source-commit",
+				Verb:           "remove-patch-from-commit",
+				Label:          fmt.Sprintf(self.c.Tr.RemovePatchFromOriginalCommit, utils.ShortHash(self.c.Git().Patch.PatchBuilder.To)),
+				Tooltip:        self.c.Tr.RemovePatchFromOriginalCommitTooltip,
+				OnPress:        self.handleDeletePatchFromCommit,
+				Keys:           menuKey('d'),
+				DisabledReason: sourceReason,
 			},
 			{
-				CommandID: "patch.move-to-index",
-				Verb:      "move-patch",
-				Label:     self.c.Tr.MovePatchOutIntoIndex,
-				Tooltip:   self.c.Tr.MovePatchOutIntoIndexTooltip,
-				OnPress:   self.handleMovePatchIntoWorkingTree,
-				Keys:      menuKey('i'),
+				CommandID:      "patch.move-to-index",
+				Verb:           "move-patch",
+				Label:          self.c.Tr.MovePatchOutIntoIndex,
+				Tooltip:        self.c.Tr.MovePatchOutIntoIndexTooltip,
+				OnPress:        self.handleMovePatchIntoWorkingTree,
+				Keys:           menuKey('i'),
+				DisabledReason: sourceReason,
 			},
 			{
-				CommandID: "patch.move-to-new-commit",
-				Verb:      "move-patch",
-				Label:     self.c.Tr.MovePatchIntoNewCommit,
-				Tooltip:   self.c.Tr.MovePatchIntoNewCommitTooltip,
-				OnPress:   self.handlePullPatchIntoNewCommit,
-				Keys:      menuKey('n'),
+				CommandID:      "patch.move-to-new-commit",
+				Verb:           "move-patch",
+				Label:          self.c.Tr.MovePatchIntoNewCommit,
+				Tooltip:        self.c.Tr.MovePatchIntoNewCommitTooltip,
+				OnPress:        self.handlePullPatchIntoNewCommit,
+				Keys:           menuKey('n'),
+				DisabledReason: sourceReason,
 			},
 			{
-				CommandID: "patch.move-to-new-commit-before",
-				Verb:      "move-patch",
-				Label:     self.c.Tr.MovePatchIntoNewCommitBefore,
-				Tooltip:   self.c.Tr.MovePatchIntoNewCommitBeforeTooltip,
-				OnPress:   self.handlePullPatchIntoNewCommitBefore,
-				Keys:      menuKey('N'),
+				CommandID:      "patch.move-to-new-commit-before",
+				Verb:           "move-patch",
+				Label:          self.c.Tr.MovePatchIntoNewCommitBefore,
+				Tooltip:        self.c.Tr.MovePatchIntoNewCommitBeforeTooltip,
+				OnPress:        self.handlePullPatchIntoNewCommitBefore,
+				Keys:           menuKey('N'),
+				DisabledReason: sourceReason,
 			},
 		}...)
 
@@ -93,8 +100,8 @@ func (self *CustomPatchOptionsMenuAction) Call() error {
 			selectedCommit := self.c.Contexts().LocalCommits.GetSelected()
 			if selectedCommit != nil && self.c.Git().Patch.PatchBuilder.To != selectedCommit.Hash() {
 
-				var disabledReason *types.DisabledReason
-				if self.c.Contexts().LocalCommits.AreMultipleItemsSelected() {
+				disabledReason := sourceReason
+				if disabledReason == nil && self.c.Contexts().LocalCommits.AreMultipleItemsSelected() {
 					disabledReason = &types.DisabledReason{Text: self.c.Tr.RangeSelectNotSupported}
 				}
 
@@ -143,7 +150,11 @@ func (self *CustomPatchOptionsMenuAction) getPatchCommitIndex() int {
 
 func (self *CustomPatchOptionsMenuAction) handleDeletePatchFromCommit() error {
 	commits := self.c.Model().Commits
-	commitIndex := self.getPatchCommitIndex()
+	// Fork: refuses when the source is not in the list; see fork_patch_source.go.
+	commitIndex, err := self.patchSourceCommitIndex()
+	if err != nil {
+		return err
+	}
 	return self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(gocui.Task) error {
 		self.c.LogAction(self.c.Tr.Actions.RemovePatchFromCommit)
 		err := self.c.Git().Patch.DeletePatchesFromCommit(commits, commitIndex)
@@ -153,7 +164,11 @@ func (self *CustomPatchOptionsMenuAction) handleDeletePatchFromCommit() error {
 
 func (self *CustomPatchOptionsMenuAction) handleMovePatchToSelectedCommit() error {
 	commits := self.c.Model().Commits
-	commitIndex := self.getPatchCommitIndex()
+	// Fork: refuses when the source is not in the list; see fork_patch_source.go.
+	commitIndex, err := self.patchSourceCommitIndex()
+	if err != nil {
+		return err
+	}
 	toCommitIndex := self.c.Contexts().LocalCommits.GetSelectedLineIdx()
 	return self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(gocui.Task) error {
 		self.c.LogAction(self.c.Tr.Actions.MovePatchToSelectedCommit)
@@ -164,7 +179,11 @@ func (self *CustomPatchOptionsMenuAction) handleMovePatchToSelectedCommit() erro
 
 func (self *CustomPatchOptionsMenuAction) handleMovePatchIntoWorkingTree() error {
 	commits := self.c.Model().Commits
-	commitIndex := self.getPatchCommitIndex()
+	// Fork: refuses when the source is not in the list; see fork_patch_source.go.
+	commitIndex, err := self.patchSourceCommitIndex()
+	if err != nil {
+		return err
+	}
 	// This replaces the upstream stash confirmation; the backend clean check
 	// reports that changes must be committed before patch movement can rebase.
 	return self.c.WithWaitingStatus(self.c.Tr.RebasingStatus, func(gocui.Task) error {
@@ -175,7 +194,11 @@ func (self *CustomPatchOptionsMenuAction) handleMovePatchIntoWorkingTree() error
 }
 
 func (self *CustomPatchOptionsMenuAction) handlePullPatchIntoNewCommit() error {
-	commitIndex := self.getPatchCommitIndex()
+	// Fork: refuses when the source is not in the list; see fork_patch_source.go.
+	commitIndex, err := self.patchSourceCommitIndex()
+	if err != nil {
+		return err
+	}
 	self.c.Helpers().Commits.OpenCommitMessagePanel(
 		&helpers.OpenCommitMessagePanelOpts{
 			// Pass a commit index of one less than the moved-from commit, so that
@@ -214,7 +237,11 @@ func (self *CustomPatchOptionsMenuAction) handlePullPatchIntoNewCommit() error {
 }
 
 func (self *CustomPatchOptionsMenuAction) handlePullPatchIntoNewCommitBefore() error {
-	commitIndex := self.getPatchCommitIndex()
+	// Fork: refuses when the source is not in the list; see fork_patch_source.go.
+	commitIndex, err := self.patchSourceCommitIndex()
+	if err != nil {
+		return err
+	}
 	self.c.Helpers().Commits.OpenCommitMessagePanel(
 		&helpers.OpenCommitMessagePanelOpts{
 			// Pass a commit index of one less than the moved-from commit, so that

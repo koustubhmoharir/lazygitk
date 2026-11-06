@@ -257,3 +257,39 @@ func TestBranchActionTagCreateHeadTarget(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+// tag.forceSignAnnotated makes Git sign annotated tags, so such a tag must be planned as
+// signed and sent to the terminal. Lightweight tags are not annotated, so they are not signed.
+func TestBranchActionTagCreateForceSignAnnotated(t *testing.T) {
+	root, _, second := transactionHistory(t)
+	branch := gitTest(t, root, "symbolic-ref", "--short", "HEAD")
+	commands := transactionCommands(t, root)
+	target, err := commands.PrepareBranchActionTarget("refs/heads/"+branch, second)
+	if !assert.NoError(t, err) {
+		return
+	}
+	tags := NewTagCommands(commands.GitCommon)
+
+	gitTest(t, root, "config", "tag.forceSignAnnotated", "true")
+	annotated, err := tags.PrepareBranchActionTagCreate(target, "forced-annotated", "message")
+	if assert.NoError(t, err) {
+		assert.True(t, annotated.Annotated())
+		assert.True(t, annotated.Signed(), "tag.forceSignAnnotated signs an annotated tag")
+	}
+	lightweight, err := tags.PrepareBranchActionTagCreate(target, "forced-lightweight", "")
+	if assert.NoError(t, err) {
+		assert.False(t, lightweight.Annotated())
+		assert.False(t, lightweight.Signed(), "a lightweight tag is not signed")
+	}
+
+	gitTest(t, root, "config", "tag.forceSignAnnotated", "false")
+	unforced, err := tags.PrepareBranchActionTagCreate(target, "unforced-annotated", "message")
+	if assert.NoError(t, err) {
+		assert.True(t, unforced.Annotated())
+		assert.False(t, unforced.Signed())
+	}
+
+	gitTest(t, root, "config", "tag.forceSignAnnotated", "not-a-bool")
+	_, err = tags.PrepareBranchActionTagCreate(target, "invalid-force-sign", "message")
+	assert.Error(t, err)
+}
