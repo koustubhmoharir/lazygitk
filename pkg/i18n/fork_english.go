@@ -116,6 +116,7 @@ type ForkTranslationSet struct {
 	ClearCommitSelection                  string
 	NoCommitsSelected                     string
 	ClearCommitSelectionFirst             string
+	PrefixNothingAvailableNow             string
 	CommitSetCount                        string
 	CommitSetCountNotShown                string
 	CommitSetMissingNotice                string
@@ -519,6 +520,7 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		ClearCommitSelection:                  "Clear selection",
 		NoCommitsSelected:                     "No commits selected",
 		ClearCommitSelectionFirst:             "Clear the selection first (Escape)",
+		PrefixNothingAvailableNow:             "Nothing here is available now",
 		CommitSetCount:                        "%d selected",
 		CommitSetCountNotShown:                "%d selected, %d not shown",
 		CommitSetMissingNotice:                "These selected commits no longer exist, so they were removed from the selection: %s",

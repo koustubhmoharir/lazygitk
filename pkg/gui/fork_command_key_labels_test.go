@@ -83,3 +83,45 @@ func TestForkCommandKeyLabelsRecomputeAfterRebinding(t *testing.T) {
 		t.Fatalf("stale label after rebinding: %q", got)
 	}
 }
+
+func TestForkCommandKeyLabelsOmitDescendantsHiddenByExplicitLeaf(t *testing.T) {
+	key := func(r rune) gocui.Key { return gocui.NewKeyRune(r) }
+	quit := &types.Binding{CommandID: "app.quit", Keys: []gocui.Key{key('t')}}
+	increase := &types.Binding{CommandID: "diff.context.increase", DefaultCommand: true, CommandPaths: [][]gocui.Key{{key('t'), key('d'), key('+')}}}
+	gui := &Gui{}
+	gui.setForkCommandBindings([]*types.Binding{quit, increase}, nil)
+	if got := gui.commandKeyLabel("diff.context.increase", "files"); got != "" {
+		t.Fatalf("unreachable default descendant advertised: %q", got)
+	}
+	if got := gui.commandKeyLabel("app.quit", "files"); got != "t" {
+		t.Fatalf("explicit leaf label=%q", got)
+	}
+
+	// An explicit descendant keeps the visible choice, as in dispatch.
+	explicit := &types.Binding{CommandID: "diff.context.increase", CommandPaths: [][]gocui.Key{{key('t'), key('d'), key('+')}}}
+	gui.setForkCommandBindings([]*types.Binding{quit, explicit}, nil)
+	if got := gui.commandKeyLabel("diff.context.increase", "files"); got != "t d +" {
+		t.Fatalf("explicit descendant hidden: %q", got)
+	}
+}
+
+func TestForkCommandKeyLabelsAgreeWithDisplayRoutes(t *testing.T) {
+	key := func(r rune) gocui.Key { return gocui.NewKeyRune(r) }
+	leaf := &types.Binding{CommandID: "explicit", ViewName: "files", Keys: []gocui.Key{key('g')}}
+	// g a is hidden by the explicit leaf g, h is claimed by a custom root, and k survives.
+	child := &types.Binding{CommandID: "default", ViewName: "files", DefaultCommand: true, CommandPaths: [][]gocui.Key{{key('g'), key('a')}, {key('h')}, {key('k')}}}
+	custom := &types.Binding{CommandID: "custom.x", Keys: []gocui.Key{key('h')}}
+	core := []*types.Binding{leaf, child}
+
+	labels := forkCommandLabelsForView(core, []*types.Binding{custom}, "files")
+	if got := labels["default"]; got != "k" {
+		t.Fatalf("label=%q, want the surviving route k", got)
+	}
+	for _, binding := range effectiveForkDisplayBindings(append([]*types.Binding{custom}, core...), "files") {
+		if binding.CommandID == "default" {
+			if labels := binding.KeyLabels(); len(labels) != 1 || labels[0] != "k" {
+				t.Fatalf("display shows %v, labels show k", labels)
+			}
+		}
+	}
+}

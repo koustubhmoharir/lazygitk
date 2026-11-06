@@ -22,6 +22,9 @@ type (
 		restored    func() bool
 		openMenu    func(types.CreateMenuOptions) error
 		invoke      func(*types.Binding) error
+		// unavailable is the reason for a continuation whose leaves are all
+		// disabled for different reasons.
+		unavailable string
 	}
 )
 
@@ -76,29 +79,46 @@ func (flow *forkPrefixFlow) invokeLeaf(binding *types.Binding, fallbacks []*type
 }
 
 func forkApplicableBindings(bindings []*types.Binding) []*types.Binding {
-	var applicable, explicit []*types.Binding
+	return forkOwnersWhere(bindings, forkApplicableNow)
+}
+
+// forkApplicableNow evaluates live applicability. A failed precondition still
+// counts as applicable, so that its reason can be shown; only an inapplicable
+// default is dropped.
+func forkApplicableNow(binding *types.Binding) bool {
+	if binding.CommandActive != nil && !binding.CommandActive() {
+		return false
+	}
+	if binding.GetDisabledReason != nil {
+		if reason := binding.GetDisabledReason(); reason != nil && (reason.Inapplicable || reason.AllowFurtherDispatching) && binding.DefaultCommand {
+			return false
+		}
+	}
+	return true
+}
+
+// forkOwnersWhere returns the bindings that own a prefix node: those accepted
+// by applicable, where an explicit binding hides default ones and aliases of
+// one command collapse to the first.
+func forkOwnersWhere(bindings []*types.Binding, applicable func(*types.Binding) bool) []*types.Binding {
+	var owners, explicit []*types.Binding
 	for _, binding := range bindings {
-		if binding.CommandActive != nil && !binding.CommandActive() {
+		if !applicable(binding) {
 			continue
 		}
-		if binding.GetDisabledReason != nil {
-			if reason := binding.GetDisabledReason(); reason != nil && (reason.Inapplicable || reason.AllowFurtherDispatching) && binding.DefaultCommand {
-				continue
-			}
-		}
-		applicable = append(applicable, binding)
+		owners = append(owners, binding)
 		if !binding.DefaultCommand {
 			explicit = append(explicit, binding)
 		}
 	}
 	if len(explicit) > 0 {
-		applicable = explicit
+		owners = explicit
 	}
 	// Several upstream entry points may be aliases of one semantic action.
 	// Explicit routes win before coalescing so an alias cannot hide an override.
-	seen := make(map[string]bool, len(applicable))
-	result := applicable[:0]
-	for _, binding := range applicable {
+	seen := make(map[string]bool, len(owners))
+	result := owners[:0]
+	for _, binding := range owners {
 		id := binding.GetCommandID()
 		if id != "" && seen[id] {
 			continue
@@ -151,6 +171,60 @@ func forkTreeHasApplicable(tree *keymap.CommandTree) bool {
 		}
 	}
 	return false
+}
+
+// forkContinuationLeaves lists the applicable leaves below a continuation, as
+// flow.run would reach them: an applicable explicit leaf hides default
+// descendants unless the subtree has explicit ones too.
+func forkContinuationLeaves(tree *keymap.CommandTree) []*types.Binding {
+	leaves := forkApplicableBindings(tree.Bindings)
+	if len(leaves) > 0 && !leaves[0].DefaultCommand && !forkExplicitDescendants(tree) {
+		return leaves
+	}
+	for _, edge := range tree.Children {
+		leaves = append(leaves, forkContinuationLeaves(edge.Tree)...)
+	}
+	return leaves
+}
+
+// forkContinuationState gives a continuation row the disabled reason and
+// tooltip of the leaves it reaches, evaluated when its menu is shown. A single
+// leaf projects its own. Several leaves are unavailable only when every one is:
+// they share their reason if it is identical, and otherwise get the generic
+// unavailable text, which is faded only when all of them are inapplicable.
+func forkContinuationState(leaves []*types.Binding, unavailable string) (*types.DisabledReason, string) {
+	switch len(leaves) {
+	case 0:
+		return nil, ""
+	case 1:
+		var reason *types.DisabledReason
+		if leaves[0].GetDisabledReason != nil {
+			reason = leaves[0].GetDisabledReason()
+		}
+		return reason, leaves[0].GetTooltip()
+	}
+	var shared *types.DisabledReason
+	uniform, allInapplicable := true, true
+	for _, leaf := range leaves {
+		if leaf.GetDisabledReason == nil {
+			return nil, ""
+		}
+		reason := leaf.GetDisabledReason()
+		if reason == nil {
+			return nil, ""
+		}
+		allInapplicable = allInapplicable && reason.Inapplicable
+		if shared == nil {
+			shared = reason
+		} else if *reason != *shared {
+			uniform = false
+		}
+	}
+	if uniform {
+		copied := *shared
+		return &copied, ""
+	}
+	return &types.DisabledReason{Text: unavailable, Inapplicable: allInapplicable}, ""
 }
 
 func forkExplicitDescendants(tree *keymap.CommandTree) bool {
@@ -208,10 +282,14 @@ func (flow *forkPrefixFlow) show(tree *keymap.CommandTree, bindings []*types.Bin
 			continue
 		}
 		nextPath := append(append([]gocui.Key(nil), path...), edge.Key)
+		// Fork: a continuation shows the state of the leaves it reaches, as a
+		// direct leaf does, so a failed precondition is crossed out here too.
+		disabled, tooltip := forkContinuationState(forkContinuationLeaves(edge.Tree), flow.unavailable)
 		items = append(items, &types.MenuItem{
 			CommandID: "menu.command-prefix", Verb: "discover-commands",
 			Label: forkPrefixDescription(edge.Tree), Keys: []gocui.Key{edge.Key},
-			OpensMenu: len(edge.Tree.Children) > 0,
+			OpensMenu:      len(edge.Tree.Children) > 0,
+			DisabledReason: disabled, Tooltip: tooltip,
 			OnPress: func() error {
 				if !take() {
 					return nil

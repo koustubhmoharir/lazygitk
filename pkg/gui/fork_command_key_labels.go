@@ -1,16 +1,17 @@
 package gui
 
 import (
-	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/keymap"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 )
 
 // forkCommandLabelsForView maps each command ID to the label of its shortest
 // effective route in view (ties go to the first route in walk order). Routes
-// whose first key is claimed by a custom binding for the view or globally are
-// skipped, as they cannot be reached. Modal views do not use command paths, so
-// their labels come from the first native key of the core binding.
+// are those of the display projection (forkEffectiveRoutes), so a route hidden
+// by an explicit leaf is not advertised, and a route whose first key is claimed
+// by a custom binding for the view or globally is skipped. Modal views do not
+// use command paths, so their labels come from the first native key of the core
+// binding.
 func forkCommandLabelsForView(core, custom []*types.Binding, view string) map[string]string {
 	labels := make(map[string]string)
 	if !forkCommandView(view) {
@@ -28,35 +29,35 @@ func forkCommandLabelsForView(core, custom []*types.Binding, view string) map[st
 		return labels
 	}
 
-	claimed := make(map[gocui.Key]bool)
+	var customs []*types.Binding
 	for _, binding := range custom {
 		if binding.ViewName == "" || binding.ViewName == view {
-			for _, key := range binding.Keys {
-				claimed[key] = true
-			}
+			customs = append(customs, binding)
 		}
 	}
+	claimed := forkCustomClaims(customs)
 	shortest := make(map[string]int)
-	var walk func(*keymap.CommandTree, []gocui.Key)
-	walk = func(node *keymap.CommandTree, path []gocui.Key) {
-		if len(path) > 0 && claimed[path[0]] {
-			return
+	// Labels are cached per keybinding reset and read from worker goroutines, so
+	// they cannot evaluate live applicability; forkStaticallyApplicable is used.
+	for _, route := range forkEffectiveRoutes(keymap.BuildCommandTree(core, view), forkStaticallyApplicable) {
+		if len(route.path) > 0 && claimed[route.path[0]] {
+			continue
 		}
-		for _, binding := range node.Bindings {
-			length, seen := shortest[binding.CommandID]
-			if seen && length <= len(path) {
-				continue
-			}
-			shortest[binding.CommandID] = len(path)
-			labels[binding.CommandID] = types.CommandPathLabel(path)
+		id := route.binding.CommandID
+		length, seen := shortest[id]
+		if seen && length <= len(route.path) {
+			continue
 		}
-		for _, edge := range node.Children {
-			next := append(append([]gocui.Key(nil), path...), edge.Key)
-			walk(edge.Tree, next)
-		}
+		shortest[id] = len(route.path)
+		labels[id] = types.CommandPathLabel(route.path)
 	}
-	walk(keymap.BuildCommandTree(core, view), nil)
 	return labels
+}
+
+// forkStaticallyApplicable counts every binding as applicable. Labels describe
+// the routes that the configuration makes, not the ones available at this moment.
+func forkStaticallyApplicable(*types.Binding) bool {
+	return true
 }
 
 // commandKeyLabel returns the effective label of commandID in view, falling back

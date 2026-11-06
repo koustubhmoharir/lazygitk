@@ -46,25 +46,9 @@ func buildForkCommandTree(bindings []*types.Binding, view string) forkCommandTre
 // mode. It returns fresh copies and never mutates bindings or the tree.
 func (structure forkCommandTree) displayBindings(bindings []*types.Binding, view string) []*types.Binding {
 	effective := make(map[*types.Binding][][]gocui.Key)
-	var walk func(*keymap.CommandTree, []gocui.Key)
-	walk = func(node *keymap.CommandTree, path []gocui.Key) {
-		active := forkApplicableBindings(node.Bindings)
-		leaf := len(active) > 0 && !active[0].DefaultCommand
-		if leaf && !forkExplicitDescendants(node) {
-			for _, binding := range node.Bindings {
-				effective[binding] = append(effective[binding], append([]gocui.Key(nil), path...))
-			}
-			return
-		}
-		for _, binding := range node.Bindings {
-			effective[binding] = append(effective[binding], append([]gocui.Key(nil), path...))
-		}
-		for _, edge := range node.Children {
-			next := append(append([]gocui.Key(nil), path...), edge.Key)
-			walk(edge.Tree, next)
-		}
+	for _, route := range forkEffectiveRoutes(structure.tree, forkApplicableNow) {
+		effective[route.binding] = append(effective[route.binding], route.path)
 	}
-	walk(structure.tree, nil)
 
 	result := make([]*types.Binding, 0, len(bindings))
 	var eligibleCustoms, eligibleCore []*types.Binding
@@ -90,6 +74,37 @@ func (structure forkCommandTree) displayBindings(bindings []*types.Binding, view
 	}
 	clearForkPathsShadowedByCustoms(eligibleCore, eligibleCustoms)
 	return result
+}
+
+// forkRoute is one path by which dispatch reaches a binding.
+type forkRoute struct {
+	binding *types.Binding
+	path    []gocui.Key
+}
+
+// forkEffectiveRoutes is the one traversal of prefix ownership, in walk order.
+// Every binding of a node is routed at that node's path. An owner at a node
+// (applicable under the given rule) hides the node's default descendants unless
+// the subtree has explicit ones too, as forkPrefixFlow.run does. The rule
+// decides who owns: live applicability for the display projection, and a
+// static one for command labels (see forkCommandLabelsForView).
+func forkEffectiveRoutes(tree *keymap.CommandTree, applicable func(*types.Binding) bool) []forkRoute {
+	var routes []forkRoute
+	var walk func(*keymap.CommandTree, []gocui.Key)
+	walk = func(node *keymap.CommandTree, path []gocui.Key) {
+		for _, binding := range node.Bindings {
+			routes = append(routes, forkRoute{binding: binding, path: append([]gocui.Key(nil), path...)})
+		}
+		owners := forkOwnersWhere(node.Bindings, applicable)
+		if len(owners) > 0 && !owners[0].DefaultCommand && !forkExplicitDescendants(node) {
+			return
+		}
+		for _, edge := range node.Children {
+			walk(edge.Tree, append(append([]gocui.Key(nil), path...), edge.Key))
+		}
+	}
+	walk(tree, nil)
+	return routes
 }
 
 func cloneForkBinding(binding *types.Binding) *types.Binding {
@@ -161,12 +176,14 @@ func equalForkDisplayPath(first, second []gocui.Key) bool {
 	return true
 }
 
-// Custom command roots use native exact event matching. Preserve case
-// distinctions here, matching the custom dispatcher rather than core routing.
-func clearForkPathsShadowedByCustoms(bindings, customs []*types.Binding) {
+// forkCustomClaims returns the keys that custom command roots claim. Custom
+// roots use native exact event matching, so their case is preserved here,
+// matching the custom dispatcher rather than core routing. Mouse keys are not
+// claimed.
+func forkCustomClaims(customs []*types.Binding) map[gocui.Key]bool {
 	claimed := make(map[gocui.Key]bool)
 	for _, binding := range customs {
-		if binding == nil || !strings.HasPrefix(binding.GetCommandID(), "custom.") {
+		if binding == nil {
 			continue
 		}
 		for _, key := range binding.Keys {
@@ -175,6 +192,11 @@ func clearForkPathsShadowedByCustoms(bindings, customs []*types.Binding) {
 			}
 		}
 	}
+	return claimed
+}
+
+func clearForkPathsShadowedByCustoms(bindings, customs []*types.Binding) {
+	claimed := forkCustomClaims(customs)
 	for _, binding := range bindings {
 		if binding == nil || strings.HasPrefix(binding.GetCommandID(), "custom.") {
 			continue

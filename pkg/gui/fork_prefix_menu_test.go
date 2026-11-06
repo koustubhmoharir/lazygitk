@@ -32,6 +32,7 @@ func (h *forkPrefixMenuHarness) flow() *forkPrefixFlow {
 			h.invoked = append(h.invoked, binding)
 			return nil
 		},
+		unavailable: "Nothing here is available now",
 	}
 }
 
@@ -437,4 +438,132 @@ func TestForkPrefixWithNoApplicableActionOpensNoMenu(t *testing.T) {
 	}
 	assert.Empty(t, h.menus)
 	assert.Empty(t, h.invoked)
+}
+
+func forkPrefixDisabled(text string, tooltip string) *types.Binding {
+	return &types.Binding{
+		CommandID: text, Description: text, Tooltip: tooltip,
+		GetDisabledReason: func() *types.DisabledReason { return &types.DisabledReason{Text: text} },
+	}
+}
+
+func forkPrefixItem(t *testing.T, opts types.CreateMenuOptions, key gocui.Key) *types.MenuItem {
+	t.Helper()
+	for _, item := range opts.Items {
+		if len(item.Keys) == 1 && item.Keys[0].Equals(key) {
+			return item
+		}
+	}
+	t.Fatalf("no menu row for key %v", key)
+	return nil
+}
+
+func TestForkPrefixContinuationRowsCarryLeafDisabledState(t *testing.T) {
+	x, y, p := gocui.NewKeyRune('x'), gocui.NewKeyRune('y'), gocui.NewKeyRune('p')
+	disabled := forkPrefixDisabled("No branch was checked out before the current one.", "Switch to previous branch")
+	enabled := forkPrefixBinding("enabled")
+	// A disabled direct continuation (p) beside an enabled sibling (y).
+	group := &keymap.CommandTree{Children: []keymap.CommandEdge{
+		{Key: p, Tree: &keymap.CommandTree{Bindings: []*types.Binding{disabled}}},
+		{Key: y, Tree: &keymap.CommandTree{Bindings: []*types.Binding{enabled}}},
+	}}
+	h := &forkPrefixMenuHarness{valid: true}
+	if err := h.flow().run(group, []gocui.Key{x}, nil); err != nil {
+		t.Fatal(err)
+	}
+	menu := h.menus[0]
+	row := forkPrefixItem(t, menu, p)
+	if row.DisabledReason == nil || row.DisabledReason.Text != "No branch was checked out before the current one." || row.DisabledReason.Inapplicable {
+		t.Fatalf("disabled continuation lost its reason: %+v", row.DisabledReason)
+	}
+	if row.Tooltip != "Switch to previous branch" {
+		t.Fatalf("disabled continuation lost its tooltip: %q", row.Tooltip)
+	}
+	if sibling := forkPrefixItem(t, menu, y); sibling.DisabledReason != nil {
+		t.Fatalf("enabled sibling was disabled: %+v", sibling.DisabledReason)
+	}
+}
+
+func TestForkPrefixContinuationRowsForSeveralLeaves(t *testing.T) {
+	s, p, q, r := gocui.NewKeyRune('s'), gocui.NewKeyRune('p'), gocui.NewKeyRune('q'), gocui.NewKeyRune('r')
+	sameA := forkPrefixDisabled("Clear the selection first (Escape)", "")
+	sameB := forkPrefixDisabled("Clear the selection first (Escape)", "")
+	other := forkPrefixDisabled("Nothing is checked out", "")
+	enabled := forkPrefixBinding("enabled")
+	cases := []struct {
+		name    string
+		leaves  []*types.Binding
+		want    string
+		wantRow bool
+	}{
+		{name: "all disabled with the same reason", leaves: []*types.Binding{sameA, sameB}, want: "Clear the selection first (Escape)", wantRow: true},
+		{name: "all disabled with different reasons", leaves: []*types.Binding{sameA, other}, want: "Nothing here is available now", wantRow: true},
+		{name: "mixed with an enabled leaf", leaves: []*types.Binding{sameA, enabled}, wantRow: false},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			// The row s groups the leaves p and q under a nested menu.
+			group := &keymap.CommandTree{Children: []keymap.CommandEdge{
+				{Key: p, Tree: &keymap.CommandTree{Bindings: []*types.Binding{tc.leaves[0]}}},
+				{Key: q, Tree: &keymap.CommandTree{Bindings: []*types.Binding{tc.leaves[1]}}},
+			}}
+			tree := &keymap.CommandTree{Children: []keymap.CommandEdge{{Key: s, Tree: group}, {Key: r, Tree: &keymap.CommandTree{Bindings: []*types.Binding{forkPrefixBinding("other")}}}}}
+			h := &forkPrefixMenuHarness{valid: true}
+			if err := h.flow().run(tree, nil, nil); err != nil {
+				t.Fatal(err)
+			}
+			row := forkPrefixItem(t, h.menus[0], s)
+			if !tc.wantRow {
+				if row.DisabledReason != nil {
+					t.Fatalf("row with an enabled leaf is disabled: %+v", row.DisabledReason)
+				}
+				return
+			}
+			if row.DisabledReason == nil || row.DisabledReason.Text != tc.want || row.DisabledReason.Inapplicable {
+				t.Fatalf("row reason=%+v, want %q as a failed precondition", row.DisabledReason, tc.want)
+			}
+		})
+	}
+}
+
+func TestForkPrefixContinuationRowFadesOnlyWhenAllLeavesAreInapplicable(t *testing.T) {
+	inapplicable := func(text string) *types.Binding {
+		return &types.Binding{CommandID: text, Description: text, GetDisabledReason: func() *types.DisabledReason {
+			return &types.DisabledReason{Text: text, Inapplicable: true}
+		}}
+	}
+	group := &keymap.CommandTree{Children: []keymap.CommandEdge{
+		{Key: gocui.NewKeyRune('p'), Tree: &keymap.CommandTree{Bindings: []*types.Binding{inapplicable("one")}}},
+		{Key: gocui.NewKeyRune('q'), Tree: &keymap.CommandTree{Bindings: []*types.Binding{inapplicable("two")}}},
+	}}
+	tree := &keymap.CommandTree{Children: []keymap.CommandEdge{{Key: gocui.NewKeyRune('s'), Tree: group}}}
+	h := &forkPrefixMenuHarness{valid: true}
+	if err := h.flow().run(tree, nil, nil); err != nil {
+		t.Fatal(err)
+	}
+	row := forkPrefixItem(t, h.menus[0], gocui.NewKeyRune('s'))
+	if row.DisabledReason == nil || !row.DisabledReason.Inapplicable {
+		t.Fatalf("inapplicable leaves should give a faded generic row: %+v", row.DisabledReason)
+	}
+}
+
+func TestForkPrefixContinuationReasonIsEvaluatedWhenShown(t *testing.T) {
+	var reason *types.DisabledReason
+	leaf := &types.Binding{CommandID: "leaf", Description: "leaf", GetDisabledReason: func() *types.DisabledReason { return reason }}
+	tree := &keymap.CommandTree{Children: []keymap.CommandEdge{{Key: gocui.NewKeyRune('s'), Tree: &keymap.CommandTree{Bindings: []*types.Binding{leaf}}}}}
+	h := &forkPrefixMenuHarness{valid: true}
+	if err := h.flow().run(tree, nil, nil); err != nil {
+		t.Fatal(err)
+	}
+	if row := forkPrefixItem(t, h.menus[0], gocui.NewKeyRune('s')); row.DisabledReason != nil {
+		t.Fatalf("enabled leaf reported as disabled: %+v", row.DisabledReason)
+	}
+	reason = &types.DisabledReason{Text: "now failing"}
+	h = &forkPrefixMenuHarness{valid: true}
+	if err := h.flow().run(tree, nil, nil); err != nil {
+		t.Fatal(err)
+	}
+	if row := forkPrefixItem(t, h.menus[0], gocui.NewKeyRune('s')); row.DisabledReason == nil || row.DisabledReason.Text != "now failing" {
+		t.Fatalf("reason not evaluated when the menu is shown: %+v", row.DisabledReason)
+	}
 }

@@ -93,6 +93,7 @@ func (gui *Gui) startForkCommand(node *keymap.CommandTree, key gocui.Key) error 
 		restored:    func() bool { return gui.State.ContextMgr.Current() == origin.context },
 		openMenu:    gui.createMenu,
 		invoke:      gui.callKeybindingHandler,
+		unavailable: gui.Tr.PrefixNothingAvailableNow,
 	}
 	gui.invalidateForkPrefix()
 	gui.forkPrefix = flow
