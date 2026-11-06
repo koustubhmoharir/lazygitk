@@ -51,6 +51,16 @@ func resetModeBegin(t *testing.T, f *namedCheckoutFixture, ui *capturedResetTest
 	if err := ui.runUI(t); err != nil {
 		t.Fatal(err)
 	}
+	if mode == "hard" {
+		// A hard reset first lists the untracked and ignored files at risk on a
+		// worker, then confirms on the UI thread.
+		if err := ui.runWorker(t); err != nil {
+			t.Fatal(err)
+		}
+		if err := ui.runUI(t); err != nil {
+			t.Fatal(err)
+		}
+	}
 	if len(ui.confirms) != 1 {
 		t.Fatalf("confirm count = %d, want 1", len(ui.confirms))
 	}
