@@ -66,18 +66,9 @@ func (self *SyncCommands) fetchCommandBuilder(fetchAll bool) *GitCommandBuilder 
 		Arg("--no-write-fetch-head")
 }
 
-func (self *SyncCommands) FetchCmdObj(task gocui.Task) *oscommands.CmdObj {
-	cmdArgs := self.fetchCommandBuilder(self.UserConfig().Git.FetchAll).ToArgv()
-
-	cmdObj := self.cmd.New(cmdArgs)
-	cmdObj.PromptOnCredentialRequest(task)
-	return cmdObj
-}
-
-func (self *SyncCommands) Fetch(task gocui.Task) error {
-	return self.FetchCmdObj(task).Run()
-}
-
+// Fork: the foreground fetch no longer reads git.fetchAll. The global f and
+// "Fetch all remotes" run FetchRemote or FetchAllRemotes (fork_fetch.go), so
+// only automatic fetch below still follows git.fetchAll.
 func (self *SyncCommands) FetchBackgroundCmdObj() *oscommands.CmdObj {
 	cmdArgs := self.fetchCommandBuilder(self.UserConfig().Git.FetchAll).ToArgv()
 

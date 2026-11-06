@@ -25,6 +25,10 @@ type BackgroundRoutineMgr struct {
 
 	// a channel to trigger an immediate background fetch; we use this when switching repos
 	triggerFetch chan struct{}
+
+	// Fork: remembers that the one-time notice about skipped fetches was shown
+	// (fork_background_fetch.go).
+	forkFetchGuard forkBackgroundFetchGuard
 }
 
 func (self *BackgroundRoutineMgr) PauseBackgroundRefreshes(pause bool) {
@@ -261,6 +265,12 @@ func (self *BackgroundRoutineMgr) goEvery(interval time.Duration, stop, retrigge
 // repos, and the post-fetch refresh needs to be able to tell (see
 // PostFetchRefresh).
 func (self *BackgroundRoutineMgr) backgroundFetch(git *commands.GitCommand, branchesHelper *helpers.BranchesHelper, fetchGeneration int) error {
+	// Fork: automatic fetch cannot ask, so it skips a remote whose refspecs write
+	// into local branches, and says so once per session (fork_background_fetch.go).
+	if self.forkSkipBackgroundFetch(git) {
+		return nil
+	}
+
 	err := git.Sync.FetchBackground()
 
 	return branchesHelper.PostFetchRefresh(err, true, fetchGeneration)

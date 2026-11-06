@@ -32,9 +32,10 @@ Order is roughly by risk. Each batch is one Haiku subagent task under
 
 ## 2. UX questions for the user (answered 2026-11-06; see docs-master/fork/Tracker.md "Decisions")
 
-- **U1 (05-F4) Fetch in Remotes.** The Guide says `f` fetches every remote from
-  any pane. In Remotes, `f` currently fetches only the selected remote, and
-  `git.fetchAll: false` drops `--all` everywhere.
+- **Fixed** U1 (05-F4) Fetch in Remotes. `f` fetches the primary remote and asks
+  when there are several; Remotes fetches the selected remote; "Fetch all remotes"
+  is in the palette; `git.fetchAll` no longer affects `f`. Refspecs that write local
+  branches are confirmed before any fetch.
 - **U2 (10-F1) Selected commits hidden by a filter.** Today filtering silently
   drops hidden commits from the selection, and when none remain, commands act on
   the cursor again.

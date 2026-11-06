@@ -373,7 +373,16 @@ func (self *RemotesController) fetch(remote *models.Remote) error {
 	return self.fetchAndCheckout(remote, "")
 }
 
+// Fork: every fetch from Remotes, including the ones that check out a branch
+// afterwards, first shows the remote's refspecs that write into local branches
+// (fork_fetch.go).
 func (self *RemotesController) fetchAndCheckout(remote *models.Remote, branchName string) error {
+	return forkReviewFetchRefspecs(self.c, []string{remote.Name}, func() error {
+		return self.fetchAndCheckoutReviewed(remote, branchName)
+	})
+}
+
+func (self *RemotesController) fetchAndCheckoutReviewed(remote *models.Remote, branchName string) error {
 	return self.c.WithInlineStatus(remote, types.ItemOperationFetching, context.REMOTES_CONTEXT_KEY, func(task gocui.Task) error {
 		err := self.c.Git().Sync.FetchRemote(task, remote.Name)
 		if err != nil {

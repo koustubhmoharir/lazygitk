@@ -120,46 +120,6 @@ func TestSyncPush(t *testing.T) {
 	}
 }
 
-func TestSyncFetch(t *testing.T) {
-	type scenario struct {
-		testName       string
-		fetchAllConfig bool
-		test           func(*oscommands.CmdObj)
-	}
-
-	scenarios := []scenario{
-		{
-			testName:       "Fetch in foreground (all=false)",
-			fetchAllConfig: false,
-			test: func(cmdObj *oscommands.CmdObj) {
-				assert.True(t, cmdObj.ShouldLog())
-				assert.Equal(t, cmdObj.GetCredentialStrategy(), oscommands.PROMPT)
-				assert.False(t, cmdObj.ShouldSuppressOutputUnlessError())
-				assert.Equal(t, cmdObj.Args(), []string{"git", "fetch", "--no-write-fetch-head"})
-			},
-		},
-		{
-			testName:       "Fetch in foreground (all=true)",
-			fetchAllConfig: true,
-			test: func(cmdObj *oscommands.CmdObj) {
-				assert.True(t, cmdObj.ShouldLog())
-				assert.Equal(t, cmdObj.GetCredentialStrategy(), oscommands.PROMPT)
-				assert.False(t, cmdObj.ShouldSuppressOutputUnlessError())
-				assert.Equal(t, cmdObj.Args(), []string{"git", "fetch", "--all", "--no-write-fetch-head"})
-			},
-		},
-	}
-
-	for _, s := range scenarios {
-		t.Run(s.testName, func(t *testing.T) {
-			instance := buildSyncCommands(commonDeps{})
-			instance.UserConfig().Git.FetchAll = s.fetchAllConfig
-			task := gocui.NewFakeTask()
-			s.test(instance.FetchCmdObj(task))
-		})
-	}
-}
-
 func TestSyncFetchBackground(t *testing.T) {
 	type scenario struct {
 		testName       string

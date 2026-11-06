@@ -229,6 +229,12 @@ re-apply it if upstream changes that code.
   and `IsCommitInCommitsLog` (`w v`) both use it.
 - `git_commands/sync.go`: `Pull` resolves `effectivePullRebasePolicy`; a
   rebasing pull checks for a clean start and passes `--no-autostash`.
+- `git_commands/sync.go` (replacement): `Fetch` and `FetchCmdObj` are removed,
+  so the global f no longer reads `git.fetchAll` (U1). Its replacements are
+  `FetchRemote` (kept here, used by Remotes) and `FetchAllRemotes` in
+  `git_commands/fork_fetch.go`, which also holds the refspec risk check and the
+  automatic fetch's remote choice. `FetchBackgroundCmdObj` still follows
+  `git.fetchAll`. Re-apply the removal if upstream changes the fetch path.
 - `git_cmd_obj_runner.go` and `oscommands/cmd_obj.go`: `DisableLockRetries`
   and subprocess success exit codes.
 - `oscommands/os.go` (replacement): `CopyToClipboard` runs
@@ -347,7 +353,7 @@ re-apply it if upstream changes that code.
 
 - `controllers/global_controller.go`: appends the fork globals: cherry-pick
   (`fork_cherry_pick.go`), continue the operation in progress
-  (`fork_continue_operation.go`), fetch (`fork_fetch.go`), previous branch
+  (`fork_continue_operation.go`), fetch (`fork_fetch.go`, with the palette's Fetch all remotes), previous branch
   (`fork_checkout_previous.go`) and usage reset. `GetKeybindings` wraps its
   list in `addFlatFilterBindings` (`fork_flat_filter_keys.go`), which adds
   `w p`, `w u` and `w c`; their prompts copy those of upstream's filtering
@@ -816,6 +822,15 @@ the removed commands.
 
 ### Other
 
+- `controllers/remotes_controller.go` `fetchAndCheckout` (replacement): the
+  upstream body is now `fetchAndCheckoutReviewed`, and `fetchAndCheckout` runs
+  the refspec review from `controllers/fork_fetch.go` before it, so every
+  Remotes fetch, including the ones that check out a branch afterwards, is
+  reviewed. Keep that wrapper when merging.
+- `pkg/gui/background.go` `backgroundFetch`: skips the fetch when
+  `fork_background_fetch.go` finds a remote it would fetch whose refspecs write
+  into local branches, with a once-per-session notice. The
+  `forkFetchGuard` field on `BackgroundRoutineMgr` holds that notice's state.
 - `helpers/repos_helper.go` `switchToLocation`: shows "Loading…" in every
   side and main pane and draws it with `ForceFlushViewsContentOnly` before
   the synchronous switch, and renders the current repo again if the switch
@@ -868,7 +883,7 @@ In `pkg/gui/controllers/`: `bisect_controller.go`,
 `confirmation_controller.go`, `context_lines_controller.go`,
 `diffing_menu_action.go`, `edit_config_action.go`, `filter_controller.go`,
 `filtering_menu_action.go`, `git_flow_controller.go`, `list_controller.go`,
-`menu_controller.go`, `remotes_controller.go`,
+`menu_controller.go`,
 `rename_similarity_threshold_controller.go`, `search_controller.go`,
 `search_prompt_controller.go`, `side_window_controller.go`,
 `snake_controller.go`, `status_controller.go`, `submodules_controller.go`,
@@ -906,5 +921,5 @@ the same way:
   delta and disables fetch/file/ref polling.
 
 Integration components gained `ExpectClipboard`, `ExplicitSelection`, `Views().Extras()`, a
-menu `Content` matcher and `ReviewBranch*` helpers. Drivers need `Title()` and
+menu `Content` matcher, `ReviewBranch*` helpers and `Git().SameCommitAs`. Drivers need `Title()` and
 `Content()` on a confirmation and `Title()` on a menu before confirming.

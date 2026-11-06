@@ -18,6 +18,24 @@ func (self *Git) CurrentBranchName(expectedName string) *Git {
 	return self.assert([]string{"git", "rev-parse", "--abbrev-ref", "HEAD"}, expectedName)
 }
 
+// SameCommitAs asserts, with retries, that ref and otherRef name the same commit.
+func (self *Git) SameCommitAs(ref string, otherRef string) *Git {
+	self.assertWithRetries(func() (bool, string) {
+		output, err := self.shell.runCommandWithOutput([]string{"git", "rev-parse", "--verify", "--quiet", ref})
+		if err != nil {
+			return false, fmt.Sprintf("Expected %s to exist, but it does not", ref)
+		}
+		expected, err := self.shell.runCommandWithOutput([]string{"git", "rev-parse", "--verify", "--quiet", otherRef})
+		if err != nil {
+			return false, fmt.Sprintf("Expected %s to exist, but it does not", otherRef)
+		}
+		actual := strings.TrimSpace(output)
+		return actual == strings.TrimSpace(expected), fmt.Sprintf("Expected %s to name the commit %s, but it names %s", ref, strings.TrimSpace(expected), actual)
+	})
+
+	return self
+}
+
 func (self *Git) TagNamesAt(ref string, expectedNames []string) *Git {
 	return self.assert([]string{"git", "tag", "--sort=v:refname", "--points-at", ref}, strings.Join(expectedNames, "\n"))
 }

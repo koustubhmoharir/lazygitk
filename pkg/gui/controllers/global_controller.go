@@ -31,8 +31,10 @@ func (self *GlobalController) GetKeybindings(opts types.KeybindingsOpts) []*type
 		forkContinueOperationBinding(self.c, opts),
 		// Fork: palette-only; clears the command usage counts after confirmation.
 		forkResetCommandUsageBinding(self.c),
-		// Fork: f fetches all remotes from any pane; Remotes keeps f for remote.fetch.
+		// Fork: f fetches the primary remote from any pane (asking when there are several);
+		// Remotes keeps f for remote.fetch. The palette also has "Fetch all remotes".
 		forkFetchBinding(self.c, opts),
+		forkFetchAllBinding(self.c),
 		// Fork: s p switches to the previous branch from any pane.
 		forkCheckoutPreviousBinding(self.c, opts),
 		{

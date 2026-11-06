@@ -399,6 +399,12 @@ type ForkTranslationSet struct {
 	ErrRepoPathNotGitRepo                 string
 	NoConflictedFilesSelected             string
 	ForkCannotSelfUpdate                  string
+	ForkFetchAllRemotes                   string
+	ForkFetchNoRemotes                    string
+	ForkFetchMenuPrompt                   string
+	ForkFetchRefspecTitle                 string
+	ForkFetchRefspecPrompt                string
+	ForkFetchBackgroundSkippedToast       string
 }
 
 // forkIntroPopupMessage is the fork's first-run popup. It only says that this is
@@ -803,6 +809,12 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		ErrRepoPathNotGitRepo:                 "Not a Git repository: {{.path}}",
 		NoConflictedFilesSelected:             "No conflicted files selected",
 		ForkCannotSelfUpdate:                  "This build of lazygitk cannot update itself. Rebuild it from source to update.",
+		ForkFetchAllRemotes:                   "Fetch all remotes",
+		ForkFetchNoRemotes:                    "No remotes are configured. Add one in Remotes first.",
+		ForkFetchMenuPrompt:                   "No remote is named origin. Choose the remote to fetch, or fetch all of them.",
+		ForkFetchRefspecTitle:                 "Fetch will move local branches",
+		ForkFetchRefspecPrompt:                "These fetch refspecs write into local branches (refs/heads/):\n\n%s\n\nGit moves those local branches to match the remote, even when they are not checked out. A refspec with a leading + also overwrites history the remote does not have, which can take local commits off a branch; they stay in the reflog.\n\nFetch anyway?",
+		ForkFetchBackgroundSkippedToast:       "Automatic fetch skipped for remote(s) %s: a fetch refspec writes into local branches. Fetch with f to review that change.",
 	}
 	set.MustExitFilterModePrompt = "Command not available while the commit log is filtered. Exit filter mode?"
 	set.MoveCommitsToNewBranchFromMainPrompt = "This will take all unpushed commits and move them to a new branch (off of {{.baseBranchName}}). The current branch is then moved back to its upstream branch. Nothing is stashed: commit or discard tracked changes first. Do you want to continue?"

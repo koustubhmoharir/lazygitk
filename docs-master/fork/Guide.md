@@ -47,7 +47,7 @@ in the [design principles](Design.md). The generated per-pane reference is
 | `/` | Search the pane (Commits, Sub-commits, diffs) or filter it (other lists and menus); a list pane never scrolls sideways to a match |
 | F3, Shift+F3 | Next, previous search result |
 | `p` | Push the selected branch, or the checked-out branch outside Branches; push the selected tag in Tags |
-| `f` | Fetch all remotes; in Remotes, fetch the selected remote |
+| `f` | Fetch `origin`, or the only remote; with several remotes and no `origin`, choose one or all from a menu. In Remotes, fetch the selected remote |
 | `g l` | Pull (deliberately no single key) |
 | F5 | Reload all repository state and redraw every pane, drawing the commit graph again; never fetches |
 | `u u`, `u r` | Undo, redo (from the reflog) |
@@ -221,7 +221,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 
 | Pane | Keys |
 | --- | --- |
-| Remotes | `v`/Space branches; `f` fetch it; `n r` new remote; `n f` add a fork remote; `e` edit; Delete remove |
+| Remotes | `v`/Space branches; `f` fetch it (after the review below, if any); `n r` new remote; `n f` add a fork remote; `e` edit; Delete remove |
 | Stash | `v`/Space files; `g s a` apply; `g s p` pop; Delete drop; F2 rename; `n w` new worktree |
 | Worktrees | `v`/Space its commits; `s w` switch to it; `n w` new; `o` open in editor; Delete remove |
 | Submodules | `v`/Space enter; `n s` new; `e` edit URL; Delete remove; `g u s`, `g u i`, `g u b` update, initialize, bulk options |
@@ -247,9 +247,11 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 
 - Automatic fetch, periodic file refresh, branch forwarding and automatic
   staging of resolved conflicts are off. Opening or switching a repository
-  never fetches. Turning off automatic staging also turns off the automatic
-  continue-merge prompt that follows it. Configuration can turn any of these
-  back on.
+  never fetches. When automatic fetch is turned on, it skips any remote whose
+  fetch refspecs write into local branches, since it cannot ask first; a
+  notice names that remote once per session, and `f` reviews its refspecs.
+  Turning off automatic staging also turns off the automatic continue-merge
+  prompt that follows it. Configuration can turn any of these back on.
 - The commit log shows every branch's history (`git.log.showWholeGraph:
   true`); set it to `false` to show only the current branch.
 
@@ -523,7 +525,17 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
   the branch lacks, **Push this branch** is crossed out and says why; Force
   with reviewed lease remains. The check reads local refs only and never
   fetches. The force-with-lease review selects the push by default.
-- **Fetch** (`f`) fetches every remote from any pane and never moves branches.
+- **Fetch** (`f`) fetches `origin`, or the repository's only remote, from any
+  pane. With several remotes and no `origin`, it opens a menu of the remotes
+  and **Fetch all remotes**. In Remotes, `f` fetches the selected remote. The
+  palette's **Fetch all remotes** fetches every remote. `git.fetchAll` no
+  longer affects `f`.
+- **Fetch refspecs that write local branches.** Before any fetch, the
+  remotes' fetch refspecs are checked. A refspec whose destination is under
+  `refs/heads/` makes Git move those local branches, even when they are not
+  checked out. The confirmation names each remote and refspec, and says that
+  Git will move those branches. Fetch is the default; Cancel and Escape fetch
+  nothing. Remotes without such a refspec fetch at once.
 - **Fast-forward** (`g f`) moves each selected branch to its upstream as
   fetched, without fetching again and without prompts. Up-to-date branches are
   left alone; diverged ones, ones without an upstream and ones checked out in

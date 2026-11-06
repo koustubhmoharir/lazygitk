@@ -36,12 +36,12 @@ triage as its batch lands.
 
 Each task is one subagent batch, reviewed and committed before the next.
 
-- Batch P: fetch per U1 (05-F4).
 - Batch F: sync.
 - Batches E, H, K, M, and L with U4 (07-F2, 07-F3).
 - O2/O3: move fork-owned methods out of upstream files; `// Fork:
   unreachable` markers (15-F3, 02-F4, 13-F2, 07-F4, 10-F3).
-- Batch N: remaining doc corrections, including MergeGuide counts after O2.
+- Batch N: remaining doc corrections, including MergeGuide counts after O2,
+  and regenerating the stale `new-features/keymap/bindings.json` snapshot.
 - Full integration suite.
 
 ## How this tracker works
