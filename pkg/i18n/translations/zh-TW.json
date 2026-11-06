@@ -611,6 +611,8 @@
   "SelectRemoteRepository": "為拉取請求選擇基礎倉庫",
   "FetchingPullRequests": "正在獲取拉取請求",
   "Keybindings": "鍵盤快捷鍵",
+  "KeybindingsMenuSectionLocal": "本地",
+  "KeybindingsMenuSectionGlobal": "全域",
   "KeybindingsMenuSectionNavigation": "導航",
   "KeybindingsTooltip": "快速鍵：",
   "RenameBranch": "重新命名分支",

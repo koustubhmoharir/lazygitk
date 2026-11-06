@@ -592,6 +592,8 @@
   "SelectRemoteRepository": "为拉取请求选择基础仓库",
   "FetchingPullRequests": "正在获取拉取请求",
   "Keybindings": "按键绑定",
+  "KeybindingsMenuSectionLocal": "本地",
+  "KeybindingsMenuSectionGlobal": "全局",
   "KeybindingsMenuSectionNavigation": "导航",
   "KeybindingsTooltip": "键绑定： ",
   "RenameBranch": "重命名分支",

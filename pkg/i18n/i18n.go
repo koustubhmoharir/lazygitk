@@ -62,7 +62,7 @@ func newTranslationSet(log *logrus.Entry, language string) (*TranslationSet, err
 			return nil, err
 		}
 		// Fork: translations carry upstream's intro text; the fork's popup stays English.
-		baseSet.IntroPopupMessage = englishIntroPopupMessage
+		baseSet.IntroPopupMessage = forkIntroPopupMessage
 	}
 
 	return baseSet, nil

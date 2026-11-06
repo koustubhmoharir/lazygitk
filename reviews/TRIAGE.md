@@ -47,7 +47,7 @@ Order is roughly by risk. Each batch is one Haiku subagent task under
 
 Merge-ease refactors (reduce future upstream conflicts, no behaviour change):
 
-- 15-F2: put fork i18n fields in one marked block, with fork values set in a
+- **Fixed** 15-F2: put fork i18n fields in one marked block, with fork values set in a
   fork-owned initializer; restore the deleted `KeybindingsMenuSectionLocal/Global`
   fields so translation JSONs match upstream again.
 - 15-F3, 02-F4, 01 merge notes, 13-F2: move wholly fork-owned methods out of

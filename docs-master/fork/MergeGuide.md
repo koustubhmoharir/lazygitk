@@ -37,7 +37,12 @@ rarely touch them:
 - `new-features/inventory/` and `new-features/keymap/`: generators for the
   static binding inventory and the instantiated key snapshot.
 
-Strings are added to `pkg/i18n/english.go` only; translations are untouched.
+Fork strings live only in `pkg/i18n/fork_english.go`: fields of
+`ForkTranslationSet`, which `TranslationSet` embeds, with values set by
+`forkEnglishTranslationSet`. That function also applies the fork's changed
+English values (`MustExitFilterModePrompt`, `IntroPopupMessage`). `english.go`
+differs from upstream only by the embed and that call, and the translation
+files match upstream. Add new fork strings there, never to `english.go`.
 
 ## Merging
 
@@ -423,8 +428,8 @@ drafts, instead of earlier commits' messages. The behaviour is in the
   panel. `GetOnQuit` also calls `SaveCommitDraftIfChanged`. Up and Down are
   `handleRecallOlderDraft` and `handleRecallNewerDraft`, and carry the
   descriptions `RecallOlderCommitDraft` and `RecallNewerCommitDraft`
-  (`i18n/english.go`), so the palette lists them. Their CommandIDs and keys are
-  upstream's. Upstream's `handleCommitIndexChange` and
+  (`i18n/fork_english.go`), so the palette lists them. Their CommandIDs and keys
+  are upstream's. Upstream's `handleCommitIndexChange` and
   `setCommitMessageAtIndex` are removed; re-apply that removal if upstream
   changes them.
 - `helpers/commits_helper.go`: `HandleCommitConfirm` takes the draft session's
@@ -561,11 +566,12 @@ the removed commands.
   `GuiDriver.TerminalTitle` and `TestDriver.ExpectTerminalTitle`.
 
 - `pkg/app/daemon/daemon.go`: registers `DaemonKindCombineRebase`.
-- `pkg/i18n/english.go` `englishIntroPopupMessage`: the first-run popup only
-  names the fork and keeps the note on donating to lazygit's author.
-  `pkg/i18n/i18n.go` `newTranslationSet` restores it after merging a
-  translation, whose text is upstream's. `misc/initial_open` checks the fork
-  text.
+- `pkg/i18n/fork_english.go` `forkIntroPopupMessage`: the first-run popup only
+  names the fork and keeps the note on donating to lazygit's author. It is set
+  by `forkEnglishTranslationSet`, and `pkg/i18n/i18n.go` `newTranslationSet`
+  sets it again after merging a translation, whose intro text is upstream's
+  `englishIntroPopupMessage` in `english.go`. `misc/initial_open` checks the
+  fork text.
 - `AGENTS.md`: replaced by the fork's short version; expect a conflict on
   every merge and keep the fork's file, folding in relevant upstream technical
   constraints deliberately.

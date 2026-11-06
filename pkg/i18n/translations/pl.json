@@ -458,6 +458,8 @@
   "StartSearch": "Szukaj w bieżącym widoku po tekście",
   "StartFilter": "Filtruj bieżący widok po tekście",
   "Keybindings": "Skróty klawiszowe",
+  "KeybindingsMenuSectionLocal": "Lokalne",
+  "KeybindingsMenuSectionGlobal": "Globalne",
   "KeybindingsMenuSectionNavigation": "Nawigacja",
   "RenameBranch": "Zmień nazwę gałęzi",
   "BranchUpstreamOptionsTitle": "Opcje upstream",

@@ -29,23 +29,20 @@ triage as its batch lands.
 
 Each task is one subagent batch, reviewed and committed before the next.
 
-1. O1 (15-F2): fork i18n fields in one marked block with a fork-owned
-   initializer; restore `KeybindingsMenuSectionLocal/Global`. First, so later
-   fixes add strings in the right place.
-2. Batch A: small isolated fixes.
-3. Batch B: checkout.
-4. Batch I: move commits to a new branch (with U3).
-5. Batch G: reword target.
-6. Batch J: ignored-file protection (probe first).
-7. Batch C: cross-instance file locking.
-8. Batch D: commit list state, with U2 (10-F1).
-9. Batch P: fetch per U1 (05-F4).
-10. Batch F: sync.
-11. Batches E, H, K, M, and L with U4 (07-F2, 07-F3).
-12. O2/O3: move fork-owned methods out of upstream files; `// Fork:
-    unreachable` markers (15-F3, 02-F4, 13-F2, 07-F4, 10-F3).
-13. Batch N: remaining doc corrections, including MergeGuide counts after O2.
-14. Full integration suite.
+- Batch A: small isolated fixes.
+- Batch B: checkout.
+- Batch I: move commits to a new branch (with U3).
+- Batch G: reword target.
+- Batch J: ignored-file protection (probe first).
+- Batch C: cross-instance file locking.
+- Batch D: commit list state, with U2 (10-F1).
+- Batch P: fetch per U1 (05-F4).
+- Batch F: sync.
+- Batches E, H, K, M, and L with U4 (07-F2, 07-F3).
+- O2/O3: move fork-owned methods out of upstream files; `// Fork:
+  unreachable` markers (15-F3, 02-F4, 13-F2, 07-F4, 10-F3).
+- Batch N: remaining doc corrections, including MergeGuide counts after O2.
+- Full integration suite.
 
 ## How this tracker works
 

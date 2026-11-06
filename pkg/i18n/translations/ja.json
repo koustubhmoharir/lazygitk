@@ -528,6 +528,8 @@
   "StartSearch": "現在のビューをテキストで検索",
   "StartFilter": "現在のビューをテキストでフィルタリング",
   "Keybindings": "キーバインディング",
+  "KeybindingsMenuSectionLocal": "ローカル",
+  "KeybindingsMenuSectionGlobal": "グローバル",
   "KeybindingsMenuSectionNavigation": "ナビゲーション",
   "RenameBranch": "ブランチ名を変更",
   "Upstream": "アップストリーム",
