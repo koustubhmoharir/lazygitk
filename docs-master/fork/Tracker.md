@@ -36,8 +36,7 @@ triage as its batch lands.
 
 Each task is one subagent batch, reviewed and committed before the next.
 
-- Batch D: commit list state.
-  D2: empty-pick auto-skip cleanup (10-F2). D3: scope clear beyond 300 rows
+- Batch D: commit list state. D3: scope clear beyond 300 rows
   (11-F2). D4: limited descendant scope (11-F1).
 - Batch P: fetch per U1 (05-F4).
 - Batch F: sync.

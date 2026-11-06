@@ -199,18 +199,30 @@ func (flow *forkCherryPickFlow) apply(plan git_commands.CherryPickPlan) error {
 		if handled != nil {
 			return handled
 		}
-		if result == nil {
+		// Decided by the state the operation was left in, not by the raw pick result:
+		// before Git 2.45 an empty pick stops Git, and the helper skips it, which can
+		// finish the whole operation without an error.
+		if flow.c.Git().Status.WorkingTreeState().None() {
 			flow.c.OnUIThread(flow.clearPickedSelection)
-		} else if flow.c.Git().Status.WorkingTreeState().Any() {
+		} else {
 			// A pick that stops on conflicts keeps the selection until the operation it
 			// left is continued or skipped to its end; an abort keeps it (see settleOperationFinished).
-			flow.c.OnUIThread(func() error {
-				flow.c.Helpers().MergeAndRebase.SetOnOperationFinished(flow.clearPickedSelection)
-				return nil
-			})
+			flow.c.OnUIThread(flow.waitForOperationFinished)
 		}
 		return nil
 	})
+}
+
+// waitForOperationFinished registers clearPickedSelection to run when the operation
+// left by the pick ends. It runs on the UI thread, which may be later than the worker
+// that saw the operation in progress; if the operation has ended since, nothing is
+// registered and the selection stays.
+func (flow *forkCherryPickFlow) waitForOperationFinished() error {
+	if flow.c.Git().Status.WorkingTreeState().None() {
+		return nil
+	}
+	flow.c.Helpers().MergeAndRebase.SetOnOperationFinished(flow.clearPickedSelection)
+	return nil
 }
 
 // clearPickedSelection clears the selection that c p picked, after the pick succeeded.

@@ -43,7 +43,31 @@ type forkCherryPickTestUI struct {
 func (ui *forkCherryPickTestUI) Context() types.IContextMgr { return ui.contextMgr }
 func (ui *forkCherryPickTestUI) LogAction(string)           {}
 
+// forkCherryPickPickSource is the selected list with a list that can clear its selection,
+// as the real commit list does.
+type forkCherryPickPickSource struct{ *historicalDiffCommitsStub }
+
+func (s forkCherryPickPickSource) GetList() types.IList {
+	return forkCherryPickClearableList{source: s.historicalDiffCommitsStub}
+}
+
+// forkCherryPickClearableList clears the stub's selection; the cursor methods are unused.
+type forkCherryPickClearableList struct {
+	types.IList
+	source *historicalDiffCommitsStub
+}
+
+func (l forkCherryPickClearableList) CancelRangeSelect() { l.source.items = nil }
+
 func forkCherryPickFixture(t *testing.T) (*ControllerCommon, *forkCherryPickTestUI, *historicalDiffCommitsStub, string, []string) {
+	t.Helper()
+	return forkCherryPickFixtureAt(t, 2, 51, 0)
+}
+
+// forkCherryPickFixtureAt builds the fixture with the given Git version, and with the
+// destination at the base commit (destination 0) or at the first pick (destination 1),
+// which already contains that pick's change.
+func forkCherryPickFixtureAt(t *testing.T, major, minor, destination int) (*ControllerCommon, *forkCherryPickTestUI, *historicalDiffCommitsStub, string, []string) {
 	t.Helper()
 	root := t.TempDir()
 	selectedRebaseFlowGit(t, root, "init", "-q")
@@ -58,11 +82,11 @@ func forkCherryPickFixture(t *testing.T) (*ControllerCommon, *forkCherryPickTest
 		selectedRebaseFlowGit(t, root, "commit", "-qm", name)
 		oids = append(oids, selectedRebaseFlowGit(t, root, "rev-parse", "HEAD"))
 	}
-	selectedRebaseFlowGit(t, root, "checkout", "-qb", "destination", oids[0])
+	selectedRebaseFlowGit(t, root, "checkout", "-qb", "destination", oids[destination])
 	cmn := common.NewDummyCommon()
-	git := commands.NewGitCommandAux(cmn, &git_commands.GitVersion{Major: 2, Minor: 51}, oscommands.NewDummyOSCommand(), git_config.NewFakeGitConfig(nil), git_commands.MockRepoPaths(root), nil)
+	git := commands.NewGitCommandAux(cmn, &git_commands.GitVersion{Major: major, Minor: minor}, oscommands.NewDummyOSCommand(), git_config.NewFakeGitConfig(nil), git_commands.MockRepoPaths(root), nil)
 	selection := &historicalDiffCommitsStub{items: []*models.Commit{historicalTestCommit(oids[2]), historicalTestCommit(oids[1])}, end: 1}
-	ui := &forkCherryPickTestUI{selectedRebaseFlowUI: &selectedRebaseFlowUI{git: git, modes: &types.Modes{CherryPicking: cherrypicking.New()}, state: &forkCherryPickTestState{}}, contextMgr: &forkCherryPickTestContextMgr{current: selection}}
+	ui := &forkCherryPickTestUI{selectedRebaseFlowUI: &selectedRebaseFlowUI{git: git, modes: &types.Modes{CherryPicking: cherrypicking.New()}, state: &forkCherryPickTestState{}}, contextMgr: &forkCherryPickTestContextMgr{current: forkCherryPickPickSource{selection}}}
 	c := NewControllerCommon(&helpers.HelperCommon{Common: cmn, IGuiCommon: ui}, nil)
 	c.IGetHelpers = selectedRebaseFlowHelpers{value: &helpers.Helpers{MergeAndRebase: helpers.NewMergeAndRebaseHelper(c.HelperCommon)}}
 	return c, ui, selection, root, oids
@@ -217,5 +241,101 @@ func TestForkCherryPickSuccessLeavesChangedSelection(t *testing.T) {
 	}
 	if len(selection.items) != 1 || selection.items[0].Hash() != oids[0] {
 		t.Fatal("successful pick changed a selection the user made since")
+	}
+}
+
+// Before Git 2.45 the pick has no --empty=keep, so an already-applied first pick stops
+// Git. The helper skips it and the sequence finishes; the selection must still be cleared.
+func TestForkCherryPickEmptyPickAutoSkipClearsSelection(t *testing.T) {
+	c, ui, selection, root, _ := forkCherryPickFixtureAt(t, 2, 44, 1)
+	confirm := forkCherryPickReview(t, c, ui)
+	if err := confirm.HandleConfirm(); err != nil {
+		t.Fatal(err)
+	}
+	if err := ui.runWorker(t); err != nil {
+		t.Fatal(err)
+	}
+	if selectedRebaseFlowGit(t, root, "show", "HEAD:second") != "second" || c.Git().Status.WorkingTreeState().Any() {
+		t.Fatal("auto-skip did not finish the sequence")
+	}
+	forkCherryPickDrainUI(t, ui)
+	if len(selection.items) != 0 {
+		t.Fatalf("picked selection %v was not cleared", selection.items)
+	}
+}
+
+// forkCherryPickDrainUI runs every queued UI callback, in order, as the UI loop does.
+func forkCherryPickDrainUI(t *testing.T, ui *forkCherryPickTestUI) {
+	t.Helper()
+	for len(ui.ui) > 0 {
+		if err := ui.runUI(t); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+// A pick that stops on conflicts keeps the selection and registers the cleanup; the
+// cleanup runs once the operation is continued.
+func TestForkCherryPickConflictKeepsSelectionUntilContinued(t *testing.T) {
+	c, ui, selection, root, oids := forkCherryPickFixture(t)
+	// Both sides change "base" after the fixture's base commit, so picking the side commit
+	// is a content conflict, which the helper recognizes.
+	selectedRebaseFlowGit(t, root, "checkout", "-qb", "side", oids[0])
+	if err := os.WriteFile(filepath.Join(root, "base"), []byte("side\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	selectedRebaseFlowGit(t, root, "commit", "-qam", "side")
+	side := selectedRebaseFlowGit(t, root, "rev-parse", "HEAD")
+	selectedRebaseFlowGit(t, root, "checkout", "-q", "destination")
+	if err := os.WriteFile(filepath.Join(root, "base"), []byte("destination\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	selectedRebaseFlowGit(t, root, "commit", "-qam", "destination")
+	selection.items = []*models.Commit{historicalTestCommit(side)}
+	confirm := forkCherryPickReview(t, c, ui)
+	if err := confirm.HandleConfirm(); err != nil {
+		t.Fatal(err)
+	}
+	if err := ui.runWorker(t); err != nil {
+		t.Fatal(err)
+	}
+	if !c.Git().Status.WorkingTreeState().CherryPicking {
+		t.Fatal("pick did not stop on a conflict")
+	}
+	forkCherryPickDrainUI(t, ui)
+	if len(selection.items) != 1 {
+		t.Fatal("conflicting pick cleared the selection")
+	}
+	if err := os.WriteFile(filepath.Join(root, "base"), []byte("resolved\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	selectedRebaseFlowGit(t, root, "add", "base")
+	if err := c.Helpers().MergeAndRebase.ContinueRebase(); err != nil {
+		t.Fatal(err)
+	}
+	if err := ui.runWorker(t); err != nil {
+		t.Fatal(err)
+	}
+	forkCherryPickDrainUI(t, ui)
+	if len(selection.items) != 0 {
+		t.Fatal("continuing the conflicted pick did not clear the selection")
+	}
+}
+
+// A failed pick is an error and keeps the selection.
+func TestForkCherryPickErrorKeepsSelection(t *testing.T) {
+	c, ui, selection, root, _ := forkCherryPickFixture(t)
+	if err := os.WriteFile(filepath.Join(root, "first"), []byte("user data\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	confirm := forkCherryPickReview(t, c, ui)
+	if err := confirm.HandleConfirm(); err != nil {
+		t.Fatal(err)
+	}
+	if err := ui.runWorker(t); err == nil {
+		t.Fatal("native untracked collision was not reported")
+	}
+	if len(ui.ui) != 0 || len(selection.items) != 2 {
+		t.Fatal("failed pick settled the selection")
 	}
 }
