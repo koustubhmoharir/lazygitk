@@ -251,7 +251,9 @@ func (self *CommitFilesController) copyDiffToClipboard(paths []string, toastMess
 	from, to := self.context().GetFromAndToForDiff()
 	from, reverse := self.c.Modes().Diffing.GetFromAndReverseArgsForDiff(from)
 
-	cmdObj := self.c.Git().WorkingTree.ShowFileDiffCmdObj(from, to, reverse, paths, git_commands.DiffModePlain)
+	// Fork: literal pathspecs, so a name such as a*.txt copies only that file's
+	// diff; rename ends and directories are literal too (fork_literal_pathspecs.go).
+	cmdObj := self.c.Git().WorkingTree.ShowLiteralFileDiffCmdObj(from, to, reverse, paths, git_commands.DiffModePlain)
 	diff, err := cmdObj.RunWithOutput()
 	if err != nil {
 		return err
@@ -505,7 +507,9 @@ func (self *CommitFilesController) canEditFiles(nodes []*filetree.CommitFileNode
 func (self *CommitFilesController) openDiffTool(node *filetree.CommitFileNode) error {
 	from, to := self.context().GetFromAndToForDiff()
 	from, reverse := self.c.Modes().Diffing.GetFromAndReverseArgsForDiff(from)
-	cmd := self.c.Git().Diff.OpenDiffToolCmdObj(
+	// Fork: literal pathspecs, so the selected name opens only that file
+	// (fork_literal_pathspecs.go).
+	cmd := self.c.Git().Diff.OpenLiteralDiffToolCmdObj(
 		git_commands.DiffToolCmdOptions{
 			Filepath:    node.GetPath(),
 			FromCommit:  from,

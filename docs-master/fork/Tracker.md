@@ -29,7 +29,6 @@ triage as its batch lands.
 
 Each task is one subagent batch, reviewed and committed before the next.
 
-- Batch A: small isolated fixes.
 - Batch B: checkout.
 - Batch I: move commits to a new branch (with U3).
 - Batch G: reword target.

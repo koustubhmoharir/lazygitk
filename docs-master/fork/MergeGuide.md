@@ -152,6 +152,12 @@ re-apply it if upstream changes that code.
   `git --literal-pathspecs mergetool --no-prompt -- <paths>` and adds
   `-c mergetool.keepBackup=false` only while that key is unset. It reads the key
   fresh on each call and refuses an empty path list.
+- `git_commands/fork_literal_pathspecs.go` (new): `OpenLiteralDiffToolCmdObj`,
+  `GetLiteralPathsDiff` and `ShowLiteralFileDiffCmdObj` wrap upstream's
+  `OpenDiffToolCmdObj`, `getDiffCmdObj` and `ShowFileDiffCmdObj` and set
+  `GIT_LITERAL_PATHSPECS=1`, so upstream changes to those builders carry over.
+  Only the fork's call sites below use them; other callers keep Git's pathspec
+  interpretation.
 - `git_commands/working_tree.go` (replacement): `OpenMergeToolCmdObj`, which ran
   `git mergetool` with no paths, is removed.
 - `git_commands/commit_loader.go`: `GetCommitsOptions` carries the commit
@@ -248,7 +254,8 @@ re-apply it if upstream changes that code.
 - `controllers/files_controller.go`: adds the flat copy menu, `d w`/`d s`/`d c`
   and tree navigation. `repo.fetch` and `fetch` are removed (now global);
   re-apply that removal or fetch is registered twice. Conflict hints use
-  `resolveKeyLabel`.
+  `resolveKeyLabel`. The copy-selected-diff item calls
+  `GetLiteralPathsDiff` (literal pathspecs) rather than upstream's `GetDiff`.
 - `controllers/branches_controller.go` (replacement): wrapped in
   `addSelectedResetBindings`; merge, rebase, fast-forward, reset, rename,
   delete and new branch go through captured flows; `branch.checkout-previous`
@@ -291,6 +298,8 @@ re-apply it if upstream changes that code.
   `GetKeybindings` there, keep the binding in it.
 - `controllers/commits_files_controller.go`: tree navigation, flat copy and
   historical diffs; copy menu items are shared with the flat bindings.
+  `copyDiffToClipboard` calls `ShowLiteralFileDiffCmdObj` (literal pathspecs)
+  rather than upstream's `ShowFileDiffCmdObj`.
 - `controllers/sync_controller.go` (replacement): push and pull act on the
   captured focused branch through the branch-sync flows.
 - `controllers/main_view_controller.go`, `working_tree_diff_actions.go`
@@ -341,10 +350,12 @@ integration points are:
 - `controllers/basic_commits_controller.go` `openDiffTool`: a commit against
   its parent or a range.
 - `controllers/commits_files_controller.go` `openDiffTool`: a commit's file or
-  directory.
-- `controllers/files_controller.go` `openDiffTool`: a Files entry.
+  directory, launched with `OpenLiteralDiffToolCmdObj` (literal pathspecs).
+- `controllers/files_controller.go` `openDiffTool`: a Files entry, launched with
+  `OpenLiteralDiffToolCmdObj` (literal pathspecs).
 - `controllers/working_file_diff_actions.go` `diffWorkingFileWithStaged`: the
-  index against the working file.
+  index against the working file, launched with `OpenLiteralDiffToolCmdObj`
+  (literal pathspecs).
 - `controllers/historical_diff_actions.go` `runHistoricalRevisionDiff`: the
   revision and directory diffs from commits and Files.
 - `controllers/historical_diff_actions.go` `runPreparedHistoricalFileDiff`: the

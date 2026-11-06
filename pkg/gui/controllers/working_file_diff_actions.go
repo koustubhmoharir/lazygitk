@@ -110,7 +110,9 @@ func (self *FilesController) diffWorkingFileWithStaged(node *filetree.FileNode) 
 	if reason := self.workingFileStagedDisabledReason(node); reason != nil {
 		return disabledReasonError(reason)
 	}
-	cmd := self.c.Git().Diff.OpenDiffToolCmdObj(git_commands.DiffToolCmdOptions{
+	// Fork: literal pathspecs, so the selected name opens only that file
+	// (fork_literal_pathspecs.go).
+	cmd := self.c.Git().Diff.OpenLiteralDiffToolCmdObj(git_commands.DiffToolCmdOptions{
 		Filepath:    node.GetPath(),
 		IsDirectory: !node.GetIsFile(),
 	})

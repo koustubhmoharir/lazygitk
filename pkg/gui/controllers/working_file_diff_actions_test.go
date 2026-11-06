@@ -13,6 +13,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/common"
+	"github.com/jesseduffield/lazygit/pkg/config"
 	guicontext "github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/filetree"
@@ -31,6 +32,10 @@ type workingFileDiffUI struct {
 	modes    *types.Modes
 	prompts  []types.PromptOpts
 	commands []*oscommands.CmdObj
+	osCmd    *oscommands.OSCommand
+	// clipboard records what the copy actions wrote, one entry per copy.
+	clipboard []string
+	toasts    []string
 }
 
 func (ui *workingFileDiffUI) Git() *commands.GitCommand   { return ui.git }
@@ -38,6 +43,8 @@ func (ui *workingFileDiffUI) State() types.IStateAccessor { return ui.state }
 func (ui *workingFileDiffUI) Model() *types.Model         { return ui.model }
 func (ui *workingFileDiffUI) Modes() *types.Modes         { return ui.modes }
 func (ui *workingFileDiffUI) Views() types.Views          { return types.Views{} }
+func (ui *workingFileDiffUI) OS() *oscommands.OSCommand   { return ui.osCmd }
+func (ui *workingFileDiffUI) Toast(message string)        { ui.toasts = append(ui.toasts, message) }
 func (ui *workingFileDiffUI) Prompt(opts types.PromptOpts) {
 	ui.prompts = append(ui.prompts, opts)
 }
@@ -57,6 +64,7 @@ type workingFileDiffFixture struct {
 	controller *FilesController
 	ui         *workingFileDiffUI
 	ctx        *guicontext.WorkingTreeContext
+	root       string
 	before     string
 	head       string
 }
@@ -89,13 +97,20 @@ func newWorkingFileDiffFixture(t *testing.T, files []*models.File, branches []*m
 	before := run("rev-parse", "HEAD~1")
 	head := run("rev-parse", "HEAD")
 
-	gitCmd := commands.NewGitCommandAux(common.NewDummyCommon(), nil, oscommands.NewDummyOSCommand(), git_config.NewFakeGitConfig(nil), git_commands.MockRepoPaths(root), nil)
+	// The diff renderer config is read when a copied diff's arguments are built.
+	rendererConfig := config.NewDiffRendererConfigManager(config.GetDefaultConfig)
+	gitCmd := commands.NewGitCommandAux(common.NewDummyCommon(), nil, oscommands.NewDummyOSCommand(), git_config.NewFakeGitConfig(nil), git_commands.MockRepoPaths(root), rendererConfig)
 	ui := &workingFileDiffUI{
 		git:   gitCmd,
 		state: &historicalComparisonState{},
 		model: &types.Model{Files: files, Branches: branches},
 		modes: &types.Modes{Diffing: diffing.New()},
+		osCmd: oscommands.NewDummyOSCommand(),
 	}
+	ui.osCmd.SetClipboardWriter(func(text string) error {
+		ui.clipboard = append(ui.clipboard, text)
+		return nil
+	})
 	cmn := common.NewDummyCommon()
 	contextCommon := &guicontext.ContextCommon{Common: cmn, IGuiCommon: ui}
 	ctx := guicontext.NewWorkingTreeContext(contextCommon)
@@ -107,10 +122,16 @@ func newWorkingFileDiffFixture(t *testing.T, files []*models.File, branches []*m
 			Files: ctx,
 		}},
 	}
+	// The Files copy menu checks the working-tree helper while it is built.
+	helpersStub := historicalTestHelpers{value: &helpers.Helpers{
+		ExternalTool: helpers.NewExternalToolHelper(helperCommon),
+		WorkingTree:  helpers.NewWorkingTreeHelper(helperCommon, nil, nil, nil, nil, nil),
+	}}
 	return &workingFileDiffFixture{
-		controller: NewFilesController(NewControllerCommon(helperCommon, historicalTestHelpersFor(helperCommon))),
+		controller: NewFilesController(NewControllerCommon(helperCommon, helpersStub)),
 		ui:         ui,
 		ctx:        ctx,
+		root:       root,
 		before:     before,
 		head:       head,
 	}
@@ -212,6 +233,7 @@ func TestWorkingFileDiffFileEndpoints(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, []string{"git", "difftool", "--no-prompt", "--", "sample.txt"}, fixture.onlyCommand(t))
+	assert.Contains(t, fixture.ui.commands[0].GetEnvVars(), "GIT_LITERAL_PATHSPECS=1")
 
 	fixture.ui.commands = nil
 	if err := fixture.controller.promptWorkingFileCommitDiff(node); err != nil {
@@ -241,6 +263,7 @@ func TestWorkingFileDiffDirectoryEndpoints(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, []string{"git", "difftool", "--no-prompt", "--dir-diff", "--", "dir"}, fixture.onlyCommand(t))
+	assert.Contains(t, fixture.ui.commands[0].GetEnvVars(), "GIT_LITERAL_PATHSPECS=1")
 
 	fixture.ui.commands = nil
 	if err := fixture.controller.promptWorkingFileCommitDiff(node); err != nil {
@@ -284,6 +307,7 @@ func TestWorkingFileDiffStickyModeIsIgnored(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, []string{"git", "difftool", "--no-prompt", "--", "sample.txt"}, fixture.onlyCommand(t))
+	assert.Contains(t, fixture.ui.commands[0].GetEnvVars(), "GIT_LITERAL_PATHSPECS=1")
 
 	fixture.ui.commands = nil
 	if err := fixture.controller.diffWorkingFileWithHead(node); err != nil {

@@ -1455,7 +1455,9 @@ func (self *FilesController) openDiffTool(node *filetree.FileNode) error {
 		fromCommit = self.c.Modes().Diffing.Ref
 		reverse = self.c.Modes().Diffing.Reverse
 	}
-	cmd := self.c.Git().Diff.OpenDiffToolCmdObj(
+	// Fork: literal pathspecs, so the selected name opens only that file
+	// (fork_literal_pathspecs.go).
+	cmd := self.c.Git().Diff.OpenLiteralDiffToolCmdObj(
 		git_commands.DiffToolCmdOptions{
 			Filepath:    node.GetPath(),
 			FromCommit:  fromCommit,
@@ -1639,7 +1641,9 @@ func (self *FilesController) copyMenuItems() []*types.MenuItem {
 		OnPress: func() error {
 			path := self.context().GetSelectedPath()
 			hasStaged := self.hasPathStagedChanges(node)
-			diff, err := self.c.Git().Diff.GetDiff(hasStaged, "--", path)
+			// Fork: literal pathspecs, so a name such as a*.txt copies only that
+			// file's diff (fork_literal_pathspecs.go).
+			diff, err := self.c.Git().Diff.GetLiteralPathsDiff(hasStaged, path)
 			if err != nil {
 				return err
 			}
