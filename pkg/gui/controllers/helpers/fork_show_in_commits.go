@@ -40,29 +40,82 @@ func (self *ModeHelper) showCommitInCommitsStep(hash string) error {
 	}
 	if commits.GetLimitCommits() {
 		commits.SetLimitCommits(false)
-		return self.reloadCommitsForShowInCommits(self.c.Tr.LoadingCommitsStatus, hash)
+		return self.reloadCommits(self.c.Tr.LoadingCommitsStatus, func() error { return self.showCommitInCommitsStep(hash) })
 	}
 	if self.c.Modes().Filtering.Active() {
 		// Unlike ClearFiltering, this does not ask, and it does not select the commit
 		// that was selected before the filter: the commit to show is the one selected.
 		self.c.Modes().Filtering.Reset()
-		return self.reloadCommitsForShowInCommits(self.c.Tr.RemovingFilterStatus, hash)
+		return self.reloadCommits(self.c.Tr.RemovingFilterStatus, func() error { return self.showCommitInCommitsStep(hash) })
 	}
 	return CommitNotInCommitsLogError(self.c.Tr, hash)
 }
 
-// reloadCommitsForShowInCommits reloads the lists that depend on the log, on a worker
-// with a waiting status. Its Then runs on the UI thread once the lists are in place, and
-// continues with the step again.
-func (self *ModeHelper) reloadCommitsForShowInCommits(message string, hash string) error {
+// reloadCommits reloads the lists that depend on the log, on a worker with a waiting
+// status. Its Then runs on the UI thread once the lists are in place, and calls then.
+func (self *ModeHelper) reloadCommits(message string, then func() error) error {
 	return self.c.WithWaitingStatusBlockingInput(types.WaitingStatusOpts{Message: message}, func(gocui.Task) error {
 		self.c.RefreshFromWorker(types.RefreshOptions{
 			Scope:          ScopesToRefreshWhenFilteringModeChanges(),
 			BatchUIUpdates: true,
-			Then:           func() error { return self.showCommitInCommitsStep(hash) },
+			Then:           then,
 		})
 		return nil
 	})
+}
+
+// selectCommitAfterClearingFilter ends a filter clear. It selects cursorHash, the commit
+// that was selected in filtering mode, or else preFilterHash, the commit selected before
+// filtering, in the reloaded list, and then calls land, which applies the screen mode and
+// focus. The filter is already cleared, so the list is the unfiltered log. When the list
+// is limited and holds neither commit, but the unfiltered log can contain one of them,
+// the limit is lifted and the list reloaded first, and the selection is tried again; the
+// explicit selection is not touched. Otherwise nothing is selected, as before.
+func (self *ModeHelper) selectCommitAfterClearingFilter(cursorHash string, preFilterHash string, land func()) {
+	commits := self.c.Contexts().LocalCommits
+	candidates := lo.Filter([]string{cursorHash, preFilterHash}, func(hash string, _ int) bool { return hash != "" })
+	for _, hash := range candidates {
+		if commits.SelectCommitByHash(hash) {
+			land()
+			return
+		}
+	}
+	if !commits.GetLimitCommits() || len(candidates) == 0 {
+		land()
+		return
+	}
+
+	wholeGraph := commits.GetShowWholeGitGraph()
+	_ = self.c.WithWaitingStatusBlockingInput(types.WaitingStatusOpts{Message: self.c.Tr.FindingCommitStatus}, func(gocui.Task) error {
+		loadable, err := self.firstCommitInCommitsLog(candidates, wholeGraph)
+		self.c.OnUIThread(func() error {
+			if err != nil || loadable == "" {
+				land()
+				return err
+			}
+			commits.SetLimitCommits(false)
+			return self.reloadCommits(self.c.Tr.LoadingCommitsStatus, func() error {
+				self.selectCommitAfterClearingFilter(cursorHash, preFilterHash, land)
+				return nil
+			})
+		})
+		return nil
+	})
+}
+
+// firstCommitInCommitsLog returns the first of hashes that the unfiltered Commits log can
+// contain, or "" when there is none. It runs git, so it is called on a worker.
+func (self *ModeHelper) firstCommitInCommitsLog(hashes []string, wholeGraph bool) (string, error) {
+	for _, hash := range hashes {
+		inLog, err := self.c.Git().Commit.IsCommitInCommitsLog(hash, wholeGraph)
+		if err != nil {
+			return "", err
+		}
+		if inLog {
+			return hash, nil
+		}
+	}
+	return "", nil
 }
 
 // focusCommitInCommits moves the cursor to hash and focuses Commits. The explicit set is

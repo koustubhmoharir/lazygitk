@@ -27,11 +27,12 @@ func (self *ModeHelper) SetCommitScopeFilter(scope filtering.CommitScope, cursor
 			self.c.Modes().Filtering.SetCommitScope(scope)
 			self.c.Modes().Filtering.SetSelectedCommitHash(cursorHash)
 		},
-		func() {
+		func(land func()) {
 			// The cursor commit is one of the scope's commits, so it stays visible.
 			if !self.c.Contexts().LocalCommits.SelectCommitByHash(cursorHash) {
 				self.c.Contexts().LocalCommits.SetSelection(0)
 			}
+			land()
 		},
 		self.commitScopeFilteringLayout,
 	)

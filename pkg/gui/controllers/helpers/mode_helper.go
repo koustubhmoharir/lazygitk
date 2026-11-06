@@ -208,8 +208,9 @@ func (self *ModeHelper) setFiltering(setFilter func()) error {
 			self.c.Modes().Filtering.SetSelectedCommitHash(
 				self.c.Contexts().LocalCommits.GetSelectedCommitHash())
 		},
-		func() {
+		func(land func()) {
 			self.c.Contexts().LocalCommits.SetSelection(0)
+			land()
 		},
 	)
 }
@@ -225,15 +226,11 @@ func (self *ModeHelper) ClearFiltering() error {
 
 	return self.changeFilteringWithLayout(
 		self.c.Modes().Filtering.Reset,
-		func() {
-			// Find the commit that was last selected in filtering mode, and select it again after refreshing
-			if !self.c.Contexts().LocalCommits.SelectCommitByHash(selectedCommitHash) {
-				// If we couldn't find it (either because no commit was selected
-				// in filtering mode, or because the commit is outside the
-				// initial 300 range), go back to the commit that was selected
-				// before we entered filtering
-				self.c.Contexts().LocalCommits.SelectCommitByHash(self.c.Modes().Filtering.GetSelectedCommitHash())
-			}
+		func(land func()) {
+			// Fork: find the commit that was last selected in filtering mode, or else the
+			// commit selected before filtering, and load the list further when it is outside
+			// the limited list. See fork_show_in_commits.go.
+			self.selectCommitAfterClearingFilter(selectedCommitHash, self.c.Modes().Filtering.GetSelectedCommitHash(), land)
 		},
 		layout,
 	)
@@ -241,7 +238,8 @@ func (self *ModeHelper) ClearFiltering() error {
 
 // changeFiltering applies a change to the filtering mode: setFilter mutates the
 // mode, then the views whose contents depend on the filter are reloaded, and
-// selectCommit puts the selection where it belongs in the reloaded commit list.
+// selectCommit puts the selection where it belongs in the reloaded commit list,
+// then calls land to apply the screen mode and focus.
 //
 // Reloading the commit list can take seconds in a big repo, so it happens on a
 // worker with a waiting status. Everything the user can see of the change waits
@@ -258,7 +256,7 @@ func (self *ModeHelper) ClearFiltering() error {
 // change, which is where they meant them to go, and it keeps a second filter
 // change from racing this one — they would both refresh with whichever filter
 // happened to be set when their git commands ran.
-func (self *ModeHelper) changeFiltering(setFilter func(), selectCommit func()) error {
+func (self *ModeHelper) changeFiltering(setFilter func(), selectCommit func(land func())) error {
 	return self.changeFilteringWithLayout(setFilter, selectCommit, self.pathFilteringLayout)
 }
 
@@ -274,7 +272,9 @@ func (self *ModeHelper) pathFilteringLayout(filtering bool) {
 
 // changeFilteringWithLayout is changeFiltering with the screen mode and focus
 // applied by layout when the reloaded lists land, instead of the path filter's.
-func (self *ModeHelper) changeFilteringWithLayout(setFilter func(), selectCommit func(), layout func(filtering bool)) error {
+// selectCommit calls land once the selection is in place. Fork: it may first load
+// the commit list further, so land can run later, on the UI thread.
+func (self *ModeHelper) changeFilteringWithLayout(setFilter func(), selectCommit func(land func()), layout func(filtering bool)) error {
 	setFilter()
 
 	filtering := self.c.Modes().Filtering.Active()
@@ -285,10 +285,11 @@ func (self *ModeHelper) changeFilteringWithLayout(setFilter func(), selectCommit
 			Scope:          ScopesToRefreshWhenFilteringModeChanges(),
 			BatchUIUpdates: true,
 			Then: func() error {
-				layout(filtering)
-
-				selectCommit()
-				self.c.PostRefreshUpdate(self.c.Contexts().LocalCommits)
+				// Fork: selectCommit may load the list further before it calls land.
+				selectCommit(func() {
+					layout(filtering)
+					self.c.PostRefreshUpdate(self.c.Contexts().LocalCommits)
+				})
 				return nil
 			},
 		})

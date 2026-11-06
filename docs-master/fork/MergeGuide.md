@@ -620,6 +620,11 @@ Commit scope filters (`w a`, `w d`, `w b`) are a third kind of filtering mode:
   only focuses Commits: upstream's switch to a half screen on applying a path
   or author filter, and back to normal on clearing any filter, is removed.
   The startup half screen for `--filter` and git arguments is upstream's.
+  `ClearFiltering` (all filter kinds) restores the selection through
+  `selectCommitAfterClearingFilter` (`helpers/fork_show_in_commits.go`), which
+  loads the unfiltered list further when the limit hides both the cursor
+  commit and the pre-filter commit. `changeFilteringWithLayout`'s `selectCommit`
+  callbacks receive `land`, which they call once the selection is in place.
 - `helpers/refresh_helper.go`: the commits refresh passes the scope; the
   reflog filters only for a path or author (`HasPathOrAuthorFilter`).
 - `helpers/diff_helper.go`: `DiffArgs` appends the filter path only when one is
