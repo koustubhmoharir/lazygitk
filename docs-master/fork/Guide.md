@@ -480,6 +480,11 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
   the box and press Up to get the text back. A reword of an older commit that
   fails leaves the rebase stopped, and the error says how to abort or continue
   it. A tag or combine message is used up as soon as its box closes.
+- A reword applies to the commit it was started on. If HEAD or the checked-out
+  branch moves while the box is open, the reword is refused with the reason,
+  nothing is changed, and the text is kept as a draft. Start the reword again.
+  If the commit list is already out of date when the reword starts, it is
+  refreshed and the reword does not open.
 - The description box still moves its own cursor with Up and Down.
 
 ### Sync

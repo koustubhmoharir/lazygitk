@@ -125,10 +125,14 @@ func rewordFailureFixture(t *testing.T) (*LocalCommitsController, *rewordFailure
 func TestRewordOlderCommitFailureRefreshesRepositoryState(t *testing.T) {
 	controller, ui, root := rewordFailureFixture(t)
 
-	if err := controller.handleReword("reworded", ""); err != nil {
+	target, err := controller.captureRewordTarget(ui.model.Commits[1], 1)
+	if err != nil {
 		t.Fatal(err)
 	}
-	err := ui.runWorker(t)
+	if err := target.submit("reworded", ""); err != nil {
+		t.Fatal(err)
+	}
+	err = ui.runWorker(t)
 	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "Rewording failed")
 		assert.Contains(t, err.Error(), "rejected by hook")

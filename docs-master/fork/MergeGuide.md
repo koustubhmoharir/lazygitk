@@ -520,25 +520,43 @@ drafts, instead of earlier commits' messages. The behaviour is in the
   state before `OnConfirm`, because `OnConfirm` closes the panel, which ends the
   session. `CloseCommitMessagePanel` ends it too. `OpenCommitMessagePanel` records
   the text the box shows as the session's opened text, after setting it in the
-  view. `SwitchToEditor` keeps the text that Up replaced.
+  view. `SwitchToEditor` keeps the text that Up replaced. For a reported submit
+  (`submitReportsResult`) it keeps the typed text as a draft and sets
+  `pendingDraftUse` around `SwitchToEditor(filepath)`, as `HandleCommitConfirm`
+  does, so `rewordTarget.switchToEditor` can take the reporter.
   `SaveCommitDraftIfChanged`, `CancelCommitMessagePanel`,
   `RecallOlderCommitDraft`, `RecallNewerCommitDraft` and
   `TakeCommitMessageSubmitReporter` are fork code.
-- `controllers/local_commits_controller.go`: `handleReword` passes a rebase-path
-  failure to `rewordFailure` (`controllers/fork_reword_failure.go`), which explains
-  the stopped rebase. It refreshes the repository state first, as the success
-  path does, so the stopped rebase shows before input is released. Re-apply this
-  if upstream changes that error path.
+- `controllers/local_commits_controller.go`: `reword` captures the target with
+  `captureRewordTarget` (`controllers/fork_reword_target.go`), and the message
+  panel's `OnConfirm` and `OnSwitchToEditor` are `rewordTarget.submit` and
+  `rewordTarget.switchToEditor`. These replace upstream's `handleReword` and
+  `switchFromCommitMessagePanelToEditor`, which are removed. Those read the live
+  commits and selection when the message was submitted, so a commit that moved
+  while the box was open was rewritten. Both submit paths verify the captured
+  repository, HEAD's ref and ID, and (for HEAD) HEAD against the target, before
+  any write, and refuse with `RewordTargetChanged` or `RewordRepositoryChanged`.
+  The rebase path's failure goes to `rewordFailure`
+  (`controllers/fork_reword_failure.go`), which explains the stopped rebase. It
+  refreshes the repository state first, as the success path does, so the stopped
+  rebase shows before input is released. Re-apply these if upstream changes
+  either function.
+- `git_commands/fork_reword_target.go` (new): `BranchCommands.CurrentHead`
+  returns the checked-out ref and HEAD's ID for the capture and the checks.
 - Submissions that finish on a worker: a panel opened with
   `OpenCommitMessagePanelOpts.ReportsSubmitResult` writes the text as a draft
   before `OnConfirm`, and its `OnConfirm` takes a reporter with
   `TakeCommitMessageSubmitReporter` and calls it on success. Those call sites are
   `helpers/working_tree_helper.go` (`HandleCommitPressWithMessage`,
-  `handleCommit`), `controllers/local_commits_controller.go` (`reword`,
-  `handleReword`, `createAmendCommit`) and
+  `handleCommit`), `controllers/fork_reword_target.go` (`rewordTarget.submit`),
+  `controllers/local_commits_controller.go` (`createAmendCommit`) and
   `controllers/custom_patch_options_menu_action.go` (both
   `handlePullPatchIntoNewCommit` functions). A new upstream panel whose work runs
   on a worker should do the same, or a failure there loses its text.
+  `CommitsHelper.SwitchToEditor` does the same for such a panel, so its
+  `OnSwitchToEditor` must take the reporter too: `rewordTarget.switchToEditor`
+  calls it once the editor is about to get the text, and
+  `WorkingTreeHelper.switchFromCommitMessagePanelToEditor` calls it at once.
 - `context/fork_commit_draft.go` (new): the drafts file,
   `LAZYGITK_COMMIT_DRAFTS` (a JSON list, newest first), beside
   `LAZYGIT_PENDING_COMMIT`, and `commitDraftSession`. In

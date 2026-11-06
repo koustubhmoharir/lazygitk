@@ -224,6 +224,9 @@ func (self *WorkingTreeHelper) switchFromCommitMessagePanelToEditor(filepath str
 	// different from what was last in the commit panel. So the best we can do
 	// here is to always clear the remembered commit message.
 	self.commitsHelper.ClearPreservedCommitMessage()
+	// Fork: for the same reason, the text that went to the editor is not kept as
+	// a draft; see TakeCommitMessageSubmitReporter and CommitsHelper.SwitchToEditor.
+	self.commitsHelper.TakeCommitMessageSubmitReporter()()
 
 	self.c.LogAction(self.c.Tr.Actions.Commit)
 	return self.c.RunSubprocessAndRefresh(

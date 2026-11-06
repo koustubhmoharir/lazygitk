@@ -11,7 +11,7 @@ import (
 // Fork: a reword of an older commit runs a rebase, and when it fails the rebase is
 // left stopped, so the reword box will not open until it is aborted or continued.
 // The submitted text is kept as a draft, so the error says both. The integration
-// point is the rebase branch of LocalCommitsController.handleReword.
+// point is the rebase branch of rewordTarget.submit (fork_reword_target.go).
 func (self *LocalCommitsController) rewordFailure(err error) error {
 	rebasing := self.c.Git().Status.WorkingTreeState().Rebasing
 	key := self.c.CommandKeyLabel("branch.merge-rebase-menu", "")

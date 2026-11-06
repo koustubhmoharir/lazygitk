@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/go-errors/errors"
-	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
@@ -916,6 +915,14 @@ func (self *LocalCommitsController) reword(commit *models.Commit) error {
 	if self.c.Git().Config.NeedsGpgSubprocessForCommit() && !self.isHeadCommit(commitIdx) {
 		return errors.New(self.c.Tr.DisabledForGPG)
 	}
+	// Fork: the target is captured here, and both submit paths act only on it.
+	// captureRewordTarget replaces upstream's handleReword and
+	// switchFromCommitMessagePanelToEditor, which read the live commits and selection
+	// when the message was submitted. See fork_reword_target.go.
+	target, err := self.captureRewordTarget(commit, commitIdx)
+	if err != nil {
+		return err
+	}
 	commitMessage, err := self.c.Git().Commit.GetCommitMessage(commit.Hash())
 	if err != nil {
 		return err
@@ -930,77 +937,14 @@ func (self *LocalCommitsController) reword(commit *models.Commit) error {
 			SummaryTitle:     self.c.Tr.Actions.RewordCommit,
 			DescriptionTitle: self.c.Tr.CommitDescriptionTitle,
 			PreserveMessage:  false,
-			// Fork: handleReword reports success; see TakeCommitMessageSubmitReporter.
+			// Fork: the reword reports success; see TakeCommitMessageSubmitReporter.
 			ReportsSubmitResult: true,
-			OnConfirm:           self.handleReword,
-			OnSwitchToEditor:    self.switchFromCommitMessagePanelToEditor,
+			OnConfirm:           target.submit,
+			OnSwitchToEditor:    target.switchToEditor,
 		},
 	)
 
 	return nil
-}
-
-func (self *LocalCommitsController) switchFromCommitMessagePanelToEditor(filepath string) error {
-	if self.isSelectedHeadCommit() {
-		return self.c.RunSubprocessAndRefresh(
-			self.c.Git().Commit.RewordLastCommitInEditorWithMessageFileCmdObj(filepath))
-	}
-
-	err := self.c.Git().Rebase.BeginInteractiveRebaseForCommit(self.c.Model().Commits, self.context().GetSelectedLineIdx(), false)
-	if err != nil {
-		return err
-	}
-
-	// now the selected commit should be our head so we'll amend it with the new message
-	err = self.c.RunSubprocessAndRefresh(
-		self.c.Git().Commit.RewordLastCommitInEditorWithMessageFileCmdObj(filepath))
-	if err != nil {
-		return err
-	}
-
-	err = self.c.Git().Rebase.ContinueRebase()
-	if err != nil {
-		return err
-	}
-
-	self.c.Refresh(types.RefreshOptions{})
-	return nil
-}
-
-func (self *LocalCommitsController) handleReword(summary string, description string) error {
-	// Fork: see TakeCommitMessageSubmitReporter.
-	reportSuccess := self.c.Helpers().Commits.TakeCommitMessageSubmitReporter()
-	commits := self.c.Model().Commits
-	selectedIdx := self.c.Contexts().LocalCommits.GetSelectedLineIdx()
-	if models.IsHeadCommit(commits, selectedIdx) {
-		// we've selected the top commit so no rebase is required
-		return self.c.Helpers().GPG.WithGpgHandling(self.c.Git().Commit.RewordLastCommit(summary, description),
-			git_commands.CommitGpgSign,
-			self.c.Tr.RewordingStatus,
-			// Fork: the reword has succeeded.
-			func() error {
-				reportSuccess()
-				return nil
-			}, nil)
-	}
-
-	return self.c.WithWaitingStatusBlockingInput(types.WaitingStatusOpts{
-		Message:              self.c.Tr.RewordingStatus,
-		HideWorkingTreeState: true,
-	}, func(gocui.Task) error {
-		err := self.c.Git().Rebase.RewordCommit(commits, selectedIdx, summary, description)
-		if err != nil {
-			// Fork: the rebase may be left stopped, and the text is kept as a draft. Refresh
-			// first, as on success, so that the model shows the stopped rebase before input
-			// is released; see fork_reword_failure.go.
-			self.c.RefreshFromWorker(types.RefreshOptions{})
-			return self.rewordFailure(err)
-		}
-		// Fork: the reword has succeeded.
-		reportSuccess()
-		self.c.RefreshFromWorker(types.RefreshOptions{})
-		return nil
-	})
 }
 
 func (self *LocalCommitsController) doRewordEditor() error {

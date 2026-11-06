@@ -119,12 +119,24 @@ func (self *CommitsHelper) SwitchToEditor() error {
 		return err
 	}
 
-	// Fork: the text that Up replaced would otherwise be lost.
-	self.c.Contexts().CommitMessage.KeepTypedCommitDraftOnSwitchToEditor()
+	// Fork: when the result is reported later, the text is kept as a draft until
+	// it succeeds, as HandleCommitConfirm does. Otherwise the text that Up replaced
+	// is kept.
+	if self.submitReportsResult {
+		commitMessage := self.c.Contexts().CommitMessage
+		text := self.JoinCommitMessageAndUnwrappedDescription()
+		useDrafts := commitMessage.CommitDraftsUsedBy(text)
+		commitMessage.KeepCommitDraftsOnCancel(text)
+		self.pendingDraftUse = useDrafts
+	} else {
+		self.c.Contexts().CommitMessage.KeepTypedCommitDraftOnSwitchToEditor()
+	}
 
 	self.CloseCommitMessagePanel()
 
-	return self.c.Contexts().CommitMessage.SwitchToEditor(filepath)
+	err = self.c.Contexts().CommitMessage.SwitchToEditor(filepath)
+	self.pendingDraftUse = nil
+	return err
 }
 
 type OpenCommitMessagePanelOpts struct {
@@ -262,7 +274,9 @@ func (self *CommitsHelper) PreserveCommitMessage() {
 }
 
 // Fork: Escape and quit keep the text as a draft. Confirming and switching to
-// the editor do not; see docs-master/fork/Guide.md.
+// the editor keep it only while a reported submit is in progress, until it
+// succeeds (see TakeCommitMessageSubmitReporter); otherwise they do not. See
+// docs-master/fork/Guide.md.
 func (self *CommitsHelper) SaveCommitDraftIfChanged() {
 	self.c.Contexts().CommitMessage.KeepCommitDraftsOnCancel(self.JoinCommitMessageAndUnwrappedDescription())
 }

@@ -313,6 +313,9 @@ type ForkTranslationSet struct {
 	RewordFailedRebaseStopped             string
 	RewordFailedRebaseStoppedNoKey        string
 	RewordFailedMessageKept               string
+	RewordTargetChanged                   string
+	RewordRepositoryChanged               string
+	RewordListStale                       string
 	PatchSourceNotInCommits               string
 	FindingCommitStatus                   string
 	LoadingCommitsStatus                  string
@@ -692,6 +695,9 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		RewordFailedRebaseStopped:             "The rebase is still stopped. Press {{.key}} to abort or continue it before you try again.",
 		RewordFailedRebaseStoppedNoKey:        "The rebase is still stopped. Abort or continue it before you try again.",
 		RewordFailedMessageKept:               "Your message is saved. Press Up in the message box to get it back.",
+		RewordTargetChanged:                   "The branch changed since the reword started. Nothing was changed; your message is kept as a draft. Start the reword again.",
+		RewordRepositoryChanged:               "The repository changed since the reword started. Nothing was changed; your message is kept as a draft. Start the reword again.",
+		RewordListStale:                       "The commit list was out of date and has been refreshed. Select the commit and start the reword again.",
 		PatchSourceNotInCommits:               "The commit this patch was built from is not in the Commits list. Clear the filter, or reset the patch.",
 		CommandPaletteFocusedSectionTitle:     "%s and global",
 		CommandPaletteAvailableIn:             "Available in %s",
