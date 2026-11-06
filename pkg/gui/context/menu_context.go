@@ -117,14 +117,6 @@ func (self *MenuViewModel) SetOnCancel(onCancel func() error) {
 	self.onCancel = onCancel
 }
 
-func (self *MenuViewModel) SetBeforeAccept(beforeAccept func() bool) {
-	self.beforeAccept = beforeAccept
-}
-
-func (self *MenuViewModel) SetBlockUnmatchedKeys(keys []gocui.Key) {
-	self.blockUnmatchedKeys = append([]gocui.Key(nil), keys...)
-}
-
 func (self *MenuViewModel) GetPrompt() string {
 	return self.prompt
 }

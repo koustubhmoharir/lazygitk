@@ -27,16 +27,10 @@ type MergeAndRebaseHelper struct {
 	continueRebasePromptShowing bool
 
 	// Fork: runs once, on the UI thread, when the operation that a pick stopped on
-	// conflicts left in progress ends by continue or skip (see settleOperationFinished).
-	// Only accessed on the UI thread.
+	// conflicts left in progress ends by continue or skip (see
+	// settleOperationFinished in fork_operation_settle.go). Only accessed on the UI
+	// thread.
 	onOperationFinished func() error
-}
-
-// SetOnOperationFinished sets the callback that runs once the operation in progress
-// ends by continue or skip. A later call replaces an earlier one. Call it on the UI
-// thread.
-func (self *MergeAndRebaseHelper) SetOnOperationFinished(callback func() error) {
-	self.onOperationFinished = callback
 }
 
 func NewMergeAndRebaseHelper(
@@ -161,6 +155,7 @@ func (self *MergeAndRebaseHelper) genericMergeCommandImpl(command string, showWa
 			CommitSelection: commitSelectionAfterMerge(success && selectHeadCommitOnSuccess),
 		}, calledFromWorker)
 		self.RecordWhetherMergeOrRebaseStartedInLazygit()
+		// Fork: see settleOperationFinished (fork_operation_settle.go).
 		self.settleOperationFinished(command, err)
 		return err
 	}
@@ -170,6 +165,7 @@ func (self *MergeAndRebaseHelper) genericMergeCommandImpl(command string, showWa
 	// CheckMergeOrRebaseWithRefreshOptions, which already runs on one.
 	runAction := func() error {
 		result := self.c.Git().Rebase.GenericMergeOrRebaseAction(commandType, command)
+		// Fork: see settleOperationFinished (fork_operation_settle.go).
 		self.settleOperationFinished(command, result)
 		return self.CheckMergeOrRebaseWithRefreshOptions(result,
 			types.RefreshOptions{
@@ -183,35 +179,6 @@ func (self *MergeAndRebaseHelper) genericMergeCommandImpl(command string, showWa
 		})
 	}
 	return runAction()
-}
-
-// settleOperationFinished runs after a continue, skip or abort. Once the operation
-// has ended, a continue or skip that succeeded runs the callback that a pick stopped
-// on conflicts registered. An abort drops that callback without running it, so the
-// pick's selection stays. A step that leaves the operation in progress, such as a
-// continue that stops on another conflict, keeps the callback.
-func (self *MergeAndRebaseHelper) settleOperationFinished(command string, result error) {
-	ended := self.c.Git().Status.WorkingTreeState().None()
-	if command == REBASE_OPTION_ABORT {
-		if ended {
-			self.c.OnUIThread(func() error {
-				self.onOperationFinished = nil
-				return nil
-			})
-		}
-		return
-	}
-	if result != nil || !ended {
-		return
-	}
-	self.c.OnUIThread(func() error {
-		callback := self.onOperationFinished
-		self.onOperationFinished = nil
-		if callback == nil {
-			return nil
-		}
-		return callback()
-	})
 }
 
 // commitSelectionAfterMerge maps whether a merge/rebase/pull created a new
@@ -468,6 +435,7 @@ func (self *MergeAndRebaseHelper) MergeRefIntoCheckedOutBranch(refName string) e
 	return MergeSelectedIntoCurrent(self.c, refName)
 }
 
+// Fork: unreachable, replaced by the captured merge flow (helpers/captured_merge.go). Do not reconnect: it reads live refs and config after the prompt.
 func (self *MergeAndRebaseHelper) RegularMerge(refName string, variant git_commands.MergeVariant) func() error {
 	return func() error {
 		self.c.LogAction(self.c.Tr.Actions.Merge)
@@ -478,6 +446,7 @@ func (self *MergeAndRebaseHelper) RegularMerge(refName string, variant git_comma
 	}
 }
 
+// Fork: unreachable, replaced by the captured merge flow (helpers/captured_merge.go). Do not reconnect: it reads live refs and config after the prompt.
 func (self *MergeAndRebaseHelper) SquashMergeUncommitted(refName string) func() error {
 	return func() error {
 		self.c.LogAction(self.c.Tr.Actions.SquashMerge)
@@ -488,6 +457,7 @@ func (self *MergeAndRebaseHelper) SquashMergeUncommitted(refName string) func() 
 	}
 }
 
+// Fork: unreachable, replaced by the captured merge flow (helpers/captured_merge.go). Do not reconnect: it reads live refs and config after the prompt.
 func (self *MergeAndRebaseHelper) SquashMergeCommitted(refName, checkedOutBranchName string) func() error {
 	return func() error {
 		self.c.LogAction(self.c.Tr.Actions.SquashMerge)

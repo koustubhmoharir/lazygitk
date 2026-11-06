@@ -208,3 +208,13 @@ func (gui *Gui) stopForkCommandUsage() {
 func (gui *Gui) attachForkUsage() (commit func(), drop func(), ok bool) {
 	return gui.forkUsage.attach()
 }
+
+// Fork: the use stays pending while the handler runs, and is committed unless a
+// popup it opens claims it (see forkUsageTracker). Called from
+// callKeybindingHandlerWithUsage in keybindings.go.
+func (gui *Gui) callHandlerWithForkUsage(binding *types.Binding, delta int) error {
+	pending := gui.forkUsage.begin(binding, delta)
+	err := binding.Handler()
+	gui.forkUsage.end(pending)
+	return err
+}

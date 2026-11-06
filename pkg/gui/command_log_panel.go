@@ -85,27 +85,8 @@ func (gui *Gui) printCommandLogHeader() {
 	}
 }
 
-// commandRoute names a command and the view whose effective key label is shown.
-type commandRoute struct {
-	commandID string
-	view      string
-}
-
-// keyTip formats a tip with the effective label of each route. It returns ""
-// when any route has no key, so that the tip is dropped rather than naming a
-// key that does not exist.
-func (gui *Gui) keyTip(format string, routes ...commandRoute) string {
-	labels := make([]any, len(routes))
-	for i, route := range routes {
-		label := gui.c.CommandKeyLabel(route.commandID, route.view)
-		if label == "" {
-			return ""
-		}
-		labels[i] = label
-	}
-	return fmt.Sprintf(format, labels...)
-}
-
+// Fork: tips name effective key labels through keyTip (fork_command_hints.go), which
+// drops a tip whose key has no label.
 func (gui *Gui) getRandomTip() string {
 	tips := []string{
 		// keybindings and lazygit-specific advice

@@ -11,7 +11,7 @@ behaviour it protects is in the [user guide](Guide.md) and the reasons in the
 - Upstream: `https://github.com/jesseduffield/lazygit.git` (remote `origin`).
 - Last integrated upstream commit: `4e1eebe278790f257a875da6633234391a5a85b3`.
 - Against that base the fork modifies 104 upstream source files and 157
-  upstream tests, and adds 380 files of its own (168 source, 212 test).
+  upstream tests, and adds 384 files of its own (172 source, 212 test).
 
 ## Layout of fork code
 
@@ -308,7 +308,8 @@ re-apply it if upstream changes that code.
 - `pkg/gui/keybindings.go` (replacement): bindings pass once through
   `projectForkBindings` (`fork_command_projection.go`), which assigns the
   catalogue paths. `resetKeybindings` registers fork commands, key labels and
-  panel jump labels; `callKeybindingHandler` records usage. Adds the global
+  panel jump labels; `callKeybindingHandler` records usage through
+  `callHandlerWithForkUsage` (`fork_command_usage.go`). Adds the global
   `s n` binding. `resetKeybindings` stores the bindings it registers, and
   `GetInitialKeybindingsWithCustomCommands` (the options bar each frame and
   the palette) returns them for the view current at the reset instead of
@@ -319,14 +320,17 @@ re-apply it if upstream changes that code.
 - `pkg/gocui/keybinding.go` and `gui.go`: command bindings match through
   `NormalizeCommandKey` (case-insensitive letters) and are skipped while an
   editable view has focus.
-- `pkg/gui/context/menu_context.go` (replacement): prefix menus
-  (`SetBeforeAccept`, `SetBlockUnmatchedKeys`), labels from
-  `Binding.KeyLabels()`, physical navigation keys, and `CommandActive`.
+- `pkg/gui/context/menu_context.go` (replacement): prefix menus, labels from
+  `Binding.KeyLabels()`, physical navigation keys, and `CommandActive`. The
+  setters `SetBeforeAccept` and `SetBlockUnmatchedKeys` are in
+  `context/fork_prefix_menu.go`.
 - `pkg/gui/menu_panel.go` and `pkg/gui/context.go`: invalidate an open prefix
   on a new menu or a focus change; `Activate` updates focus frames.
 - `pkg/gui/options_map.go` and `pkg/gui/command_log_panel.go` (replacement):
   hints and tips name effective key paths through `CommandKeyLabel`; tips for
-  keys with no route are dropped. The operation-in-progress block adds the
+  keys with no route are dropped. `keyTip`, `commandRoute` and the options-map
+  hint filters (`localFirstForkHintBindings`, `forkHintBindingInContext`) are in
+  `fork_command_hints.go`. The operation-in-progress block adds the
   `operation.continue-in-progress` hint after the `g o` hint, so it renders
   first (`fork_command_hints.go`).
 - `pkg/cheatsheet/generate.go`: labels from `binding.KeyLabels()`.
@@ -340,8 +344,9 @@ re-apply it if upstream changes that code.
 
 ### Palette
 
-- `controllers/options_menu_action.go` (replacement): the palette lists every
-  pane's commands, merged by command ID, in pane sections ordered by key group
+- `controllers/options_menu_action.go` (replacement): `Call` delegates to
+  `openPalette` in `controllers/fork_palette_menu.go`, which lists every pane's
+  commands, merged by command ID, in pane sections ordered by key group
   (`command_palette.go`, `fork_command_palette_order.go`). Other panes'
   commands are static copies whose callbacks are never run. Selections count
   as palette uses.
@@ -369,7 +374,9 @@ re-apply it if upstream changes that code.
   menu (`filtering_menu_action.go`), so check them against it when merging.
   `filter.options-menu` keeps its command but has no default key.
 - `controllers/files_controller.go`: adds the flat copy menu, `d w`/`d s`/`d c`
-  and tree navigation. `repo.fetch` and `fetch` are removed (now global);
+  and tree navigation. The copy menu's items (`copyMenuItems`) are in
+  `controllers/fork_files_copy.go`, beside the flat bindings; `openCopyMenu`
+  stays here as the seam. `repo.fetch` and `fetch` are removed (now global);
   re-apply that removal or fetch is registered twice. Conflict hints use
   `resolveKeyLabel`. The copy-selected-diff item calls
   `GetLiteralPathsDiff` (literal pathspecs) rather than upstream's `GetDiff`.
@@ -442,7 +449,9 @@ re-apply it if upstream changes that code.
   Sub-commits gain a `GetKeybindings` for it. If upstream adds its own
   `GetKeybindings` there, keep the binding in it.
 - `controllers/commits_files_controller.go`: tree navigation, flat copy and
-  historical diffs; copy menu items are shared with the flat bindings.
+  historical diffs. The copy menu's items (`copyMenuItems`) are in
+  `controllers/fork_commit_files_copy.go`, shared with the flat bindings;
+  `openCopyMenu` stays here as the seam.
   `copyDiffToClipboard` calls `ShowLiteralFileDiffCmdObj` (literal pathspecs)
   rather than upstream's `ShowFileDiffCmdObj`.
 - `controllers/sync_controller.go` (replacement): push and pull act on the
@@ -568,12 +577,16 @@ launch, described under "Merge tool" below.
 - `helpers/merge_and_rebase_helper.go`: upstream's merge and rebase menus are
   removed; `CreateRebaseOptionsMenu`, `RebaseOntoRef`,
   `MergeRefIntoCheckedOutBranch` and related functions delegate to
-  `captured_merge*.go` and `captured_rebase*.go`. While `SequencePaused`, its
-  skip item stays in the menu, disabled with `SkipCommittedPickDisabled`.
+  `captured_merge*.go` and `captured_rebase*.go`. The three unused upstream
+  merge methods are marked and listed under "Unreachable upstream code". While
+  `SequencePaused`, its skip item stays in the menu, disabled with
+  `SkipCommittedPickDisabled`.
   Fork: `SetOnOperationFinished` holds a callback, which `fork_cherry_pick.go`
-  registers when a pick stops on conflicts. `genericMergeCommandImpl` calls
-  `settleOperationFinished` after each continue, skip or abort, in both its
-  subprocess and worker paths, so the auto-skip is covered. A continue or skip
+  registers when a pick stops on conflicts. Both it and
+  `settleOperationFinished` are in `helpers/fork_operation_settle.go`.
+  `genericMergeCommandImpl` calls `settleOperationFinished` after each
+  continue, skip or abort, in both its subprocess and worker paths, so the
+  auto-skip is covered. A continue or skip
   that ends the operation runs the callback once; an abort drops it. Upstream
   changes to these functions must keep that call.
 - `helpers/fork_undo_checkout.go`: `CheckoutReflogTarget`, the undo and redo
@@ -697,7 +710,8 @@ drafts, instead of earlier commits' messages. The behaviour is in the
   does, so `rewordTarget.switchToEditor` can take the reporter.
   `SaveCommitDraftIfChanged`, `CancelCommitMessagePanel`,
   `RecallOlderCommitDraft`, `RecallNewerCommitDraft` and
-  `TakeCommitMessageSubmitReporter` are fork code.
+  `TakeCommitMessageSubmitReporter` are fork code in
+  `helpers/fork_commit_drafts.go`.
   Draft saves return errors, and the callers decide. `CancelCommitMessagePanel`
   returns one before closing, so the box stays open. `HandleCommitConfirm` does
   not call `OnConfirm` when the pre-submit save fails. `SwitchToEditor` saves the
@@ -781,7 +795,8 @@ dormant rather than restoring the marks:
   `sub_commits_context.go`: the presentation highlight of marked commits,
   which is always empty.
 - `helpers/cherry_pick_helper.go`: `Paste`, `CanPaste` and `Reset`, with
-  `rerender`. `Paste` was already replaced by `c p`; `Reset` only serves the
+  `rerender`. `Paste` was already replaced by `c p` and is marked
+  unreachable (see "Unreachable upstream code"); `Reset` only serves the
   dormant banner. `CopyRange` and its `resetIfNecessary` are removed.
 - `pkg/i18n/english.go`: `CherryPickCopy`, `CherryPickCopyTooltip`,
   `NoCopiedCommits`, `ResetCherryPick`, `ResetCherryPickShort`,
@@ -797,6 +812,19 @@ dormant rather than restoring the marks:
 
 The generated legacy-field map and the keybinding cheatsheets no longer list
 the removed commands.
+
+### Unreachable upstream code
+
+These upstream functions have no callers. They are kept rather than deleted,
+because deleting them adds merge conflicts. Each carries a `// Fork:
+unreachable` marker that names its replacement. Do not reconnect them.
+
+- `helpers/merge_and_rebase_helper.go`: `RegularMerge`,
+  `SquashMergeUncommitted` and `SquashMergeCommitted`. Replaced by the captured
+  merge flow (`helpers/captured_merge.go`). They read live refs and config
+  after the prompt.
+- `helpers/cherry_pick_helper.go`: `Paste`. Replaced by the captured
+  cherry-pick flow (`controllers/fork_cherry_pick.go`). It stashes implicitly.
 
 ### Appearance
 

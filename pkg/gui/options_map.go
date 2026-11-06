@@ -36,6 +36,7 @@ func (self *OptionsMapMgr) renderContextOptionsMap() {
 
 	allBindings, _ := self.c.GetInitialKeybindingsWithCustomCommands()
 	view := currentContext.GetViewName()
+	// Fork: replaces upstream's key-set filter. The hint rules are in fork_command_hints.go.
 	displayBindings := make([]*types.Binding, 0, len(allBindings))
 	for _, binding := range allBindings {
 		// Normal command compilation owns global core routes only in normal
@@ -95,28 +96,6 @@ func (self *OptionsMapMgr) renderContextOptionsMap() {
 	}
 
 	self.renderOptions(self.formatBindingInfos(optionsMap))
-}
-
-func localFirstForkHintBindings(bindings []*types.Binding) []*types.Binding {
-	result := make([]*types.Binding, 0, len(bindings))
-	for _, binding := range bindings {
-		if binding.ViewName != "" {
-			result = append(result, binding)
-		}
-	}
-	for _, binding := range bindings {
-		if binding.ViewName == "" {
-			result = append(result, binding)
-		}
-	}
-	return result
-}
-
-func forkHintBindingInContext(binding *types.Binding, view string) bool {
-	if binding.ViewName != "" && binding.ViewName != view {
-		return false
-	}
-	return binding.ViewName != "" || forkCommandView(view) || strings.HasPrefix(binding.GetCommandID(), "custom.")
 }
 
 func (self *OptionsMapMgr) formatBindingInfos(bindingInfos []bindingInfo) string {

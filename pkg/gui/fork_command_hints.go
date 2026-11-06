@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/gui/style"
@@ -52,4 +53,47 @@ func appendModeHint(options []bindingInfo, hint bindingInfo) []bindingInfo {
 		return options
 	}
 	return utils.Prepend(options, hint)
+}
+
+// commandRoute names a command and the view whose effective key label is shown.
+type commandRoute struct {
+	commandID string
+	view      string
+}
+
+// keyTip formats a tip with the effective label of each route. It returns ""
+// when any route has no key, so that the tip is dropped rather than naming a
+// key that does not exist.
+func (gui *Gui) keyTip(format string, routes ...commandRoute) string {
+	labels := make([]any, len(routes))
+	for i, route := range routes {
+		label := gui.c.CommandKeyLabel(route.commandID, route.view)
+		if label == "" {
+			return ""
+		}
+		labels[i] = label
+	}
+	return fmt.Sprintf(format, labels...)
+}
+
+func localFirstForkHintBindings(bindings []*types.Binding) []*types.Binding {
+	result := make([]*types.Binding, 0, len(bindings))
+	for _, binding := range bindings {
+		if binding.ViewName != "" {
+			result = append(result, binding)
+		}
+	}
+	for _, binding := range bindings {
+		if binding.ViewName == "" {
+			result = append(result, binding)
+		}
+	}
+	return result
+}
+
+func forkHintBindingInContext(binding *types.Binding, view string) bool {
+	if binding.ViewName != "" && binding.ViewName != view {
+		return false
+	}
+	return binding.ViewName != "" || forkCommandView(view) || strings.HasPrefix(binding.GetCommandID(), "custom.")
 }

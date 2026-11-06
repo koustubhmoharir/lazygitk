@@ -36,8 +36,6 @@ triage as its batch lands.
 
 Each task is one subagent batch, reviewed and committed before the next.
 
-- O2/O3: move fork-owned methods out of upstream files; `// Fork:
-  unreachable` markers (15-F3, 02-F4, 13-F2, 07-F4, 10-F3).
 - Batch N: remaining doc corrections, including MergeGuide counts after O2,
   and regenerating the stale `new-features/keymap/bindings.json` snapshot.
 - Full integration suite.

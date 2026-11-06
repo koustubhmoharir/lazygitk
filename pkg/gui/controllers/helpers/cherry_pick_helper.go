@@ -32,6 +32,7 @@ func (self *CherryPickHelper) getData() *cherrypicking.CherryPicking {
 	return self.c.Modes().CherryPicking
 }
 
+// Fork: unreachable, replaced by the captured cherry-pick flow (controllers/fork_cherry_pick.go). Do not reconnect: it stashes implicitly.
 // HandlePasteCommits begins a cherry-pick rebase with the commits the user has copied.
 // Only to be called from the branch commits controller
 func (self *CherryPickHelper) Paste() error {

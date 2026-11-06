@@ -51,12 +51,14 @@ Merge-ease refactors (reduce future upstream conflicts, no behaviour change):
 - **Fixed** 15-F2: put fork i18n fields in one marked block, with fork values set in a
   fork-owned initializer; restore the deleted `KeybindingsMenuSectionLocal/Global`
   fields so translation JSONs match upstream again.
-- 15-F3, 02-F4, 01 merge notes, 13-F2: move wholly fork-owned methods out of
+- **Fixed** 15-F3, 02-F4, 13-F2: move wholly fork-owned methods out of
   upstream files (draft methods in `commits_helper.go`, palette body in
   `options_menu_action.go`, hint/tip helpers in `options_map.go` and
   `command_log_panel.go`, usage handler in `keybindings.go`, operation-finished
-  settlement in `merge_and_rebase_helper.go`, menu prefix setters).
-- 07-F4, 10-F3: keep the unused upstream merge methods and dormant paste code
+  settlement in `merge_and_rebase_helper.go`, menu prefix setters, copy-menu
+  providers in the two Files controllers).
+- 01 merge notes: the same kind of move, not part of that change.
+- **Fixed** 07-F4, 10-F3: keep the unused upstream merge methods and dormant paste code
   (deleting them adds conflicts) but mark them `// Fork: unreachable, replaced by …`.
 - Merge probe (15): the next upstream merge conflicts in `bisect_controller.go`
   and `commit_loader.go` (upstream's `Limit` became an int); `fork_commit_scope.go`

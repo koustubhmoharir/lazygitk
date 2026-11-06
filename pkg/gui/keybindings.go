@@ -540,10 +540,7 @@ func (gui *Gui) callKeybindingHandlerWithUsage(binding *types.Binding, delta int
 		}
 	}
 
-	// Fork: the use stays pending while the handler runs, and is committed
-	// unless a popup it opens claims it (see forkUsageTracker).
-	pending := gui.forkUsage.begin(binding, delta)
-	err := binding.Handler()
-	gui.forkUsage.end(pending)
-	return err
+	// Fork: runs the handler with its usage pending; see callHandlerWithForkUsage
+	// (fork_command_usage.go).
+	return gui.callHandlerWithForkUsage(binding, delta)
 }
