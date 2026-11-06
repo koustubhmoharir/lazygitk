@@ -208,6 +208,10 @@ type ForkTranslationSet struct {
 	NamedCheckoutApplyingStatus           string
 	NamedCheckoutSelectCommit             string
 	NamedCheckoutRepositoryChanged        string
+	CheckoutByNameEmpty                   string
+	CheckoutByNameAmbiguous               string
+	CheckoutByNameNoRef                   string
+	CheckoutByNameRemoteNotLoaded         string
 	PlaceBranchNamePrompt                 string
 	PlaceBranchTooltip                    string
 	PlaceBranchMoveTitle                  string
@@ -566,6 +570,10 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		NamedCheckoutApplyingStatus:           "Checking out named branch",
 		NamedCheckoutSelectCommit:             "Select one actual commit to check out under a branch name.",
 		NamedCheckoutRepositoryChanged:        "The repository changed. Start the named checkout again.",
+		CheckoutByNameEmpty:                   "Enter a branch name, remote branch, tag or commit.",
+		CheckoutByNameAmbiguous:               "%q is ambiguous: it names %s. Enter the full ref name instead.",
+		CheckoutByNameNoRef:                   "No such ref: %s. Enter a local branch, remote branch or tag ref that exists.",
+		CheckoutByNameRemoteNotLoaded:         "Remote branch %s is not loaded. Refresh the branches and try again.",
 		PlaceBranchNamePrompt:                 "Local branch name at %s (without checkout)",
 		PlaceBranchTooltip:                    "Create or move a local branch to the selected commit without changing HEAD, the index or working files.",
 		PlaceBranchMoveTitle:                  "Move existing branch?",

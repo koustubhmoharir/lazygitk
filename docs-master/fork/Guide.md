@@ -307,6 +307,16 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   policy, none, or track the source) before they are created.
 - `s p` switches to the branch checked out before the current one
   (`git checkout -`); its menu entry names that branch.
+- `?` then "Checkout by name" (no key) asks for a name and reads it literally;
+  it is never treated as a path, and nothing is stashed or forced. A local
+  branch is checked out as `s c` does it, and wins over a tag or remote branch
+  of the same name. `origin/topic` checks out that remote branch as `s c` does
+  on it. A tag, or a commit ID or other revision that names a commit, is
+  checked out detached as `s d` does. `-` is the previous checkout, as `s p`.
+  A name that matches more than one ref (for example a remote branch and a tag
+  both called `origin/topic`) is refused; enter the full ref, such as
+  `refs/tags/origin/topic`. A full ref that does not exist is refused. Any
+  other name offers to create a branch with that name from the selected branch.
 - Deleting a branch offers local, remote or both, refuses branches checked out
   in any worktree, and asks before deleting unmerged history. For both, the
   remote branch is deleted first; a remote failure keeps the local branch.

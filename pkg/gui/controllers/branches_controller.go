@@ -400,54 +400,17 @@ func (self *BranchesController) forceCheckout() error {
 }
 
 func (self *BranchesController) checkoutByName() error {
-	// Fork: retain the selected creation source before name entry. A failed
-	// checkout must not create from a later selection or another repository.
-	git, generation := self.c.Git(), self.c.State().GetRepoGeneration()
-	sourceRef, sourceLabel := "", ""
-	if branch := self.context().GetSelected(); branch != nil {
-		sourceRef, sourceLabel = branch.FullRefName(), branch.RefName()
-	}
-	checkRepository := func() error {
-		if self.c.Git() != git || self.c.State().GetRepoGeneration() != generation {
-			return errors.New(self.c.Tr.BranchSyncRepositoryChanged)
-		}
-		return nil
-	}
+	// Fork: the repository and the selected creation source are captured when
+	// the prompt opens; the name is classified and dispatched by
+	// CheckoutByNameFlow, which never runs upstream's plain `git checkout`.
+	flow := self.c.Helpers().Refs.CaptureCheckoutByName(self.context().GetSelected())
 	self.c.Prompt(types.PromptOpts{
 		Title:               self.c.Tr.BranchName + ":",
 		FindSuggestionsFunc: self.c.Helpers().Suggestions.GetRefsSuggestionsFunc(),
-		HandleClose:         checkRepository,
+		HandleClose:         flow.CheckRepository,
 		HandleConfirm: func(response string) error {
-			if err := checkRepository(); err != nil {
-				return err
-			}
-			self.c.LogAction("Checkout branch")
-			_, branchName, found := self.c.Helpers().Refs.ParseRemoteBranchName(response)
-			if found {
-				return self.c.Helpers().Refs.CheckoutRemoteBranch(response, branchName)
-			}
-			return self.c.Helpers().Refs.CheckoutRef(response, types.CheckoutRefOptions{
-				OnRefNotFound: func(ref string) error {
-					if err := checkRepository(); err != nil {
-						return err
-					}
-					self.c.Confirm(types.ConfirmOpts{
-						Title:       self.c.Tr.BranchNotFoundTitle,
-						Prompt:      fmt.Sprintf("%s %s?", self.c.Tr.BranchNotFoundPrompt, ref),
-						HandleClose: checkRepository,
-						HandleConfirm: func() error {
-							if err := checkRepository(); err != nil {
-								return err
-							}
-							if sourceRef == "" {
-								return errors.New(self.c.Tr.NoBranchesThisRepo)
-							}
-							return self.c.Helpers().Refs.NewBranchWithNameFromRef(sourceRef, sourceLabel, ref)
-						},
-					})
-					return nil
-				},
-			})
+			// Fork: see CheckoutByNameFlow.Confirm in fork_checkout_by_name.go.
+			return flow.Confirm(response)
 		},
 	})
 	return nil

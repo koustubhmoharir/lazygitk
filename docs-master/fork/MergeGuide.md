@@ -260,6 +260,10 @@ re-apply it if upstream changes that code.
   `addSelectedResetBindings`; merge, rebase, fast-forward, reset, rename,
   delete and new branch go through captured flows; `branch.checkout-previous`
   and `checkoutPreviousBranch` are removed (now global; re-apply the removal).
+  `checkoutByName` (`branch.checkout-by-name`) keeps upstream's prompt and
+  suggestions, but its confirm delegates to `CheckoutByNameFlow`
+  (`helpers/fork_checkout_by_name.go`), so upstream's `CheckoutRef` and
+  `CheckoutRemoteBranch` are not reached from it.
 - `controllers/remote_branches_controller.go` (replacement): delete, merge,
   rebase and new local branch go through captured flows; adds placement.
 - `controllers/basic_commits_controller.go`: appends placement, rebase onto
@@ -316,15 +320,36 @@ re-apply it if upstream changes that code.
   `context/confirmation_context.go`, `types/common.go`: the optional
   `HandleTab` prompt hook used by `s n`. Keep the pass-throughs when upstream
   changes prompt options.
-- Default `s c` routes: `projectForkBinding` replaces the handlers of
-  `branch.checkout`, `remote-branch.checkout`, `tag.checkout` and
-  `commit.checkout-menu` with the flat checkouts in
-  `helpers/fork_flat_checkout.go` (`pkg/gui/fork_selected_checkout.go`).
-  Upstream's `CreateCheckoutMenu`, `CheckoutRemoteBranch` and
-  `CheckoutPreviousRef` stay for explicit legacy configuration only; they use
-  `CheckoutRef`, which offers an autostash, so fork defaults must not call
-  them. `s d` (`commit.checkout-detached`) attaches through
-  `fork_checkout_detached.go` and `RefCommitCopyController`.
+- Default checkout routes: `projectForkBinding`, for a binding the user has
+  not set explicitly, replaces the handlers of `branch.checkout`,
+  `remote-branch.checkout`, `tag.checkout` and `commit.checkout-menu` with
+  `forkSelectedCheckoutHandler` (`pkg/gui/fork_selected_checkout.go`), which
+  calls the flat checkouts in `helpers/fork_flat_checkout.go`. `s d`
+  (`commit.checkout-detached`) attaches through `fork_checkout_detached.go` and
+  `RefCommitCopyController`. `s p` runs `CheckoutPreviousFlat` through
+  `controllers/fork_checkout_previous.go`. The palette's "Checkout by name"
+  (`branch.checkout-by-name`) runs `CheckoutByNameFlow`, which dispatches to
+  the same flat checkouts (`branches_controller.go`, `helpers/fork_checkout_by_name.go`,
+  classifier `git_commands/fork_checkout_by_name.go`).
+- Upstream checkout handlers, by status. Each one that uses `CheckoutRef`
+  runs plain `git checkout` and offers an autostash, so fork defaults must not
+  reach it:
+  - Explicit legacy only. A key the user binds to the command keeps the
+    upstream handler, since the replacement above skips explicit bindings:
+    `BranchesController.checkoutBranch` (`branch.checkout`, `CheckoutRef`),
+    `TagsController.checkout` (`tag.checkout`, `CheckoutRef`),
+    `RemoteBranchesController.checkoutBranch` (`remote-branch.checkout`,
+    `CheckoutRemoteBranch`, which shows upstream's new-or-detached menu and
+    then calls `CheckoutRef`), and `BasicCommitsController.checkout`
+    (`commit.checkout-menu`, `CreateCheckoutMenu`, which lists `CheckoutRef`
+    actions).
+  - Unused. `CheckoutPreviousRef` has no callers, and
+    `CreateSelectedRefCheckoutMenu` (`helpers/selected_ref_checkout.go`) is
+    called only by its tests. Both remain until the checkout-menu cleanup
+    batch removes them.
+  - Still reached by default: undo and redo of a checkout
+    (`controllers/undo_controller.go`, `CHECKOUT` action) call `CheckoutRef`
+    and offer an autostash. Not changed yet.
 - In Status, `s` is for repositories: the global `repo.switch-menu` binding in
   `keybindings.go` gets no path (Status's own binding keeps `s r`),
   `repo.open-path` is a Status binding, and `s p` is inapplicable there.
@@ -400,10 +425,12 @@ launch, described under "Merge tool" below.
   subprocess and worker paths, so the auto-skip is covered. A continue or skip
   that ends the operation runs the callback once; an abort drops it. Upstream
   changes to these functions must keep that call.
-- `helpers/refs_helper.go`: checkout of remote branches, the reset menu,
-  the checkout menu, new branch and move-commits-to-new-branch use captured
-  selections (`captured_reset.go`, `named_checkout.go`,
-  `captured_branch_create.go`). Named checkout bypasses autostash.
+- `helpers/refs_helper.go`: the reset menu, new branch and
+  move-commits-to-new-branch use captured selections (`captured_reset.go`,
+  `captured_branch_create.go`). The flat checkouts (`fork_flat_checkout.go`,
+  `fork_checkout_by_name.go`) use the captured named checkout
+  (`named_checkout.go`). Its upstream checkout menus and `CheckoutRemoteBranch`
+  are the legacy handlers listed under "Default checkout routes" above.
 - `helpers/tags_helper.go`: tag creation uses `captured_tag_create.go`.
 - `helpers/refresh_helper.go` `performRefresh` and `types/refresh.go`:
   `RefreshOptions.ThenIfRepoUnchanged` runs on the UI thread after all of a
