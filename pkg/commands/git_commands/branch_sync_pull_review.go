@@ -1,6 +1,8 @@
 package git_commands
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"slices"
@@ -279,6 +281,52 @@ func (self *SyncCommands) CurrentPullIntegrationCommand(plan CurrentPullIntegrat
 	if fresh.method != plan.method || fresh.replayBaseOID != plan.replayBaseOID || fresh.ignoredFingerprint != plan.ignoredFingerprint || !slices.Equal(fresh.ignoredPaths, plan.ignoredPaths) {
 		return nil, ErrBranchSyncChanged
 	}
+	return self.currentPullIntegrationCmdObj(plan)
+}
+
+// CurrentPullIntegrationHandoffCommand builds the reviewed integration command
+// at terminal handoff, on the UI thread. The worker has already prepared and
+// verified the plan, so this does not repeat that inspection (ancestry, status,
+// replay and ignored-file scans, and content hashing). It only confirms that the
+// captured branch is still checked out at, and still points to, the reviewed
+// source commit. Any other change returns ErrBranchSyncChanged so the caller
+// reviews again.
+func (self *SyncCommands) CurrentPullIntegrationHandoffCommand(plan CurrentPullIntegrationPlan) (*oscommands.CmdObj, error) {
+	if !plan.prepared || !plan.review.prepared || plan.review.owner != self.GitCommon {
+		return nil, fmt.Errorf("pull integration plan was not prepared by this repository instance")
+	}
+	if err := self.confirmCurrentPullSourceAtHandoff(plan.review.name, plan.review.sourceOID); err != nil {
+		return nil, err
+	}
+	return self.currentPullIntegrationCmdObj(plan)
+}
+
+// confirmCurrentPullSourceAtHandoff checks HEAD's symbolic ref and object ID, and
+// the branch ref's object ID, against the reviewed source. It runs only a few
+// ref queries and does not inspect the rest of the repository.
+func (self *SyncCommands) confirmCurrentPullSourceAtHandoff(name, sourceOID string) error {
+	branches := NewBranchCommands(self.GitCommon)
+	fullRef := "refs/heads/" + name
+	headRef, headOID, err := branches.namedCheckoutHead()
+	if err != nil {
+		return err
+	}
+	if headRef != fullRef || headOID != sourceOID {
+		return ErrBranchSyncChanged
+	}
+	state, err := branches.readPlacementRef(fullRef)
+	if err != nil {
+		return err
+	}
+	if state.symbolic != "" || !state.exists || strings.ToLower(state.oid) != sourceOID {
+		return ErrBranchSyncChanged
+	}
+	return nil
+}
+
+// currentPullIntegrationCmdObj builds the native merge or rebase command for a
+// plan that has already been verified. Callers are responsible for that check.
+func (self *SyncCommands) currentPullIntegrationCmdObj(plan CurrentPullIntegrationPlan) (*oscommands.CmdObj, error) {
 	if len(plan.ignoredPaths) > 0 && !plan.ignoredApproved {
 		return nil, ErrPullIgnoredApprovalRequired
 	}
@@ -317,6 +365,23 @@ func (self *SyncCommands) CurrentPullIntegrationCommand(plan CurrentPullIntegrat
 	}
 	return self.cmd.New(args.Config("core.warnAmbiguousRefs=false").Config("submodule.recurse=false").ToArgv()).SetWd(self.repoPaths.WorktreePath()).
 		AddEnvVars(literalMergeOptionsEnv + "=").DisableLockRetries(), nil
+}
+
+func (self *SyncCommands) currentPullPolicySignature(name string) (string, error) {
+	entries, err := self.branchSyncConfigEntries()
+	if err != nil {
+		return "", err
+	}
+	digest := sha256.New()
+	branchPrefix := "branch." + name + "."
+	for _, entry := range entries {
+		key := entry.key
+		if strings.HasPrefix(key, "pull.") || strings.HasPrefix(key, "rebase.") ||
+			strings.HasPrefix(key, "merge.") || key == branchPrefix+"rebase" || key == branchPrefix+"mergeoptions" {
+			writeBranchSyncConfigEntry(digest, entry)
+		}
+	}
+	return hex.EncodeToString(digest.Sum(nil)), nil
 }
 
 func isPullReviewRebase(method PullIntegrationMethod) bool {

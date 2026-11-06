@@ -126,6 +126,13 @@ func branchSyncPushGit(t *testing.T, dir string, args ...string) string {
 
 func newBranchSyncPushFixture(t *testing.T) *branchSyncPushFixture {
 	t.Helper()
+	return newBranchSyncPushFixtureWithOS(t, nil)
+}
+
+// newBranchSyncPushFixtureWithOS lets a test wrap the command runner before the
+// git commands are built. A nil configure leaves the default runner in place.
+func newBranchSyncPushFixtureWithOS(t *testing.T, configure func(*oscommands.OSCommand)) *branchSyncPushFixture {
+	t.Helper()
 	root := t.TempDir()
 	branchSyncPushGit(t, root, "init", "-q", "-b", "main")
 	branchSyncPushGit(t, root, "config", "user.name", "Test")
@@ -150,6 +157,9 @@ func newBranchSyncPushFixture(t *testing.T) *branchSyncPushFixture {
 	branchSyncPushGit(t, root, "config", "branch.main.pushRemote", "origin")
 	paths := git_commands.MockRepoPaths(root)
 	osCmd := oscommands.NewDummyOSCommand()
+	if configure != nil {
+		configure(osCmd)
+	}
 	cmn := common.NewDummyCommon()
 	git := commands.NewGitCommandAux(cmn, nil, osCmd, git_config.NewFakeGitConfig(nil), paths, nil)
 	state := &branchSyncTestState{generation: 1, operations: map[string]types.ItemOperation{}}

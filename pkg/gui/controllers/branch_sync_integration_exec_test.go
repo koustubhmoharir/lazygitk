@@ -22,6 +22,65 @@ type branchSyncIntegrationExecUI struct {
 	subprocessErr   error
 	dispatchCalls   int
 	dispatchFailAt  int
+	runs            *integrationExecRunRecorder
+}
+
+// integrationExecRunRecorder records the git subcommands that run through the
+// command runner, grouped by the phase the test says is active.
+type integrationExecRunRecorder struct {
+	inner  oscommands.ICmdObjRunner
+	phase  string
+	phases map[string][]string
+}
+
+func (r *integrationExecRunRecorder) install(osCmd *oscommands.OSCommand) {
+	osCmd.Cmd = osCmd.Cmd.CloneWithNewRunner(func(inner oscommands.ICmdObjRunner) oscommands.ICmdObjRunner {
+		r.inner = inner
+		return r
+	})
+}
+
+func (r *integrationExecRunRecorder) record(cmdObj *oscommands.CmdObj) {
+	subcommand := ""
+	if cmd := cmdObj.GetCmd(); cmd != nil {
+		subcommand = gitSubcommandOf(cmd.Args)
+	}
+	r.phases[r.phase] = append(r.phases[r.phase], subcommand)
+}
+
+func (r *integrationExecRunRecorder) Run(cmdObj *oscommands.CmdObj) error {
+	r.record(cmdObj)
+	return r.inner.Run(cmdObj)
+}
+
+func (r *integrationExecRunRecorder) RunWithOutput(cmdObj *oscommands.CmdObj) (string, error) {
+	r.record(cmdObj)
+	return r.inner.RunWithOutput(cmdObj)
+}
+
+func (r *integrationExecRunRecorder) RunWithOutputs(cmdObj *oscommands.CmdObj) (string, string, error) {
+	r.record(cmdObj)
+	return r.inner.RunWithOutputs(cmdObj)
+}
+
+func (r *integrationExecRunRecorder) RunAndProcessLines(cmdObj *oscommands.CmdObj, onLine func(string) (bool, error)) error {
+	r.record(cmdObj)
+	return r.inner.RunAndProcessLines(cmdObj, onLine)
+}
+
+// gitSubcommandOf returns the git subcommand from an argv such as
+// ["git", "-c", "key=value", "merge", ...].
+func gitSubcommandOf(argv []string) string {
+	for i := 1; i < len(argv); i++ {
+		if argv[i] == "-c" {
+			i++
+			continue
+		}
+		if !strings.HasPrefix(argv[i], "-") {
+			return argv[i]
+		}
+	}
+	return ""
 }
 
 func (ui *branchSyncIntegrationExecUI) WithWaitingStatusBlockingInput(_ types.WaitingStatusOpts, fn func(gocui.Task) error) error {
@@ -72,8 +131,9 @@ func integrationExecPlan(t *testing.T, fixture *branchSyncPushFixture, method gi
 
 func integrationExecFixture(t *testing.T) (*branchSyncPushFixture, *branchSyncTarget, *branchSyncIntegrationExecUI) {
 	t.Helper()
-	f := newBranchSyncPushFixture(t)
-	ui := &branchSyncIntegrationExecUI{branchSyncPushTestUI: f.ui}
+	runs := &integrationExecRunRecorder{phases: map[string][]string{}}
+	f := newBranchSyncPushFixtureWithOS(t, runs.install)
+	ui := &branchSyncIntegrationExecUI{branchSyncPushTestUI: f.ui, runs: runs}
 	// The fake UI owns terminal execution in these tests; no credential helper
 	// or external editor is needed for the noninteractive fast-forward command.
 	f.ui = ui.branchSyncPushTestUI
@@ -351,6 +411,58 @@ func TestBranchSyncIntegrationExecPostTerminalDispatchFailureCleanup(t *testing.
 	}
 	if f.ui.refreshes != 1 {
 		t.Fatalf("UI-safe refresh count = %d, want 1", f.ui.refreshes)
+	}
+}
+
+// The worker performs the full plan preparation. The queued UI callback may run
+// only the bounded handoff check (HEAD and branch ref queries) and launch the
+// reviewed command. Any other git work there would block the UI thread.
+func TestBranchSyncIntegrationExecUIPhaseRunsOnlyHandoffCheck(t *testing.T) {
+	f, target, ui := integrationExecFixture(t)
+	plan := integrationExecPlan(t, f, git_commands.PullIntegrationFastForwardOnly)
+	ui.runs.phases = map[string][]string{}
+	ui.runs.phase = "queue"
+	if err := target.runReviewedIntegration(plan, nil, nil); err != nil {
+		t.Fatal(err)
+	}
+	ui.runs.phase = "worker"
+	if err := ui.runBlockingWorker(t); err != nil {
+		t.Fatal(err)
+	}
+	ui.runs.phase = "ui"
+	if err := ui.runUI(t); err != nil {
+		t.Fatal(err)
+	}
+	ui.runs.phase = "post-terminal"
+	if err := ui.runBlockingWorker(t); err != nil {
+		t.Fatal(err)
+	}
+	if ui.subprocessCalls != 1 {
+		t.Fatalf("subprocess calls = %d, want 1", ui.subprocessCalls)
+	}
+
+	handoffQueries := map[string]bool{"symbolic-ref": true, "rev-parse": true, "for-each-ref": true}
+	launches := 0
+	for _, subcommand := range ui.runs.phases["ui"] {
+		switch {
+		case subcommand == "merge" || subcommand == "rebase":
+			launches++
+		case handoffQueries[subcommand]:
+		default:
+			t.Fatalf("UI callback ran git %q; recorded phases: %v", subcommand, ui.runs.phases)
+		}
+	}
+	if launches != 1 {
+		t.Fatalf("UI callback launched %d native commands, want 1; recorded phases: %v", launches, ui.runs.phases)
+	}
+	preparation := 0
+	for _, subcommand := range ui.runs.phases["worker"] {
+		if !handoffQueries[subcommand] && subcommand != "merge" && subcommand != "rebase" {
+			preparation++
+		}
+	}
+	if preparation == 0 {
+		t.Fatalf("worker did not run the full plan preparation; recorded phases: %v", ui.runs.phases)
 	}
 }
 

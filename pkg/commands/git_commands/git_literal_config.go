@@ -4,7 +4,6 @@ import "strings"
 
 const (
 	literalMergeOptionsEnv = "LAZYGITK_MERGE_OPTIONS"
-	literalPruneTagsEnv    = "LAZYGITK_PRUNE_TAGS"
 	literalMirrorEnv       = "LAZYGITK_REMOTE_MIRROR"
 )
 

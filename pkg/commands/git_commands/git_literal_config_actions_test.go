@@ -68,27 +68,3 @@ func TestGitLiteralConfigActionsPullChoiceClearsBranchOptions(t *testing.T) {
 	assert.Equal(t, "--squash", gitTest(t, root, "config", "--get", key))
 	assert.Equal(t, incoming, gitTest(t, root, "rev-parse", "refs/heads/incoming"))
 }
-
-func TestGitLiteralConfigActionsPullPreservesTagPolicyForEqualsRemote(t *testing.T) {
-	root, bare, head := currentPullFixture(t)
-	gitTest(t, root, "remote", "rename", "origin", "peer=one")
-	gitTest(t, root, "config", "remote.peer=one.pruneTags", "true")
-	gitTest(t, root, "config", "remote.peer=one.tagOpt", "--tags")
-	gitTest(t, root, "config", "pull.rebase", "false")
-	gitTest(t, bare, "tag", "server-tag", "refs/heads/master")
-	sync := branchSyncTestCommands(t, root)
-	plan, err := sync.PrepareCurrentBranchPull("master", head, BranchFetchOptions{
-		Remote: "peer=one", RemoteRef: "refs/heads/master", TrackingRef: "refs/remotes/custom/master",
-	})
-	if !assert.NoError(t, err) {
-		return
-	}
-	cmd, err := sync.CurrentBranchPullCommand(plan, nil)
-	if !assert.NoError(t, err) {
-		return
-	}
-	assert.NoError(t, cmd.Run())
-	assert.Equal(t, head, gitTest(t, root, "rev-parse", "HEAD"))
-	assert.Empty(t, gitTest(t, root, "for-each-ref", "--format=%(refname)", "refs/tags/server-tag"))
-	assert.Equal(t, "true", gitTest(t, root, "config", "--get", "remote.peer=one.pruneTags"))
-}

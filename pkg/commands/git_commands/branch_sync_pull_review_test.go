@@ -563,3 +563,33 @@ func TestCurrentPullReviewUnusableConfiguredDefaultsKeepExplicitChoices(t *testi
 		})
 	}
 }
+
+func currentPullFixture(t *testing.T) (string, string, string) {
+	t.Helper()
+	root, _, _ := transactionHistory(t)
+	gitTest(t, root, "checkout", "-q", "master")
+	local := gitTest(t, root, "rev-parse", "HEAD")
+	bare := filepath.Join(t.TempDir(), "origin.git")
+	gitTest(t, filepath.Dir(bare), "init", "--bare", "-q", bare)
+	gitTest(t, root, "push", "-q", bare, "refs/heads/master:refs/heads/master")
+	gitTest(t, root, "remote", "add", "origin", bare)
+	gitTest(t, root, "config", "core.editor", "true")
+	return root, bare, local
+}
+
+func currentPullOptions() BranchFetchOptions {
+	return BranchFetchOptions{Remote: "origin", RemoteRef: "refs/heads/master", TrackingRef: "refs/remotes/custom/master"}
+}
+
+func advanceCurrentPullRemote(t *testing.T, bare, filename, contents string) string {
+	t.Helper()
+	server := filepath.Join(t.TempDir(), "server")
+	gitTest(t, filepath.Dir(server), "clone", "-q", bare, server)
+	gitTest(t, server, "config", "user.name", "Test")
+	gitTest(t, server, "config", "user.email", "test@example.com")
+	writeTestFile(t, filepath.Join(server, filename), []byte(contents), 0o644)
+	gitTest(t, server, "add", filename)
+	gitTest(t, server, "commit", "-qm", "remote advance")
+	gitTest(t, server, "push", "-q", "origin", "HEAD:refs/heads/master")
+	return gitTest(t, server, "rev-parse", "HEAD")
+}

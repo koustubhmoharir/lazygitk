@@ -108,9 +108,11 @@ func (target *branchSyncTarget) runReviewedIntegrationReporting(
 			if err := target.checkRepository(); err != nil {
 				return finishUI(err)
 			}
-			// Rebuild and validate the command on the UI thread immediately before
-			// terminal launch. HEAD and reviewed inputs can change while callbacks queue.
-			cmd, err := target.git.Sync.CurrentPullIntegrationCommand(plan)
+			// Only the bounded handoff check runs here. The worker has already
+			// prepared and verified the full plan, and repeating that on the UI thread
+			// would block it. HEAD and the branch can move while callbacks queue, so
+			// the handoff check confirms them; a change requires review.
+			cmd, err := target.git.Sync.CurrentPullIntegrationHandoffCommand(plan)
 			if err != nil {
 				if errors.Is(err, git_commands.ErrBranchSyncChanged) || errors.Is(err, git_commands.ErrPullIgnoredApprovalRequired) {
 					return reviewOnUI(err)

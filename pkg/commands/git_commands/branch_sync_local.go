@@ -1,8 +1,6 @@
 package git_commands
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"strings"
 )
@@ -54,39 +52,4 @@ func (self *SyncCommands) inspectLocalBranchSyncRef(fullRef string) (string, err
 		return "", fmt.Errorf("local upstream ref %q does not point directly to a commit: %w", fullRef, err)
 	}
 	return strings.ToLower(state.oid), nil
-}
-
-// inspectLocalCurrentPullTarget fingerprints exact local source state and
-// verifies Git's built-in "." remote is not shadowed or URL-rewritten.
-func (self *SyncCommands) inspectLocalCurrentPullTarget(upstreamRef string) (string, error) {
-	oid, err := self.inspectLocalBranchSyncRef(upstreamRef)
-	if err != nil {
-		return "", err
-	}
-	entries, err := self.branchSyncConfigEntries()
-	if err != nil {
-		return "", err
-	}
-	digest := sha256.New()
-	for _, entry := range entries {
-		key, localRemoteEntry := strings.CutPrefix(entry.key, "remote...")
-		if localRemoteEntry && key != "" && !strings.ContainsRune(key, '.') {
-			return "", fmt.Errorf("a remote named '.' shadows the local upstream; remove that remote configuration or choose another named remote")
-		}
-		if branchSyncURLRewriteEntry(entry.key) {
-			writeBranchSyncConfigEntry(digest, entry)
-		}
-	}
-	resolved, _, err := self.cmd.New(NewGitCmd("ls-remote").Arg("--get-url", "--", ".").ToArgv()).
-		SetWd(self.repoPaths.WorktreePath()).DontLog().RunWithOutputs()
-	if err != nil {
-		return "", fmt.Errorf("cannot verify the local '.' upstream safely; choose an explicit named remote")
-	}
-	resolved = trimTerminalLineEnding(resolved)
-	if resolved != "." {
-		return "", fmt.Errorf("the local '.' upstream is redirected; choose an explicit named remote")
-	}
-	writeFingerprintString(digest, oid)
-	writeFingerprintString(digest, resolved)
-	return hex.EncodeToString(digest.Sum(nil)), nil
 }
