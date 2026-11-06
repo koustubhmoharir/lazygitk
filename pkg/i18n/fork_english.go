@@ -212,6 +212,7 @@ type ForkTranslationSet struct {
 	CheckoutByNameAmbiguous               string
 	CheckoutByNameNoRef                   string
 	CheckoutByNameRemoteNotLoaded         string
+	CheckoutRemoteBranchChanged           string
 	PlaceBranchNamePrompt                 string
 	PlaceBranchTooltip                    string
 	PlaceBranchMoveTitle                  string
@@ -352,6 +353,7 @@ type ForkTranslationSet struct {
 	InspectFileTooltip                    string
 	CheckoutPreviousBranchNamed           string
 	NoPreviousBranch                      string
+	PreviousCheckoutUnavailable           string
 	RepoPathPrompt                        string
 	ErrRepoPathNotDirectory               string
 	ErrRepoPathNotGitRepo                 string
@@ -574,6 +576,7 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		CheckoutByNameAmbiguous:               "%q is ambiguous: it names %s. Enter the full ref name instead.",
 		CheckoutByNameNoRef:                   "No such ref: %s. Enter a local branch, remote branch or tag ref that exists.",
 		CheckoutByNameRemoteNotLoaded:         "Remote branch %s is not loaded. Refresh the branches and try again.",
+		CheckoutRemoteBranchChanged:           "The remote branch changed after it was selected. Review it again before checking it out.",
 		PlaceBranchNamePrompt:                 "Local branch name at %s (without checkout)",
 		PlaceBranchTooltip:                    "Create or move a local branch to the selected commit without changing HEAD, the index or working files.",
 		PlaceBranchMoveTitle:                  "Move existing branch?",
@@ -714,6 +717,7 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		InspectFileTooltip:                    "Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule.",
 		CheckoutPreviousBranchNamed:           "Switch to previous branch: %s",
 		NoPreviousBranch:                      "No branch was checked out before the current one.",
+		PreviousCheckoutUnavailable:           "The previous checkout %q is no longer a local branch or a commit, so s p cannot return to it. Check out the target explicitly.",
 		RepoPathPrompt:                        "Repository path",
 		ErrRepoPathNotDirectory:               "Not a directory: {{.path}}",
 		ErrRepoPathNotGitRepo:                 "Not a Git repository: {{.path}}",

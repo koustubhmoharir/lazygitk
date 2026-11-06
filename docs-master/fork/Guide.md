@@ -303,10 +303,21 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   gives a detached HEAD instead. Every checkout, including `s p`, carries
   uncommitted changes when Git can. Files that would be overwritten, including
   ignored ones, block the checkout instead. Nothing is stashed or forced.
-- New branches show the source and a tracking choice (Git's configured
+- `s c` on a remote branch with no local branch of that name creates a local
+  branch that tracks it and checks it out, in one step: if the checkout is
+  refused (a local change would be overwritten, a merge is in progress, or the
+  remote branch moved since you selected it), no branch is created.
+- `s d`, and the detached route of `s p`, refuse while a merge, rebase,
+  cherry-pick, revert, sequencer operation or bisect is in progress, as named
+  checkout does. Finish or abort the operation first, so its state is kept.
+- Other new branches show the source and a tracking choice (Git's configured
   policy, none, or track the source) before they are created.
-- `s p` switches to the branch checked out before the current one
-  (`git checkout -`); its menu entry names that branch.
+- `s p` switches to the branch checked out before the current one. It reads
+  that checkout from HEAD's reflog, so a tag with the same name does not
+  change the result. If the previous checkout was a commit, `s p` detaches at
+  that commit. If it is neither a branch that still exists nor a commit, such
+  as a deleted branch, `s p` refuses and names it. Its menu entry names the
+  branch.
 - `?` then "Checkout by name" (no key) asks for a name and reads it literally;
   it is never treated as a path, and nothing is stashed or forced. A local
   branch is checked out as `s c` does it, and wins over a tag or remote branch

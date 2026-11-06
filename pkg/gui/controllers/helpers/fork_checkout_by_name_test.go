@@ -11,10 +11,27 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// checkoutStateAccessor reports the repository generation that the checkout
+// flows compare before they act.
+type checkoutStateAccessor struct {
+	types.IStateAccessor
+	generation int
+}
+
+func (s *checkoutStateAccessor) GetRepoGeneration() int { return s.generation }
+
+// checkoutStateUI supplies the state accessor on top of the popup/worker fake.
+type checkoutStateUI struct {
+	*namedCheckoutFakeIGuiCommon
+	state checkoutStateAccessor
+}
+
+func (ui *checkoutStateUI) State() types.IStateAccessor { return &ui.state }
+
 // checkoutByNameUI runs the Then callback of a refresh on the queued UI
 // callbacks, as the GUI does after the refresh completes.
 type checkoutByNameUI struct {
-	*selectedRefCheckoutUI
+	*checkoutStateUI
 }
 
 func (ui *checkoutByNameUI) Refresh(opts types.RefreshOptions) {
@@ -28,7 +45,7 @@ func (ui *checkoutByNameUI) Refresh(opts types.RefreshOptions) {
 func checkoutByNameFixture(t *testing.T) (*namedCheckoutFixture, *checkoutByNameUI) {
 	t.Helper()
 	f := newNamedCheckoutFixture(t)
-	ui := &checkoutByNameUI{selectedRefCheckoutUI: &selectedRefCheckoutUI{namedCheckoutFakeIGuiCommon: f.ui}}
+	ui := &checkoutByNameUI{checkoutStateUI: &checkoutStateUI{namedCheckoutFakeIGuiCommon: f.ui}}
 	f.c.IGuiCommon = ui
 	return f, ui
 }
@@ -111,23 +128,12 @@ func TestCheckoutByNameRemoteBranchUsesRemoteFlow(t *testing.T) {
 	f, ui := checkoutByNameFixture(t)
 	namedCheckoutGit(t, f.root, "remote", "add", "origin", "https://example.invalid/repo.git")
 	namedCheckoutGit(t, f.root, "update-ref", "refs/remotes/origin/topic", f.other)
-	// CreateWithUpstream runs git in the working directory, as the app does
-	// inside the repository, so the test enters the repository for this call.
-	wd, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Chdir(f.root); err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() { _ = os.Chdir(wd) })
 	ui.model.RemoteBranches = []*models.RemoteBranch{{Name: "topic", RemoteName: "origin"}}
 
 	if err := (&RefsHelper{c: f.c}).CaptureCheckoutByName(nil).Confirm("origin/topic"); err != nil {
 		t.Fatal(err)
 	}
-	// The remote flow creates the tracking branch first, which is how s c on a
-	// remote branch starts; that creation is what this test observes.
+	// The remote flow creates and checks out the tracking branch in one command.
 	if err := drainCheckoutByName(t, ui); err != nil {
 		t.Fatal(err)
 	}

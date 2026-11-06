@@ -327,7 +327,10 @@ re-apply it if upstream changes that code.
   calls the flat checkouts in `helpers/fork_flat_checkout.go`. `s d`
   (`commit.checkout-detached`) attaches through `fork_checkout_detached.go` and
   `RefCommitCopyController`. `s p` runs `CheckoutPreviousFlat` through
-  `controllers/fork_checkout_previous.go`. The palette's "Checkout by name"
+  `controllers/fork_checkout_previous.go`; `CheckoutPreviousFlat` reads the
+  previous checkout from HEAD's reflog (`git_commands/fork_previous_checkout.go`,
+  `ClassifyPreviousCheckout`), not from `@{-1}`, which is ambiguous when a
+  branch and a tag share a name. The palette's "Checkout by name"
   (`branch.checkout-by-name`) runs `CheckoutByNameFlow`, which dispatches to
   the same flat checkouts (`branches_controller.go`, `helpers/fork_checkout_by_name.go`,
   classifier `git_commands/fork_checkout_by_name.go`).
@@ -343,10 +346,11 @@ re-apply it if upstream changes that code.
     then calls `CheckoutRef`), and `BasicCommitsController.checkout`
     (`commit.checkout-menu`, `CreateCheckoutMenu`, which lists `CheckoutRef`
     actions).
-  - Unused. `CheckoutPreviousRef` has no callers, and
-    `CreateSelectedRefCheckoutMenu` (`helpers/selected_ref_checkout.go`) is
-    called only by its tests. Both remain until the checkout-menu cleanup
-    batch removes them.
+  - Unused. `CheckoutPreviousRef` has no callers. It remains until the
+    checkout-menu cleanup batch removes it. `CreateSelectedRefCheckoutMenu` and
+    its tests (`helpers/selected_ref_checkout.go`, `selected_ref_checkout_test.go`)
+    were removed: no production code called them, and their tests covered the
+    unused menu rather than the default handlers.
   - Still reached by default: undo and redo of a checkout
     (`controllers/undo_controller.go`, `CHECKOUT` action) call `CheckoutRef`
     and offer an autostash. Not changed yet.
@@ -431,6 +435,14 @@ launch, described under "Merge tool" below.
   `fork_checkout_by_name.go`) use the captured named checkout
   (`named_checkout.go`). Its upstream checkout menus and `CheckoutRemoteBranch`
   are the legacy handlers listed under "Default checkout routes" above.
+  Remote checkout with no local branch of that name is in
+  `fork_remote_checkout.go`: `PrepareRemoteBranchCheckout` runs the named
+  checkout's checks and requires the remote branch to still name the captured
+  commit, then `ApplyRemoteBranchCheckout` runs one
+  `git checkout --no-overwrite-ignore --no-guess -b <name> --track
+  refs/remotes/<remote>/<branch>`. Git creates the branch only when the
+  checkout succeeds. Detached checkout (`captured_detached_checkout.go`) runs
+  `rejectWorktreeOperation` immediately before `git checkout --detach`.
 - `helpers/tags_helper.go`: tag creation uses `captured_tag_create.go`.
 - `helpers/refresh_helper.go` `performRefresh` and `types/refresh.go`:
   `RefreshOptions.ThenIfRepoUnchanged` runs on the UI thread after all of a
