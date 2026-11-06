@@ -119,15 +119,16 @@ func (self *UndoController) reflogUndo() error {
 			return true, nil
 
 		case CHECKOUT:
+			// Fork: replaces CheckoutRef, which offers an autostash and has no
+			// ignored-file protection. CheckoutReflogTarget uses the named or captured
+			// detached checkout. The named flow shows no review of its own for an
+			// existing branch, so this confirmation is the only one.
 			self.c.Confirm(types.ConfirmOpts{
 				Title:  self.c.Tr.Actions.Undo,
-				Prompt: fmt.Sprintf(self.c.Tr.CheckoutAutostashPrompt, action.from),
+				Prompt: fmt.Sprintf(self.c.Tr.UndoCheckoutPrompt, action.from),
 				HandleConfirm: func() error {
 					self.c.LogAction(self.c.Tr.Actions.Undo)
-					return self.c.Helpers().Refs.CheckoutRef(action.from, types.CheckoutRefOptions{
-						EnvVars:       undoEnvVars,
-						WaitingStatus: undoingStatus,
-					})
+					return self.c.Helpers().Refs.CheckoutReflogTarget(action.from, undoEnvVars)
 				},
 			})
 			return true, nil
@@ -173,15 +174,13 @@ func (self *UndoController) reflogRedo() error {
 			return true, nil
 
 		case CHECKOUT:
+			// Fork: replaces CheckoutRef, as in reflogUndo. See CheckoutReflogTarget.
 			self.c.Confirm(types.ConfirmOpts{
 				Title:  self.c.Tr.Actions.Redo,
-				Prompt: fmt.Sprintf(self.c.Tr.CheckoutAutostashPrompt, action.to),
+				Prompt: fmt.Sprintf(self.c.Tr.UndoCheckoutPrompt, action.to),
 				HandleConfirm: func() error {
 					self.c.LogAction(self.c.Tr.Actions.Redo)
-					return self.c.Helpers().Refs.CheckoutRef(action.to, types.CheckoutRefOptions{
-						EnvVars:       redoEnvVars,
-						WaitingStatus: redoingStatus,
-					})
+					return self.c.Helpers().Refs.CheckoutReflogTarget(action.to, redoEnvVars)
 				},
 			})
 			return true, nil

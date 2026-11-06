@@ -98,7 +98,7 @@ var UndoCheckoutAndDrop = NewIntegrationTest(NewIntegrationTestArgs{
 			Tap(func() {
 				t.ExpectPopup().Confirmation().
 					Title(Equals("Undo")).
-					Content(Contains("Are you sure you want to checkout 'master'?")).
+					Content(Contains("Check out 'master'? Uncommitted changes are carried over when Git can; nothing is stashed.")).
 					Confirm()
 
 				t.Views().Branches().
@@ -133,7 +133,7 @@ var UndoCheckoutAndDrop = NewIntegrationTest(NewIntegrationTestArgs{
 			Tap(func() {
 				t.ExpectPopup().Confirmation().
 					Title(Equals("Redo")).
-					Content(Contains("Are you sure you want to checkout 'other_branch'?")).
+					Content(Contains("Check out 'other_branch'? Uncommitted changes are carried over when Git can; nothing is stashed.")).
 					Confirm()
 
 				t.Views().Branches().

@@ -88,7 +88,10 @@ func (self *BranchCommands) PrepareNamedCheckout(name, targetOID string) (NamedC
 // ApplyNamedCheckout revalidates the exact prepared snapshot immediately
 // before Git's combined checkout operation. Git's own concurrency model applies
 // while checkout runs; this API does not promise expected-old ref atomicity.
-func (self *BranchCommands) ApplyNamedCheckout(plan NamedCheckoutPlan) error {
+//
+// Fork: envVars are added to the checkout command only; undo and redo pass
+// their reflog action here, so the reflog entry is marked.
+func (self *BranchCommands) ApplyNamedCheckout(plan NamedCheckoutPlan, envVars ...string) error {
 	if !plan.prepared {
 		return fmt.Errorf("named checkout plan was not prepared")
 	}
@@ -102,7 +105,7 @@ func (self *BranchCommands) ApplyNamedCheckout(plan NamedCheckoutPlan) error {
 	args := NewGitCmd("checkout").Arg("--no-overwrite-ignore", "--no-guess", "-B", plan.name, plan.targetOID+"^{commit}").ToArgv()
 	err = self.cmd.New(args).
 		DisableLockRetries().
-		AddEnvVars("GIT_TERMINAL_PROMPT=0").
+		AddEnvVars("GIT_TERMINAL_PROMPT=0").AddEnvVars(envVars...).
 		SetWd(self.repoPaths.WorktreePath()).Run()
 	if err != nil {
 		return &NamedCheckoutError{Cause: err}

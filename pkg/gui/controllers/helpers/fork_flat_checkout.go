@@ -206,8 +206,9 @@ func (self *RefsHelper) namedCheckoutFlowAt(oid string, repository *capturedActi
 }
 
 // checkoutCapturedDetached detaches HEAD at oid, using the same captured
-// checkout as the detached item of the upstream menus.
-func (self *RefsHelper) checkoutCapturedDetached(oid string, repository *capturedActionRepository) error {
+// checkout as the detached item of the upstream menus. envVars are set on the
+// Git command only (undo and redo use them for the reflog action).
+func (self *RefsHelper) checkoutCapturedDetached(oid string, repository *capturedActionRepository, envVars ...string) error {
 	if err := repository.checkRepository(); err != nil {
 		return err
 	}
@@ -215,7 +216,7 @@ func (self *RefsHelper) checkoutCapturedDetached(oid string, repository *capture
 		if err := repository.checkRepository(); err != nil {
 			return err
 		}
-		err := repository.git.Branch.CheckoutCapturedCommit(oid)
+		err := repository.git.Branch.CheckoutCapturedCommit(oid, envVars...)
 		self.c.RefreshFromWorker(namedCheckoutFailureRefreshOptions())
 		return err
 	})

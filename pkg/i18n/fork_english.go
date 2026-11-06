@@ -354,6 +354,8 @@ type ForkTranslationSet struct {
 	CheckoutPreviousBranchNamed           string
 	NoPreviousBranch                      string
 	PreviousCheckoutUnavailable           string
+	UndoCheckoutPrompt                    string
+	UndoCheckoutUnavailable               string
 	RepoPathPrompt                        string
 	ErrRepoPathNotDirectory               string
 	ErrRepoPathNotGitRepo                 string
@@ -718,6 +720,8 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		CheckoutPreviousBranchNamed:           "Switch to previous branch: %s",
 		NoPreviousBranch:                      "No branch was checked out before the current one.",
 		PreviousCheckoutUnavailable:           "The previous checkout %q is no longer a local branch or a commit, so s p cannot return to it. Check out the target explicitly.",
+		UndoCheckoutPrompt:                    "Check out '%s'? Uncommitted changes are carried over when Git can; nothing is stashed.",
+		UndoCheckoutUnavailable:               "Cannot return to %q: it is neither a local branch nor a commit ID that names one commit, so undo or redo refuses it. Check out the target explicitly.",
 		RepoPathPrompt:                        "Repository path",
 		ErrRepoPathNotDirectory:               "Not a directory: {{.path}}",
 		ErrRepoPathNotGitRepo:                 "Not a Git repository: {{.path}}",

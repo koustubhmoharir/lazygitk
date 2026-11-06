@@ -318,6 +318,13 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   that commit. If it is neither a branch that still exists nor a commit, such
   as a deleted branch, `s p` refuses and names it. Its menu entry names the
   branch.
+- `u u` and `u r` undo and redo a checkout from HEAD's reflog. The target is
+  the branch or commit the reflog recorded. An existing local branch is
+  checked out as `s c` does it, and a commit is detached as `s d` does. Undo
+  and redo ask once, naming the target; uncommitted changes are carried when
+  Git can, nothing is stashed, and ignored files block the checkout. A target
+  that is neither an existing local branch nor a commit ID is refused, and the
+  message names it.
 - `?` then "Checkout by name" (no key) asks for a name and reads it literally;
   it is never treated as a path, and nothing is stashed or forced. A local
   branch is checked out as `s c` does it, and wins over a tag or remote branch

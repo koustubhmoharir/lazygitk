@@ -36,6 +36,9 @@ type namedCheckoutFlow struct {
 	// nameSuggestions overrides the branch-name suggestions of begin. Nil keeps
 	// the upstream order of every branch name.
 	nameSuggestions func() func(string) []*types.Suggestion
+	// envVars are passed to the checkout command. Undo and redo set their reflog
+	// action here.
+	envVars []string
 }
 
 func (flow *namedCheckoutFlow) checkRepository() error {
@@ -130,7 +133,7 @@ func (flow *namedCheckoutFlow) apply(plan git_commands.NamedCheckoutPlan) error 
 	// Fork: unlike the upstream checkout helper, this flow never offers stash
 	// or force. Buffer subsequent input until the changed checkout is refreshed.
 	return flow.c.WithWaitingStatusBlockingInput(types.WaitingStatusOpts{Message: flow.c.Tr.NamedCheckoutApplyingStatus}, func(gocui.Task) error {
-		err := flow.git.Branch.ApplyNamedCheckout(plan)
+		err := flow.git.Branch.ApplyNamedCheckout(plan, flow.envVars...)
 		if errors.Is(err, git_commands.ErrNamedCheckoutChanged) {
 			// Prepare on this worker so the fresh warning is queued before the
 			// blocking-status helper releases buffered input. Starting a second

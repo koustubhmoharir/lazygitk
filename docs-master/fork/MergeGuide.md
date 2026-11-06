@@ -256,6 +256,11 @@ re-apply it if upstream changes that code.
   re-apply that removal or fetch is registered twice. Conflict hints use
   `resolveKeyLabel`. The copy-selected-diff item calls
   `GetLiteralPathsDiff` (literal pathspecs) rather than upstream's `GetDiff`.
+- `controllers/undo_controller.go` (replacement, CHECKOUT cases only): undo and
+  redo of a checkout confirm with `UndoCheckoutPrompt` and then call
+  `CheckoutReflogTarget`. Undo and redo of a rebase and of a commit still use
+  `hardResetWithAutoStash`, which stashes; they are unchanged. The
+  `hardResetWithAutoStash` method stays reachable through redo of a commit.
 - `controllers/branches_controller.go` (replacement): wrapped in
   `addSelectedResetBindings`; merge, rebase, fast-forward, reset, rename,
   delete and new branch go through captured flows; `branch.checkout-previous`
@@ -351,9 +356,12 @@ re-apply it if upstream changes that code.
     its tests (`helpers/selected_ref_checkout.go`, `selected_ref_checkout_test.go`)
     were removed: no production code called them, and their tests covered the
     unused menu rather than the default handlers.
-  - Still reached by default: undo and redo of a checkout
-    (`controllers/undo_controller.go`, `CHECKOUT` action) call `CheckoutRef`
-    and offer an autostash. Not changed yet.
+  - Replaced for undo and redo of a checkout (`controllers/undo_controller.go`,
+    `CHECKOUT` action, which calls `CheckoutReflogTarget` in
+    `helpers/fork_undo_checkout.go`). The reflog action is passed as
+    `envVars` to `ApplyNamedCheckout` and `CheckoutCapturedCommit`, so the
+    entry keeps its undo or redo marker. `CheckoutAutostashPrompt` is no
+    longer used by undo; the upstream string stays.
 - In Status, `s` is for repositories: the global `repo.switch-menu` binding in
   `keybindings.go` gets no path (Status's own binding keeps `s r`),
   `repo.open-path` is a Status binding, and `s p` is inapplicable there.
@@ -429,6 +437,10 @@ launch, described under "Merge tool" below.
   subprocess and worker paths, so the auto-skip is covered. A continue or skip
   that ends the operation runs the callback once; an abort drops it. Upstream
   changes to these functions must keep that call.
+- `helpers/fork_undo_checkout.go`: `CheckoutReflogTarget`, the undo and redo
+  checkout (`git_commands/fork_undo_checkout.go`, `ClassifyReflogCheckoutTarget`).
+  It replaces upstream's `CheckoutRef` there, which runs plain `git checkout`
+  and offers an autostash; see the controllers' undo entry above.
 - `helpers/refs_helper.go`: the reset menu, new branch and
   move-commits-to-new-branch use captured selections (`captured_reset.go`,
   `captured_branch_create.go`). The flat checkouts (`fork_flat_checkout.go`,
