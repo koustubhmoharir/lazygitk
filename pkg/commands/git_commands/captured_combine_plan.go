@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"slices"
 	"strings"
+
+	"github.com/jesseduffield/lazygit/pkg/utils"
 )
 
 // CapturedCombinePlan binds a pure topology plan to the repository snapshot
@@ -30,6 +32,22 @@ func (plan CapturedCombinePlan) IgnoredFiles() []string { return slices.Clone(pl
 func (plan CapturedCombinePlan) WithIgnoredFilesApproved() CapturedCombinePlan {
 	plan.ignoredApproved = true
 	return plan
+}
+
+// Fork: CombineCommitsNotInHeadError is the refusal when some selected commits are not in
+// the history of the checked-out HEAD, so they cannot be combined into it. The GUI shows
+// the commits by their short hashes in its own translated text; Error names them too.
+// Commits that a filter hides from Commits are still checked here, against the history.
+type CombineCommitsNotInHeadError struct {
+	OIDs []string
+}
+
+func (err *CombineCommitsNotInHeadError) Error() string {
+	shortOIDs := make([]string, len(err.OIDs))
+	for i, oid := range err.OIDs {
+		shortOIDs[i] = utils.ShortHash(oid)
+	}
+	return "selected commits are not in the history of the checked-out branch: " + strings.Join(shortOIDs, ", ")
 }
 
 // PrepareCombinePlan captures the current first-parent history and validates
@@ -96,14 +114,18 @@ func (self *RebaseCommands) PrepareCombinePlan(oids []string) (CapturedCombinePl
 		}
 		earliest = candidate
 	}
+	var notInHead []string
 	for _, oid := range selected {
 		ok, err := sync.branchSyncIsCommitAncestor(oid, head)
 		if err != nil {
 			return CapturedCombinePlan{}, err
 		}
 		if !ok {
-			return CapturedCombinePlan{}, fmt.Errorf("selected commit %q is not an ancestor of current HEAD", oid)
+			notInHead = append(notInHead, oid)
 		}
+	}
+	if len(notInHead) > 0 {
+		return CapturedCombinePlan{}, &CombineCommitsNotInHeadError{OIDs: notInHead}
 	}
 
 	start, err := self.readCombineCommit(earliest)

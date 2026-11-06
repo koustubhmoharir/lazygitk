@@ -12,6 +12,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils"
 )
 
 func (self *BasicCommitsController) combineSelectedBinding() *types.Binding {
@@ -29,18 +30,16 @@ func (self *BasicCommitsController) combineSelectedBinding() *types.Binding {
 }
 
 func forkCombineSelection(context ContainsCommits) ([]string, bool) {
-	selected, _, _ := context.GetSelectedItems()
-	if len(selected) < 2 {
+	hashes := forkSelectionHashes(context)
+	if len(hashes) < 2 {
 		return nil, false
 	}
-	oids := make([]string, len(selected))
-	for i, commit := range selected {
-		if commit == nil || !isFullSelectedCommitOID(commit.Hash()) {
+	for _, hash := range hashes {
+		if !isFullSelectedCommitOID(hash) {
 			return nil, false
 		}
-		oids[i] = commit.Hash()
 	}
-	return oids, true
+	return hashes, true
 }
 
 func (self *BasicCommitsController) beginCombineSelected() error {
@@ -94,6 +93,7 @@ func (flow *forkCombineFlow) prepare(changed bool) error {
 	return flow.c.WithWaitingStatus(flow.c.Tr.CombineChecking, func(gocui.Task) error {
 		plan, err := flow.git.Rebase.PrepareCombinePlan(slices.Clone(flow.oids))
 		if err != nil {
+			err = flow.planError(err)
 			if editorPlan != nil {
 				flow.c.OnUIThread(func() error { return flow.recoverDraft(*editorPlan, draft, err) })
 				return nil
@@ -228,7 +228,7 @@ func (flow *forkCombineFlow) apply(plan git_commands.CapturedCombinePlan, messag
 			flow.c.RefreshFromWorker(selectedRebaseRefreshOptions(false))
 			flow.c.OnUIThread(func() error {
 				flow.started = false
-				return flow.recoverDraft(plan, message, err)
+				return flow.recoverDraft(plan, message, flow.planError(err))
 			})
 			return nil
 		}
@@ -240,6 +240,20 @@ func (flow *forkCombineFlow) apply(plan git_commands.CapturedCombinePlan, messag
 		result := cmd.Run()
 		return flow.c.Helpers().MergeAndRebase.CheckMergeOrRebaseWithRefreshOptions(result, selectedRebaseRefreshOptions(result == nil))
 	})
+}
+
+// planError translates the refusal that names the selected commits not in the checked-out
+// history. Other errors are returned as they are.
+func (flow *forkCombineFlow) planError(err error) error {
+	var notInHead *git_commands.CombineCommitsNotInHeadError
+	if !errors.As(err, &notInHead) {
+		return err
+	}
+	shortOIDs := make([]string, len(notInHead.OIDs))
+	for i, oid := range notInHead.OIDs {
+		shortOIDs[i] = utils.ShortHash(oid)
+	}
+	return fmt.Errorf(flow.c.Tr.CombineCommitsNotInHead, strings.Join(shortOIDs, ", "))
 }
 
 func (flow *forkCombineFlow) runTerminal(cmd *oscommands.CmdObj, cleanup func()) error {

@@ -116,6 +116,11 @@ type ForkTranslationSet struct {
 	ClearCommitSelection                  string
 	NoCommitsSelected                     string
 	ClearCommitSelectionFirst             string
+	CommitSetCount                        string
+	CommitSetCountNotShown                string
+	CommitSetMissingNotice                string
+	CommitSetRewrittenNotice              string
+	CombineCommitsNotInHead               string
 	CommitScopeNoRef                      string
 	CommitScopeSelectBranch               string
 	ShowingBranchWithUpstream             string
@@ -515,6 +520,11 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		ClearCommitSelection:                  "Clear selection",
 		NoCommitsSelected:                     "No commits selected",
 		ClearCommitSelectionFirst:             "Clear the selection first (Escape)",
+		CommitSetCount:                        "%d selected",
+		CommitSetCountNotShown:                "%d selected, %d not shown",
+		CommitSetMissingNotice:                "These selected commits no longer exist, so they were removed from the selection: %s",
+		CommitSetRewrittenNotice:              "No branch, tag or HEAD reaches these selected commits any more, as if they were rewritten outside the selection. They stay selected: %s",
+		CombineCommitsNotInHead:               "Cannot combine commits that are not in the checked-out branch's history: %s",
 		CommitScopeNoRef:                      "No branch or tag points at this commit.",
 		CommitScopeSelectBranch:               "Select a local branch to show it with its upstream.",
 		ShowingBranchWithUpstream:             "Showing %s and %s",

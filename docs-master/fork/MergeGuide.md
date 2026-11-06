@@ -124,6 +124,11 @@ re-apply it if upstream changes that code.
 
 ### Git commands
 
+- `git_commands/captured_combine_plan.go`: a selection that is not in HEAD's
+  history fails with `CombineCommitsNotInHeadError`, which lists the commits.
+  The combine flow (`controllers/fork_combine.go`, `planError`) turns it into
+  the translated `CombineCommitsNotInHead`. Keep that mapping if the error
+  changes.
 - `git_commands/rebase.go` (replacement): `PrepareInteractiveRebaseCommand`
   returns an error, checks for a clean start, passes `--no-autostash`, can set
   `rebase.updateRefs=false` and disables lock retries. Every start site goes
@@ -375,7 +380,17 @@ re-apply it if upstream changes that code.
   cursor methods that end a range, `GetSelectedItems`, focus and render.
   `GetSelectedRefRangeForDiffFiles` and `RefForAdjustingLineNumberInDiff`
   use the cursor commit while a set exists. New upstream `ListCursor` entry
-  points that cancel a range need an override there.
+  points that cancel a range need an override there. The set is never pruned
+  for absence (a filter or the commit limit hides members without removing
+  them), and the sync sets the Commits subtitle. The commands' hashes come
+  from `SelectedCommitHashes`, through `forkSelectionHashes` in
+  `controllers/fork_commit_multi_select.go`; `GetSelectedItems` still lists only
+  the loaded commits.
+- `controllers/local_commits_controller.go` `selectRebaseResultCommit`, which
+  drop, fixup and squash call before they rewrite, calls
+  `SetSelectionAfterRewrite` instead of `SetSelection`. The override would add a
+  Shift run to the set first, and the rewrite would then leave those commits
+  unreachable. Upstream's use of `SetSelection` there is otherwise unchanged.
 - `controllers/local_commits_controller.go`, `basic_commits_controller.go` and
   `bisect_controller.go`: `GetKeybindings` returns through
   `guardCommitSelectionBindings`, which disables the commands in
@@ -582,6 +597,13 @@ launch, described under "Merge tool" below.
   may be combined with `DontBlockRepoSwitch`.
 - `helpers/refresh_helper.go` `refForLog` delegates to `BisectCommands.LogRef`;
   keep it and the `w v` check (`IsCommitInCommitsLog`) on that one decision.
+- `helpers/refresh_helper.go` `refreshCommitsWithLimit` calls
+  `checkSelectedCommitsAfterRefresh` (`helpers/fork_commit_set_refresh.go`) at
+  the end of its UI-thread model update, after the selection is restored. It
+  classifies the selected commits that the new list lacks, with
+  `CommitCommands.ClassifySelectedCommits` (`git_commands/fork_commit_set_classify.go`),
+  on a worker, and applies the result on the UI thread for the same repository.
+  Keep the call inside that closure, so that a repository switch drops it.
 
 Upstream changes to these menus should be ported into the captured flows, not
 restored.

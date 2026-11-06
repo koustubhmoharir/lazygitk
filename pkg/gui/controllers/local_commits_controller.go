@@ -1158,7 +1158,8 @@ func (self *LocalCommitsController) interactiveRebaseWithFlag(commits []*models.
 // keep-selection-by-hash can't restore it and falls back to the index, which by
 // then holds the commit that shifted up into its place.
 func (self *LocalCommitsController) selectRebaseResultCommit(startIdx int) {
-	self.context().SetSelection(startIdx)
+	// Fork: the run that this rewrites ends without joining the set (see SetSelectionAfterRewrite).
+	self.context().SetSelectionAfterRewrite(startIdx)
 }
 
 // updateTodos sees if the selected commit is in fact a rebasing

@@ -8,7 +8,6 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
-	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
@@ -22,9 +21,10 @@ func forkCherryPickBinding(c *ControllerCommon) *types.Binding {
 	}
 }
 
-// forkCherryPickSource returns the commit list that c p picks from, and the commits
-// its selection covers. ok is false when the focus is not a commit list.
-func forkCherryPickSource(c *ControllerCommon) (source ContainsCommits, selected []*models.Commit, ok bool) {
+// forkCherryPickSource returns the commit list that c p picks from, and the hashes its
+// selection covers, including members the list does not show. ok is false when the focus
+// is not a commit list.
+func forkCherryPickSource(c *ControllerCommon) (source ContainsCommits, hashes []string, ok bool) {
 	current := c.Context().CurrentStatic()
 	source, ok = current.(ContainsCommits)
 	if !ok && current.GetKind() == types.MAIN_CONTEXT {
@@ -33,27 +33,26 @@ func forkCherryPickSource(c *ControllerCommon) (source ContainsCommits, selected
 	if !ok {
 		return nil, nil, false
 	}
-	selected, _, _ = source.GetSelectedItems()
-	return source, selected, true
+	return source, forkSelectionHashes(source), true
 }
 
-func forkCherryCommitIDs(commits []*models.Commit) []string {
-	ids := make([]string, 0, len(commits))
-	for _, commit := range commits {
-		if commit == nil || !isFullSelectedCommitOID(commit.Hash()) {
+// forkCherryCommitIDs returns the hashes when all of them are full object IDs, and nil
+// otherwise.
+func forkCherryCommitIDs(hashes []string) []string {
+	for _, hash := range hashes {
+		if !isFullSelectedCommitOID(hash) {
 			return nil
 		}
-		ids = append(ids, commit.Hash())
 	}
-	return ids
+	return slices.Clone(hashes)
 }
 
 func forkCherryPickDisabledReason(c *ControllerCommon) *types.DisabledReason {
-	_, selected, ok := forkCherryPickSource(c)
-	if !ok || len(selected) == 0 {
+	_, hashes, ok := forkCherryPickSource(c)
+	if !ok || len(hashes) == 0 {
 		return &types.DisabledReason{Text: c.Tr.NoCommitsSelected, Inapplicable: true}
 	}
-	if len(forkCherryCommitIDs(selected)) == 0 {
+	if len(forkCherryCommitIDs(hashes)) == 0 {
 		return &types.DisabledReason{Text: c.Tr.CannotCherryPickNonCommit, Inapplicable: true}
 	}
 	return nil
@@ -64,17 +63,18 @@ type forkCherryPickFlow struct {
 	git             *commands.GitCommand
 	generation      int
 	source          ContainsCommits // the list whose selection is picked
-	oids            []string        // the selection when c p began, in list order
+	oids            []string        // the selection when c p began, sorted by hash
 	ignoredApproved bool
 	started         bool
 }
 
 func beginForkCherryPick(c *ControllerCommon) error {
-	source, selected, ok := forkCherryPickSource(c)
-	oids := forkCherryCommitIDs(selected)
+	source, hashes, ok := forkCherryPickSource(c)
+	oids := forkCherryCommitIDs(hashes)
 	if !ok || len(oids) == 0 {
 		return nil
 	}
+	slices.Sort(oids)
 	flow := &forkCherryPickFlow{c: c, git: c.Git(), generation: c.State().GetRepoGeneration(), source: source, oids: oids}
 	return flow.prepare(false)
 }
@@ -219,8 +219,9 @@ func (flow *forkCherryPickFlow) clearPickedSelection() error {
 	if err := flow.checkRepository(); err != nil {
 		return err
 	}
-	selected, _, _ := flow.source.GetSelectedItems()
-	if !slices.Equal(forkCherryCommitIDs(selected), flow.oids) {
+	current := forkCherryCommitIDs(forkSelectionHashes(flow.source))
+	slices.Sort(current)
+	if !slices.Equal(current, flow.oids) {
 		return nil
 	}
 	if commits, ok := flow.source.(*context.LocalCommitsContext); ok {

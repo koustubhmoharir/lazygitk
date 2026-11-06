@@ -65,12 +65,11 @@ func (self *ModeHelper) reloadCommitsForShowInCommits(message string, hash strin
 	})
 }
 
-// focusCommitInCommits selects hash as the only commit and focuses Commits. The
-// explicit set and the run in progress are cleared first, so that moving the cursor
-// does not add the run to the set; cherry-pick marks are not touched.
+// focusCommitInCommits moves the cursor to hash and focuses Commits. The explicit set is
+// kept, as Escape keeps it: the set may hold commits that this does not show. A run in
+// progress ends with the move, as a cursor move ends it; its commits join the set.
 func (self *ModeHelper) focusCommitInCommits(hash string) {
 	commits := self.c.Contexts().LocalCommits
-	commits.ClearMultiSelection()
 	commits.SelectCommitByHash(hash)
 	self.c.Context().Push(commits, types.OnFocusOpts{})
 	self.enlargeSideAreaForCommits()

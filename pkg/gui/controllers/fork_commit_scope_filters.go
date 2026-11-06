@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"errors"
+	"slices"
 
-	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gui/modes/filtering"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/samber/lo"
@@ -81,8 +81,7 @@ func (self *LocalCommitsController) commitScopeFilterBinding(commandID string, d
 		Description: description,
 		Handler:     func() error { return self.applyCommitScopeFilter(descendants) },
 		GetDisabledReason: func() *types.DisabledReason {
-			commits, _, _ := self.context().GetSelectedItems()
-			if _, ok := forkCommitScopeHashes(commits); !ok {
+			if _, ok := forkCommitScopeHashes(forkSelectionHashes(self.context())); !ok {
 				return &types.DisabledReason{Text: self.c.Tr.CommitScopeSelectCommits, Inapplicable: true}
 			}
 			return nil
@@ -91,26 +90,23 @@ func (self *LocalCommitsController) commitScopeFilterBinding(commandID string, d
 }
 
 func (self *LocalCommitsController) applyCommitScopeFilter(descendants bool) error {
-	commits, _, _ := self.context().GetSelectedItems()
-	hashes, ok := forkCommitScopeHashes(commits)
+	hashes, ok := forkCommitScopeHashes(forkSelectionHashes(self.context()))
 	if !ok {
 		return nil
 	}
 	return self.c.Helpers().Mode.SetCommitScopeFilter(filtering.CommitScope{Hashes: hashes, Descendants: descendants}, self.context().GetSelectedCommitHash())
 }
 
-// forkCommitScopeHashes returns the hashes of commits, or false when there are
-// none or one of them is not a real commit (a rebase todo, for example).
-func forkCommitScopeHashes(commits []*models.Commit) ([]string, bool) {
-	if len(commits) == 0 {
+// forkCommitScopeHashes returns the hashes, or false when there are none or one of them
+// is not a full commit ID (a rebase todo, for example).
+func forkCommitScopeHashes(hashes []string) ([]string, bool) {
+	if len(hashes) == 0 {
 		return nil, false
 	}
-	hashes := make([]string, 0, len(commits))
-	for _, commit := range commits {
-		if commit == nil || !isFullSelectedCommitOID(commit.Hash()) {
+	for _, hash := range hashes {
+		if !isFullSelectedCommitOID(hash) {
 			return nil, false
 		}
-		hashes = append(hashes, commit.Hash())
 	}
-	return hashes, true
+	return slices.Clone(hashes), true
 }

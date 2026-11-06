@@ -922,6 +922,8 @@ func (self *RefreshHelper) refreshCommitsWithLimit(captured capturedCommitState,
 		case types.KeepCommitSelectionIndex:
 			// The caller set the selection index deliberately; leave it untouched.
 		}
+		// Fork: the selected commits this list lacks are checked by Git (fork_commit_set_refresh.go).
+		self.checkSelectedCommitsAfterRefresh(env, commits)
 	})
 
 	self.refreshView(self.c.Contexts().LocalCommits, env)

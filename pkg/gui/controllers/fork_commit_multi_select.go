@@ -11,13 +11,33 @@ import (
 // Reflog and Sub-commits keep Space as inspect, and Space in Commits is no longer the
 // inspect route (see fork_command_projection.go).
 
+// forkSelectionHashes returns the hashes that a command on the selection of source acts
+// on. In Commits with a set or a run, that is the whole selection, including the members
+// the loaded list does not show. Otherwise it is the selected items, which is the cursor
+// commit in single-select mode, as upstream has it. A nil item gives an empty hash, which
+// the callers' full-ID checks refuse.
+func forkSelectionHashes(source ContainsCommits) []string {
+	if local, ok := source.(*context.LocalCommitsContext); ok && local.MultiSelectActive() {
+		return local.SelectedCommitHashes()
+	}
+	selected, _, _ := source.GetSelectedItems()
+	hashes := make([]string, len(selected))
+	for i, commit := range selected {
+		if commit != nil {
+			hashes[i] = commit.Hash()
+		}
+	}
+	return hashes
+}
+
 // commitSelectionScoped lists the Commits commands that act on the selected commit, the
 // cursor or an index range, so they cannot act on an explicit set. While a set exists,
 // guardCommitSelectionBindings disables them. Classification:
 //
 // Enabled with a set, because they take the set or do not use the selection: g c
-// (combine the set), c p (picks the set, in list order), w a and w d (GetSelectedItems),
-// Space, v (inspect the cursor commit), navigation, search, log options, w o, /, g i (the
+// (combine the set), c p (picks the set, in ancestry order), w a and w d (the set, see
+// forkSelectionHashes), Space, v (inspect the cursor commit), navigation, search, log
+// options, w o, /, g i (the
 // first merge-base commit, not the cursor), autosquash, open PR, c clear, g m n (moves
 // commits to a new branch from the checked-out branch), t l s (moves the cursor and
 // starts a run) and focus-diff (it only shows the main view).

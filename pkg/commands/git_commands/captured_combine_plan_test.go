@@ -191,3 +191,23 @@ func TestCapturedCombineIgnoredApprovalAndFingerprintInvalidation(t *testing.T) 
 	assert.ErrorIs(t, commands.CheckCombinePlan(approved), ErrBranchActionChanged)
 	assert.NotEmpty(t, third)
 }
+
+func TestCapturedCombineRefusalNamesCommitsNotInHead(t *testing.T) {
+	root := initHistoricalRepo(t)
+	base := capturedCherryPickCommit(t, root, "base", "base\n", "base", capturedCherryPickDate)
+	mainBranch := gitTest(t, root, "branch", "--show-current")
+	gitTest(t, root, "checkout", "-qb", "side", base)
+	right := capturedCherryPickCommit(t, root, "right", "right\n", "right", capturedCherryPickDate)
+	rightTwo := capturedCherryPickCommit(t, root, "right-two", "right two\n", "right two", capturedCherryPickDate)
+	gitTest(t, root, "checkout", "-q", mainBranch)
+	commands := selectedCommitRebaseCommands(t, root)
+
+	// base is on HEAD, and right and right two are on one line from base but not on HEAD.
+	_, err := commands.PrepareCombinePlan([]string{base, right, rightTwo})
+	var notInHead *CombineCommitsNotInHeadError
+	if assert.ErrorAs(t, err, &notInHead) {
+		assert.Equal(t, []string{right, rightTwo}, notInHead.OIDs)
+	}
+	assert.Contains(t, err.Error(), right[:7])
+	assert.Contains(t, err.Error(), rightTwo[:7])
+}

@@ -54,6 +54,10 @@ recorded here or in the user guide.
   with the reason "Clear the selection first (Escape)"; it never falls back to
   the cursor commit. Only inspection (`v` and the main view) follows the
   cursor, which the gutter marks.
+  The set is kept by commit identity: commits hidden by a filter, beyond the
+  loaded list or rewritten elsewhere stay selected and counted, and a notice
+  names rewritten ones. Only commits whose objects no longer exist leave it,
+  with a notice.
 - **Never switch the checkout to simulate an operation.** Operations that
   would need another worktree (merging or rebasing into a branch that is not
   checked out) are not offered; the user checks out explicitly.

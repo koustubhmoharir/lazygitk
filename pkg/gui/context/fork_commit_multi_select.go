@@ -1,6 +1,9 @@
 package context
 
 import (
+	"fmt"
+	"slices"
+
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gui/context/traits"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
@@ -23,8 +26,14 @@ import (
 // commitMultiSelect is the explicit set of multi-select mode, and what the view last
 // drew of the commit list.
 type commitMultiSelect struct {
-	// hashes holds the commits of the set, by hash. Rebase todo items never join it.
+	// hashes holds the commits of the set, by hash. Rebase todo items never join it. A
+	// hash stays until the user removes it or a refresh finds its object missing: a
+	// filter or the commit limit hiding it does not remove it.
 	hashes map[string]bool
+	// notified holds the set's hashes that a refresh has already named as no longer
+	// reached by any ref. A hash leaves it when it leaves the set, so a later rewrite
+	// is named again. See NewUnreachableNotices.
+	notified map[string]bool
 	// drawn is the commit list the view last synchronised with, and the hashes of the
 	// run's ends at that time. When a refresh has replaced the list since, the run's
 	// indices may point at other commits, so the run that ends then is found again by
@@ -58,7 +67,97 @@ func (self *LocalCommitsViewModel) HasCommitSet() bool {
 // the run to the set. This is what Escape does.
 func (self *LocalCommitsViewModel) ClearMultiSelection() {
 	self.multiSelect.hashes = nil
+	self.multiSelect.notified = nil
 	self.ListCursor.CancelRangeSelect()
+}
+
+// SelectedCommitHashes returns the hashes that the selection covers, each once: the set,
+// including the members that the loaded list does not show, and the run in progress. The
+// order is not meaningful. In single-select mode it is empty; the cursor commit is the
+// selection there, and GetSelectedItems gives it.
+func (self *LocalCommitsViewModel) SelectedCommitHashes() []string {
+	if !self.MultiSelectActive() {
+		return nil
+	}
+	seen := make(map[string]bool, len(self.multiSelect.hashes))
+	hashes := make([]string, 0, len(self.multiSelect.hashes))
+	add := func(hash string) {
+		if !seen[hash] {
+			seen[hash] = true
+			hashes = append(hashes, hash)
+		}
+	}
+	for hash := range self.multiSelect.hashes {
+		add(hash)
+	}
+	for _, commit := range self.runCommits() {
+		add(commit.Hash())
+	}
+	return hashes
+}
+
+// CommitSelectionCounts returns how many commits the selection covers, and how many of
+// them the loaded list does not show. Both are zero in single-select mode.
+func (self *LocalCommitsViewModel) CommitSelectionCounts() (selected int, notShown int) {
+	hashes := self.SelectedCommitHashes()
+	return len(hashes), len(self.SelectedCommitHashesNotIn(self.GetCommits()))
+}
+
+// SelectedCommitHashesNotIn returns the set's hashes that commits does not show, in
+// sorted order. A rebase todo item in the list does not count as showing its commit.
+func (self *LocalCommitsViewModel) SelectedCommitHashesNotIn(commits []*models.Commit) []string {
+	present := make(map[string]bool, len(commits))
+	for _, commit := range realCommits(commits) {
+		present[commit.Hash()] = true
+	}
+	absent := []string{}
+	for hash := range self.multiSelect.hashes {
+		if !present[hash] {
+			absent = append(absent, hash)
+		}
+	}
+	slices.Sort(absent)
+	return absent
+}
+
+// RemoveFromCommitSet removes hashes from the set, as a refresh does for commits whose
+// objects no longer exist. Nothing else about the selection changes.
+func (self *LocalCommitsViewModel) RemoveFromCommitSet(hashes []string) {
+	for _, hash := range hashes {
+		self.removeFromSet(hash)
+	}
+}
+
+// NewUnreachableNotices returns the set's hashes among hashes that have not been named
+// yet, and records them as named. Hashes that are not in the set are ignored.
+func (self *LocalCommitsViewModel) NewUnreachableNotices(hashes []string) []string {
+	var fresh []string
+	for _, hash := range hashes {
+		if !self.multiSelect.hashes[hash] || self.multiSelect.notified[hash] {
+			continue
+		}
+		if self.multiSelect.notified == nil {
+			self.multiSelect.notified = map[string]bool{}
+		}
+		self.multiSelect.notified[hash] = true
+		fresh = append(fresh, hash)
+	}
+	return fresh
+}
+
+// removeFromSet removes a hash from the set and forgets that it was named.
+func (self *LocalCommitsViewModel) removeFromSet(hash string) {
+	delete(self.multiSelect.hashes, hash)
+	delete(self.multiSelect.notified, hash)
+}
+
+// SetSelectionAfterRewrite moves the cursor to idx for an operation that rewrites the
+// commits of the run in progress: a drop, fixup or squash starting on the run. The run
+// ends without joining the set, since the operation takes its commits. A plain move
+// would add them to the set, and they would then be unreachable once rewritten.
+func (self *LocalCommitsViewModel) SetSelectionAfterRewrite(idx int) {
+	self.ListCursor.CancelRangeSelect()
+	self.ListCursor.SetSelection(idx)
 }
 
 // ToggleCommitSelection is Space in Commits. With a run in progress it toggles the
@@ -86,7 +185,7 @@ func (self *LocalCommitsViewModel) toggleCommits(commits []*models.Commit) {
 	})
 	if allInSet {
 		for _, commit := range commits {
-			delete(self.multiSelect.hashes, commit.Hash())
+			self.removeFromSet(commit.Hash())
 		}
 		return
 	}
@@ -155,26 +254,10 @@ func (self *LocalCommitsViewModel) recordDrawn(commits []*models.Commit) {
 	self.multiSelect.drawnCursor = commitHashAt(commits, cursor)
 }
 
-// pruneCommitSet drops the hashes that are not in the loaded list: commits that a rebase
-// removed, or that a filter hides. The set is kept by hash, so it comes back when they do.
-func (self *LocalCommitsViewModel) pruneCommitSet(commits []*models.Commit) {
-	if len(self.multiSelect.hashes) == 0 {
-		return
-	}
-	present := make(map[string]bool, len(commits))
-	for _, commit := range realCommits(commits) {
-		present[commit.Hash()] = true
-	}
-	for hash := range self.multiSelect.hashes {
-		if !present[hash] {
-			delete(self.multiSelect.hashes, hash)
-		}
-	}
-}
-
-// GetSelectedItems returns the commits that the selection covers. In multi-select mode
-// that is the set and the run, in list order, and the indices of the first and the last
-// of them. In single-select mode it is upstream's selection.
+// GetSelectedItems returns the loaded commits that the selection covers. In multi-select
+// mode that is the set and the run, in list order, and the indices of the first and the
+// last of them. Members the loaded list does not show are left out; SelectedCommitHashes
+// has the whole selection. In single-select mode it is upstream's selection.
 func (self *LocalCommitsViewModel) GetSelectedItems() ([]*models.Commit, int, int) {
 	if !self.MultiSelectActive() {
 		return self.ListViewModel.GetSelectedItems()
@@ -241,14 +324,28 @@ func (self *LocalCommitsViewModel) ToggleStickyRange() {
 	self.ListCursor.ToggleStickyRange()
 }
 
+// commitSetSubtitle is the Commits subtitle while a set is held: how many commits it
+// holds, and how many of them the loaded list does not show. It is empty otherwise.
+func (self *LocalCommitsContext) commitSetSubtitle() string {
+	if !self.HasCommitSet() {
+		return ""
+	}
+	tr := self.ListContextTrait.c.Tr
+	selected, notShown := self.CommitSelectionCounts()
+	if notShown == 0 {
+		return fmt.Sprintf(tr.CommitSetCount, selected)
+	}
+	return fmt.Sprintf(tr.CommitSetCountNotShown, selected, notShown)
+}
+
 // syncMultiSelect brings the view in line with the multi-select state: the highlighted
-// lines of the set and the run, and the cursor marker. It runs whenever the list is
-// focused, moved or rendered, so it costs time in the size of the loaded list.
+// lines of the set and the run, the cursor marker and the subtitle. It runs whenever the
+// list is focused, moved or rendered, so it costs time in the size of the loaded list.
 func (self *LocalCommitsContext) syncMultiSelect() {
 	commits := self.GetCommits()
-	self.pruneCommitSet(commits)
 
 	view := self.GetView()
+	view.Subtitle = self.commitSetSubtitle()
 	if !self.MultiSelectActive() || len(commits) == 0 {
 		view.SetSelectedLines(nil)
 		view.SetInclusionGutter(false, nil)

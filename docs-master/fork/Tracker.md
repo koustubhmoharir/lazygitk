@@ -18,6 +18,13 @@ triage as its batch lands.
 - **U2 Hidden selected commits.** Commits hidden by a filter or beyond the
   loaded list stay selected; selection mode does not change. The count
   includes hidden commits and commands act on the whole set.
+- **U2a Rewritten selected commits** (2026-11-06). Selected commits that a
+  refresh finds unreachable from every ref (rewritten outside the selection)
+  stay selected and counted, and a notice names them. Copy and cherry-pick
+  still use them; commands that edit the current branch's history refuse and
+  name the selected commits that are no longer in it.
+- **Descendant scope** (11-F1, 2026-11-06) follows the normal commit limit:
+  the newest 300 descendants, loading more on scroll.
 - **U3 Move commits to a new branch** refuses while tracked files have staged
   or unstaged changes; it never stashes.
 - **U4 Merge menu.** `s` squash-merges and commits; `u` squash-merges without
@@ -29,7 +36,9 @@ triage as its batch lands.
 
 Each task is one subagent batch, reviewed and committed before the next.
 
-- Batch D: commit list state, with U2 (10-F1).
+- Batch D: commit list state.
+  D2: empty-pick auto-skip cleanup (10-F2). D3: scope clear beyond 300 rows
+  (11-F2). D4: limited descendant scope (11-F1).
 - Batch P: fetch per U1 (05-F4).
 - Batch F: sync.
 - Batches E, H, K, M, and L with U4 (07-F2, 07-F3).

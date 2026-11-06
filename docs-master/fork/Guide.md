@@ -369,9 +369,9 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   no key; it is still in the palette.
 - `w v` shows the selected branch's, tag's or entry's commit in Commits, from
   Branches (including the detached HEAD entry, whose commit is HEAD's), Remote
-  branches, Tags, Reflog and Sub-commits. The commit becomes
-  the only selection. A log filter that hides it is
-  removed without asking; one that shows it stays. If the side panels are in
+  branches, Tags, Reflog and Sub-commits. The cursor moves to
+  the commit, and an explicit selection is kept (Escape clears it). A log filter
+  that hides the commit is removed without asking; one that shows it stays. If the side panels are in
   normal mode, or the main views are enlarged, the side panels become half
   screen. When the log cannot show the commit at all (no branch, tag, or the
   ref the log walks reaches it, as with some reflog entries), nothing changes
@@ -392,12 +392,24 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   while Shift is held join the selection when the cursor next moves without
   Shift.
 - While a selection exists, `c p`, `g c`, `w a` and `w d` act on all the
-  selected commits. Commands that need one commit or a range (for
-  example reword, drop, move, reset, copy, `w b`) are disabled until Escape
-  clears the selection; mouse drags do not move commits then.
-- The selection is kept by commit, so it survives refreshes and filters. The
-  main view shows the cursor commit's diff, or the whole range while a Shift
-  run is the only selection.
+  selected commits, including those that the log does not show. Commands that
+  need one commit or a range (for example reword, drop, move, reset, copy,
+  `w b`) are disabled until Escape clears the selection; mouse drags do not move
+  commits then.
+- The selection is kept by commit, so it survives refreshes and filters. A
+  selected commit that a filter or the commit limit hides stays selected. The
+  Commits subtitle counts the whole selection, as `N selected`, and adds
+  `M not shown` for the members the log does not show. Clearing the filter
+  shows them selected again. The main view shows the cursor commit's diff, or
+  the whole range while a Shift run is the only selection.
+- After a refresh, a selected commit whose object no longer exists is removed
+  from the selection, and a notice names it. A selected commit that no branch,
+  tag or HEAD reaches any more (rewritten or dropped outside the selection)
+  stays selected, and a notice names it the first time it is found. Copy and
+  cherry-pick still use it. `g c` refuses it if it is not in the checked-out
+  branch's history, and names it.
+- A Shift run that a drop, fixup or squash starts on does not join the
+  selection, since the operation takes its commits.
 
 ### Rebase, merge, reset
 
@@ -446,8 +458,9 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 ### History editing
 
 - `g c` combines the selected commits into one commit at the position of the
-  oldest selected one (by ancestry). Commits in between that are not selected
-  stay. The subject comes from that oldest commit and the editable
+  oldest selected one (by ancestry). It refuses commits that are not in the
+  checked-out branch's history, and names them. Commits in between that are
+  not selected stay. The subject comes from that oldest commit and the editable
   description contains every selected commit's full message, oldest first.
   Merges cannot be crossed. This replaces squash and fixup.
 - `c p` cherry-picks the selection of the pane it is pressed in: the commits
