@@ -64,22 +64,22 @@ func TestHistoricalFileDiffInvocationArguments(t *testing.T) {
 		{
 			name: "directory working tree", files: []*models.CommitFile{{Path: "dir/a.txt"}},
 			showTree: true, handler: "worktree",
-			want: []string{"git", "--literal-pathspecs", "difftool", "--no-prompt", "--dir-diff", oid, "--", "dir"},
+			want: []string{"git", "--literal-pathspecs", "difftool", "--tool=fake", "--no-prompt", "--dir-diff", oid, "--", "dir"},
 		},
 		{
 			name: "directory previous", files: []*models.CommitFile{{Path: "dir/a.txt"}},
 			showTree: true, handler: "previous",
-			want: []string{"git", "--literal-pathspecs", "difftool", "--no-prompt", "--dir-diff", parent, oid, "--", "dir"},
+			want: []string{"git", "--literal-pathspecs", "difftool", "--tool=fake", "--no-prompt", "--dir-diff", parent, oid, "--", "dir"},
 		},
 		{
 			name: "renamed file previous", files: []*models.CommitFile{{Path: "new/name.txt", PreviousPath: "old/name.txt"}},
 			handler: "previous",
-			want:    []string{"git", "--literal-pathspecs", "difftool", "--no-prompt", parent, oid, "--", "new/name.txt", "old/name.txt"},
+			want:    []string{"git", "--literal-pathspecs", "difftool", "--tool=fake", "--no-prompt", parent, oid, "--", "new/name.txt", "old/name.txt"},
 		},
 		{
 			name: "deleted file previous", files: []*models.CommitFile{{Path: "gone.txt", ChangeStatus: "D"}},
 			handler: "previous",
-			want:    []string{"git", "--literal-pathspecs", "difftool", "--no-prompt", parent, oid, "--", "gone.txt"},
+			want:    []string{"git", "--literal-pathspecs", "difftool", "--tool=fake", "--no-prompt", parent, oid, "--", "gone.txt"},
 		},
 	}
 	for _, tc := range tests {
@@ -92,6 +92,7 @@ func TestHistoricalFileDiffInvocationArguments(t *testing.T) {
 			runner.ExpectGitArgs([]string{"rev-parse", "--verify", "--end-of-options", oid + "^{commit}"}, oid, nil)
 			runner.ExpectGitArgs([]string{"rev-list", "--parents", "-n", "1", oid, "--"}, oid+" "+parent, nil)
 			// diff.tool is configured, so the chooser launches without a menu.
+			runner.ExpectGitArgs([]string{"config", "--get", "difftool.guiDefault"}, "", nil)
 			runner.ExpectGitArgs([]string{"config", "--get", "diff.tool"}, "fake", nil)
 			var err error
 			if tc.handler == "previous" {
@@ -151,6 +152,7 @@ func TestHistoricalFileDiffInvocationGuardsAndFailureRefresh(t *testing.T) {
 	controller.c.IGuiCommon = gui
 	runner.ExpectGitArgs([]string{"rev-parse", "--verify", "--end-of-options", oid + "^{commit}"}, oid, nil)
 	runner.ExpectGitArgs([]string{"rev-list", "--parents", "-n", "1", oid, "--"}, oid+" "+parent, nil)
+	runner.ExpectGitArgs([]string{"config", "--get", "difftool.guiDefault"}, "", nil)
 	runner.ExpectGitArgs([]string{"config", "--get", "diff.tool"}, "fake", nil)
 	err := controller.diffHistoricalFileWithWorktree()
 	if !errors.Is(err, sentinel) {

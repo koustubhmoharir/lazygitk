@@ -226,13 +226,13 @@ func TestWorkingFileDiffFileEndpoints(t *testing.T) {
 	if err := fixture.controller.diffWorkingFileWithHead(node); err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, []string{"git", "--literal-pathspecs", "difftool", "--no-prompt", fixture.head, "--", "sample.txt"}, fixture.onlyCommand(t))
+	assert.Equal(t, []string{"git", "--literal-pathspecs", "difftool", "--tool=fake", "--no-prompt", fixture.head, "--", "sample.txt"}, fixture.onlyCommand(t))
 
 	fixture.ui.commands = nil
 	if err := fixture.controller.diffWorkingFileWithStaged(node); err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, []string{"git", "difftool", "--no-prompt", "--", "sample.txt"}, fixture.onlyCommand(t))
+	assert.Equal(t, []string{"git", "difftool", "--tool=fake", "--no-prompt", "--", "sample.txt"}, fixture.onlyCommand(t))
 	assert.Contains(t, fixture.ui.commands[0].GetEnvVars(), "GIT_LITERAL_PATHSPECS=1")
 
 	fixture.ui.commands = nil
@@ -245,7 +245,7 @@ func TestWorkingFileDiffFileEndpoints(t *testing.T) {
 	if err := fixture.ui.prompts[0].HandleConfirm(fixture.before[:7]); err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, []string{"git", "--literal-pathspecs", "difftool", "--no-prompt", fixture.before, "--", "sample.txt"}, fixture.onlyCommand(t))
+	assert.Equal(t, []string{"git", "--literal-pathspecs", "difftool", "--tool=fake", "--no-prompt", fixture.before, "--", "sample.txt"}, fixture.onlyCommand(t))
 }
 
 func TestWorkingFileDiffDirectoryEndpoints(t *testing.T) {
@@ -256,13 +256,13 @@ func TestWorkingFileDiffDirectoryEndpoints(t *testing.T) {
 	if err := fixture.controller.diffWorkingFileWithHead(node); err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, []string{"git", "--literal-pathspecs", "difftool", "--no-prompt", "--dir-diff", fixture.head, "--", "dir"}, fixture.onlyCommand(t))
+	assert.Equal(t, []string{"git", "--literal-pathspecs", "difftool", "--tool=fake", "--no-prompt", "--dir-diff", fixture.head, "--", "dir"}, fixture.onlyCommand(t))
 
 	fixture.ui.commands = nil
 	if err := fixture.controller.diffWorkingFileWithStaged(node); err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, []string{"git", "difftool", "--no-prompt", "--dir-diff", "--", "dir"}, fixture.onlyCommand(t))
+	assert.Equal(t, []string{"git", "difftool", "--tool=fake", "--no-prompt", "--dir-diff", "--", "dir"}, fixture.onlyCommand(t))
 	assert.Contains(t, fixture.ui.commands[0].GetEnvVars(), "GIT_LITERAL_PATHSPECS=1")
 
 	fixture.ui.commands = nil
@@ -272,7 +272,7 @@ func TestWorkingFileDiffDirectoryEndpoints(t *testing.T) {
 	if err := fixture.ui.prompts[0].HandleConfirm(fixture.before); err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, []string{"git", "--literal-pathspecs", "difftool", "--no-prompt", "--dir-diff", fixture.before, "--", "dir"}, fixture.onlyCommand(t))
+	assert.Equal(t, []string{"git", "--literal-pathspecs", "difftool", "--tool=fake", "--no-prompt", "--dir-diff", fixture.before, "--", "dir"}, fixture.onlyCommand(t))
 }
 
 func TestWorkingFileDiffStagedRenameIncludesOldPath(t *testing.T) {
@@ -284,7 +284,7 @@ func TestWorkingFileDiffStagedRenameIncludesOldPath(t *testing.T) {
 	if err := fixture.controller.diffWorkingFileWithHead(node); err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, []string{"git", "--literal-pathspecs", "difftool", "--no-prompt", fixture.head, "--", "new.txt", "sample.txt"}, fixture.onlyCommand(t))
+	assert.Equal(t, []string{"git", "--literal-pathspecs", "difftool", "--tool=fake", "--no-prompt", fixture.head, "--", "new.txt", "sample.txt"}, fixture.onlyCommand(t))
 
 	fixture.ui.commands = nil
 	if err := fixture.controller.promptWorkingFileCommitDiff(node); err != nil {
@@ -293,7 +293,7 @@ func TestWorkingFileDiffStagedRenameIncludesOldPath(t *testing.T) {
 	if err := fixture.ui.prompts[0].HandleConfirm(fixture.before); err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, []string{"git", "--literal-pathspecs", "difftool", "--no-prompt", fixture.before, "--", "new.txt", "sample.txt"}, fixture.onlyCommand(t))
+	assert.Equal(t, []string{"git", "--literal-pathspecs", "difftool", "--tool=fake", "--no-prompt", fixture.before, "--", "new.txt", "sample.txt"}, fixture.onlyCommand(t))
 }
 
 func TestWorkingFileDiffStickyModeIsIgnored(t *testing.T) {
@@ -306,14 +306,14 @@ func TestWorkingFileDiffStickyModeIsIgnored(t *testing.T) {
 	if err := fixture.controller.diffWorkingFileWithStaged(node); err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, []string{"git", "difftool", "--no-prompt", "--", "sample.txt"}, fixture.onlyCommand(t))
+	assert.Equal(t, []string{"git", "difftool", "--tool=fake", "--no-prompt", "--", "sample.txt"}, fixture.onlyCommand(t))
 	assert.Contains(t, fixture.ui.commands[0].GetEnvVars(), "GIT_LITERAL_PATHSPECS=1")
 
 	fixture.ui.commands = nil
 	if err := fixture.controller.diffWorkingFileWithHead(node); err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, []string{"git", "--literal-pathspecs", "difftool", "--no-prompt", fixture.head, "--", "sample.txt"}, fixture.onlyCommand(t))
+	assert.Equal(t, []string{"git", "--literal-pathspecs", "difftool", "--tool=fake", "--no-prompt", fixture.head, "--", "sample.txt"}, fixture.onlyCommand(t))
 }
 
 func TestWorkingFileDiffUntrackedFileRefused(t *testing.T) {
