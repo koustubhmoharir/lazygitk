@@ -354,6 +354,9 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   removed by Escape (the cursor stays on its commit), or by choosing another.
   The filtered rows keep the order of the unfiltered log, with the other rows
   removed, so commits that were close together stay close together.
+- While the list is limited, `w d` shows the newest 300 descendants; scrolling
+  past the commit threshold lifts the limit and loads them all, as in the normal
+  log. `w a` follows the same limit.
 - `w b` (show branch / tag) shows only a ref and every ancestor of it. A
   local branch is shown with its tracking branch, so their shared history and
   both sides of a divergence are visible; a branch without one is shown alone,

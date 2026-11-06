@@ -259,7 +259,17 @@ re-apply it if upstream changes that code.
   `commitScopeLog` (`fork_commit_scope.go`). New `git log` arguments that depend on the ref or
   limit must go through `commitScopeLog`. A scope walks the unfiltered
   revisions and order and drops commits while it reads, so an upstream change
-  to the unfiltered log arguments changes the scoped walk with it.
+  to the unfiltered log arguments changes the scoped walk with it. The
+  descendant scope is the exception: it walks `--all` in the unfiltered order,
+  reads only until its reachable selected commits have been read, and parses
+  only the rows it keeps (`loadCommitDescendants`, `descendantWalk`). Its
+  reachability check streams `rev-list --all` (`reachableFromAll`), and does not
+  use `rev-list <hash> --not --all`, whose limit walk trusts commit dates. Its
+  limit is not a git `-300`: a limited scope keeps the newest `commitScopeLimit`
+  rows, which are the first kept rows of the walk. The scoped ancestors filter
+  and the descendant rows both read `commitScopeLimit`, the one place that sets
+  the scope limit. When the upstream `Limit` bool becomes an int, the `-300` in
+  `getLogCmd` and that constant must follow it together.
 - `git_commands/fork_unmerged_paths.go`: `UnmergedPaths` asks Git for the
   unmerged paths (`git diff --name-only --diff-filter=U -z`) for the `c c`
   refusal. Keep it fresh: the Files model may be stale.

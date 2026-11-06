@@ -36,7 +36,6 @@ triage as its batch lands.
 
 Each task is one subagent batch, reviewed and committed before the next.
 
-- Batch D: commit list state. D4: limited descendant scope (11-F1).
 - Batch P: fetch per U1 (05-F4).
 - Batch F: sync.
 - Batches E, H, K, M, and L with U4 (07-F2, 07-F3).

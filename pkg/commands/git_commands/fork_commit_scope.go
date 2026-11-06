@@ -1,7 +1,6 @@
 package git_commands
 
 import (
-	"slices"
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
@@ -19,6 +18,9 @@ import (
 // adjacent. A walk that starts from the selected commits alone would group its
 // rows by line of history instead.
 //
+// A descendant scope reads the walk only as far as its selected commits, and parses
+// only the rows it keeps (see loadCommitDescendants).
+//
 // Integration points: GetCommits loads a scoped list with loadCommitScope instead
 // of loadCommits, and getLogCmd takes its revisions, order, --all and limit from
 // commitScopeLog. Upstream lists never set ScopeHashes or ScopeRef, so they keep
@@ -26,7 +28,9 @@ import (
 
 // commitScopeLimit is the number of commits in a limited list. getLogCmd applies
 // it to unscoped lists with -300; a scoped ancestors list applies it while it reads
-// the walk, because the walk has no git limit (see commitAncestorFilter).
+// the walk, because the walk has no git limit (see commitAncestorFilter); a
+// descendant scope keeps its newest rows, which are the first ones it finds in its walk (see
+// loadCommitDescendants).
 const commitScopeLimit = 300
 
 // hasCommitScope reports whether the list is limited to a commit scope.
@@ -53,8 +57,8 @@ func commitScopeLog(opts GetCommitsOptions, refSpec string, configuredOrder stri
 	if opts.ScopeDescendants {
 		// Descendants can be on any ref, so the walk is always --all, whatever the
 		// unfiltered list shows. Children come before their parents in topo-order and
-		// date-order, which keepCommitDescendants relies on. The walk has no limit,
-		// so that no descendant is missed.
+		// date-order, so the walk can stop after its selected commits (see
+		// loadCommitDescendants). It has no limit: the rows are limited there.
 		return commitScopeLogArgs{revisions: []string{refSpec}, order: order, all: true}
 	}
 	// Ancestors: the walk is the unfiltered one. Its tips are the ones the unfiltered
@@ -81,8 +85,7 @@ func scopeWalkOrder(configuredOrder string) string {
 
 // loadCommitScope loads the commits of a commit scope with parseLine, as
 // loadCommits does for unscoped lists. Selected hashes that no longer exist are
-// dropped first, so that a vanished commit cannot make the descendants search
-// read the whole history, and an ancestors log cannot fail on it.
+// dropped first, so that an ancestors log cannot fail on one.
 func (self *CommitLoader) loadCommitScope(opts GetCommitsOptions, parseLine func(string) (*models.Commit, bool)) ([]*models.Commit, error) {
 	if opts.ScopeRef != "" {
 		return self.loadRefScope(opts, parseLine)
@@ -101,30 +104,76 @@ func (self *CommitLoader) loadCommitScope(opts GetCommitsOptions, parseLine func
 		return self.loadCommitAncestors(scoped, parseLine)
 	}
 
-	selected := make(map[string]bool, len(hashes))
-	for _, hash := range hashes {
-		selected[hash] = true
-	}
-	remaining := len(selected)
-	// Children come before their parents, so once the last selected commit has
-	// been read, no later commit can be a descendant of a selected one. Stopping
-	// is done by the line after that commit: returning stop drops the line it is
-	// returned for, which is what we want, since that line is not needed.
-	untilLastSelected := func(line string) (*models.Commit, bool) {
-		if remaining == 0 {
-			return nil, true
-		}
-		commit, stop := parseLine(line)
-		if commit != nil && selected[commit.Hash()] {
-			remaining--
-		}
-		return commit, stop
-	}
-	commits, err := loadCommits(self.getLogCmd(scoped), "", untilLastSelected)
+	return self.loadCommitDescendants(scoped, parseLine)
+}
+
+// loadCommitDescendants loads the selected commits and their descendants, newest
+// first. Only commits reachable from a ref can be descendants of a reachable
+// selected commit, so the selected commits are first split into reachable and not.
+// The walk runs newest first and stops once every reachable selected commit has been
+// read: their descendants come before them, so no later line can be one. The lines
+// read are then decided from the oldest, where parents come first (see descendantWalk),
+// and only the rows kept are parsed into commits.
+func (self *CommitLoader) loadCommitDescendants(opts GetCommitsOptions, parseLine func(string) (*models.Commit, bool)) ([]*models.Commit, error) {
+	reachable, err := self.reachableFromAll(opts.ScopeHashes)
 	if err != nil {
 		return nil, err
 	}
-	return keepCommitDescendants(commits, selected), nil
+	if len(reachable) == 0 {
+		return []*models.Commit{}, nil
+	}
+
+	walk := newDescendantWalk(opts.ScopeHashes, reachable)
+	streamLine := func(line string) (*models.Commit, bool) {
+		return nil, !walk.read(line)
+	}
+	// loadCommits returns nothing here: the lines are held by walk.
+	if _, err := loadCommits(self.getLogCmd(opts), "", streamLine); err != nil {
+		return nil, err
+	}
+	return walk.rows(opts.Limit, func(line string) *models.Commit {
+		commit, _ := parseLine(line)
+		return commit
+	}), nil
+}
+
+// reachableFromAll returns the hashes, of those given, that a walk of --all reaches. The
+// walk is streamed and stops once every hash has been seen, so a recent selection costs
+// little. A hash that is never seen is unreachable. The check does not use
+// `rev-list <hash> --not --all`: its limit walk trusts commit dates, and clock skew makes
+// it wrong.
+func (self *CommitLoader) reachableFromAll(hashes []string) ([]string, error) {
+	wanted := make(map[string]bool, len(hashes))
+	for _, hash := range hashes {
+		wanted[hash] = true
+	}
+	seen := make(map[string]bool, len(hashes))
+	err := self.cmd.New(NewGitCmd("rev-list").Arg("--all").ToArgv()).DontLog().RunAndProcessLines(func(line string) (bool, error) {
+		if wanted[line] {
+			seen[line] = true
+		}
+		return len(seen) == len(wanted), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	reachable := []string{}
+	for _, hash := range hashes {
+		if seen[hash] {
+			reachable = append(reachable, hash)
+		}
+	}
+	return reachable, nil
+}
+
+// parseHashAndParents reads the hash and parents of a line of a log in prettyFormat,
+// without its leading '+'. It reads no other field.
+func parseHashAndParents(line string) (string, []string, bool) {
+	fields := strings.SplitN(line, "\x00", 6)
+	if len(fields) < 5 {
+		return "", nil, false
+	}
+	return fields[0], strings.Fields(fields[4]), true
 }
 
 // loadCommitAncestors loads the ancestors of opts.ScopeHashes from the unfiltered
@@ -255,24 +304,93 @@ func (self *commitAncestorFilter) keep(commit *models.Commit) bool {
 	return true
 }
 
-// keepCommitDescendants returns the commits that are selected or have a kept
-// parent, in their original order. commits must be in topo-order, with children
-// before their parents. The pass runs backwards, so that every parent's decision
-// is made before the commit that refers to it.
-func keepCommitDescendants(commits []*models.Commit, selected map[string]bool) []*models.Commit {
-	kept := make(map[string]bool, len(commits))
-	keep := make([]bool, len(commits))
-	for i := len(commits) - 1; i >= 0; i-- {
-		commit := commits[i]
-		if selected[commit.Hash()] || slices.ContainsFunc(commit.Parents(), func(parent string) bool { return kept[parent] }) {
+// descendantWalk holds the lines of a walk of --all, newest first, read up to the
+// point where every reachable selected commit has been read. The walk holds the raw
+// lines and their hashes and parents, not parsed commits: rows are parsed only when
+// they are kept.
+type descendantWalk struct {
+	// selected holds every selected commit, including unreachable ones, which are
+	// kept when they are seen, though no walk shows them.
+	selected map[string]bool
+	// awaited holds the reachable selected commits that the walk has not read yet.
+	awaited map[string]bool
+	lines   []descendantLine
+}
+
+type descendantLine struct {
+	hash    string
+	parents []string
+	line    string
+}
+
+// newDescendantWalk returns a walk for the selected hashes. reachable is the subset
+// of selected that a walk of --all reaches; the walk stops after the last of them.
+func newDescendantWalk(selected []string, reachable []string) *descendantWalk {
+	walk := &descendantWalk{
+		selected: make(map[string]bool, len(selected)),
+		awaited:  make(map[string]bool, len(reachable)),
+	}
+	for _, hash := range selected {
+		walk.selected[hash] = true
+	}
+	for _, hash := range reachable {
+		walk.awaited[hash] = true
+	}
+	return walk
+}
+
+// read records the next line of the walk. It returns false when the walk can stop
+// before this line, because no later line can be a descendant of a selected commit.
+// Lines that are not commits are skipped.
+func (self *descendantWalk) read(line string) bool {
+	if len(self.awaited) == 0 {
+		return false
+	}
+	hash, parents, ok := parseHashAndParents(line)
+	if !ok {
+		return true
+	}
+	delete(self.awaited, hash)
+	self.lines = append(self.lines, descendantLine{hash: hash, parents: parents, line: line})
+	return true
+}
+
+// rows returns the rows that are kept, newest first: a commit is kept if it is selected or
+// one of its parents is kept. The decision runs from the oldest line, where parents come
+// first. When limit is set, only the newest commitScopeLimit kept rows are parsed; they
+// are the first kept rows of the walk, which is newest first.
+func (self *descendantWalk) rows(limit bool, parse func(line string) *models.Commit) []*models.Commit {
+	kept := make(map[string]bool, len(self.selected))
+	for hash := range self.selected {
+		kept[hash] = true
+	}
+	keep := make([]bool, len(self.lines))
+	for i := len(self.lines) - 1; i >= 0; i-- {
+		entry := self.lines[i]
+		keepEntry := kept[entry.hash]
+		for _, parent := range entry.parents {
+			if kept[parent] {
+				keepEntry = true
+				break
+			}
+		}
+		if keepEntry {
+			kept[entry.hash] = true
 			keep[i] = true
-			kept[commit.Hash()] = true
 		}
 	}
 
-	result := make([]*models.Commit, 0, len(kept))
-	for i, commit := range commits {
-		if keep[i] {
+	result := []*models.Commit{}
+	count := 0
+	for i, entry := range self.lines {
+		if !keep[i] {
+			continue
+		}
+		if limit && count == commitScopeLimit {
+			break
+		}
+		count++
+		if commit := parse(entry.line); commit != nil {
 			result = append(result, commit)
 		}
 	}
