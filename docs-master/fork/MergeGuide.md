@@ -544,8 +544,8 @@ the removed commands.
   (`gui/fork_screen_mode_area.go`). The integration `GuiDriver` gains
   `ScreenMode` and `ScreenModeArea` (`TestDriver.ExpectScreenMode`,
   `ViewDriver.HasScreenArea`, `components/fork_screen_mode.go`).
-- `pkg/gui/layout.go`: focus frames, and the startup notices for an
-  unreadable usage file, ignored key settings and missing delta.
+- `pkg/gui/layout.go`: focus frames. The startup notices are not here any
+  more; they are queued by `onNewRepo` (below).
 
 ### Other
 
@@ -557,7 +557,14 @@ the removed commands.
 - `pkg/gui/gui.go` `loadNewRepo`: a switch's refresh sets
   `ThenIfRepoUnchanged` to the "Opened <repo>" toast (`fork_repo_switch.go`).
   Integration tests that switch repos must expect that toast.
-- `pkg/gui/gui.go` `onNewRepo`: calls `updateForkTerminalTitle`
+- `pkg/gui/gui.go` `onNewRepo`: queues the startup notices in a fixed order
+  (`queueForkUsageResetNotice`, `showForkIgnoredKeyConfigNotices`,
+  `queueForkDiffRendererFallbackNotice`). They are shown one after another, each
+  for its full time, by the queue in `fork_startup_notices.go`, which does not
+  change the status manager. Its `forkNoticeDuration` repeats the status
+  manager's inline two seconds for info toasts and must match it. The
+  runtime usage reset in `fork_command_usage.go` also goes through the queue.
+  It calls `updateForkTerminalTitle`
   (`fork_terminal_title.go`) after the key-config notices, so startup and
   every repository switch set the terminal title. tcell saves and restores the
   terminal's title itself; keep that behaviour in mind when upstream changes

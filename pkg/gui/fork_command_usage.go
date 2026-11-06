@@ -167,7 +167,8 @@ func (gui *Gui) flushForkUsageInBackground() {
 
 	if gui.flushForkUsage() {
 		gui.onUIThread(func() error {
-			gui.c.Toast(gui.Tr.CommandUsageReset)
+			// Fork: queued with the other notices (fork_startup_notices.go).
+			gui.enqueueForkNotices(gui.Tr.CommandUsageReset)
 			return nil
 		})
 	}

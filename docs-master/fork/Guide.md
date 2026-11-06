@@ -496,6 +496,8 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
   frame.
 - Diffs render through delta when it is on `PATH`, with Git's own diff one
   `t d n` away. Without delta, Git's diff is used and a notice says so once.
+  Notices appear one at a time, each for two seconds, in this order: unreadable
+  usage counts, ignored key settings, then missing delta.
   The default delta command draws file names, hunk headers and line-number
   columns in the palette's Blue instead of the terminal's. On a dark terminal
   with true colour, changed lines get dark green and red backgrounds, a little

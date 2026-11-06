@@ -137,6 +137,10 @@ type Gui struct {
 
 	// Fork: notices already shown for ignored key settings (roadmap item 13).
 	forkKeyConfigNotices forkKeyConfigNotices
+	// Fork: startup notices waiting to be shown one after another, and whether
+	// the delta fallback notice has been queued (fork_startup_notices.go).
+	forkNotices                  *forkNoticeQueue
+	forkDiffRendererNoticeQueued bool
 
 	Views types.Views
 
@@ -415,8 +419,12 @@ func (gui *Gui) onNewRepo(startArgs appTypes.StartArgs, contextKey types.Context
 	gui.resetHelpersAndControllers()
 	gui.resetKeybindings()
 	// Fork: notify about ignored key settings in the files just loaded (roadmap
-	// item 13). Toasts need the helpers, so this runs after they are reset.
+	// item 13). Toasts need the helpers, so this runs after they are reset. At
+	// startup, the usage-counts and delta notices are queued first, so that the
+	// startup notices appear in a fixed order (fork_startup_notices.go).
+	gui.queueForkUsageResetNotice()
 	gui.showForkIgnoredKeyConfigNotices()
+	gui.queueForkDiffRendererFallbackNotice()
 
 	// Fork: the terminal title names the repository being viewed.
 	gui.updateForkTerminalTitle()

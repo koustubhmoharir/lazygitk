@@ -16,21 +16,30 @@ type forkKeyConfigNotices struct {
 	shown map[string]bool
 }
 
-// showForkIgnoredKeyConfigNotices toasts each ignored-settings entry that has
-// not been shown yet. It runs after the startup layout and after each
-// repository's config is loaded, so global and per-repo files are both covered.
+// showForkIgnoredKeyConfigNotices queues a notice for each ignored-settings
+// entry that has not been shown yet. onNewRepo calls it after each
+// repository's config is loaded, so global and per-repo files are both
+// covered. An entry is marked shown when it is queued.
 func (gui *Gui) showForkIgnoredKeyConfigNotices() {
-	for _, setting := range gui.Config.GetUserConfig().IgnoredKeySettings() {
+	if gui.forkKeyConfigNotices.shown == nil {
+		gui.forkKeyConfigNotices.shown = make(map[string]bool)
+	}
+	gui.enqueueForkNotices(forkIgnoredKeyConfigNotices(gui.forkKeyConfigNotices.shown, gui.Config.GetUserConfig().IgnoredKeySettings(), gui.Tr)...)
+}
+
+// forkIgnoredKeyConfigNotices returns the messages for the settings not yet in
+// shown, and marks each of them shown.
+func forkIgnoredKeyConfigNotices(shown map[string]bool, settings []config.IgnoredKeySetting, tr *i18n.TranslationSet) []string {
+	var messages []string
+	for _, setting := range settings {
 		key := forkIgnoredKeyConfigNoticeKey(setting)
-		if gui.forkKeyConfigNotices.shown[key] {
+		if shown[key] {
 			continue
 		}
-		if gui.forkKeyConfigNotices.shown == nil {
-			gui.forkKeyConfigNotices.shown = make(map[string]bool)
-		}
-		gui.forkKeyConfigNotices.shown[key] = true
-		gui.c.Toast(forkIgnoredKeyConfigMessage(gui.Tr, setting))
+		shown[key] = true
+		messages = append(messages, forkIgnoredKeyConfigMessage(tr, setting))
 	}
+	return messages
 }
 
 func forkIgnoredKeyConfigNoticeKey(setting config.IgnoredKeySetting) string {

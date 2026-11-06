@@ -334,19 +334,7 @@ func (gui *Gui) onInitialViewsCreation() error {
 
 	gui.helpers.Update.CheckForUpdateInBackground()
 
-	// Fork: report a command usage file that was unreadable and reset at startup.
-	if gui.forkUsageReset {
-		gui.forkUsageReset = false
-		gui.c.Toast(gui.Tr.CommandUsageReset)
-	}
-
-	// Fork: report key settings that were ignored at startup (roadmap item 13).
-	gui.showForkIgnoredKeyConfigNotices()
-
-	// Fork: report that the default delta renderer was dropped because delta is
-	// not on PATH (roadmap item 15). This runs once, with the views' creation.
-	gui.showForkDiffRendererFallbackNotice()
-
+	// Fork: the startup notices are queued in onNewRepo, which runs before this.
 	gui.waitForIntro.Done()
 
 	return nil
