@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/jesseduffield/lazygit/pkg/commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
+	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/i18n"
 )
@@ -74,34 +74,17 @@ func showIgnoredRebaseMenu(
 	finish func(err error) error,
 	riskErr *git_commands.IgnoredRebaseRiskError,
 ) error {
-	// The approval leads so the reviewed action is selected; Cancel follows it.
-	items := []*types.MenuItem{
-		{
-			CommandID: "rebase.approve-ignored-overwrite", Verb: "rebase",
-			Label: c.Tr.SelectedRebaseApproveIgnored, Keys: menuKey('p'),
-			OnPress: func() error {
-				return approveIgnoredRebaseStart(c, git, start, finish, riskErr.Fingerprint)
-			},
+	// The menu itself is shared with the hard reset review (helpers.ShowIgnoredRiskMenu).
+	return helpers.ShowIgnoredRiskMenu(c.HelperCommon, helpers.IgnoredRiskReview{
+		CommandPrefix: "rebase",
+		Title:         c.Tr.SelectedRebaseIgnoredTitle,
+		Prompt:        c.Tr.SelectedRebaseIgnoredPrompt,
+		ApproveLabel:  c.Tr.SelectedRebaseApproveIgnored,
+		Paths:         riskErr.Paths,
+		Approve: func() error {
+			return approveIgnoredRebaseStart(c, git, start, finish, riskErr.Fingerprint)
 		},
-		{
-			CommandID: "rebase.cancel-ignored-risk", Verb: "cancel",
-			Label: c.Tr.Cancel, OnPress: func() error { return nil },
-		},
-	}
-	// File rows keep the full risk list scrollable. Enter on a file reopens the
-	// review, and never approves it.
-	for _, path := range riskErr.Paths {
-		quoted := fmt.Sprintf("%q", path)
-		items = append(items, &types.MenuItem{
-			CommandID: "rebase.inspect-ignored-path", Verb: "inspect",
-			Label: quoted, Tooltip: quoted, OpensMenu: true,
-			OnPress: func() error { return showIgnoredRebaseMenu(c, git, start, finish, riskErr) },
-		})
-	}
-	return c.Menu(types.CreateMenuOptions{
-		Title:      c.Tr.SelectedRebaseIgnoredTitle,
-		Prompt:     c.Tr.SelectedRebaseIgnoredPrompt,
-		HideCancel: true, Items: items,
+		Reopen: func() error { return showIgnoredRebaseMenu(c, git, start, finish, riskErr) },
 	})
 }
 

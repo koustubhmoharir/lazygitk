@@ -31,7 +31,7 @@ var Undo = NewIntegrationTest(NewIntegrationTestArgs{
 		confirmUndo := func() {
 			t.ExpectPopup().Confirmation().
 				Title(Equals("Undo")).
-				Content(MatchesRegexp(`Are you sure you want to hard reset to '.*'\? An auto-stash will be performed if necessary\.`)).
+				Content(Contains("Undo performs a hard reset")).
 				Wait(500).
 				Confirm()
 		}

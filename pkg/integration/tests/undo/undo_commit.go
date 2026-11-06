@@ -28,7 +28,7 @@ var UndoCommit = NewIntegrationTest(NewIntegrationTestArgs{
 		confirmRedo := func() {
 			t.ExpectPopup().Confirmation().
 				Title(Equals("Redo")).
-				Content(MatchesRegexp(`Are you sure you want to hard reset to '.*'\? An auto-stash will be performed if necessary\.`)).
+				Content(Contains("Redo performs a hard reset")).
 				Confirm()
 		}
 
@@ -62,27 +62,29 @@ var UndoCommit = NewIntegrationTest(NewIntegrationTestArgs{
 				Equals("   M other-file"),
 			)
 
+		// Redo would hard reset over the unstaged change to other-file. It is
+		// refused, and nothing is stashed.
 		t.Views().Commits().Focus().
-			Press(keys.Universal.Redo).
-			Tap(confirmRedo).
-			Lines(
-				Contains("two").IsSelected(),
-				Contains("one"),
-			)
+			Press(keys.Universal.Redo)
 
-		t.Views().Files().
-			Lines(
-				Equals(" M other-file"),
-			)
+		t.ExpectPopup().Alert().
+			Title(Equals("Error")).
+			Content(Contains("Commit or discard the changes to tracked files first. Redo never stashes.")).
+			Confirm()
 
-		// Undo again, this time discarding the original change before redoing again
-		t.Views().Commits().Focus().
-			Press(keys.Universal.Undo).
-			Tap(confirmUndo).
+		t.Views().Commits().
 			Lines(
 				Contains("one").IsSelected(),
 			)
+		t.Views().Files().
+			Lines(
+				Equals("▼ /"),
+				Equals("  A  file"),
+				Equals("   M other-file"),
+			)
+		t.Views().Stash().IsEmpty()
 
+		// Discard both changes, then redo the commit on a clean tree.
 		t.Views().Files().Focus().
 			Lines(
 				Equals("▼ /"),
@@ -95,18 +97,21 @@ var UndoCommit = NewIntegrationTest(NewIntegrationTestArgs{
 			Lines(
 				Equals(" M other-file"),
 			).
+			Press(keys.Universal.Remove).
+			Tap(confirmDiscardFile)
+
+		t.Views().Files().IsEmpty()
+
+		t.Views().Commits().Focus().
 			Press(keys.Universal.Redo).
 			Tap(confirmRedo)
 
 		t.Views().Commits().
 			Lines(
-				Contains("two"),
+				Contains("two").IsSelected(),
 				Contains("one"),
 			)
 
-		t.Views().Files().
-			Lines(
-				Equals(" M other-file"),
-			)
+		t.Views().Files().IsEmpty()
 	},
 })

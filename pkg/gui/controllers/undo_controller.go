@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/jesseduffield/lazygit/pkg/gocui"
+	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
 )
@@ -105,18 +106,10 @@ func (self *UndoController) reflogUndo() error {
 			return true, nil
 
 		case REBASE:
-			self.c.Confirm(types.ConfirmOpts{
-				Title:  self.c.Tr.Actions.Undo,
-				Prompt: fmt.Sprintf(self.c.Tr.HardResetAutostashPrompt, utils.ShortHash(action.from)),
-				HandleConfirm: func() error {
-					self.c.LogAction(self.c.Tr.Actions.Undo)
-					return self.hardResetWithAutoStash(action.from, hardResetOptions{
-						EnvVars:       undoEnvVars,
-						WaitingStatus: undoingStatus,
-					})
-				},
-			})
-			return true, nil
+			// Fork: replaces hardResetWithAutoStash, which stashed. ResetReflogTarget
+			// refuses tracked changes and otherwise runs the captured hard reset with
+			// one confirmation.
+			return true, self.c.Helpers().Refs.ResetReflogTarget(action.from, helpers.ReflogUndo, undoEnvVars)
 
 		case CHECKOUT:
 			// Fork: replaces CheckoutRef, which offers an autostash and has no
@@ -144,7 +137,6 @@ func (self *UndoController) reflogUndo() error {
 
 func (self *UndoController) reflogRedo() error {
 	redoEnvVars := []string{"GIT_REFLOG_ACTION=[lazygit redo]"}
-	redoingStatus := self.c.Tr.RedoingStatus
 
 	if self.c.Git().Status.WorkingTreeState().Any() {
 		return errors.New(self.c.Tr.CantRedoWhileRebasing)
@@ -160,18 +152,8 @@ func (self *UndoController) reflogRedo() error {
 
 		switch action.kind {
 		case COMMIT, REBASE:
-			self.c.Confirm(types.ConfirmOpts{
-				Title:  self.c.Tr.Actions.Redo,
-				Prompt: fmt.Sprintf(self.c.Tr.HardResetAutostashPrompt, utils.ShortHash(action.to)),
-				HandleConfirm: func() error {
-					self.c.LogAction(self.c.Tr.Actions.Redo)
-					return self.hardResetWithAutoStash(action.to, hardResetOptions{
-						EnvVars:       redoEnvVars,
-						WaitingStatus: redoingStatus,
-					})
-				},
-			})
-			return true, nil
+			// Fork: replaces hardResetWithAutoStash, as in reflogUndo. See ResetReflogTarget.
+			return true, self.c.Helpers().Refs.ResetReflogTarget(action.to, helpers.ReflogRedo, redoEnvVars)
 
 		case CHECKOUT:
 			// Fork: replaces CheckoutRef, as in reflogUndo. See CheckoutReflogTarget.
@@ -246,40 +228,4 @@ func (self *UndoController) parseReflogForActions(onUserAction func(counter int,
 		}
 	}
 	return nil
-}
-
-type hardResetOptions struct {
-	WaitingStatus string
-	EnvVars       []string
-}
-
-// only to be used in the undo flow for now (does an autostash)
-func (self *UndoController) hardResetWithAutoStash(commitHash string, options hardResetOptions) error {
-	reset := func() error {
-		return self.c.Helpers().Refs.ResetToRef(commitHash, "hard", options.EnvVars)
-	}
-
-	// if we have any modified tracked files we need to auto-stash
-	dirtyWorkingTree := self.c.Helpers().WorkingTree.IsWorkingTreeDirtyExceptSubmodules()
-	if dirtyWorkingTree {
-		return self.c.WithWaitingStatus(options.WaitingStatus, func(gocui.Task) error {
-			if err := self.c.Git().Stash.Push(fmt.Sprintf(self.c.Tr.AutoStashForUndo, utils.ShortHash(commitHash))); err != nil {
-				return err
-			}
-			if err := reset(); err != nil {
-				return err
-			}
-
-			err := self.c.Git().Stash.Pop(0)
-			if err != nil {
-				return err
-			}
-			self.c.RefreshFromWorker(types.RefreshOptions{})
-			return nil
-		})
-	}
-
-	return self.c.WithWaitingStatus(options.WaitingStatus, func(gocui.Task) error {
-		return reset()
-	})
 }

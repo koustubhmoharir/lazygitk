@@ -339,11 +339,15 @@ re-apply it if upstream changes that code.
   re-apply that removal or fetch is registered twice. Conflict hints use
   `resolveKeyLabel`. The copy-selected-diff item calls
   `GetLiteralPathsDiff` (literal pathspecs) rather than upstream's `GetDiff`.
-- `controllers/undo_controller.go` (replacement, CHECKOUT cases only): undo and
-  redo of a checkout confirm with `UndoCheckoutPrompt` and then call
-  `CheckoutReflogTarget`. Undo and redo of a rebase and of a commit still use
-  `hardResetWithAutoStash`, which stashes; they are unchanged. The
-  `hardResetWithAutoStash` method stays reachable through redo of a commit.
+- `controllers/undo_controller.go` (replacement, CHECKOUT, REBASE and COMMIT
+  redo cases): undo and redo of a checkout confirm with `UndoCheckoutPrompt` and
+  then call `CheckoutReflogTarget`. Undo of a rebase, and redo of a rebase or a
+  commit, call `Refs.ResetReflogTarget` (`helpers/fork_undo_reset.go`). It
+  refuses tracked changes and otherwise runs the captured hard reset with the
+  undo or redo reflog marker. It replaces upstream's `hardResetWithAutoStash`,
+  which stashed and popped; that method is removed. Undo of a commit still
+  soft-resets with `ResetToRef`. The upstream `HardResetAutostashPrompt` string
+  is no longer used by undo.
 - `controllers/branches_controller.go` (replacement): wrapped in
   `addSelectedResetBindings`; merge, rebase, fast-forward, reset, rename,
   delete and new branch go through captured flows; `branch.checkout-previous`
@@ -524,6 +528,26 @@ launch, described under "Merge tool" below.
   checkout (`git_commands/fork_undo_checkout.go`, `ClassifyReflogCheckoutTarget`).
   It replaces upstream's `CheckoutRef` there, which runs plain `git checkout`
   and offers an autostash; see the controllers' undo entry above.
+- `helpers/fork_undo_reset.go` (new): `ResetReflogTarget`, the undo and redo
+  reset. It passes `capturedResetOptions` to `captured_reset.go`: a `preflight`
+  that calls `git_commands/branch_action_reset_risks.go`
+  (`TrackedChangesPresent`), the title and warning for undo or redo, and the
+  reflog `envVars`. Undo and redo of a rebase and of a commit use it; see the
+  controllers' undo entry above.
+- `helpers/captured_reset.go` (replacement of the reset flow): `s h`, the
+  hard row of the reset menu, and undo or redo all reach `reviewHard`. It
+  computes the hard reset's ignored or untracked risks on a worker
+  (`HardResetIgnoredRisks`, `git_commands/branch_action_reset_risks.go`). With
+  none it confirms as before; with risks it opens `ShowIgnoredRiskMenu`. The
+  approval passes its fingerprint to `BranchActionResetCommand`, which refuses
+  a changed list with `ResetIgnoredRiskError`; the flow then reviews afresh.
+  `BranchActionResetCommand` takes the approval and the env vars as parameters
+  after the strength. Its callers are only the captured flow and its tests.
+- `helpers/fork_ignored_risk_review.go` (new): `ShowIgnoredRiskMenu`, the review
+  menu shared by the hard reset and by the rebase starts. The rebase review
+  (`controllers/fork_rebase_ignored_review.go`, `showIgnoredRebaseMenu`)
+  delegates to it, keeping its command IDs and strings. Upstream merges that
+  change either menu must keep the approve-first, Cancel-second layout.
 - `helpers/refs_helper.go`: the reset menu and new branch use captured
   selections (`captured_reset.go`, `captured_branch_create.go`).
   `MoveCommitsToNewBranch` is a fork delegation to `helpers/fork_move_commits.go`

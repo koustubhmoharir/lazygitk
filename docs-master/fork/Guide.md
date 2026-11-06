@@ -147,7 +147,7 @@ of a stash entry:
 | `s c` | Check out the commit on a branch: a name prompt that lists the branches already at the commit first; a new name is created there, and a name that points elsewhere is moved here after a warning |
 | `s d` | Check out the commit as a detached HEAD |
 | `n b` | Create or move a branch here without checking out |
-| `s h`, `s m`, `s s` | Hard, mixed, soft reset of the checked-out branch to this commit |
+| `s h`, `s m`, `s s` | Hard, mixed, soft reset of the checked-out branch to this commit. A hard reset's review lists the untracked or ignored files that it would overwrite or remove, and approval is needed before it runs |
 | `r` | Rebase the checked-out branch onto this commit |
 | `g c` | Combine the selected commits |
 | `n t`, `n w` | New tag here; new worktree |
@@ -325,6 +325,11 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   Git can, nothing is stashed, and ignored files block the checkout. A target
   that is neither an existing local branch nor a commit ID is refused, and the
   message names it.
+- `u u` and `u r` also undo and redo a commit or a rebase with a hard reset to
+  HEAD's reflog target. Undo and redo ask once, naming the target. Tracked
+  files must have no staged or unstaged changes; otherwise the action is
+  refused, and nothing is stashed. Untracked or ignored files that the target
+  tracks at the same paths are listed for approval, as `s h` lists them.
 - `?` then "Checkout by name" (no key) asks for a name and reads it literally;
   it is never treated as a path, and nothing is stashed or forced. A local
   branch is checked out as `s c` does it, and wins over a tag or remote branch

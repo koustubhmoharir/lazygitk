@@ -197,6 +197,13 @@ func TestBranchActionResetFlowHardAlwaysConfirmsAndCancellationDoesNotWrite(t *t
 	if err := menuItem(t, menu, "branch.reset.hard").OnPress(); err != nil {
 		t.Fatal(err)
 	}
+	// The hard reset first inspects its ignored-file risks on a worker, then confirms.
+	if err := ui.runWorker(t); err != nil {
+		t.Fatal(err)
+	}
+	if err := ui.runUI(t); err != nil {
+		t.Fatal(err)
+	}
 	if len(ui.confirms) != 1 || len(ui.blockingWorkers) != 0 {
 		t.Fatal("clean hard reset must show confirmation before work")
 	}
@@ -246,6 +253,20 @@ func TestBranchActionResetFlowHardIgnoredCollisionWaitsForConfirmation(t *testin
 	if err := menuItem(t, menu, "branch.reset.hard").OnPress(); err != nil {
 		t.Fatal(err)
 	}
+	// The hard reset first inspects its ignored-file risks on a worker, then confirms.
+	if err := ui.runWorker(t); err != nil {
+		t.Fatal(err)
+	}
+	if err := ui.runUI(t); err != nil {
+		t.Fatal(err)
+	}
+	if len(ui.confirms) != 0 || len(f.ui.menus) < 2 {
+		t.Fatal("an ignored collision must open the file review, not a confirmation")
+	}
+	review := f.ui.menus[len(f.ui.menus)-1]
+	if !strings.Contains(review.Title, "overwritten") || !strings.Contains(review.Prompt, "ignored") {
+		t.Fatalf("review does not name the overwrite risk: %q / %q", review.Title, review.Prompt)
+	}
 	if got, err := os.ReadFile(filepath.Join(f.root, "ignored")); err != nil || string(got) != "collision bytes" {
 		t.Fatalf("inspection lost ignored collision: %q %v", got, err)
 	}
@@ -256,7 +277,7 @@ func TestBranchActionResetFlowHardIgnoredCollisionWaitsForConfirmation(t *testin
 	if err != nil || !bytes.Equal(indexBefore, indexPreConfirm) {
 		t.Fatal("confirmation changed the staged index")
 	}
-	if err := ui.confirms[0].HandleConfirm(); err != nil {
+	if err := menuItem(t, review, "reset.approve-ignored-overwrite").OnPress(); err != nil {
 		t.Fatal(err)
 	}
 	if err := ui.runBlockingWorker(t); err != nil {
@@ -348,6 +369,12 @@ func TestBranchActionResetFlowHardApprovalRejectsChangedSourceAndHead(t *testing
 			f, ui, controller := branchActionResetFixture(t)
 			menu := branchActionResetOpen(t, f, ui, controller, &models.Branch{Name: "topic"})
 			if err := menuItem(t, menu, "branch.reset.hard").OnPress(); err != nil {
+				t.Fatal(err)
+			}
+			if err := ui.runWorker(t); err != nil {
+				t.Fatal(err)
+			}
+			if err := ui.runUI(t); err != nil {
 				t.Fatal(err)
 			}
 			approval := ui.confirms[len(ui.confirms)-1]

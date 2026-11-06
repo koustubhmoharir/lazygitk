@@ -375,6 +375,15 @@ type ForkTranslationSet struct {
 	PreviousCheckoutUnavailable           string
 	UndoCheckoutPrompt                    string
 	UndoCheckoutUnavailable               string
+	ResetIgnoredTitle                     string
+	ResetIgnoredPrompt                    string
+	ResetApproveIgnored                   string
+	ResetChangedTitle                     string
+	ResetIgnoredChangedNote               string
+	UndoResetEffect                       string
+	RedoResetEffect                       string
+	UndoRefuseTrackedChanges              string
+	RedoRefuseTrackedChanges              string
 	RepoPathPrompt                        string
 	ErrRepoPathNotDirectory               string
 	ErrRepoPathNotGitRepo                 string
@@ -760,6 +769,15 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		PreviousCheckoutUnavailable:           "The previous checkout %q is no longer a local branch or a commit, so s p cannot return to it. Check out the target explicitly.",
 		UndoCheckoutPrompt:                    "Check out '%s'? Uncommitted changes are carried over when Git can; nothing is stashed.",
 		UndoCheckoutUnavailable:               "Cannot return to %q: it is neither a local branch nor a commit ID that names one commit, so undo or redo refuses it. Check out the target explicitly.",
+		ResetIgnoredTitle:                     "Untracked or ignored files will be overwritten or removed",
+		ResetIgnoredPrompt:                    "The selected commit tracks paths where the untracked or ignored files listed below exist, so the hard reset overwrites or removes them. Scroll to review all paths. Cancel to move or back up files first; approval explicitly accepts this loss.",
+		ResetApproveIgnored:                   "Approve these overwrites and reset",
+		ResetChangedTitle:                     "Reset changed; review again",
+		ResetIgnoredChangedNote:               "The untracked or ignored files at risk from this reset changed. Review the fresh list; previous approvals no longer apply.",
+		UndoResetEffect:                       "Undo performs a hard reset. Tracked files have no changes, so none are discarded. Nothing is stashed.",
+		RedoResetEffect:                       "Redo performs a hard reset. Tracked files have no changes, so none are discarded. Nothing is stashed.",
+		UndoRefuseTrackedChanges:              "Commit or discard the changes to tracked files first. Undo never stashes.",
+		RedoRefuseTrackedChanges:              "Commit or discard the changes to tracked files first. Redo never stashes.",
 		RepoPathPrompt:                        "Repository path",
 		ErrRepoPathNotDirectory:               "Not a directory: {{.path}}",
 		ErrRepoPathNotGitRepo:                 "Not a Git repository: {{.path}}",

@@ -32,14 +32,14 @@ var UndoCheckoutAndDrop = NewIntegrationTest(NewIntegrationTestArgs{
 		confirmUndoDrop := func() {
 			t.ExpectPopup().Confirmation().
 				Title(Equals("Undo")).
-				Content(MatchesRegexp(`Are you sure you want to hard reset to '.*'\? An auto-stash will be performed if necessary\.`)).
+				Content(Contains("Undo performs a hard reset")).
 				Confirm()
 		}
 
 		confirmRedoDrop := func() {
 			t.ExpectPopup().Confirmation().
 				Title(Equals("Redo")).
-				Content(MatchesRegexp(`Are you sure you want to hard reset to '.*'\? An auto-stash will be performed if necessary\.`)).
+				Content(Contains("Redo performs a hard reset")).
 				Confirm()
 		}
 
