@@ -1,6 +1,6 @@
 // Package commandusage persists per-user command usage counts. Several lazygit
 // processes may share one counts file, so writes merge deltas into the file
-// under a lock instead of overwriting it.
+// under an OS file lock (see package filelock) instead of overwriting it.
 package commandusage
 
 import (
@@ -12,6 +12,8 @@ import (
 	"path/filepath"
 	"sync"
 	"time"
+
+	"github.com/jesseduffield/lazygit/pkg/utils/filelock"
 )
 
 const formatVersion = 1
@@ -26,9 +28,8 @@ type fileFormat struct {
 // Store holds usage counts in memory and flushes deltas to a shared file.
 // It is safe for concurrent use.
 type Store struct {
-	path         string
-	lockTimeout  time.Duration
-	staleLockAge time.Duration
+	path        string
+	lockTimeout time.Duration
 
 	// flushMu serializes file operations, so only one Flush or Reset runs at a time.
 	flushMu sync.Mutex
@@ -40,34 +41,59 @@ type Store struct {
 	pending  map[string]int // deltas not yet handed to a Flush
 }
 
+// beforeCorruptRecheck is a test hook. It runs after Open's unlocked read finds
+// a corrupt file, and before the locked recheck, so a test can repair the file in
+// between, as another instance might.
+var beforeCorruptRecheck = func() {}
+
 // Open loads the counts file at path. A missing file yields an empty store.
 // If the file is unparseable or has an unsupported version, it is removed and
 // reset is true so the caller can warn the user. Other read errors return an
 // empty store and the error; they are not fatal.
+//
+// Another instance may repair or replace the file between the first read and
+// the removal, so the file is reread under the lock before anything is removed.
 func Open(path string) (store *Store, reset bool, err error) {
 	s := newStore(path)
 	counts, err := readFile(path)
-	if errors.Is(err, errCorrupt) {
+	if err == nil {
+		s.base = counts
+		return s, false, nil
+	}
+	if !errors.Is(err, errCorrupt) {
+		return s, false, err
+	}
+
+	beforeCorruptRecheck()
+	unlock, err := s.lock()
+	if err != nil {
+		return s, false, err
+	}
+	defer unlock()
+
+	counts, err = readFile(path)
+	switch {
+	case err == nil:
+		// Repaired in the meantime, or removed: keep whatever counts are there.
+		s.base = counts
+		return s, false, nil
+	case errors.Is(err, errCorrupt):
 		if rmErr := os.Remove(path); rmErr != nil && !errors.Is(rmErr, fs.ErrNotExist) {
 			return s, true, rmErr
 		}
 		return s, true, nil
-	}
-	if err != nil {
+	default:
 		return s, false, err
 	}
-	s.base = counts
-	return s, false, nil
 }
 
 func newStore(path string) *Store {
 	return &Store{
-		path:         path,
-		lockTimeout:  defaultLockTimeout,
-		staleLockAge: defaultStaleLockAge,
-		base:         map[string]int{},
-		inFlight:     map[string]int{},
-		pending:      map[string]int{},
+		path:        path,
+		lockTimeout: filelock.DefaultTimeout,
+		base:        map[string]int{},
+		inFlight:    map[string]int{},
+		pending:     map[string]int{},
 	}
 }
 

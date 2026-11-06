@@ -165,6 +165,7 @@ var tests = []*components.IntegrationTest{
 	commit.DraftRecallStepsThroughList,
 	commit.DraftSubmitKeepsTypedText,
 	commit.DraftSurvivesNewCommitPrefill,
+	commit.DraftUnsaveableEscapeKeepsBoxOpen,
 	commit.EditFilesMissingFromWorkingTree,
 	commit.FailHooksThenCommitNoHooks,
 	commit.FindBaseCommitForFixup,

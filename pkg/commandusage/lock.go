@@ -1,54 +1,16 @@
 package commandusage
 
 import (
-	"errors"
-	"fmt"
-	"io/fs"
-	"os"
-	"time"
+	"github.com/jesseduffield/lazygit/pkg/utils/filelock"
 )
 
-const (
-	defaultLockTimeout  = time.Second
-	defaultStaleLockAge = 10 * time.Second
-	lockRetryInterval   = 10 * time.Millisecond
-)
-
-// lock creates the lock file next to the counts file, which serializes writers
-// across processes. It returns a function that releases the lock. A lock file
-// older than staleLockAge is assumed to be left behind by a crashed process
-// and is removed.
+// lock takes the exclusive lock that serializes writers to the counts file across
+// processes. It returns a function that releases the lock. The OS releases the
+// lock if the holding process dies, so no stale lock is ever broken.
 func (s *Store) lock() (unlock func(), err error) {
-	lockPath := s.path + ".lock"
-	deadline := time.Now().Add(s.lockTimeout)
-	for {
-		f, err := os.OpenFile(lockPath, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o644)
-		if err == nil {
-			if err := f.Close(); err != nil {
-				_ = os.Remove(lockPath)
-				return nil, err
-			}
-			return func() { _ = os.Remove(lockPath) }, nil
-		}
-		if !errors.Is(err, fs.ErrExist) {
-			return nil, err
-		}
-		if s.breakStaleLock(lockPath) {
-			continue
-		}
-		if time.Now().After(deadline) {
-			return nil, fmt.Errorf("timed out waiting for lock %s", lockPath)
-		}
-		time.Sleep(lockRetryInterval)
+	lock, err := filelock.Acquire(s.path+".lock", s.lockTimeout)
+	if err != nil {
+		return nil, err
 	}
-}
-
-// breakStaleLock removes lockPath if it is older than staleLockAge. It reports
-// whether the lock was removed.
-func (s *Store) breakStaleLock(lockPath string) bool {
-	info, err := os.Stat(lockPath)
-	if err != nil || time.Since(info.ModTime()) < s.staleLockAge {
-		return false
-	}
-	return os.Remove(lockPath) == nil
+	return func() { _ = lock.Release() }, nil
 }

@@ -63,7 +63,9 @@ recorded here or in the user guide.
 - **Native Git, normal concurrency.** Operations use one native Git command
   or ref transaction where possible, recheck state just before writing, and
   rely on Git's own locks. The fork adds no locks, retries or assumed
-  rollback.
+  rollback. lazygitk's own files (command usage counts and commit drafts) are
+  the exception: each update takes an OS file lock, so several instances can
+  share them.
 - **Refuse rather than guess.** Ambiguous input, unsupported topology or an
   occupied worktree is refused with the reason. Git's own error is shown when
   it rejects an operation, and the panes refresh to the actual state.

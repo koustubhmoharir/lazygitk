@@ -27,7 +27,8 @@ in the [design principles](Design.md). The generated per-pane reference is
   in Commits") are faded; commands that apply but cannot run now are crossed
   out; selecting either says why. Typing filters by name. Usage counts are
   still recorded but do not order the palette; "Reset command usage counts"
-  clears them.
+  clears them. Several lazygitk instances share the counts, and a count saved
+  by one is kept when another saves at the same time.
 - **Keys are fixed.** The `keybinding` section, `commandBindings` and
   custom-command `key` settings are ignored, with a startup notice naming the
   file. Custom commands run from `?`.
@@ -477,23 +478,22 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
 - Edits to a shown draft are kept when you step away from it or press Escape.
   Clearing all its text deletes it.
 - Escape while a draft is shown keeps the draft and the text you were typing.
-- Enter uses up the shown draft and keeps the text you were typing as a draft.
-  Switching to the editor also keeps that text, but keeps the draft too.
-- A draft is also used up if you submit text equal to it. Submitting anything
-  else leaves the drafts alone.
-- A new commit's box reopens with its cancelled text, which is also a draft. The
-  box then works on that draft: editing and cancelling replaces it, and
-  submitting uses it up.
-- A submitted commit, reword, amend commit or commit moved from a patch stays a
-  draft until it succeeds. If it fails, for example because of a hook, reopen
-  the box and press Up to get the text back. A reword of an older commit that
-  fails leaves the rebase stopped, and the error says how to abort or continue
-  it. A tag or combine message is used up as soon as its box closes.
-- A reword applies to the commit it was started on. If HEAD or the checked-out
-  branch moves while the box is open, the reword is refused with the reason,
-  nothing is changed, and the text is kept as a draft. Start the reword again.
-  If the commit list is already out of date when the reword starts, it is
-  refreshed and the reword does not open.
+- Several lazygitk instances on one worktree share the drafts. Each change
+  reads the file under a lock first, so a draft another instance saved is kept.
+  A drafts file that is malformed is moved aside, to a file named
+  `LAZYGITK_COMMIT_DRAFTS.corrupt-` followed by a timestamp, and the drafts
+  start empty. A message says where the file went.
+- A draft that cannot be saved keeps the box open with its text, and the error
+  is shown. This applies to Escape, to switching to the editor (which does not
+  happen), and to Enter on a submission whose result is reported later, such as
+  a commit, reword, amend or patch move (which is not started). Up and Down do
+  not move either: the shown text stays as it is.
+- Quitting is not possible while the box has focus; close the box first. If
+  lazygitk is closed from outside (for example, its terminal is closed) with
+  the box open, it tries to save the text as a draft, and a failure is only
+  logged.
+- The lock files `LAZYGITK_COMMIT_DRAFTS.lock` and `command_usage.json.lock`
+  stay on disk, empty, beside the files they guard. They are safe to leave.
 - The description box still moves its own cursor with Up and Down.
 
 ### Sync

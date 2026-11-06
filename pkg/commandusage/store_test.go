@@ -2,7 +2,6 @@ package commandusage
 
 import (
 	"encoding/json"
-	"errors"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -11,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/jesseduffield/lazygit/pkg/utils/filelock"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -163,10 +163,12 @@ func TestCorruptionAppearingBeforeFlushIsReset(t *testing.T) {
 	assert.Equal(t, map[string]int{"x": 3}, result.Snapshot())
 }
 
-func TestStaleLockIsBroken(t *testing.T) {
+// A lock file left behind by a process that died does not block anyone: the OS
+// released its lock when the process exited, so the file is just unlocked.
+func TestLeftoverLockFileDoesNotBlock(t *testing.T) {
 	path := countsPath(t)
 	lockPath := path + ".lock"
-	noErr(t, os.WriteFile(lockPath, nil, 0o644))
+	noErr(t, os.WriteFile(lockPath, []byte("left behind"), 0o644))
 	old := time.Now().Add(-time.Hour)
 	noErr(t, os.Chtimes(lockPath, old, old))
 
@@ -174,33 +176,82 @@ func TestStaleLockIsBroken(t *testing.T) {
 	s.Add("x", 1)
 	_, err := s.Flush()
 	noErr(t, err)
-
-	_, err = os.Stat(lockPath)
-	assert.ErrorIs(t, err, fs.ErrNotExist)
 	assert.Equal(t, 1, reopen(t, path).Count("x"))
 }
 
-func TestFreshLockTimesOutAndKeepsPending(t *testing.T) {
+func TestHeldLockTimesOutAndKeepsPending(t *testing.T) {
 	path := countsPath(t)
-	lockPath := path + ".lock"
-	noErr(t, os.WriteFile(lockPath, nil, 0o644))
+	held, err := filelock.Acquire(path+".lock", time.Second)
+	noErr(t, err)
 
 	s := openStore(t, path)
 	s.lockTimeout = 50 * time.Millisecond
 	s.Add("x", 2)
 
-	_, err := s.Flush()
+	_, err = s.Flush()
 	assert.Error(t, err)
 	assert.True(t, s.HasPending())
 	assert.Equal(t, 2, s.Count("x"))
 	_, statErr := os.Stat(path)
 	assert.ErrorIs(t, statErr, fs.ErrNotExist)
 
-	noErr(t, os.Remove(lockPath))
+	noErr(t, held.Release())
 	_, err = s.Flush()
 	noErr(t, err)
 	assert.False(t, s.HasPending())
 	assert.Equal(t, 2, reopen(t, path).Count("x"))
+}
+
+func TestCorruptFileRepairedBeforeRecheckIsKept(t *testing.T) {
+	path := countsPath(t)
+	noErr(t, os.WriteFile(path, []byte("garbage"), 0o644))
+
+	// Another instance repairs the file after our unlocked read saw the corruption.
+	beforeCorruptRecheck = func() {
+		beforeCorruptRecheck = func() {}
+		noErr(t, os.WriteFile(path, []byte(`{"version": 1, "counts": {"x": 7}}`), 0o644))
+	}
+	t.Cleanup(func() { beforeCorruptRecheck = func() {} })
+
+	s, reset, err := Open(path)
+	noErr(t, err)
+	assert.False(t, reset)
+	assert.Equal(t, map[string]int{"x": 7}, s.Snapshot())
+	assert.Equal(t, 7, reopen(t, path).Count("x"), "the repaired file is not removed")
+}
+
+// Two stores on one file are two lazygit instances. Their deltas must all land.
+func TestConcurrentFlushesLoseNoCounts(t *testing.T) {
+	path := countsPath(t)
+	const instances, flushesPerInstance = 4, 25
+
+	stores := make([]*Store, instances)
+	for i := range stores {
+		stores[i] = openStore(t, path)
+		stores[i].lockTimeout = 10 * time.Second
+	}
+
+	errs := make([]error, instances)
+	var wg sync.WaitGroup
+	for i, s := range stores {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for range flushesPerInstance {
+				s.Add("x", 1)
+				if _, err := s.Flush(); err != nil {
+					errs[i] = err
+					return
+				}
+			}
+		}()
+	}
+	wg.Wait()
+	for _, err := range errs {
+		noErr(t, err)
+	}
+
+	assert.Equal(t, instances*flushesPerInstance, reopen(t, path).Count("x"))
 }
 
 func TestUnwritableDirectoryKeepsPending(t *testing.T) {
@@ -271,13 +322,16 @@ func TestConcurrentAddIsRaceFree(t *testing.T) {
 	assert.Equal(t, 800, s.Count("x"))
 }
 
-func TestLockFileIsReleased(t *testing.T) {
+func TestLockIsReleasedAfterFlush(t *testing.T) {
 	path := countsPath(t)
 	s := openStore(t, path)
 	s.Add("x", 1)
 	_, err := s.Flush()
 	noErr(t, err)
-	_, err = os.Stat(path + ".lock")
-	assert.True(t, errors.Is(err, fs.ErrNotExist))
+
+	// The lock file stays, but nothing holds it any more.
+	lock, err := filelock.Acquire(path+".lock", time.Second)
+	noErr(t, err)
+	noErr(t, lock.Release())
 	assert.Equal(t, map[string]int{"x": 1}, reopen(t, path).Snapshot())
 }

@@ -98,8 +98,13 @@ func (self *CommitMessageController) GetOnFocusLost() func(types.OnFocusLostOpts
 func (self *CommitMessageController) GetOnQuit() func() {
 	return func() {
 		self.c.Helpers().Commits.PreserveCommitMessage()
-		// Fork: quitting with the box open keeps its text as the draft too.
-		self.c.Helpers().Commits.SaveCommitDraftIfChanged()
+		// Fork: quitting with the box open keeps its text as the draft too. A save
+		// that fails here is only logged: this runs after the main loop has ended,
+		// and no quit key reaches the app while the box has focus, so there is no
+		// quit that could still be held.
+		if err := self.c.Helpers().Commits.SaveCommitDraftIfChanged(); err != nil {
+			self.c.Log.Errorf("error when persisting commit drafts: %v", err)
+		}
 	}
 }
 
@@ -172,8 +177,7 @@ func (self *CommitMessageController) confirm() error {
 
 // Fork: Escape saves the draft; see CommitsHelper.CancelCommitMessagePanel.
 func (self *CommitMessageController) close() error {
-	self.c.Helpers().Commits.CancelCommitMessagePanel()
-	return nil
+	return self.c.Helpers().Commits.CancelCommitMessagePanel()
 }
 
 func (self *CommitMessageController) openCommitMenu() error {

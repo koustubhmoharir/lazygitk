@@ -29,7 +29,6 @@ triage as its batch lands.
 
 Each task is one subagent batch, reviewed and committed before the next.
 
-- Batch C: cross-instance file locking.
 - Batch D: commit list state, with U2 (10-F1).
 - Batch P: fetch per U1 (05-F4).
 - Batch F: sync.

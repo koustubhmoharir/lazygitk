@@ -30,7 +30,11 @@ rarely touch them:
 - `pkg/commands/git_commands/` additions (`branch_placement.go`,
   `branch_action_*.go`, `fork_ref_commit.go`, `pull_rebase_policy.go`, …):
   native Git plans for those flows.
-- `pkg/commandusage/`: the palette usage store.
+- `pkg/commandusage/`: the palette usage store. Its counts file is updated
+  under a lock from `pkg/utils/filelock/`.
+- `pkg/utils/filelock/` (new): the exclusive OS file lock that serializes
+  updates to lazygitk's own files. It is a lock on a `<file>.lock` file, which is
+  never deleted. The OS releases the lock when the holding process exits.
 - `pkg/config/fork_*.go`: fork defaults, config directory, theme palette,
   diff renderers, ignored key settings.
 - `pkg/integration/tests/**/fork_*.go`: fork scenarios.
@@ -634,6 +638,15 @@ drafts, instead of earlier commits' messages. The behaviour is in the
   `SaveCommitDraftIfChanged`, `CancelCommitMessagePanel`,
   `RecallOlderCommitDraft`, `RecallNewerCommitDraft` and
   `TakeCommitMessageSubmitReporter` are fork code.
+  Draft saves return errors, and the callers decide. `CancelCommitMessagePanel`
+  returns one before closing, so the box stays open. `HandleCommitConfirm` does
+  not call `OnConfirm` when the pre-submit save fails. `SwitchToEditor` saves the
+  drafts before it creates the message file, and does not switch on failure.
+  `RecallOlderCommitDraft` and `RecallNewerCommitDraft` return the error and do
+  not move. After a successful commit, the drafts' update is only logged,
+  because the commit has already happened. `GetOnQuit` (in both controllers)
+  logs a failed save: it runs after the main loop has ended, when nothing can
+  be vetoed, and no quit key reaches the app while the box has focus.
 - `controllers/local_commits_controller.go`: `reword` captures the target with
   `captureRewordTarget` (`controllers/fork_reword_target.go`), and the message
   panel's `OnConfirm` and `OnSwitchToEditor` are `rewordTarget.submit` and
@@ -666,7 +679,13 @@ drafts, instead of earlier commits' messages. The behaviour is in the
   `WorkingTreeHelper.switchFromCommitMessagePanelToEditor` calls it at once.
 - `context/fork_commit_draft.go` (new): the drafts file,
   `LAZYGITK_COMMIT_DRAFTS` (a JSON list, newest first), beside
-  `LAZYGIT_PENDING_COMMIT`, and `commitDraftSession`. In
+  `LAZYGIT_PENDING_COMMIT`, and `commitDraftSession`. Every change goes through
+  `updateCommitDrafts`, which takes the lock `<drafts>.lock`, reads the file,
+  applies the change, and writes a unique temporary file before renaming it.
+  A malformed file is moved aside to `<drafts>.corrupt-<timestamp>`, and a toast
+  names the new path (`CommitDraftsMovedAside`). Up and Down use
+  `StepToOlderCommitDraft` and `StepToNewerCommitDraft`, which now return an
+  error too. In
   `context/commit_message_context.go`, the view model's `drafts` field holds the
   session, `SetPanelState` resets it, and `RenderSubtitle` shows the position.
 - Retained on purpose: `OpenCommitMessagePanelOpts.CommitIndex`, the index

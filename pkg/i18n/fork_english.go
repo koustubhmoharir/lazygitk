@@ -312,6 +312,11 @@ type ForkTranslationSet struct {
 	RecallOlderCommitDraft                string
 	RecallNewerCommitDraft                string
 	CommitDraftPosition                   string
+	CommitDraftNotSavedOnCancel           string
+	CommitDraftNotSavedBeforeSubmit       string
+	CommitDraftNotSavedBeforeEditor       string
+	CommitDraftNotSavedOnRecall           string
+	CommitDraftsMovedAside                string
 	RewordFailed                          string
 	RewordFailedRebaseStopped             string
 	RewordFailedRebaseStoppedNoKey        string
@@ -706,6 +711,11 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		RecallOlderCommitDraft:                "Recall older cancelled message",
 		RecallNewerCommitDraft:                "Recall newer cancelled message",
 		CommitDraftPosition:                   "Draft {{.index}} of {{.total}}",
+		CommitDraftNotSavedOnCancel:           "The draft could not be saved, so the message box stays open: {{.error}}",
+		CommitDraftNotSavedBeforeSubmit:       "The draft could not be saved, so the commit was not started and the message box stays open: {{.error}}",
+		CommitDraftNotSavedBeforeEditor:       "The draft could not be saved, so the message was not opened in the editor: {{.error}}",
+		CommitDraftNotSavedOnRecall:           "The draft could not be saved, so the shown text was not changed and the drafts did not move: {{.error}}",
+		CommitDraftsMovedAside:                "The commit drafts file could not be read, so it was moved to {{.path}}. The drafts start empty.",
 		RewordFailed:                          "Rewording failed: {{.error}}",
 		RewordFailedRebaseStopped:             "The rebase is still stopped. Press {{.key}} to abort or continue it before you try again.",
 		RewordFailedRebaseStoppedNoKey:        "The rebase is still stopped. Abort or continue it before you try again.",

@@ -9,6 +9,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils"
 	"github.com/samber/lo"
 )
 
@@ -26,7 +27,7 @@ type CommitsHelper struct {
 	submitReportsResult bool
 	// Fork: takes the drafts used by the submission in progress, for OnConfirm to
 	// claim with TakeCommitMessageSubmitReporter.
-	pendingDraftUse func()
+	pendingDraftUse func() error
 }
 
 func NewCommitsHelper(
@@ -113,23 +114,28 @@ func (self *CommitsHelper) SwitchToEditor() error {
 	message := lo.Ternary(len(self.getCommitDescription()) == 0,
 		self.getCommitSummary(),
 		self.getCommitSummary()+"\n\n"+self.getCommitDescription())
-	filepath := filepath.Join(self.c.OS().GetTempDir(), self.c.Git().RepoPaths.RepoName(), time.Now().Format("Jan _2 15.04.05.000000000")+".msg")
-	err := self.c.OS().CreateFileWithContent(filepath, message)
-	if err != nil {
-		return err
-	}
 
-	// Fork: when the result is reported later, the text is kept as a draft until
-	// it succeeds, as HandleCommitConfirm does. Otherwise the text that Up replaced
-	// is kept.
+	// Fork: the drafts are saved before the message file is created, so a failed
+	// save leaves nothing behind and the message stays in the box. When the result
+	// is reported later, the text is kept as a draft until it succeeds, as
+	// HandleCommitConfirm does. Otherwise the text that Up replaced is kept.
 	if self.submitReportsResult {
 		commitMessage := self.c.Contexts().CommitMessage
 		text := self.JoinCommitMessageAndUnwrappedDescription()
 		useDrafts := commitMessage.CommitDraftsUsedBy(text)
-		commitMessage.KeepCommitDraftsOnCancel(text)
+		if err := commitMessage.KeepCommitDraftsOnCancel(text); err != nil {
+			return draftNotSavedError(self.c.Tr.CommitDraftNotSavedBeforeEditor, err)
+		}
 		self.pendingDraftUse = useDrafts
-	} else {
-		self.c.Contexts().CommitMessage.KeepTypedCommitDraftOnSwitchToEditor()
+	} else if err := self.c.Contexts().CommitMessage.KeepTypedCommitDraftOnSwitchToEditor(); err != nil {
+		return draftNotSavedError(self.c.Tr.CommitDraftNotSavedBeforeEditor, err)
+	}
+
+	filepath := filepath.Join(self.c.OS().GetTempDir(), self.c.Git().RepoPaths.RepoName(), time.Now().Format("Jan _2 15.04.05.000000000")+".msg")
+	err := self.c.OS().CreateFileWithContent(filepath, message)
+	if err != nil {
+		self.pendingDraftUse = nil
+		return err
 	}
 
 	self.CloseCommitMessagePanel()
@@ -228,9 +234,12 @@ func (self *CommitsHelper) HandleCommitConfirm() error {
 
 	// Fork: when the result is reported later, the text is kept as a draft until
 	// it succeeds, so that a failure does not lose it. Keeping it here, before
-	// OnConfirm, also keeps the text that Up replaced.
+	// OnConfirm, also keeps the text that Up replaced. If that cannot be saved,
+	// nothing is submitted and the box stays open.
 	if self.submitReportsResult {
-		commitMessage.KeepCommitDraftsOnCancel(text)
+		if err := commitMessage.KeepCommitDraftsOnCancel(text); err != nil {
+			return draftNotSavedError(self.c.Tr.CommitDraftNotSavedBeforeSubmit, err)
+		}
 		self.pendingDraftUse = useDrafts
 	}
 
@@ -241,7 +250,11 @@ func (self *CommitsHelper) HandleCommitConfirm() error {
 	}
 
 	if !self.submitReportsResult {
-		useDrafts()
+		// Fork: the commit has succeeded, so a failure to update the drafts only
+		// means a stale draft is left behind. Nothing the user typed is lost.
+		if err := useDrafts(); err != nil {
+			self.c.Log.Errorf("error when updating commit drafts after commit: %v", err)
+		}
 	}
 
 	return nil
@@ -257,7 +270,11 @@ func (self *CommitsHelper) TakeCommitMessageSubmitReporter() func() {
 	return func() {
 		if useDrafts != nil {
 			self.c.OnUIThread(func() error {
-				useDrafts()
+				// Fork: the commit has succeeded, so a failure here is only logged; see
+				// HandleCommitConfirm.
+				if err := useDrafts(); err != nil {
+					self.c.Log.Errorf("error when updating commit drafts after commit: %v", err)
+				}
 				return nil
 			})
 		}
@@ -277,29 +294,45 @@ func (self *CommitsHelper) PreserveCommitMessage() {
 // the editor keep it only while a reported submit is in progress, until it
 // succeeds (see TakeCommitMessageSubmitReporter); otherwise they do not. See
 // docs-master/fork/Guide.md.
-func (self *CommitsHelper) SaveCommitDraftIfChanged() {
-	self.c.Contexts().CommitMessage.KeepCommitDraftsOnCancel(self.JoinCommitMessageAndUnwrappedDescription())
+func (self *CommitsHelper) SaveCommitDraftIfChanged() error {
+	return self.c.Contexts().CommitMessage.KeepCommitDraftsOnCancel(self.JoinCommitMessageAndUnwrappedDescription())
 }
 
 // Fork: Escape in either box. Unlike CloseCommitMessagePanel, which confirm
-// also uses, this saves the draft first.
-func (self *CommitsHelper) CancelCommitMessagePanel() {
-	self.SaveCommitDraftIfChanged()
+// also uses, this saves the draft first. If the draft cannot be saved, the box
+// stays open with its text, and the error is returned for the user to see.
+func (self *CommitsHelper) CancelCommitMessagePanel() error {
+	if err := self.SaveCommitDraftIfChanged(); err != nil {
+		return draftNotSavedError(self.c.Tr.CommitDraftNotSavedOnCancel, err)
+	}
 	self.CloseCommitMessagePanel()
+	return nil
 }
 
-// Fork: Up in the summary box.
+// Fork: the error shown when a draft cannot be saved, which keeps the box open.
+func draftNotSavedError(template string, err error) error {
+	return errors.New(utils.ResolvePlaceholderString(template, map[string]string{"error": err.Error()}))
+}
+
+// Fork: Up in the summary box. If the shown text cannot be saved as a draft,
+// the text is left as it is and the error is shown.
 func (self *CommitsHelper) RecallOlderCommitDraft() error {
-	text, ok := self.c.Contexts().CommitMessage.StepToOlderCommitDraft(self.JoinCommitMessageAndUnwrappedDescription())
+	text, ok, err := self.c.Contexts().CommitMessage.StepToOlderCommitDraft(self.JoinCommitMessageAndUnwrappedDescription())
+	if err != nil {
+		return draftNotSavedError(self.c.Tr.CommitDraftNotSavedOnRecall, err)
+	}
 	if ok {
 		self.SetPreservedMessageInView(text)
 	}
 	return nil
 }
 
-// Fork: Down in the summary box.
+// Fork: Down in the summary box. See RecallOlderCommitDraft.
 func (self *CommitsHelper) RecallNewerCommitDraft() error {
-	text, ok := self.c.Contexts().CommitMessage.StepToNewerCommitDraft(self.JoinCommitMessageAndUnwrappedDescription())
+	text, ok, err := self.c.Contexts().CommitMessage.StepToNewerCommitDraft(self.JoinCommitMessageAndUnwrappedDescription())
+	if err != nil {
+		return draftNotSavedError(self.c.Tr.CommitDraftNotSavedOnRecall, err)
+	}
 	if ok {
 		self.SetPreservedMessageInView(text)
 	}
