@@ -30,7 +30,7 @@ Order is roughly by risk. Each batch is one Haiku subagent task under
 | M. Tags `n b` | 06-F5 | Add `branch.place-at-selected-commit` to Tags as the Guide promises |
 | N. Docs | 01-F2, 03-F4, 03-F5, 03-F6, 04-F3 (verify; MergeGuide already mentions the clipboard writer), 06-F6, 08-F7, 09-F5, 14-F5, 15-F1, 15-F5 | Correct MergeGuide (baseline counts with a counting recipe, remote names, metadata-only list, rebase-wrapper claim, checkout and move-commits claims, missing paths, translations), Guide (repo-root `.lazygitk.yml`), Config.md/schema descriptions of ignored key settings, stale `|` key, stale CommitIndex comments; add `// Fork:` markers at the replacement sites listed in 15-F5 |
 
-## 2. UX questions for the user (block the marked batches)
+## 2. UX questions for the user (answered 2026-11-06; see docs-master/fork/Tracker.md "Decisions")
 
 - **U1 (05-F4) Fetch in Remotes.** The Guide says `f` fetches every remote from
   any pane. In Remotes, `f` currently fetches only the selected remote, and

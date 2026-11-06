@@ -1,6 +1,51 @@
-# Current work
+# Current work: fix the fork review findings
 
-No work is in progress.
+Source: [reviews/TRIAGE.md](../../reviews/TRIAGE.md) (batch letters and finding
+ids `NN-Fk` refer to it). Confirm each finding before fixing it, with a
+failing test where practical. Mark each finding fixed or declined in the
+triage as its batch lands.
+
+## Decisions (2026-11-06)
+
+- **U1 Fetch.** Outside Remotes, `f` fetches the primary remote: `origin`, or
+  the repository's only remote. With several remotes and none named `origin`,
+  `f` opens a menu of the remotes plus "Fetch all remotes". In Remotes, `f`
+  fetches the selected remote. "Fetch all remotes" is a palette item.
+  `git.fetchAll` no longer affects `f`. Before any fetch, the remotes' fetch
+  refspecs are checked; if one writes into local branches (`refs/heads/`), a
+  confirmation names the refspecs and explains that Git will move those
+  branches. The fetch is selected; Cancel and Escape stop it.
+- **U2 Hidden selected commits.** Commits hidden by a filter or beyond the
+  loaded list stay selected; selection mode does not change. The count
+  includes hidden commits and commands act on the whole set.
+- **U3 Move commits to a new branch** refuses while tracked files have staged
+  or unstaged changes; it never stashes.
+- **U4 Merge menu.** `s` squash-merges and commits; `u` squash-merges without
+  committing.
+- **Merge-ease cleanups** in triage §3 (first group) are approved. The other
+  §3 quality items stay open.
+
+## Tasks
+
+Each task is one subagent batch, reviewed and committed before the next.
+
+1. O1 (15-F2): fork i18n fields in one marked block with a fork-owned
+   initializer; restore `KeybindingsMenuSectionLocal/Global`. First, so later
+   fixes add strings in the right place.
+2. Batch A: small isolated fixes.
+3. Batch B: checkout.
+4. Batch I: move commits to a new branch (with U3).
+5. Batch G: reword target.
+6. Batch J: ignored-file protection (probe first).
+7. Batch C: cross-instance file locking.
+8. Batch D: commit list state, with U2 (10-F1).
+9. Batch P: fetch per U1 (05-F4).
+10. Batch F: sync.
+11. Batches E, H, K, M, and L with U4 (07-F2, 07-F3).
+12. O2/O3: move fork-owned methods out of upstream files; `// Fork:
+    unreachable` markers (15-F3, 02-F4, 13-F2, 07-F4, 10-F3).
+13. Batch N: remaining doc corrections, including MergeGuide counts after O2.
+14. Full integration suite.
 
 ## How this tracker works
 
