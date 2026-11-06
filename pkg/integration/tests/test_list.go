@@ -54,6 +54,7 @@ var tests = []*components.IntegrationTest{
 	branch.ForkFlatCheckoutMenus,
 	branch.MergeFastForward,
 	branch.MergeNonFastForward,
+	branch.MoveCommitsRefusesTrackedChanges,
 	branch.MoveCommitsToNewBranchFromBaseBranch,
 	branch.MoveCommitsToNewBranchFromMainBranch,
 	branch.MoveCommitsToNewBranchKeepStacked,

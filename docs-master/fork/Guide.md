@@ -405,6 +405,21 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - If a rebase could overwrite ignored files, a separate menu lists them before
   anything runs. The approval is selected; choose Cancel or press Escape to
   stop.
+- `g m n` moves the unpushed commits of the checked-out branch to a new
+  branch. Its menu offers two variants: a new branch stacked on the current
+  branch, or a new branch off the base branch with the commits cherry-picked
+  onto it. On the main branch it asks to confirm the stacked variant only.
+  The name prompt suggests a name, and the flow refuses before writing if:
+  the name starts with `-`, is not a valid branch name, or names an existing
+  branch; tracked files have staged or unstaged changes (commit or discard
+  them first; nothing is stashed); or the branch, its upstream or the base has
+  moved since the action started. Untracked files are fine. Nothing is
+  stashed. The source keeps its commits until the new branch has them: the
+  current branch is moved back to its upstream only after the new branch holds
+  the commits. With the base variant, a conflict stops the cherry-picks, and
+  the current branch is moved only after the operation is continued and the
+  new branch holds one commit per moved commit; a skipped pick leaves the
+  current branch untouched, and an abort does too.
 - `s h`, `s m`, `s s` reset the checked-out branch to the selection, with a
   confirmation explaining what the mode does to the index and files.
 - Conflicts and paused rebases are continued, skipped or aborted explicitly

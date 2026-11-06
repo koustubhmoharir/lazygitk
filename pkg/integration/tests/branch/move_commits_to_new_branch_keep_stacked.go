@@ -22,12 +22,12 @@ var MoveCommitsToNewBranchKeepStacked = NewIntegrationTest(NewIntegrationTestArg
 		shell.CreateFileAndAdd("file1", "file1 content")
 		shell.Commit("new commit 1")
 		shell.EmptyCommit("new commit 2")
-		shell.UpdateFile("file1", "file1 changed")
+		shell.CreateFile("untracked file", "untracked content")
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
 		t.Views().Files().
 			Lines(
-				Contains("M file1"),
+				Contains("untracked file"),
 			)
 		t.Views().Branches().
 			Focus().
@@ -64,7 +64,7 @@ var MoveCommitsToNewBranchKeepStacked = NewIntegrationTest(NewIntegrationTestArg
 			)
 		t.Views().Files().
 			Lines(
-				Contains("M file1"),
+				Contains("untracked file"),
 			)
 	},
 })

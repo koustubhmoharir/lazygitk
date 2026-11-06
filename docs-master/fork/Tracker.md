@@ -29,7 +29,6 @@ triage as its batch lands.
 
 Each task is one subagent batch, reviewed and committed before the next.
 
-- Batch I: move commits to a new branch (with U3).
 - Batch G: reword target.
 - Batch J: ignored-file protection (probe first), including undo/redo of
   rebases and the hard-reset review (J-U).

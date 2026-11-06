@@ -441,9 +441,17 @@ launch, described under "Merge tool" below.
   checkout (`git_commands/fork_undo_checkout.go`, `ClassifyReflogCheckoutTarget`).
   It replaces upstream's `CheckoutRef` there, which runs plain `git checkout`
   and offers an autostash; see the controllers' undo entry above.
-- `helpers/refs_helper.go`: the reset menu, new branch and
-  move-commits-to-new-branch use captured selections (`captured_reset.go`,
-  `captured_branch_create.go`). The flat checkouts (`fork_flat_checkout.go`,
+- `helpers/refs_helper.go`: the reset menu and new branch use captured
+  selections (`captured_reset.go`, `captured_branch_create.go`).
+  `MoveCommitsToNewBranch` is a fork delegation to `helpers/fork_move_commits.go`
+  (`git_commands/fork_move_commits.go`). It replaces upstream's reset-first
+  variants, which were removed from `refs_helper.go` rather than kept as
+  unreachable code. The flow captures the branch, upstream, base and unpushed
+  commits at invocation, refuses tracked changes and never stashes, validates
+  the name, and moves the current branch only after the new branch has the
+  commits. For the base variant's conflicts, it registers its completion with
+  `MergeAndRebaseHelper.SetOnOperationFinished` (see the cherry-pick entry).
+  Its menu, labels and command IDs are upstream's. The flat checkouts (`fork_flat_checkout.go`,
   `fork_checkout_by_name.go`) use the captured named checkout
   (`named_checkout.go`). Its upstream checkout menus and `CheckoutRemoteBranch`
   are the legacy handlers listed under "Default checkout routes" above.

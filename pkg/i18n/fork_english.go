@@ -17,6 +17,19 @@ type ForkTranslationSet struct {
 	ForkUnstageSelection                 string
 	ForkRemovePatchSelection             string
 	CheckoutDetached                     string
+	MoveCommitsReadingStatus             string
+	MoveCommitsFinishingStatus           string
+	MoveCommitsTrackedChanges            string
+	MoveCommitsChanged                   string
+	MoveCommitsNameOption                string
+	MoveCommitsNameExists                string
+	MoveCommitsCreateFailed              string
+	MoveCommitsCheckoutFailed            string
+	MoveCommitsCreateFromBaseFailed      string
+	MoveCommitsOldBranchChanged          string
+	MoveCommitsOldBranchInUse            string
+	MoveCommitsIncomplete                string
+	MoveCommitsOldBranchNotMoved         string
 	CherryPickChangedNote                string
 	CombineSelected                      string
 	CombineSelectCommits                 string
@@ -385,6 +398,19 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		ForkUnstageSelection:                  "Unstage selected changes",
 		ForkRemovePatchSelection:              "Remove selected lines from custom patch",
 		CheckoutDetached:                      "Checkout detached HEAD",
+		MoveCommitsReadingStatus:              "Reading the branch to move commits from",
+		MoveCommitsFinishingStatus:            "Moving the old branch back to its upstream",
+		MoveCommitsTrackedChanges:             "Commit or discard the changes to tracked files first. Moving commits never stashes.",
+		MoveCommitsChanged:                    "The branch changed since the action started. Nothing was changed; start the action again.",
+		MoveCommitsNameOption:                 "A branch name cannot start with '-'. Choose another name.",
+		MoveCommitsNameExists:                 "A branch named %s already exists. Nothing was changed; choose another name.",
+		MoveCommitsCreateFailed:               "Could not create branch %s. Nothing was changed. Git said: %v",
+		MoveCommitsCheckoutFailed:             "Created branch %s, but could not check it out. The commits are on %s, and %s was not moved. Git said: %v",
+		MoveCommitsCreateFromBaseFailed:       "Could not create branch %s from the base branch. Nothing was changed. Git said: %v",
+		MoveCommitsOldBranchChanged:           "%s was not moved because it changed since the action started. Its commits are still on it, and %s has the moved commits.",
+		MoveCommitsOldBranchInUse:             "%s is checked out or reserved in another worktree, so it was not moved. Its commits are still on it, and %s has the moved commits.",
+		MoveCommitsIncomplete:                 "%s was not moved, because %s does not hold one commit for each moved commit (a pick was skipped, or the branch has other commits). Its commits are still on it.",
+		MoveCommitsOldBranchNotMoved:          "The moved commits are on %s, but %s was not moved. Git said: %v",
 		CherryPickChangedNote:                 "The destination or ignored-file risks changed. Review the fresh state before proceeding.",
 		CombineSelected:                       "Combine selected commits",
 		CombineSelectCommits:                  "Select at least two full commit IDs to combine.",
@@ -729,5 +755,6 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		ForkCannotSelfUpdate:                  "This build of lazygitk cannot update itself. Rebuild it from source to update.",
 	}
 	set.MustExitFilterModePrompt = "Command not available while the commit log is filtered. Exit filter mode?"
+	set.MoveCommitsToNewBranchFromMainPrompt = "This will take all unpushed commits and move them to a new branch (off of {{.baseBranchName}}). The current branch is then moved back to its upstream branch. Nothing is stashed: commit or discard tracked changes first. Do you want to continue?"
 	set.IntroPopupMessage = forkIntroPopupMessage
 }
