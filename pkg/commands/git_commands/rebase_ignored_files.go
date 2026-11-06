@@ -74,24 +74,58 @@ func (self *RebaseCommands) rebaseCandidateRisks(replay rebaseReplay) ([]string,
 	for _, path := range replay.extra {
 		candidates[path] = struct{}{}
 	}
-	known := append(nulPaths(replayed), replay.extra...)
-	predicted, err := self.predictedRebaseCandidates(replay, known)
+	ignored, err := self.ignoredFilesSnapshot()
 	if err != nil {
 		return nil, "", err
 	}
-	for path := range predicted {
-		candidates[path] = struct{}{}
+	// Without ignored files nothing can be at risk, so the replay prediction, which
+	// costs several Git calls, is skipped.
+	if len(ignored.paths) > 0 {
+		known := append(nulPaths(replayed), replay.extra...)
+		predicted, err := self.predictedRebaseCandidates(replay, known, ignored)
+		if err != nil {
+			return nil, "", err
+		}
+		for path := range predicted {
+			candidates[path] = struct{}{}
+		}
 	}
-	return self.ignoredRisksForPaths(candidates)
+	return self.risksFromSnapshot(candidates, ignored)
 }
 
 // Share collision and content-fingerprint policy with other captured history
 // operations. Callers supply exactly the paths their native operation may touch.
 func (self *RebaseCommands) ignoredRisksForPaths(candidates map[string]struct{}) ([]string, string, error) {
-	paths, err := self.collidingIgnoredPaths(candidates)
+	ignored, err := self.ignoredFilesSnapshot()
 	if err != nil {
 		return nil, "", err
 	}
+	return self.risksFromSnapshot(candidates, ignored)
+}
+
+// ignoredFiles is one reading of the worktree's ignored files and the case policy,
+// shared by the checks of one risk calculation.
+type ignoredFiles struct {
+	paths      []string
+	ignoreCase bool
+}
+
+func (self *RebaseCommands) ignoredFilesSnapshot() (ignoredFiles, error) {
+	ignoredOutput, err := self.selectedRebaseGitOutput(NewGitCmd("ls-files").Arg("--others", "--ignored", "--exclude-standard", "-z").ToArgv())
+	if err != nil {
+		return ignoredFiles{}, fmt.Errorf("list ignored files: %w", err)
+	}
+	ignoreCase, err := self.selectedRebaseIgnoreCase()
+	if err != nil {
+		return ignoredFiles{}, err
+	}
+	return ignoredFiles{paths: nulPaths(ignoredOutput), ignoreCase: ignoreCase}, nil
+}
+
+// risksFromSnapshot lists the ignored files that collide with candidates, with their
+// fingerprint.
+func (self *RebaseCommands) risksFromSnapshot(candidates map[string]struct{}, ignored ignoredFiles) ([]string, string, error) {
+	paths := collidingIgnoredPaths(candidates, ignored)
 	fingerprint, err := fingerprintIgnoredPaths(self.repoPaths.WorktreePath(), paths)
 	if err != nil {
 		return nil, "", fmt.Errorf("fingerprint ignored rebase risks: %w", err)
@@ -100,15 +134,8 @@ func (self *RebaseCommands) ignoredRisksForPaths(candidates map[string]struct{})
 }
 
 // collidingIgnoredPaths lists, sorted, the ignored files that collide with candidates.
-func (self *RebaseCommands) collidingIgnoredPaths(candidates map[string]struct{}) ([]string, error) {
-	ignoredOutput, err := self.selectedRebaseGitOutput(NewGitCmd("ls-files").Arg("--others", "--ignored", "--exclude-standard", "-z").ToArgv())
-	if err != nil {
-		return nil, fmt.Errorf("list ignored files: %w", err)
-	}
-	ignoreCase, err := self.selectedRebaseIgnoreCase()
-	if err != nil {
-		return nil, err
-	}
+func collidingIgnoredPaths(candidates map[string]struct{}, ignored ignoredFiles) []string {
+	ignoreCase := ignored.ignoreCase
 	candidateSet := make(map[string]struct{}, len(candidates))
 	candidatePaths := make([]string, 0, len(candidates))
 	for candidate := range candidates {
@@ -118,9 +145,9 @@ func (self *RebaseCommands) collidingIgnoredPaths(candidates map[string]struct{}
 	}
 	sort.Strings(candidatePaths)
 	riskSet := make(map[string]struct{})
-	for _, ignored := range nulPaths(ignoredOutput) {
-		if rebaseCandidatePathCollides(rebasePathKey(ignored, ignoreCase), candidateSet, candidatePaths) {
-			riskSet[ignored] = struct{}{}
+	for _, path := range ignored.paths {
+		if rebaseCandidatePathCollides(rebasePathKey(path, ignoreCase), candidateSet, candidatePaths) {
+			riskSet[path] = struct{}{}
 		}
 	}
 	paths := make([]string, 0, len(riskSet))
@@ -128,7 +155,7 @@ func (self *RebaseCommands) collidingIgnoredPaths(candidates map[string]struct{}
 		paths = append(paths, path)
 	}
 	sort.Strings(paths)
-	return paths, nil
+	return paths
 }
 
 func (self *RebaseCommands) selectedRebaseGitOutput(args []string) ([]byte, error) {

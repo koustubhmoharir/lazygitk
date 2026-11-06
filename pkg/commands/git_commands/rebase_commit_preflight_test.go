@@ -90,7 +90,7 @@ func TestRebaseCommitPreflight(t *testing.T) {
 		runner := oscommands.NewFakeRunner(t).
 			ExpectGitArgs([]string{"diff", "--quiet", "--no-ext-diff", "--ignore-submodules=untracked", "--"}, "", nil).
 			// The ignored-file preflight before the fixup, then the start guard before the rebase.
-			ExpectGitArgs([]string{"diff", "--cached", "--name-only", "--no-renames", "-z", "HEAD", "--"}, "", nil).
+			ExpectGitArgs([]string{"diff", "--cached", "--name-status", "-M", "-z", "HEAD", "--"}, "", nil).
 			ExpectGitArgs([]string{"log", "--format=", "--name-only", "--no-renames", "--root", "-m", "-z", "HEAD^{commit}", "--"}, "", nil).
 			ExpectGitArgs([]string{"ls-files", "--others", "--ignored", "--exclude-standard", "-z"}, "", nil).
 			ExpectGitArgs([]string{"config", "--type=bool", "--get", "core.ignoreCase"}, "false\n", nil).

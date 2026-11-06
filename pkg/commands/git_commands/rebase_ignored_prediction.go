@@ -41,16 +41,12 @@ var mergeTreeChainRuns atomic.Int64
 // Trade-off: the gate assumes the mirrored rule covers every path that Git's
 // directory-rename detection can create. The diffs therefore raise the rename limit
 // to the one merge uses, so that detection finds the same renames.
-func (self *RebaseCommands) predictedRebaseCandidates(replay rebaseReplay, known []string) (map[string]struct{}, error) {
+func (self *RebaseCommands) predictedRebaseCandidates(replay rebaseReplay, known []string, ignored ignoredFiles) (map[string]struct{}, error) {
 	mirrored, err := self.mirroredRenameCandidates(replay, known)
 	if err != nil {
 		return nil, err
 	}
-	risks, err := self.collidingIgnoredPaths(mirrored)
-	if err != nil {
-		return nil, err
-	}
-	if len(risks) == 0 {
+	if len(collidingIgnoredPaths(mirrored, ignored)) == 0 {
 		return map[string]struct{}{}, nil
 	}
 	if !replay.reordered && replay.destination != "" {
