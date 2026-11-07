@@ -359,9 +359,11 @@ re-apply it if upstream changes that code.
 - `pkg/gui/context/menu_context.go` (replacement): prefix menus, labels from
   `Binding.KeyLabels()`, physical navigation keys, and `CommandActive`. The
   setters `SetBeforeAccept` and `SetBlockUnmatchedKeys` are in
-  `context/fork_prefix_menu.go`.
+  `context/fork_prefix_menu.go`. The prefix key overrides and blocked-key
+  bindings in `GetKeybindings` are in `context/fork_menu_context.go`.
 - `pkg/gui/menu_panel.go` and `pkg/gui/context.go`: invalidate an open prefix
-  on a new menu or a focus change; `Activate` updates focus frames.
+  on a new menu or a focus change; `Activate` updates focus frames. The physical
+  essential keys of a prefix menu are in `pkg/gui/fork_menu_panel.go`.
 - `pkg/gui/options_map.go` and `pkg/gui/command_log_panel.go` (replacement):
   hints and tips name effective key paths through `CommandKeyLabel`; tips for
   keys with no route are dropped. `keyTip`, `commandRoute` and the options-map
@@ -373,7 +375,8 @@ re-apply it if upstream changes that code.
 - `controllers/list_controller_trait.go`: selection disabled reasons are
   `Inapplicable`, so an unusable key does nothing quietly.
 - `controllers/jump_to_side_window_controller.go`: numbered pane jumps keep
-  distinct identities even without keys.
+  distinct identities even without keys. `focusPanelTitle` is in
+  `controllers/fork_jump_to_side_window.go`.
 - Hints that used to read upstream key fields now ask `CommandKeyLabel`
   (`commit_diff_actions.go`, `helpers/gpg_helper.go`). Do the same for new
   upstream hints that name a key.

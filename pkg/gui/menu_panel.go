@@ -38,9 +38,8 @@ func (gui *Gui) createMenu(opts types.CreateMenuOptions) error {
 	// take precedence over the inherited list bindings.
 	var essentialKeys []gocui.Key
 	if len(opts.BlockUnmatchedKeys) > 0 {
-		// Fork prefix menus use physical controls independently of ordinary
-		// menu aliases, leaving every offered letter accelerator available.
-		essentialKeys = []gocui.Key{gocui.NewKeyName(gocui.KeyEnter), gocui.NewKeyName(gocui.KeyEsc), gocui.NewKeyName(gocui.KeyArrowUp), gocui.NewKeyName(gocui.KeyArrowDown)}
+		// Fork: a prefix menu's essential keys are physical (fork_menu_panel.go).
+		essentialKeys = forkPrefixEssentialKeys()
 	} else {
 		for _, binding := range []config.Keybinding{
 			gui.c.UserConfig().Keybinding.Universal.ConfirmMenu,

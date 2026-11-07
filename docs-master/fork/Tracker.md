@@ -13,8 +13,6 @@ see the user guide.
   02-F3 (popup attribution across workers), 15-F4 (restore weakened graph
   assertions), 13-F3 (copy tests stop before real handlers), and the
   cherry-pick add/add conflict that the merge helper reports as a plain error.
-- Remaining "01 merge notes" move: `focusPanelTitle` to a fork file, and
-  optional extractions in `menu_context.go` and `menu_panel.go`.
 
 ## How this tracker works
 

@@ -46,7 +46,8 @@ func (self *JumpToSideWindowController) GetKeybindings(opts types.KeybindingsOpt
 			Keys:     keys,
 			Handler:  opts.Guards.NoPopupPanel(self.goToSideWindow(windows[i])),
 			// Fork: distinct target identities keep explicit overrides and palette
-			// deduplication from conflating five different destinations.
+			// deduplication from conflating five different destinations. The
+			// description's title comes from focusPanelTitle (fork_jump_to_side_window.go).
 			CommandID:   "navigation.focus-panel." + windows[i],
 			Description: fmt.Sprintf(self.c.Tr.FocusPanel, self.focusPanelTitle(windows[i])),
 			Tag:         "navigation",
@@ -68,30 +69,4 @@ func (self *JumpToSideWindowController) goToSideWindow(window string) func() err
 		self.c.Context().Push(context, types.OnFocusOpts{})
 		return nil
 	}
-}
-
-func (self *JumpToSideWindowController) focusPanelTitle(window string) string {
-	switch window {
-	case "status":
-		return self.c.Tr.StatusTitle
-	case "files":
-		return self.c.Tr.FilesTitle
-	case "branches":
-		return self.c.Tr.BranchesTitle
-	case "commits":
-		return self.c.Tr.CommitsTitle
-	case "stash":
-		return self.c.Tr.StashTitle
-	case "worktrees":
-		return self.c.Tr.WorktreesTitle
-	case "submodules":
-		return self.c.Tr.SubmodulesTitle
-	case "remotes":
-		return self.c.Tr.RemotesTitle
-	case "tags":
-		return self.c.Tr.TagsTitle
-	case "reflog":
-		return self.c.Tr.ReflogCommitsTitle
-	}
-	return window
 }

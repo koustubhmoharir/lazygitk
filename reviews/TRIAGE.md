@@ -57,7 +57,7 @@ Merge-ease refactors (reduce future upstream conflicts, no behaviour change):
   `command_log_panel.go`, usage handler in `keybindings.go`, operation-finished
   settlement in `merge_and_rebase_helper.go`, menu prefix setters, copy-menu
   providers in the two Files controllers).
-- 01 merge notes: the same kind of move, not part of that change. **Not started** (needs a go-ahead). Already done: `keyTip`, `commandRoute`, `localFirstForkHintBindings` and `forkHintBindingInContext` are in `fork_command_hints.go`. Still open: `focusPanelTitle` in `jump_to_side_window_controller.go`, the prefix and blocker setup in `menu_context.go` `GetKeybindings` (an extraction inside an upstream method, not a move), and the essential-key choice in `menu_panel.go`.
+- **Fixed** 01 merge notes: the same kind of move. `keyTip`, `commandRoute`, `localFirstForkHintBindings` and `forkHintBindingInContext` are in `fork_command_hints.go`; `focusPanelTitle` is in `controllers/fork_jump_to_side_window.go`; the prefix option overrides and blocker bindings of `menu_context.go` `GetKeybindings` are in `context/fork_menu_context.go`; the physical essential keys of `menu_panel.go` are in `fork_menu_panel.go`.
 - **Fixed** 07-F4, 10-F3: keep the unused upstream merge methods and dormant paste code
   (deleting them adds conflicts) but mark them `// Fork: unreachable, replaced by …`.
 - Merge probe (15): the next upstream merge conflicts in `bisect_controller.go`

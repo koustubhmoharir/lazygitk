@@ -256,14 +256,8 @@ func (self *MenuViewModel) GetNonModelItems() []*NonModelItem {
 }
 
 func (self *MenuContext) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
-	if len(self.blockUnmatchedKeys) > 0 {
-		// Fork prefixes reserve physical navigation; configured letter aliases
-		// must not consume a continuation before its command accelerator.
-		opts.Config.Universal.PrevItem = []string{"<up>"}
-		opts.Config.Universal.NextItem = []string{"<down>"}
-		opts.Config.Universal.ConfirmMenu = []string{"<enter>"}
-		opts.Config.Universal.Return = []string{"<esc>"}
-	}
+	// Fork: a prefix menu reserves physical navigation (fork_menu_context.go).
+	opts = self.applyForkPrefixKeys(opts)
 	basicBindings := self.ListContextTrait.GetKeybindings(opts)
 
 	if self.filterAsYouType {
@@ -298,10 +292,8 @@ func (self *MenuContext) GetKeybindings(opts types.KeybindingsOpts) []*types.Bin
 		// allows assigning a keybinding to a menu item that overrides a non-essential binding such
 		// as 'j', 'k', 'H', 'L', etc. This is safe to do because the essential bindings such as
 		// confirm and return have already been removed from the menu items in this case.
-		blockedKeyBindings := lo.Map(self.blockUnmatchedKeys, func(key gocui.Key, _ int) *types.Binding {
-			return &types.Binding{Keys: []gocui.Key{key}, DefaultCommand: true, Handler: func() error { return nil }}
-		})
-		return append(append(menuItemBindings, blockedKeyBindings...), basicBindings...)
+		// Fork: blocked keys of a prefix menu (fork_menu_context.go).
+		return append(append(menuItemBindings, self.forkBlockedKeyBindings()...), basicBindings...)
 	}
 
 	// For the keybindings menu we didn't remove the essential bindings from the menu items, because
