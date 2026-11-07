@@ -6,7 +6,7 @@ import (
 )
 
 var ForkFetchFromAnyPane = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "f fetches every remote from Branches, Commits, Status, Stash and the main diff; in Remotes it fetches only the selected remote",
+	Description: "f fetches the primary remote (origin) from Branches, Commits, Status, Stash and the main diff; in Remotes it fetches only the selected remote",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -60,13 +60,15 @@ var ForkFetchFromAnyPane = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("dev").DoesNotContain("↓"),
 			)
 
-		// Commits: f fetches upstream, so dev shows it is behind.
+		// Commits: f fetches only the primary remote, origin, so dev, which tracks
+		// upstream, does not move (decision U1 in the tracker).
 		pushRemoteCommit("upstream", "upstream 1")
 		t.Views().Commits().Focus().
 			Press(config.Keybinding{"f"})
 		t.Views().Branches().
-			ContainsLines(
-				Contains("dev ↓1"),
+			Lines(
+				Contains("master ↓1"),
+				Contains("dev").DoesNotContain("↓"),
 			)
 
 		// Status: f fetches origin again.
@@ -100,7 +102,8 @@ var ForkFetchFromAnyPane = NewIntegrationTest(NewIntegrationTestArgs{
 			)
 
 		// Remotes: f fetches only the selected remote. Both remotes get new
-		// commits; selecting origin must leave upstream's tracking ref alone.
+		// commits; selecting origin must leave upstream's tracking ref alone, so dev
+		// still shows nothing.
 		pushRemoteCommit("origin", "origin 5")
 		pushRemoteCommit("upstream", "upstream 2")
 		upstreamBefore := t.Git().GetCommitHash("refs/remotes/upstream/master")
@@ -110,7 +113,7 @@ var ForkFetchFromAnyPane = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Branches().
 			Lines(
 				Contains("master ↓5"),
-				Contains("dev ↓1").DoesNotContain("↓2"),
+				Contains("dev").DoesNotContain("↓"),
 			)
 		if got := t.Git().GetCommitHash("refs/remotes/upstream/master"); got != upstreamBefore {
 			t.Fail("fetching the selected origin remote moved upstream/master")
