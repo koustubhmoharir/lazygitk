@@ -36,6 +36,10 @@ func (ui *rebaseSigningContinuationUI) Refresh(opts types.RefreshOptions) {
 
 func (ui *rebaseSigningContinuationUI) LogAction(string) {}
 
+// OnUIThread drops the callback: settleOperationFinished queues one on every
+// path, and these tests only check how the continuation is run.
+func (ui *rebaseSigningContinuationUI) OnUIThread(func() error) {}
+
 func (ui *rebaseSigningContinuationUI) LogCommand(string, bool) {}
 
 func (ui *rebaseSigningContinuationUI) Model() *types.Model { return &types.Model{} }
