@@ -91,6 +91,10 @@ type colorSchemeTty struct {
 
 	started bool
 
+	// Input that was read before tcell started, which Read returns before it
+	// reads the tty (see replayInput)
+	pending []byte
+
 	background colorful.Color
 	// Whether the terminal has told us its background color
 	haveBackground bool
@@ -206,6 +210,17 @@ func (self *colorSchemeTty) awaitingRepliesLocked() bool {
 		(self.colorSchemeRequested && self.reported != ColorSchemeUnknown)
 }
 
+// replayInput makes the next reads return b before anything from the tty. It is
+// for input that was read before tcell started, such as keys typed while the
+// probe for true colour waited for the terminal (see probeTrueColor).
+// Fork: tcell's Start flushes the tty, so the input must not be left there.
+func (self *colorSchemeTty) replayInput(b []byte) {
+	self.mutex.Lock()
+	defer self.mutex.Unlock()
+
+	self.pending = append(self.pending, b...)
+}
+
 func (self *colorSchemeTty) Stop() error {
 	self.mutex.Lock()
 	// Otherwise, the program we hand the terminal to would receive the reports
@@ -214,6 +229,9 @@ func (self *colorSchemeTty) Stop() error {
 		self.writeLocked(disableColorSchemeReports)
 	}
 	self.started = false
+	// Fork: replayed input that tcell didn't read is stale once the tty is
+	// stopped, so a later start must not replay it
+	self.pending = nil
 	self.mutex.Unlock()
 
 	return self.Tty.Stop()
@@ -227,13 +245,28 @@ func (self *colorSchemeTty) Write(p []byte) (int, error) {
 }
 
 func (self *colorSchemeTty) Read(p []byte) (int, error) {
-	n, err := self.Tty.Read(p)
+	n, err := self.readPending(p)
+	if n == 0 {
+		n, err = self.Tty.Read(p)
+	}
 
 	for _, reply := range self.scanner.scan(p[:n]) {
 		self.handleReply(reply)
 	}
 
 	return n, err
+}
+
+// readPending copies replayed input into p, if there is any. It returns 0 if
+// there isn't, and then Read reads the tty.
+// Fork: the replayed input is not read from the tty, so it is not lost.
+func (self *colorSchemeTty) readPending(p []byte) (int, error) {
+	self.mutex.Lock()
+	defer self.mutex.Unlock()
+
+	n := copy(p, self.pending)
+	self.pending = self.pending[n:]
+	return n, nil
 }
 
 // onFocusGained asks for the background color again, for the terminals that

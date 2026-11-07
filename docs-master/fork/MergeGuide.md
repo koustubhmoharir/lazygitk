@@ -883,7 +883,9 @@ unreachable` marker that names its replacement. Do not reconnect them.
   `trueColorScreenOptions` (`fork_true_color.go`), which asks the terminal
   whether it shows true colour before tcell starts, when `COLORTERM` doesn't
   say so. Keep it before `NewTerminfoScreenFromTty` if tcell's start-up
-  changes.
+  changes. Keys typed during the probe are handed to `colorSchemeTty`
+  (`replayInput`) before `s.Init()`, because tcell's start flushes the tty;
+  tcell must keep reading through that wrapper.
 - `pkg/gocui/view.go`: `setCharacter` takes the cell's content line, and an
   explicit set of selected lines (`SetSelectedLines`,
   `fork_selected_lines.go`) replaces the cursor and range highlight while set.

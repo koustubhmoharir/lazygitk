@@ -1,6 +1,7 @@
 package gocui
 
 import (
+	"bytes"
 	"os"
 	"regexp"
 	"runtime"
@@ -35,6 +36,8 @@ const (
 
 var (
 	deviceAttributesReply = regexp.MustCompile(`\x1b\[\?[0-9;]*c`)
+	// The start of a device attributes reply at the end of the input
+	partialDeviceAttributesReply = regexp.MustCompile(`\x1b\[\?[0-9;]*$`)
 	// The answer to requestTrueColorSgr, in any of the ways that terminals
 	// write a true colour background: 48;2;1;2;3, 48:2:1:2:3 or 48:2::1:2:3
 	trueColorSgrReply  = regexp.MustCompile(`\x1bP1\$r[0-9;:]*48[:;]2[:;]{1,2}1[:;]2[:;]3[0-9;:]*m`)
@@ -42,12 +45,18 @@ var (
 )
 
 // trueColorScreenOptions returns the options that make tcell use true colour
-// when the terminal shows it but COLORTERM doesn't say so.
-func trueColorScreenOptions(tty tcell.Tty) []tcell.TerminfoScreenOption {
-	if !shouldProbeTrueColor() || !probeTrueColor(tty) {
-		return nil
+// when the terminal shows it but COLORTERM doesn't say so. It also returns the
+// input that the probe read but didn't use up; tcell must read it first (see
+// probeTrueColor).
+func trueColorScreenOptions(tty tcell.Tty) ([]tcell.TerminfoScreenOption, []byte) {
+	if !shouldProbeTrueColor() {
+		return nil, nil
 	}
-	return []tcell.TerminfoScreenOption{tcell.OptColors(1 << 24)}
+	trueColor, typedAhead := probeTrueColor(tty)
+	if !trueColor {
+		return nil, typedAhead
+	}
+	return []tcell.TerminfoScreenOption{tcell.OptColors(1 << 24)}, typedAhead
 }
 
 // shouldProbeTrueColor says whether tcell's own detection leaves true colour
@@ -65,37 +74,42 @@ func shouldProbeTrueColor() bool {
 }
 
 // probeTrueColor asks the terminal whether it shows true colour, and leaves
-// the tty stopped for tcell to start.
-func probeTrueColor(tty tcell.Tty) bool {
+// the tty stopped for tcell to start. It also returns the input it read that
+// isn't a reply to its queries, in the order it arrived, so that the caller can
+// hand it to tcell. The user may have typed while we waited. tcell's Start
+// flushes the tty, so that input must not be left there.
+func probeTrueColor(tty tcell.Tty) (bool, []byte) {
 	if err := tty.Start(); err != nil {
-		return false
+		return false, nil
 	}
 	defer func() { _ = tty.Stop() }()
 
 	if _, err := tty.Write([]byte(requestTrueColorSgr + requestRgbCapability + requestDeviceAttributes)); err != nil {
-		return false
+		return false, nil
 	}
 
-	replies := make(chan string, 1)
+	replies := make(chan []byte, 1)
 	go safe(func() {
 		replies <- readUntilDeviceAttributes(tty)
 	})
 
 	select {
 	case reply := <-replies:
-		return trueColorSgrReply.MatchString(reply) || rgbCapabilityReply.MatchString(reply)
+		trueColor := trueColorSgrReply.Match(reply) || rgbCapabilityReply.Match(reply)
+		return trueColor, withoutProbeReplies(reply, false)
 	case <-time.After(trueColorProbeTimeout):
-		// Ends the read; tcell flushes whatever arrives later when it starts
-		// the tty.
+		// Ends the read; the reader returns what it has read so far, and the
+		// input that arrives later stays in the tty for tcell.
 		_ = tty.Drain()
-		<-replies
-		return false
+		reply := <-replies
+		return false, withoutProbeReplies(reply, true)
 	}
 }
 
 // readUntilDeviceAttributes reads the terminal's answers up to the one to
-// requestDeviceAttributes, or until reading fails.
-func readUntilDeviceAttributes(tty tcell.Tty) string {
+// requestDeviceAttributes, or until reading fails. It returns everything read,
+// including any input after that answer in the same read.
+func readUntilDeviceAttributes(tty tcell.Tty) []byte {
 	var input []byte
 	buffer := make([]byte, 256)
 	for len(input) < 4096 {
@@ -108,7 +122,40 @@ func readUntilDeviceAttributes(tty tcell.Tty) string {
 			break
 		}
 	}
-	return string(input)
+	return input
+}
+
+// withoutProbeReplies removes the terminal's replies to the probe's queries
+// (the complete DCS strings and the device attributes reply) from input, and
+// keeps every other byte in order. A DCS with no terminating ST runs to the end
+// of the input. On the timeout path, that is a partial reply, so it is dropped.
+// Otherwise it is kept, because the reply to the device attributes ends the read
+// and nothing says that the DCS is a reply.
+func withoutProbeReplies(input []byte, timedOut bool) []byte {
+	var kept []byte
+	rest := input
+	for {
+		start := bytes.Index(rest, []byte("\x1bP"))
+		if start < 0 {
+			kept = append(kept, rest...)
+			break
+		}
+		kept = append(kept, rest[:start]...)
+		end := bytes.Index(rest[start+2:], []byte("\x1b\\"))
+		if end < 0 {
+			if !timedOut {
+				kept = append(kept, rest[start:]...)
+			}
+			break
+		}
+		rest = rest[start+2+end+2:]
+	}
+	kept = deviceAttributesReply.ReplaceAll(kept, nil)
+	if timedOut {
+		// A device attributes reply cut off by the timeout is partial too.
+		kept = partialDeviceAttributesReply.ReplaceAll(kept, nil)
+	}
+	return kept
 }
 
 // TrueColor says whether the screen shows true colour; otherwise colours are

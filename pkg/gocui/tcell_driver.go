@@ -65,12 +65,15 @@ func (g *Gui) tcellInit(runeReplacements map[rune]string) error {
 	colorSchemeTty := newColorSchemeTty(tty)
 
 	// Fork: true colour when the terminal shows it, even if COLORTERM doesn't
-	// say so (fork_true_color.go).
-	s, e := tcell.NewTerminfoScreenFromTty(colorSchemeTty, trueColorScreenOptions(tty)...)
+	// say so (fork_true_color.go). The input typed while probing is replayed to
+	// tcell before it starts reading.
+	screenOptions, typedAhead := trueColorScreenOptions(tty)
+	s, e := tcell.NewTerminfoScreenFromTty(colorSchemeTty, screenOptions...)
 	if e != nil {
 		return e
 	}
 
+	colorSchemeTty.replayInput(typedAhead)
 	if e = s.Init(); e != nil {
 		return e
 	}

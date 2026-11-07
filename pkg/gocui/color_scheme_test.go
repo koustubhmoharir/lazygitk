@@ -400,3 +400,53 @@ func TestColorSchemeTtyDoesntWaitForRepliesThatNeverCame(t *testing.T) {
 	test.feed("\x1b[?997;1n")
 	assertDoneWaiting(t, done)
 }
+
+func readOneByte(tty tcell.Tty) string {
+	buffer := make([]byte, 1)
+	n, _ := tty.Read(buffer)
+	return string(buffer[:n])
+}
+
+func TestColorSchemeTtyReplaysInputBeforeTheTty(t *testing.T) {
+	test := newColorSchemeTtyTest("")
+	test.tty.replayInput([]byte("ab"))
+	test.fake.input = "XY"
+
+	assert.NoError(t, test.tty.Start())
+	assert.Equal(t, "a", readOneByte(test.tty))
+	assert.Equal(t, "b", readOneByte(test.tty))
+	assert.Equal(t, "X", readOneByte(test.tty), "the tty is read once the replayed input is used up")
+	assert.Equal(t, "Y", readOneByte(test.tty))
+}
+
+func TestColorSchemeTtyScansReplayedInput(t *testing.T) {
+	test := newColorSchemeTtyTest("")
+	test.tty.replayInput([]byte("\x1b[?997;1n"))
+
+	assert.NoError(t, test.tty.Start())
+	assert.Equal(t, "\x1b[?997;1n", string(readAll(test.tty, len("\x1b[?997;1n"))))
+	assert.Equal(t, []string{"dark (reported by the terminal)"}, test.takeNotifications())
+}
+
+func TestColorSchemeTtyDropsReplayedInputOnStop(t *testing.T) {
+	test := newColorSchemeTtyTest("")
+	test.tty.replayInput([]byte("ab"))
+
+	assert.NoError(t, test.tty.Start())
+	assert.NoError(t, test.tty.Stop())
+	test.fake.takeWritten()
+
+	// The input was never read, and it must not be replayed by a later start
+	test.fake.input = "cd"
+	assert.NoError(t, test.tty.Start())
+	assert.Equal(t, "c", readOneByte(test.tty))
+}
+
+// readAll reads n bytes one at a time
+func readAll(tty tcell.Tty, n int) []byte {
+	var result []byte
+	for range n {
+		result = append(result, readOneByte(tty)...)
+	}
+	return result
+}
