@@ -8,10 +8,34 @@ behaviour it protects is in the [user guide](Guide.md) and the reasons in the
 
 ## Baseline
 
-- Upstream: `https://github.com/jesseduffield/lazygit.git` (remote `origin`).
+- Upstream: `https://github.com/jesseduffield/lazygit.git`, the remote
+  `upstream`. The fork's own remote is `origin`.
 - Last integrated upstream commit: `4e1eebe278790f257a875da6633234391a5a85b3`.
-- Against that base the fork modifies 104 upstream source files and 157
-  upstream tests, and adds 384 files of its own (172 source, 212 test).
+- Against that base, at commit `09ef9d41d`, the fork modifies 133 upstream
+  source files, 203 upstream test files (199 modified, 4 deleted) and 6 other
+  upstream files. It adds 620 files: 241 source, 346 test, 30 other and 3
+  generated. Recompute with the recipe below after a merge, or whenever files
+  are added or removed.
+
+Counting recipe, from the repository root. Status `M` is an upstream file that
+the fork modified, `D` an upstream file it deleted and `A` a file it adds. The
+generated files are counted apart. Test files are `*_test.go` and the scenarios
+under `pkg/integration/tests/`; source files are the other `.go` files.
+
+```sh
+B=4e1eebe278790f257a875da6633234391a5a85b3
+git diff --no-renames --name-status $B HEAD | awk -F'\t' '{
+  p = $2
+  if (p ~ /^(docs-master\/keybindings\/|docs-master\/Config\.md$|schema-master\/|pkg\/integration\/tests\/test_list\.go$|pkg\/gui\/keymap\/legacy_fields_generated\.go$|new-features\/(keymap\/bindings|inventory\/inventory)\.json$)/) k = "generated"
+  else if (p ~ /_test\.go$|^pkg\/integration\/tests\//) k = "test"
+  else if (p ~ /\.go$/) k = "source"
+  else k = "other"
+  print $1, k }' | sort | uniq -c
+```
+
+The output lists, for each status and category, the number of paths. The
+`docs-master/Config.md` file is generated, so it is counted as generated, though
+its hand-written paragraphs are the fork's too.
 
 ## Layout of fork code
 
@@ -69,7 +93,8 @@ files match upstream. Add new fork strings there, never to `english.go`.
 6. Update this guide's paths and notes in the merge commit.
 
 Generated outputs: `go generate ./...` rewrites
-`docs-master/keybindings/*`, `schema-master/*` and
+`docs-master/keybindings/*`, the generated block of `docs-master/Config.md`,
+`schema-master/*`, `pkg/gui/keymap/legacy_fields_generated.go` and
 `pkg/integration/tests/test_list.go`. Snapshots, from the repository root:
 `env GOMAXPROCS=2 go run new-features/keymap/generate.go >
 new-features/keymap/bindings.json` and
@@ -137,9 +162,19 @@ re-apply it if upstream changes that code.
   changes.
 - `git_commands/rebase.go` (replacement): `PrepareInteractiveRebaseCommand`
   returns an error, checks for a clean start, passes `--no-autostash`, can set
-  `rebase.updateRefs=false` and disables lock retries. Every start site goes
-  through `runInteractiveRebase`. `SquashAllAboveFixupCommits` and `AmendTo`
-  have clean-tree preflights. New upstream rebase starts must use the wrapper.
+  `rebase.updateRefs=false` and disables lock retries. It is the shared generic
+  entry point: `runInteractiveRebase` calls it, as do `RewordCommitInEditor` and
+  the captured branch rebase (`branch_action_rebase.go`). `AmendTo` has a
+  clean-tree preflight before its fixup commit, and its rebase then goes through
+  `runInteractiveRebase`. New generic upstream rebase starts must use
+  `PrepareInteractiveRebaseCommand` or `runInteractiveRebase`. Some starts build
+  their own command, each with its own checks: `SquashAllAboveFixupCommits`
+  (clean check and ignored-file review in `rebase.go`), the selected-commit
+  rebase (`selected_commit_rebase.go`, clean check), the combine rebase
+  (`combine_command.go`, with the clean check in `captured_combine_plan.go`) and
+  the reviewed pull rebase (`branch_sync_pull_review.go`, with its clean check in
+  the plan). All of them pass `--no-autostash`. `GitRebaseEditTodo` edits an
+  existing operation and needs no clean start.
   The same function calls `requireIgnoredRebaseStart` after the clean check
   (`git_commands/rebase_ignored_start.go`, new), which refuses with
   `IgnoredRebaseRiskError` when Git's rewind could overwrite ignored files.
@@ -247,7 +282,8 @@ re-apply it if upstream changes that code.
   `os.copyToClipboardCmd` when set and otherwise the writer injected with
   `SetClipboardWriter` (OSC 52, `pkg/gui/fork_clipboard.go`, wired right after
   `gui.os = osCommand`). Paste still uses `atotto/clipboard`. Keep the writer
-  injected so `oscommands` never imports gocui.
+  injected so `oscommands` never imports gocui. The writer needs the running
+  gocui screen and returns an error before it starts.
 - `git_commands/fork_external_tool.go`: `ConfiguredExternalTool` (keys in Git's
   order, with the GUI keys first in GUI mode, as `get_configured_merge_tool` in
   `git-mergetool--lib`; GUI mode follows `GIT_MERGETOOL_GUI`, then the mode's
@@ -309,8 +345,8 @@ re-apply it if upstream changes that code.
   `projectForkBindings` (`fork_command_projection.go`), which assigns the
   catalogue paths. `resetKeybindings` registers fork commands, key labels and
   panel jump labels; `callKeybindingHandler` records usage through
-  `callHandlerWithForkUsage` (`fork_command_usage.go`). Adds the global
-  `s n` binding. `resetKeybindings` stores the bindings it registers, and
+  `callHandlerWithForkUsage` (`fork_command_usage.go`). Adds the Status-only
+  `s n` binding (`repo.open-path`). `resetKeybindings` stores the bindings it registers, and
   `GetInitialKeybindingsWithCustomCommands` (the options bar each frame and
   the palette) returns them for the view current at the reset instead of
   rebuilding (`fork_binding_cache.go`). Applicability is still evaluated per
@@ -499,8 +535,8 @@ re-apply it if upstream changes that code.
     then calls `CheckoutRef`), and `BasicCommitsController.checkout`
     (`commit.checkout-menu`, `CreateCheckoutMenu`, which lists `CheckoutRef`
     actions).
-  - Unused. `CheckoutPreviousRef` has no callers. It remains until the
-    checkout-menu cleanup batch removes it. `CreateSelectedRefCheckoutMenu` and
+  - Unused. `CheckoutPreviousRef` has no callers and is marked `// Fork:
+    unreachable`; do not reconnect it. `CreateSelectedRefCheckoutMenu` and
     its tests (`helpers/selected_ref_checkout.go`, `selected_ref_checkout_test.go`)
     were removed: no production code called them, and their tests covered the
     unused menu rather than the default handlers.
@@ -765,7 +801,8 @@ drafts, instead of earlier commits' messages. The behaviour is in the
 - Retained on purpose: `OpenCommitMessagePanelOpts.CommitIndex`, the index
   parameter of `SetPanelState` and the `selectedindex` field. Upstream's call
   sites (local commits, custom patch options, working tree) still pass indexes,
-  and they now drive nothing. Their `// Fork:` comments say so. Removing them
+  and they now drive nothing. The field's `// Fork:` comment says so, and the
+  call sites pass it unchanged. Removing them
   would mean editing those call sites for no gain.
 - `git_commands/commit.go`: `GetCommitMessageFromHistory` and
   `ErrInvalidCommitIndex` are removed, with `TestGetCommitMessageFromHistory`.
@@ -825,6 +862,9 @@ unreachable` marker that names its replacement. Do not reconnect them.
   after the prompt.
 - `helpers/cherry_pick_helper.go`: `Paste`. Replaced by the captured
   cherry-pick flow (`controllers/fork_cherry_pick.go`). It stashes implicitly.
+- `helpers/refs_helper.go`: `CheckoutPreviousRef`. Replaced by
+  `CheckoutPreviousFlat` (`controllers/fork_checkout_previous.go`). It runs
+  plain `git checkout` and offers an autostash.
 
 ### Appearance
 
@@ -916,7 +956,7 @@ unreachable` marker that names its replacement. Do not reconnect them.
   names the fork and keeps the note on donating to lazygit's author. It is set
   by `forkEnglishTranslationSet`, and `pkg/i18n/i18n.go` `newTranslationSet`
   sets it again after merging a translation, whose intro text is upstream's
-  `englishIntroPopupMessage` in `english.go`. `misc/initial_open` checks the
+  `englishIntroPopupMessage` in `english.go`. `pkg/integration/tests/misc/initial_open.go` checks the
   fork text.
 - `AGENTS.md`: replaced by the fork's short version; expect a conflict on
   every merge and keep the fork's file, folding in relevant upstream technical
@@ -936,23 +976,29 @@ These files only gained `CommandID`/`Verb` metadata on bindings or menu items.
 Conflicts there are mechanical; keep upstream's change and re-add the
 metadata:
 
-In `pkg/gui/controllers/`: `bisect_controller.go`,
-`confirmation_controller.go`, `context_lines_controller.go`,
-`diffing_menu_action.go`, `edit_config_action.go`, `filter_controller.go`,
-`filtering_menu_action.go`, `git_flow_controller.go`, `list_controller.go`,
-`menu_controller.go`,
+In `pkg/gui/controllers/`: `confirmation_controller.go`,
+`context_lines_controller.go`, `diffing_menu_action.go`,
+`edit_config_action.go`, `filter_controller.go`, `filtering_menu_action.go`,
+`git_flow_controller.go`, `list_controller.go`, `menu_controller.go`,
 `rename_similarity_threshold_controller.go`, `search_controller.go`,
 `search_prompt_controller.go`, `side_window_controller.go`,
 `snake_controller.go`, `status_controller.go`, `submodules_controller.go`,
 `suggestions_controller.go`, `switch_to_diff_files_controller.go`,
-`tags_controller.go`, `undo_controller.go`, `workspace_reset_controller.go`,
-`worktrees_controller.go`. In `helpers/`: `branches_helper.go`,
-`diff_line_file_menu.go`, `refresh_helper.go`,
-`repos_helper.go`, `worktree_helper.go`. Also
-`pkg/gui/extras_panel.go` and
-`pkg/gui/services/custom_commands/keybinding_creator.go`.
+`workspace_reset_controller.go`, `worktrees_controller.go`. In `helpers/`:
+`branches_helper.go`, `diff_line_file_menu.go`, `worktree_helper.go`. Also
+`pkg/gui/extras_panel.go`.
+
+These files also changed behaviour and are not metadata-only. Keep them with
+their integration entries: `bisect_controller.go` (the commit-selection guard in
+`GetKeybindings`), `tags_controller.go` (the `w b`, `w v` and placement
+bindings), `undo_controller.go` (Controllers), `helpers/refresh_helper.go` and
+`helpers/repos_helper.go` (Helpers), and
+`pkg/gui/services/custom_commands/keybinding_creator.go`, which computes each
+custom command's identity (Palette).
+
 `go run new-features/inventory/check_annotations.go -base <commit> <files…>`
-confirms that a file differs from a baseline only in this metadata.
+confirms that a file differs from a baseline only in this metadata. On the 30
+files above it passes 24; the six named here fail.
 
 ### Upstream tests
 
@@ -972,10 +1018,14 @@ the same way:
   interactive rebase runs the test binary as the sequence editor. Keep one
   `TestMain` per package when upstream adds its own.
 - `TestBackgroundDefaultsAreDerivedFromTheBackgroundColor` calls
-  `themeDefaults` directly; `TestCurrentDiffRendererNameWithoutDiffRenderers`
-  expects `default`.
+  `themeDefaults` directly. `TestCurrentDiffRendererNameWithoutDiffRenderers`
+  stubs delta's lookup and expects `default` without delta, `delta` with it.
 - The shared fixture sets an explicit `rawGit` renderer so scenarios never use
   delta and disables fetch/file/ref polling.
+- Four upstream scenarios were deleted: `cherry_pick/cherry_pick_across_worktrees`,
+  `cherry_pick/cherry_pick_range_after_paste`, `commit/history` and
+  `commit/history_complex`. Do not restore them without checking the fork's
+  replacement behaviour for each.
 
 Integration components gained `ExpectClipboard`, `ExplicitSelection`, `Views().Extras()`, a
 menu `Content` matcher, `ReviewBranch*` helpers and `Git().SameCommitAs`. Drivers need `Title()` and

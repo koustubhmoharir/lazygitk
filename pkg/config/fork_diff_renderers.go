@@ -10,8 +10,8 @@ import (
 )
 
 // Fork: when git.diffRenderers is empty, which includes unset and an explicit
-// [], the fork uses delta followed by git's own diff, so that | cycles between
-// them (roadmap item 15). Upstream's empty list meant git's own diff, with no
+// [], the fork uses delta followed by git's own diff, so that t d n and t d p
+// cycle between them (roadmap item 15). Upstream's empty list meant git's own diff, with no
 // GIT_PAGER. If delta is not on PATH, the delta entry is dropped and git's own
 // diff is used, with a notice at startup (see pkg/gui/fork_diff_renderer_notice.go).
 // A non-empty list the user configured is never changed, not even when it names

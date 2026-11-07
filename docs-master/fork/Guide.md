@@ -625,9 +625,12 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
 ### Configuration and installation
 
 - lazygitk keeps its own configuration and state: `lazygitk/` under the
-  config and state directories, and `.git/lazygitk.yml` or `.lazygitk.yml` in
-  repositories. Upstream lazygit's files are never read or written, and nothing
-  is migrated. `CONFIG_DIR` and `LG_CONFIG_FILE` work as upstream.
+  config and state directories. Per-repository settings come from
+  `lazygitk.yml` in the repository's Git directory (`.git/lazygitk.yml` in a
+  normal clone) and from `.lazygitk.yml` in each parent directory of the
+  repository. A `.lazygitk.yml` at the repository root is not read. Upstream
+  lazygit's files are never read or written, and nothing is migrated.
+  `CONFIG_DIR` and `LG_CONFIG_FILE` work as upstream.
 - `scripts/build_dist.sh` (or `just dist`) and `scripts/build_dist.ps1` build
   portable `lazygitk` binaries into `dist/`.
 - lazygitk never checks for or installs updates; upstream's updater would

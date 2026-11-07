@@ -108,7 +108,7 @@
               "type": "array"
             }
           ],
-          "description": "The key to trigger the command. Use a single letter or one of the values from https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md. To bind several alternates to the same command, use a sequence (e.g. `[a, b]`)."
+          "description": "Ignored in lazygitk, where keys are fixed: custom commands run from the command palette (`?`)."
         },
         "commandMenu": {
           "items": {
@@ -2188,7 +2188,7 @@
       },
       "additionalProperties": false,
       "type": "object",
-      "description": "Legacy keybinding overrides and native modal/editor controls. Values shown\nhere are compatibility values, not the fork's effective normal-pane defaults.\nCopy only fields you want to override; use commandBindings for semantic paths.\nEach binding can be a single key or a list of keys; see https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md for the syntax."
+      "description": "Legacy key settings from upstream lazygit. Ignored in lazygitk, where keys are\nfixed (see the user guide): setting these has no effect. They stay in the\nschema so that existing configuration files remain valid."
     },
     "KeybindingFilesConfig": {
       "properties": {
@@ -4260,7 +4260,7 @@
             "$ref": "#/$defs/CommandBindingPaths"
           },
           "type": "object",
-          "description": "Alternate key paths for stable command IDs. For example,\ncommandBindings: {diff.commit.worktree: [[d, w], '\u003cf6\u003e']} binds d then w,\nor F6. An empty or null value removes keyboard paths; the action remains\ndiscoverable in the command palette. Omitted IDs keep their built-in paths."
+          "description": "Alternate key paths for stable command IDs, for example\ncommandBindings: {diff.commit.worktree: [[d, w], '\u003cf6\u003e']}. Ignored in\nlazygitk, where keys are fixed (see the user guide): setting this has no effect."
         },
         "services": {
           "additionalProperties": {
@@ -4287,7 +4287,7 @@
         },
         "keybinding": {
           "$ref": "#/$defs/KeybindingConfig",
-          "description": "Legacy keybinding overrides and native modal/editor controls. Values shown\nhere are compatibility values, not the fork's effective normal-pane defaults.\nCopy only fields you want to override; use commandBindings for semantic paths.\nEach binding can be a single key or a list of keys; see https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md for the syntax."
+          "description": "Legacy key settings from upstream lazygit. Ignored in lazygitk, where keys are\nfixed (see the user guide): setting these has no effect. They stay in the\nschema so that existing configuration files remain valid."
         }
       },
       "additionalProperties": false,

@@ -21,9 +21,10 @@ type CommitMessageContext struct {
 
 var _ types.Context = (*CommitMessageContext)(nil)
 
-// when selectedIndex (see below) is set to this value, it means that we're not
-// currently viewing a commit message of an existing commit: instead we're making our own
-// new commit message
+// Fork: upstream's meaning was that selectedIndex (see below) set to this value
+// means we are making a new commit message, not viewing an existing commit's.
+// The fork no longer reads selectedIndex, so this value is inert compatibility
+// plumbing for upstream call sites.
 const NoCommitIndex = -1
 
 type CommitMessageViewModel struct {

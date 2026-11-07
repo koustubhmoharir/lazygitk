@@ -36,8 +36,6 @@ triage as its batch lands.
 
 Each task is one subagent batch, reviewed and committed before the next.
 
-- Batch N: remaining doc corrections, including MergeGuide counts after O2,
-  and regenerating the stale `new-features/keymap/bindings.json` snapshot.
 - Full integration suite.
 
 ## How this tracker works

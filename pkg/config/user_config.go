@@ -32,10 +32,9 @@ type UserConfig struct {
 	// User-configured commands that can be invoked from within Lazygit
 	// See https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_Command_Keybindings.md
 	CustomCommands []CustomCommand `yaml:"customCommands" jsonschema:"uniqueItems=true"`
-	// Alternate key paths for stable command IDs. For example,
-	// commandBindings: {diff.commit.worktree: [[d, w], '<f6>']} binds d then w,
-	// or F6. An empty or null value removes keyboard paths; the action remains
-	// discoverable in the command palette. Omitted IDs keep their built-in paths.
+	// Alternate key paths for stable command IDs, for example
+	// commandBindings: {diff.commit.worktree: [[d, w], '<f6>']}. Ignored in
+	// lazygitk, where keys are fixed (see the user guide): setting this has no effect.
 	CommandBindings map[string]CommandBindingPaths `yaml:"commandBindings,omitempty"`
 	// See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-pull-request-urls
 	Services map[string]string `yaml:"services"`
@@ -47,10 +46,9 @@ type UserConfig struct {
 	NotARepository string `yaml:"notARepository" jsonschema:"enum=prompt,enum=create,enum=skip,enum=quit"`
 	// If true, display a confirmation when subprocess terminates. This allows you to view the output of the subprocess before returning to Lazygit.
 	PromptToReturnFromSubprocess bool `yaml:"promptToReturnFromSubprocess"`
-	// Legacy keybinding overrides and native modal/editor controls. Values shown
-	// here are compatibility values, not the fork's effective normal-pane defaults.
-	// Copy only fields you want to override; use commandBindings for semantic paths.
-	// Each binding can be a single key or a list of keys; see https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md for the syntax.
+	// Legacy key settings from upstream lazygit. Ignored in lazygitk, where keys are
+	// fixed (see the user guide): setting these has no effect. They stay in the
+	// schema so that existing configuration files remain valid.
 	Keybinding KeybindingConfig `yaml:"keybinding"`
 }
 
@@ -764,7 +762,7 @@ type CustomCommandAfterHook struct {
 type CustomCommand struct {
 	// ID is an optional stable identity. Set it to keep this command's identity across definition changes.
 	ID string `yaml:"id,omitempty"`
-	// The key to trigger the command. Use a single letter or one of the values from https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md. To bind several alternates to the same command, use a sequence (e.g. `[a, b]`).
+	// Ignored in lazygitk, where keys are fixed: custom commands run from the command palette (`?`).
 	Key Keybinding `yaml:"key"`
 	// Instead of defining a single custom command, create a menu of custom commands. Useful for grouping related commands together under a single keybinding, and for keeping them out of the global keybindings menu.
 	// When using this, all other fields except ID, Key and Description are ignored and must be empty.

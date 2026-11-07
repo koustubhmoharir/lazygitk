@@ -209,8 +209,9 @@ func (self *CustomPatchOptionsMenuAction) handlePullPatchIntoNewCommit() error {
 	}
 	self.c.Helpers().Commits.OpenCommitMessagePanel(
 		&helpers.OpenCommitMessagePanelOpts{
-			// Pass a commit index of one less than the moved-from commit, so that
-			// you can press up arrow once to recall the original commit message:
+			// Fork: CommitIndex is inert; Up recalls the worktree's cancelled drafts
+			// (see OpenCommitMessagePanelOpts.CommitIndex). The value is kept so the
+			// call site matches upstream.
 			CommitIndex:      commitIndex - 1,
 			InitialMessage:   "",
 			SummaryTitle:     self.c.Tr.CommitSummaryTitle,
@@ -256,8 +257,9 @@ func (self *CustomPatchOptionsMenuAction) handlePullPatchIntoNewCommitBefore() e
 	}
 	self.c.Helpers().Commits.OpenCommitMessagePanel(
 		&helpers.OpenCommitMessagePanelOpts{
-			// Pass a commit index of one less than the moved-from commit, so that
-			// you can press up arrow once to recall the original commit message:
+			// Fork: CommitIndex is inert; Up recalls the worktree's cancelled drafts
+			// (see OpenCommitMessagePanelOpts.CommitIndex). The value is kept so the
+			// call site matches upstream.
 			CommitIndex:      commitIndex - 1,
 			InitialMessage:   "",
 			SummaryTitle:     self.c.Tr.CommitSummaryTitle,

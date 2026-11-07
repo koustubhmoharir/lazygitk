@@ -98,6 +98,9 @@ func (self *MainViewController) GetKeybindings(opts types.KeybindingsOpts) []*ty
 			GetDisabledReason: self.diffSelectionDisabledReason,
 			Tooltip:           self.c.Tr.EditFileTooltip,
 		},
+		// Fork: the primary and discard commands are dynamic: their command IDs and verbs
+		// depend on the diff's source (working tree or commit) and on the focused panel
+		// (diff_command_identity.go).
 		{
 			Keys:          opts.GetKeys(opts.Config.Universal.Select),
 			CommandID:     "diff.primary-selection",

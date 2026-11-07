@@ -184,6 +184,8 @@ func (self *RefsHelper) CheckoutRemoteBranch(fullBranchName string, localBranchN
 	})
 }
 
+// Fork: unreachable, replaced by CheckoutPreviousFlat (controllers/fork_checkout_previous.go).
+// Do not reconnect: it runs plain git checkout and offers an autostash.
 func (self *RefsHelper) CheckoutPreviousRef() error {
 	previousRef, err := self.c.Git().Branch.PreviousRef()
 	if err == nil && strings.HasPrefix(previousRef, "refs/heads/") {

@@ -2,7 +2,7 @@
 
 > **lazygitk:** when `git.diffRenderers` is empty or not set, the default list
 > is `delta --{{colorScheme}} --paging=never --tabs=4` followed by git's own diff
-> (`|` cycles between them). If `delta` is not on `PATH`, git's own diff is used
+> (`t d n` and `t d p` cycle between them, see the [user guide](fork/Guide.md)). If `delta` is not on `PATH`, git's own diff is used
 > and a notice is shown once per session. A list you configure is used as is.
 
 Custom diff renderers are useful for showing a better rendering of a diff than git's builtin raw diff, and using one is strongly recommended (I personally prefer delta myself, but that's a matter of personal preference). There are three types of diff renderers that lazygit supports:
@@ -11,7 +11,7 @@ Custom diff renderers are useful for showing a better rendering of a diff than g
 - **external diff programs**, e.g. difftastic; these are called using git's `--ext-diff` flag, and they take over diff generation from git completely rather than post-processing git's output.
 - **git's raw output using custom arguments**; mainly useful for `--color-words` (or `--word-diff` if you are color blind).
 
-Diff renderers are configured with the `diffRenderers` array in the `git` section of lazygit's config file; it is an array because you can have multiple entries that you can cycle through with the `|` key. This can be useful if you usually prefer a particular diff renderer, but want to use a different one for certain kinds of diffs.
+Diff renderers are configured with the `diffRenderers` array in the `git` section of lazygit's config file; it is an array because you can have multiple entries that you can cycle through with `t d n` (next) and `t d p` (previous). This can be useful if you usually prefer a particular diff renderer, but want to use a different one for certain kinds of diffs.
 
 Fields that are shared by all renderer types:
 

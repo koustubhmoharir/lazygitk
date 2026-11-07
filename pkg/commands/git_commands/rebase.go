@@ -223,6 +223,9 @@ type PrepareInteractiveRebaseCommandOpts struct {
 // PrepareInteractiveRebaseCommand returns the cmd for an interactive rebase
 // we tell git to run lazygit to edit the todo list, and we pass the client
 // lazygit instructions what to do with the todo file
+// Fork: this replaces upstream's start, which autostashed. It refuses a dirty
+// start, runs the ignored-file review and passes --no-autostash, so every generic
+// start goes through it, or through runInteractiveRebase, which calls it.
 func (self *RebaseCommands) PrepareInteractiveRebaseCommand(opts PrepareInteractiveRebaseCommandOpts) (*oscommands.CmdObj, error) {
 	if err := self.requireCleanRebaseStart(); err != nil {
 		return nil, err

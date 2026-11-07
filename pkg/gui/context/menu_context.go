@@ -311,10 +311,15 @@ func (self *MenuContext) GetKeybindings(opts types.KeybindingsOpts) []*types.Bin
 	return append(basicBindings, menuItemBindings...)
 }
 
+// Fork: a command whose CommandActive is false does nothing when its item is
+// pressed, and so does an inapplicable default command without ExplainDisabled.
+// Any other disabled item shows its reason, as upstream does.
 func (self *MenuContext) OnMenuPress(selectedItem *types.MenuItem) error {
 	if selectedItem != nil && selectedItem.Binding != nil && selectedItem.Binding.CommandActive != nil && !selectedItem.Binding.CommandActive() {
 		return nil
 	}
+	// Fork: a menu item's disabled reason, when it is inapplicable and the item is a
+	// default command, stays silent here; the palette sets ExplainDisabled to say why.
 	if selectedItem != nil && selectedItem.DisabledReason != nil {
 		if selectedItem.Binding != nil && selectedItem.Binding.DefaultCommand && selectedItem.DisabledReason.Inapplicable && !selectedItem.ExplainDisabled {
 			return nil
