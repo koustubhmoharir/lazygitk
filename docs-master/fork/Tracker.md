@@ -1,42 +1,26 @@
-# Current work: fix the fork review findings
+# Current work: none
 
-Source: [reviews/TRIAGE.md](../../reviews/TRIAGE.md) (batch letters and finding
-ids `NN-Fk` refer to it). Confirm each finding before fixing it, with a
-failing test where practical. Mark each finding fixed or declined in the
-triage as its batch lands.
+The fork review fixes are finished (see [reviews/TRIAGE.md](../../reviews/TRIAGE.md)).
+Their decisions are recorded in the [user guide](Guide.md) and the
+[design principles](Design.md). The full integration suite passed on
+2026-11-07.
 
-## Decisions (2026-11-06)
+## Open follow-ups (not started; need the user's go-ahead)
 
-- **U1 Fetch.** Outside Remotes, `f` fetches the primary remote: `origin`, or
-  the repository's only remote. With several remotes and none named `origin`,
-  `f` opens a menu of the remotes plus "Fetch all remotes". In Remotes, `f`
-  fetches the selected remote. "Fetch all remotes" is a palette item.
-  `git.fetchAll` no longer affects `f`. Before any fetch, the remotes' fetch
-  refspecs are checked; if one writes into local branches (`refs/heads/`), a
-  confirmation names the refspecs and explains that Git will move those
-  branches. The fetch is selected; Cancel and Escape stop it.
-- **U2 Hidden selected commits.** Commits hidden by a filter or beyond the
-  loaded list stay selected; selection mode does not change. The count
-  includes hidden commits and commands act on the whole set.
-- **U2a Rewritten selected commits** (2026-11-06). Selected commits that a
-  refresh finds unreachable from every ref (rewritten outside the selection)
-  stay selected and counted, and a notice names them. Copy and cherry-pick
-  still use them; commands that edit the current branch's history refuse and
-  name the selected commits that are no longer in it.
-- **Descendant scope** (11-F1, 2026-11-06) follows the normal commit limit:
-  the newest 300 descendants, loading more on scroll.
-- **U3 Move commits to a new branch** refuses while tracked files have staged
-  or unstaged changes; it never stashes.
-- **U4 Merge menu.** `s` squash-merges and commits; `u` squash-merges without
-  committing.
-- **Merge-ease cleanups** in triage §3 (first group) are approved. The other
-  §3 quality items stay open.
-
-## Tasks
-
-Each task is one subagent batch, reviewed and committed before the next.
-
-- Full integration suite.
+- Triage §3 quality items: 04-F1 (true-colour probe can eat keys typed during
+  start-up), 04-F2 (graph cache key hashes the whole history per render),
+  02-F3 (popup attribution across workers), 15-F4 (restore weakened graph
+  assertions), 13-F3 (copy tests stop before real handlers), and the
+  cherry-pick add/add conflict that the merge helper reports as a plain error.
+- Remaining "01 merge notes" move: `focusPanelTitle` to a fork file, and
+  optional extractions in `menu_context.go` and `menu_panel.go`.
+- `docs-master/Custom_Command_Keybindings.md` still shows the ignored `key`
+  setting in its tables, and the custom-command menu `key` comment was not
+  updated.
+- Reword in a path-filtered list takes the rebase base from the next filtered
+  row, which with merges may not be an ancestor of the target (inherited).
+- A completion callback registered by a cherry-pick or move-commits flow stays
+  set if the operation is finished outside lazygitk (review 10, open question).
 
 ## How this tracker works
 
