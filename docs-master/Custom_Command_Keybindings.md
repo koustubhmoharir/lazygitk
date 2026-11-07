@@ -55,7 +55,7 @@ For a given custom command, here are the allowed fields:
 | _field_ | _description_ | required |
 |-----------------|----------------------|-|
 | id | Fork-specific stable command identity; see [Command identity](#command-identity) | no |
-| key | The key to trigger the command. Use a single key or list of keys, as described in [Custom_Keybindings.md](https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md). Custom commands without a key specified can be triggered by selecting them from the keybindings (`?`) menu | no |
+| key | **Ignored in lazygitk**, including inside `commandMenu`; run the command from the `?` command palette. Upstream: the key to trigger the command. Use a single key or list of keys, as described in [Custom_Keybindings.md](https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md). Custom commands without a key specified can be triggered by selecting them from the keybindings (`?`) menu | no |
 | command | The command to run (using Go template syntax for placeholder values) | yes |
 | context | The context in which to listen for the key (see [below](#contexts)) | yes |
 | prompts | A list of prompts that will request user input before running the final command | no |

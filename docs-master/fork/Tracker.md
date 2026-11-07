@@ -15,9 +15,6 @@ see the user guide.
   cherry-pick add/add conflict that the merge helper reports as a plain error.
 - Remaining "01 merge notes" move: `focusPanelTitle` to a fork file, and
   optional extractions in `menu_context.go` and `menu_panel.go`.
-- `docs-master/Custom_Command_Keybindings.md` still shows the ignored `key`
-  setting in its tables, and the custom-command menu `key` comment was not
-  updated.
 - Reword in a path-filtered list takes the rebase base from the next filtered
   row, which with merges may not be an ancestor of the target (inherited).
 - A completion callback registered by a cherry-pick or move-commits flow stays

@@ -766,6 +766,7 @@ type CustomCommand struct {
 	Key Keybinding `yaml:"key"`
 	// Instead of defining a single custom command, create a menu of custom commands. Useful for grouping related commands together under a single keybinding, and for keeping them out of the global keybindings menu.
 	// When using this, all other fields except ID, Key and Description are ignored and must be empty.
+	// lazygitk ignores Key as well, here and in every nested command.
 	CommandMenu []CustomCommand `yaml:"commandMenu"`
 	// The context in which to listen for the key. Valid values are: status, files, worktrees, localBranches, remotes, remoteBranches, tags, commits, reflogCommits, subCommits, commitFiles, stash, and global. Multiple contexts separated by comma are allowed; most useful for "commits, subCommits" or "files, commitFiles".
 	Context string `yaml:"context" jsonschema:"example=status,example=files,example=worktrees,example=localBranches,example=remotes,example=remoteBranches,example=tags,example=commits,example=reflogCommits,example=subCommits,example=commitFiles,example=stash,example=global"`

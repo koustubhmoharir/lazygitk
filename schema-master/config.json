@@ -115,7 +115,7 @@
             "$ref": "#/$defs/CustomCommand"
           },
           "type": "array",
-          "description": "Instead of defining a single custom command, create a menu of custom commands. Useful for grouping related commands together under a single keybinding, and for keeping them out of the global keybindings menu.\nWhen using this, all other fields except ID, Key and Description are ignored and must be empty."
+          "description": "Instead of defining a single custom command, create a menu of custom commands. Useful for grouping related commands together under a single keybinding, and for keeping them out of the global keybindings menu.\nWhen using this, all other fields except ID, Key and Description are ignored and must be empty.\nlazygitk ignores Key as well, here and in every nested command."
         },
         "context": {
           "type": "string",
