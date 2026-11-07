@@ -10,6 +10,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/petermattis/goid"
 )
 
 // Fork: command usage counts (roadmap item 9). A shortcut or prefix-menu leaf
@@ -17,6 +18,11 @@ import (
 // recorded but do not order the palette. A use counts
 // only once its action is accepted: while the handler runs it is pending, and a
 // popup opened through PopupHandler claims it. See fork_usage_hook.go.
+//
+// Only a popup opened on the goroutine that runs the handler can claim its use.
+// A worker left behind by an earlier command may open a popup while another
+// command's handler runs; that popup belongs to the earlier command, whose use
+// was settled when its handler returned, so it claims nothing.
 
 const (
 	forkShortcutUsageDelta = -1
@@ -55,7 +61,9 @@ type forkPendingUsage struct {
 	id       string
 	delta    int
 	attached bool // guarded by tracker.mu
-	settled  sync.Once
+	// goroutine runs the handler; only popups opened on it may claim the use.
+	goroutine int64
+	settled   sync.Once
 }
 
 func newForkUsageTracker(record func(id string, delta int)) *forkUsageTracker {
@@ -68,7 +76,7 @@ func (t *forkUsageTracker) begin(binding *types.Binding, delta int) *forkPending
 	if !forkUsageRecordable(binding) {
 		return nil
 	}
-	pending := &forkPendingUsage{tracker: t, id: binding.GetCommandID(), delta: delta}
+	pending := &forkPendingUsage{tracker: t, id: binding.GetCommandID(), delta: delta, goroutine: goid.Get()}
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	t.stack = append(t.stack, pending)
@@ -91,13 +99,15 @@ func (t *forkUsageTracker) end(pending *forkPendingUsage) {
 	}
 }
 
-// attach claims the innermost running use that no popup has claimed yet.
-// The returned functions settle it: commit records the use, drop discards it.
+// attach claims the innermost running use, started on the calling goroutine,
+// that no popup has claimed yet. The returned functions settle it: commit
+// records the use, drop discards it.
 func (t *forkUsageTracker) attach() (commit func(), drop func(), ok bool) {
+	caller := goid.Get()
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	for i := len(t.stack) - 1; i >= 0; i-- {
-		if pending := t.stack[i]; pending.claimLocked() {
+		if pending := t.stack[i]; pending.goroutine == caller && pending.claimLocked() {
 			return pending.commit, pending.drop, true
 		}
 	}

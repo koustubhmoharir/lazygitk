@@ -148,3 +148,20 @@ func TestForkUsageIgnoresUnrecordableBindings(t *testing.T) {
 	assert.False(t, ok)
 	assert.Empty(t, *records)
 }
+
+// A popup that a worker opens while another command's handler runs belongs to
+// the worker's own command, so it must not claim the running use (review 02-F3).
+func TestForkUsageWorkerPopupDoesNotClaimRunningUse(t *testing.T) {
+	tracker, records := newRecordingForkUsage()
+	pending := tracker.begin(&types.Binding{CommandID: "files.stage"}, forkShortcutUsageDelta)
+
+	claimed := make(chan bool)
+	go func() {
+		_, _, ok := tracker.attach()
+		claimed <- ok
+	}()
+	assert.False(t, <-claimed, "a worker's popup claims nothing")
+
+	tracker.end(pending)
+	assert.Equal(t, []forkUsageRecord{{"files.stage", -1}}, *records, "the unclaimed use commits on return")
+}

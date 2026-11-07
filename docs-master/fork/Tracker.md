@@ -8,7 +8,7 @@ see the user guide.
 
 ## Open follow-ups (not started; need the user's go-ahead)
 
-- Triage §3 quality items: 02-F3 (popup attribution across workers), 15-F4 (restore weakened graph
+- Triage §3 quality items: 15-F4 (restore weakened graph
   assertions), 13-F3 (copy tests stop before real handlers).
 
 ## How this tracker works
