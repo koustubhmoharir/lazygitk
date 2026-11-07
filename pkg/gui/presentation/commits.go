@@ -315,11 +315,10 @@ func loadPipesets(commits []*models.Commit) [][]graph.Pipe {
 		pipeSetCacheAuthorColors = authors.ColorsVersion()
 	}
 
-	// given that our cache key is a commit hash and a commit count, it's very important that we don't actually try to render pipes
+	// given that our cache key is a digest of the commit hashes and a commit count, it's very important that we don't actually try to render pipes
 	// when dealing with things like filtered commits.
 	cacheKey := pipeSetCacheKey{
-		// Fork: the key names every commit of the list, not only its first one
-		// (fork_pipe_set_key.go).
+		// Fork: the key is a digest of the whole list, memoized per list (fork_pipe_set_key.go).
 		commitHash:  commitListKey(commits),
 		commitCount: len(commits),
 		divergence:  commits[0].Divergence,
