@@ -236,6 +236,11 @@ var conflictStrings = []string{
 	"Merge conflict in file",
 	"hint: after resolving the conflicts",
 	"CONFLICT (content):",
+	// Fork: Git prints "CONFLICT (<kind>):" for every kind of conflict (add/add,
+	// modify/delete, rename/delete, ...), not only content conflicts. Without it, an
+	// add/add cherry-pick conflict in a file not named "file" was reported as a plain
+	// error instead of offering the conflict flow.
+	"CONFLICT (",
 }
 
 func isMergeConflictErr(errStr string) bool {

@@ -636,6 +636,9 @@ launch, described under "Merge tool" below.
   callback with its notice (`DropAbandonedOperationStep`), guarded by an epoch
   and an in-flight count so a refresh cannot drop a step that a lazygitk run is
   still settling.
+  `conflictStrings` gains the generic `"CONFLICT ("` entry, so add/add,
+  modify/delete and other non-content conflicts offer the conflict flow; keep
+  it if upstream changes the list.
 - `helpers/fork_undo_checkout.go`: `CheckoutReflogTarget`, the undo and redo
   checkout (`git_commands/fork_undo_checkout.go`, `ClassifyReflogCheckoutTarget`).
   It replaces upstream's `CheckoutRef` there, which runs plain `git checkout`
