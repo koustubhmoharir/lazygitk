@@ -392,10 +392,12 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   ref the log walks reaches it, as with some reflog entries), nothing changes
   and a message says so. The log walks HEAD, or during a bisect the bisect's
   start ref, or its new ref when the start is not reachable from it.
-- While the log is filtered, commands that rewrite history offer to leave the
-  filter first, as upstream's path filter does. Unlike upstream, applying or
-  clearing any log filter, including a path or author filter, never changes
-  the screen mode.
+- While the log is filtered, most commands that rewrite history offer to leave
+  the filter first, as upstream's path filter does. Reword (in the box or the
+  editor), drop, amend and attribute edits act on the selected commit in place
+  instead; reword and drop are upstream's choice (52be6964e). Unlike upstream,
+  applying or clearing any log filter, including a path or author filter, never
+  changes the screen mode.
 
 ### Selecting commits
 

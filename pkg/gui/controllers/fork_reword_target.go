@@ -38,7 +38,7 @@ func (self *LocalCommitsController) captureRewordTarget(commit *models.Commit, i
 	commits := self.c.Model().Commits
 	// The captured commits drive the rebase, so they must describe the HEAD
 	// captured above. A model that is already stale is refused before the box opens.
-	if headIdx := models.HeadCommitIdx(commits); headIdx < 0 || commits[headIdx].Hash() != headOID {
+	if !self.rewordListMatchesHead(commit.Hash(), commits, headOID) {
 		self.c.Refresh(types.RefreshOptions{})
 		return nil, errors.New(self.c.Tr.RewordListStale)
 	}
@@ -49,10 +49,24 @@ func (self *LocalCommitsController) captureRewordTarget(commit *models.Commit, i
 		commits:    slices.Clone(commits),
 		index:      index,
 		commitOID:  commit.Hash(),
-		wasHead:    models.IsHeadCommit(commits, index),
-		headRef:    headRef,
-		headOID:    headOID,
+		// The hash, not the position: a filtered list may start with a commit that is not HEAD.
+		wasHead: commit.Hash() == headOID,
+		headRef: headRef,
+		headOID: headOID,
 	}, nil
+}
+
+// rewordListMatchesHead reports whether the captured commit list describes headOID. An
+// unfiltered list starts with HEAD. A filtered list (a path, author or commit scope
+// filter) holds only the matching commits, so HEAD may not be in it. Then the check is
+// that the target is still reached from HEAD, which a rewrite outside Git's view would
+// break. Reword is allowed in filter mode, as upstream decided in 52be6964e.
+func (self *LocalCommitsController) rewordListMatchesHead(targetOID string, commits []*models.Commit, headOID string) bool {
+	if !self.c.Modes().Filtering.Active() {
+		headIdx := models.HeadCommitIdx(commits)
+		return headIdx >= 0 && commits[headIdx].Hash() == headOID
+	}
+	return self.c.Git().Branch.IsAncestor(targetOID, headOID)
 }
 
 // verify reports an error unless the repository, HEAD's ref and ID, and (for a HEAD
