@@ -9,6 +9,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils"
 )
 
 // Fork: a reword captures its target when it starts: the repository, the commit's
@@ -42,12 +43,16 @@ func (self *LocalCommitsController) captureRewordTarget(commit *models.Commit, i
 		self.c.Refresh(types.RefreshOptions{})
 		return nil, errors.New(self.c.Tr.RewordListStale)
 	}
+	rebaseCommits, rebaseIndex, err := self.rewordRebaseCommits(commit, commits, index)
+	if err != nil {
+		return nil, err
+	}
 	return &rewordTarget{
 		lc:         self,
 		git:        self.c.Git(),
 		generation: self.c.State().GetRepoGeneration(),
-		commits:    slices.Clone(commits),
-		index:      index,
+		commits:    rebaseCommits,
+		index:      rebaseIndex,
 		commitOID:  commit.Hash(),
 		// The hash, not the position: a filtered list may start with a commit that is not HEAD.
 		wasHead: commit.Hash() == headOID,
@@ -67,6 +72,34 @@ func (self *LocalCommitsController) rewordListMatchesHead(targetOID string, comm
 		return headIdx >= 0 && commits[headIdx].Hash() == headOID
 	}
 	return self.c.Git().Branch.IsAncestor(targetOID, headOID)
+}
+
+// rewordRebaseCommits returns the list and index that the rebase is started from. The
+// rebase base is the commit after the target in the list (see getBaseHashOrRoot). An
+// unfiltered list has the target's parent there, so it is used as it is. A filtered list
+// holds only the matching commits, so the next row may be an older match, a commit on
+// the other side of a merge, or nothing (--root). Starting from it widens the rebase
+// and its ignored-file review to commits that have nothing to do with the target.
+// Then the list is [target, first parent], with the parent as the base, or [target] for
+// a root commit, which gives --root. Git resolves the parent now, because the model's
+// parents can be rewritten in a filtered list. A merge target still uses itself as the
+// base, as it does unfiltered, so the list does not change its behaviour.
+func (self *LocalCommitsController) rewordRebaseCommits(commit *models.Commit, commits []*models.Commit, index int) ([]*models.Commit, int, error) {
+	if !self.c.Modes().Filtering.Active() {
+		return slices.Clone(commits), index, nil
+	}
+	// A shallow boundary commit has no first parent in Git's view, so it is treated as a
+	// root, as the unfiltered list treats the last row of a shallow history.
+	resolved, err := self.c.Git().Diff.ResolveHistoricalDiffCommit(commit.Hash())
+	if err != nil {
+		return nil, 0, err
+	}
+	rebaseCommits := []*models.Commit{commit}
+	if resolved.FirstParent != "" {
+		pool := &utils.StringPool{}
+		rebaseCommits = append(rebaseCommits, models.NewCommit(pool, models.NewCommitOpts{Hash: resolved.FirstParent}))
+	}
+	return rebaseCommits, 0, nil
 }
 
 // verify reports an error unless the repository, HEAD's ref and ID, and (for a HEAD

@@ -362,6 +362,7 @@ var tests = []*components.IntegrationTest{
 	filter_by_path.DropCommitInFilteringMode,
 	filter_by_path.KeepSameCommitSelectedOnExit,
 	filter_by_path.RewordCommitInFilteringMode,
+	filter_by_path.RewordUsesParentAsBase,
 	filter_by_path.SelectFile,
 	filter_by_path.SelectFilteredFileWhenEnteringCommit,
 	filter_by_path.SelectFilteredFileWhenEnteringCommitNoRootItem,
