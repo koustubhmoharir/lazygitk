@@ -432,10 +432,14 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 
 - `r` rebases the checked-out branch onto the selected commit or branch;
   `m` merges the selected branch into it. The menu names the current branch,
-  the source and the commits involved. Its keys are `s` simple, `i`
-  interactive and `b` onto the base branch for a rebase; `m` configured
-  options, `f` allow fast-forward, `n` no fast-forward, `u` squash and leave
-  uncommitted, and `s` squash and commit for a merge. Choosing an entry runs it
+  the source and the commits involved. Its rebase keys are `s` onto the
+  tracking branch, `b` simple, `i` interactive and `m` onto the base branch.
+  `s` rebases the checked-out branch onto its remote tracking branch. It is
+  available only when the cursor is on the checked-out branch; with several
+  candidates it opens a chooser, the configured upstream first and then
+  same-named branches on other remotes. Its keys for a merge are `m`
+  configured options, `f` allow fast-forward, `n` no fast-forward, `u` squash
+  and leave uncommitted, and `s` squash and commit. Choosing an entry runs it
   straight from the menu, since the menu already names the branches and the
   mode. What still asks: ignored files that the action would overwrite, which
   are listed for review, and staged changes for a squash-and-commit merge. A

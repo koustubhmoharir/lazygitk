@@ -399,6 +399,14 @@ type ForkTranslationSet struct {
 	ForkFetchRefspecTitle                 string
 	ForkFetchRefspecPrompt                string
 	ForkFetchBackgroundSkippedToast       string
+	RebaseOntoTrackingBranch              string
+	RebaseOntoTrackingBranches            string
+	RebaseOntoTrackingBranchTooltip       string
+	RebaseOntoTrackingChooserTitle        string
+	RebaseOntoTrackingUpstreamChoice      string
+	RebaseOntoTrackingCheckoutFirst       string
+	RebaseOntoTrackingSelectCheckedOut    string
+	RebaseOntoTrackingNoCandidates        string
 }
 
 // forkIntroPopupMessage is the fork's first-run popup. It only says that this is
@@ -803,6 +811,14 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		ForkFetchRefspecTitle:                 "Fetch will move local branches",
 		ForkFetchRefspecPrompt:                "These fetch refspecs write into local branches (refs/heads/):\n\n%s\n\nGit moves those local branches to match the remote, even when they are not checked out. A refspec with a leading + also overwrites history the remote does not have, which can take local commits off a branch; they stay in the reflog.\n\nFetch anyway?",
 		ForkFetchBackgroundSkippedToast:       "Automatic fetch skipped for remote(s) %s: a fetch refspec writes into local branches. Fetch with f to review that change.",
+		RebaseOntoTrackingBranch:              "Rebase onto tracking branch '{{.ref}}'",
+		RebaseOntoTrackingBranches:            "Rebase onto a tracking branch…",
+		RebaseOntoTrackingBranchTooltip:       "Rebase the checked-out branch onto its remote tracking branch.",
+		RebaseOntoTrackingChooserTitle:        "Rebase '{{.branch}}' onto",
+		RebaseOntoTrackingUpstreamChoice:      "{{.ref}} (upstream)",
+		RebaseOntoTrackingCheckoutFirst:       "Check out '{{.branch}}' first",
+		RebaseOntoTrackingSelectCheckedOut:    "Select the checked-out branch '{{.branch}}' in Branches first",
+		RebaseOntoTrackingNoCandidates:        "'{{.branch}}' has no remote tracking branch",
 	}
 	set.MustExitFilterModePrompt = "Command not available while the commit log is filtered. Exit filter mode?"
 	set.MoveCommitsToNewBranchFromMainPrompt = "This will take all unpushed commits and move them to a new branch (off of {{.baseBranchName}}). The current branch is then moved back to its upstream branch. Nothing is stashed: commit or discard tracked changes first. Do you want to continue?"

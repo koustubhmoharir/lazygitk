@@ -18,6 +18,14 @@ type capturedRebaseFlow struct {
 	base         git_commands.BranchActionTarget
 	baseDisabled *types.DisabledReason
 	markedBase   string
+	// tracking holds the captured remote tracking candidates, in menu order.
+	// It is filled only when the source is the checked-out branch.
+	tracking []capturedTrackingRebase
+}
+
+type capturedTrackingRebase struct {
+	candidate git_commands.TrackingRebaseCandidate
+	source    git_commands.BranchActionTarget
 }
 
 type capturedRebaseChoice struct {
@@ -67,6 +75,22 @@ func RebaseCurrentOntoCapturedRef(c *HelperCommon, ref string) error {
 				} else {
 					flow.baseDisabled = nil
 				}
+			}
+		}
+		if flow.source.SourceRef() == flow.source.HeadRef() {
+			candidates, err := flow.repository.git.Sync.TrackingRebaseCandidates(strings.TrimPrefix(flow.source.HeadRef(), "refs/heads/"))
+			if err != nil {
+				return err
+			}
+			for _, candidate := range candidates {
+				source, err := flow.captureSource(candidate.Ref)
+				if err != nil {
+					return err
+				}
+				if source.HeadRef() != flow.source.HeadRef() || source.HeadOID() != flow.source.HeadOID() {
+					return git_commands.ErrBranchActionChanged
+				}
+				flow.tracking = append(flow.tracking, capturedTrackingRebase{candidate: candidate, source: source})
 			}
 		}
 		c.OnUIThread(flow.menu)
@@ -126,7 +150,7 @@ func (flow *capturedRebaseFlow) menu() error {
 	choices := []capturedRebaseChoice{
 		{
 			id: "branch.rebase-current-onto-selected.simple", label: utils.ResolvePlaceholderString(c.Tr.SimpleRebase, map[string]string{"ref": label}),
-			source: flow.source, disabled: selfDisabled, key: 's',
+			source: flow.source, disabled: selfDisabled, key: 'b',
 		},
 		{
 			id: "branch.rebase-current-onto-selected.interactive", label: utils.ResolvePlaceholderString(c.Tr.InteractiveRebase, map[string]string{"ref": label}),
@@ -134,10 +158,11 @@ func (flow *capturedRebaseFlow) menu() error {
 		},
 		{
 			id: "branch.rebase-current-onto-base", label: utils.ResolvePlaceholderString(c.Tr.RebaseOntoBaseBranch, map[string]string{"baseBranch": baseLabel}),
-			source: flow.base, disabled: flow.baseDisabled, key: 'b', tooltip: c.Tr.RebaseOntoBaseBranchTooltip,
+			source: flow.base, disabled: flow.baseDisabled, key: 'm', tooltip: c.Tr.RebaseOntoBaseBranchTooltip,
 		},
 	}
-	items := make([]*types.MenuItem, 0, len(choices))
+	items := make([]*types.MenuItem, 0, len(choices)+1)
+	items = append(items, flow.trackingMenuItem())
 	for _, choice := range choices {
 		verb := "rebase"
 		if choice.insertBreak {
@@ -150,6 +175,64 @@ func (flow *capturedRebaseFlow) menu() error {
 		})
 	}
 	return c.Menu(types.CreateMenuOptions{Title: flow.title(), Prompt: flow.prompt(flow.source, c.Tr.RebaseBranch), Items: items, OnCancel: flow.repository.checkRepository})
+}
+
+// trackingMenuItem is the `s` entry. Fork: it rebases the checked-out branch
+// onto its remote tracking branch. Candidates exist only when the source is the
+// checked-out branch, so other selections get a reason instead.
+func (flow *capturedRebaseFlow) trackingMenuItem() *types.MenuItem {
+	c := flow.repository.c
+	checkedOut := strings.TrimPrefix(flow.source.HeadRef(), "refs/heads/")
+	var disabled *types.DisabledReason
+	switch {
+	case flow.source.SourceRef() != flow.source.HeadRef() && strings.HasPrefix(flow.source.SourceRef(), "refs/heads/"):
+		disabled = &types.DisabledReason{Text: utils.ResolvePlaceholderString(c.Tr.RebaseOntoTrackingCheckoutFirst, map[string]string{"branch": ShortBranchName(flow.source.SourceRef())})}
+	case flow.source.SourceRef() != flow.source.HeadRef():
+		disabled = &types.DisabledReason{Text: utils.ResolvePlaceholderString(c.Tr.RebaseOntoTrackingSelectCheckedOut, map[string]string{"branch": checkedOut})}
+	case len(flow.tracking) == 0:
+		disabled = &types.DisabledReason{Text: utils.ResolvePlaceholderString(c.Tr.RebaseOntoTrackingNoCandidates, map[string]string{"branch": checkedOut})}
+	}
+	item := &types.MenuItem{
+		CommandID: "branch.rebase-current-onto-tracking", Verb: "rebase", Keys: menuKey('s'),
+		DisabledReason: disabled, Tooltip: c.Tr.RebaseOntoTrackingBranchTooltip, OpensMenu: true,
+	}
+	if len(flow.tracking) == 1 {
+		// A single candidate is named and rebases directly, as the simple rebase does.
+		tracked := flow.tracking[0]
+		label := utils.ResolvePlaceholderString(c.Tr.RebaseOntoTrackingBranch, map[string]string{"ref": ShortBranchName(tracked.candidate.Ref)})
+		item.Label = label
+		choice := capturedRebaseChoice{id: item.CommandID, label: label, source: tracked.source}
+		item.OnPress = func() error { return flow.prepare(choice) }
+		return item
+	}
+	item.Label = c.Tr.RebaseOntoTrackingBranches
+	item.OnPress = flow.chooseTracking
+	return item
+}
+
+// chooseTracking opens the candidates when several exist. The configured
+// upstream comes first, as captured.
+func (flow *capturedRebaseFlow) chooseTracking() error {
+	if err := flow.checkReview(); err != nil {
+		return err
+	}
+	c := flow.repository.c
+	items := make([]*types.MenuItem, 0, len(flow.tracking))
+	for _, tracked := range flow.tracking {
+		label := ShortBranchName(tracked.candidate.Ref)
+		if tracked.candidate.Upstream {
+			label = utils.ResolvePlaceholderString(c.Tr.RebaseOntoTrackingUpstreamChoice, map[string]string{"ref": label})
+		}
+		choice := capturedRebaseChoice{id: "branch.rebase-current-onto-tracking.choose", label: label, source: tracked.source}
+		items = append(items, &types.MenuItem{
+			CommandID: choice.id, Verb: "rebase", Label: label, OpensMenu: true,
+			OnPress: func() error { return flow.prepare(choice) },
+		})
+	}
+	return c.Menu(types.CreateMenuOptions{
+		Title: utils.ResolvePlaceholderString(c.Tr.RebaseOntoTrackingChooserTitle, map[string]string{"branch": strings.TrimPrefix(flow.source.HeadRef(), "refs/heads/")}),
+		Items: items, OnCancel: flow.repository.checkRepository,
+	})
 }
 
 func (flow *capturedRebaseFlow) prepare(choice capturedRebaseChoice) error {

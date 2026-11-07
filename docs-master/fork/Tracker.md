@@ -3,7 +3,8 @@
 The fork review fixes are finished (see [reviews/TRIAGE.md](../../reviews/TRIAGE.md)).
 Their decisions are recorded in the [user guide](Guide.md) and the
 [design principles](Design.md). The full integration suite passed on
-2026-11-07.
+2026-11-07. `r s` (rebase onto the tracking branch) followed on the same day;
+see the user guide.
 
 ## Open follow-ups (not started; need the user's go-ahead)
 

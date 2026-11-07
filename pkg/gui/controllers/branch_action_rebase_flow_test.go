@@ -113,7 +113,12 @@ func branchActionRebaseReplaceRepository(t *testing.T, ui *branchActionRebaseUI)
 
 func branchActionRebaseStart(t *testing.T, f *branchSyncPushFixture, ui *branchActionRebaseUI) types.CreateMenuOptions {
 	t.Helper()
-	if err := helpers.RebaseCurrentOntoCapturedRef(f.sync.c.HelperCommon, "refs/heads/topic"); err != nil {
+	return branchActionRebaseStartRef(t, f, ui, "refs/heads/topic")
+}
+
+func branchActionRebaseStartRef(t *testing.T, f *branchSyncPushFixture, ui *branchActionRebaseUI, ref string) types.CreateMenuOptions {
+	t.Helper()
+	if err := helpers.RebaseCurrentOntoCapturedRef(f.sync.c.HelperCommon, ref); err != nil {
 		t.Fatal(err)
 	}
 	if err := ui.runWorker(t); err != nil {
@@ -158,10 +163,13 @@ func TestBranchActionRebaseFlowCapturedRefAndModes(t *testing.T) {
 	if !strings.Contains(menu.Prompt, "Marked range base:") || !strings.Contains(menu.Prompt, f.sourceOID) {
 		t.Fatalf("menu prompt omitted captured marked base: %q", menu.Prompt)
 	}
-	if len(menu.Items) != 3 || menu.Items[0].CommandID != "branch.rebase-current-onto-selected.simple" || menu.Items[1].CommandID != "branch.rebase-current-onto-selected.interactive" || menu.Items[2].CommandID != "branch.rebase-current-onto-base" {
+	if len(menu.Items) != 4 || menu.Items[0].CommandID != "branch.rebase-current-onto-tracking" || menu.Items[1].CommandID != "branch.rebase-current-onto-selected.simple" || menu.Items[2].CommandID != "branch.rebase-current-onto-selected.interactive" || menu.Items[3].CommandID != "branch.rebase-current-onto-base" {
 		t.Fatalf("unexpected rebase menu IDs: %+v", menu.Items)
 	}
-	if menu.Items[2].DisabledReason == nil {
+	if menu.Items[0].DisabledReason == nil || menu.Items[0].DisabledReason.Text != "Check out 'topic' first" {
+		t.Fatalf("tracking choice should be disabled until its branch is checked out: %+v", menu.Items[0].DisabledReason)
+	}
+	if menu.Items[3].DisabledReason == nil {
 		t.Fatal("base choice should start disabled when main branches are unavailable")
 	}
 	if err := menu.OnCancel(); err != nil {
@@ -222,6 +230,69 @@ func TestBranchActionRebaseFlowRebasesOnlyCurrentAndPreservesOtherRefs(t *testin
 		if err := ui.refresh[0].Then(); err != nil {
 			t.Fatal(err)
 		}
+	}
+}
+
+func TestBranchActionRebaseFlowTrackingChoices(t *testing.T) {
+	f, ui := branchActionRebaseFixture(t)
+	headOID := branchActionRebaseGit(t, f.root, "rev-parse", "HEAD")
+	trackingItem := func(menu types.CreateMenuOptions) *types.MenuItem {
+		t.Helper()
+		return menuItem(t, menu, "branch.rebase-current-onto-tracking")
+	}
+
+	// No remote-tracking ref exists yet for the checked-out branch.
+	menu := branchActionRebaseStartRef(t, f, ui, "refs/heads/main")
+	if item := trackingItem(menu); item.DisabledReason == nil || item.DisabledReason.Text != "'main' has no remote tracking branch" {
+		t.Fatalf("expected no-candidate reason, got %+v", item.DisabledReason)
+	}
+	if err := menu.OnCancel(); err != nil {
+		t.Fatal(err)
+	}
+
+	// A remote branch selected from elsewhere names the checked-out branch instead.
+	branchActionRebaseGit(t, f.root, "update-ref", "refs/remotes/origin/topic", f.sourceOID)
+	menu = branchActionRebaseStartRef(t, f, ui, "refs/remotes/origin/topic")
+	if item := trackingItem(menu); item.DisabledReason == nil || item.DisabledReason.Text != "Select the checked-out branch 'main' in Branches first" {
+		t.Fatalf("expected select-checked-out reason, got %+v", item.DisabledReason)
+	}
+	if err := menu.OnCancel(); err != nil {
+		t.Fatal(err)
+	}
+
+	// The configured upstream is the single candidate, so the entry names it directly.
+	branchActionRebaseGit(t, f.root, "config", "branch.main.remote", "origin")
+	branchActionRebaseGit(t, f.root, "config", "branch.main.merge", "refs/heads/main")
+	branchActionRebaseGit(t, f.root, "update-ref", "refs/remotes/origin/main", headOID)
+	menu = branchActionRebaseStartRef(t, f, ui, "refs/heads/main")
+	item := trackingItem(menu)
+	if item.DisabledReason != nil || item.Label != "Rebase onto tracking branch 'origin/main'" {
+		t.Fatalf("single candidate entry: disabled=%+v label=%q", item.DisabledReason, item.Label)
+	}
+	if err := menu.OnCancel(); err != nil {
+		t.Fatal(err)
+	}
+
+	// A same-named branch on another remote makes the entry open a chooser, upstream first.
+	branchActionRebaseGit(t, f.root, "remote", "add", "fork", "https://example.invalid/fork.git")
+	branchActionRebaseGit(t, f.root, "update-ref", "refs/remotes/fork/main", headOID)
+	menu = branchActionRebaseStartRef(t, f, ui, "refs/heads/main")
+	item = trackingItem(menu)
+	if item.DisabledReason != nil || item.Label != "Rebase onto a tracking branch…" || !item.OpensMenu {
+		t.Fatalf("multi-candidate entry: disabled=%+v label=%q", item.DisabledReason, item.Label)
+	}
+	if err := item.OnPress(); err != nil {
+		t.Fatal(err)
+	}
+	chooser := f.ui.menus[len(f.ui.menus)-1]
+	if chooser.Title != "Rebase 'main' onto" || len(chooser.Items) != 2 {
+		t.Fatalf("chooser title=%q items=%d", chooser.Title, len(chooser.Items))
+	}
+	if chooser.Items[0].Label != "origin/main (upstream)" || chooser.Items[1].Label != "fork/main" {
+		t.Fatalf("chooser order: %q, %q", chooser.Items[0].Label, chooser.Items[1].Label)
+	}
+	if err := menu.OnCancel(); err != nil {
+		t.Fatal(err)
 	}
 }
 
