@@ -5,6 +5,10 @@ import (
 	. "github.com/jesseduffield/lazygit/pkg/integration/components"
 )
 
+// Fork: Push offers only the selected branch, so there is no push-all-stack
+// success to assert. This test proves the single-branch force push: origin gets
+// branch3 at its new OID, while the stacked branch1 and branch2 and local-only
+// keep their remote state. The local branches are unchanged too.
 var PushStackedBranches = NewIntegrationTest(NewIntegrationTestArgs{
 	Description:  "Force push only the current branch from a rebased stack after reviewing its lease",
 	ExtraCmdArgs: []string{},
@@ -32,7 +36,7 @@ var PushStackedBranches = NewIntegrationTest(NewIntegrationTestArgs{
 		menu.Select(Contains("Push with reviewed lease")).Confirm()
 
 		t.Views().Status().EventuallyContent(Contains("✓ repo → branch3"))
-		t.Shell().RunShellCommand("test \"$(git --git-dir=../origin rev-parse refs/heads/branch3)\" = \"" + sourceOID + "\" && test \"$(git --git-dir=../origin rev-parse refs/heads/branch1)\" = \"" + remoteBranch1OID + "\" && test \"$(git --git-dir=../origin rev-parse refs/heads/branch2)\" = \"" + remoteBranch2OID + "\" && ! git --git-dir=../origin show-ref --verify --quiet refs/heads/local-only")
+		t.Shell().RunShellCommand("test \"$(git --git-dir=../origin rev-parse refs/heads/branch3)\" = \"" + sourceOID + "\" && test \"$(git --git-dir=../origin rev-parse refs/heads/branch1)\" = \"" + remoteBranch1OID + "\" && test \"$(git --git-dir=../origin rev-parse refs/heads/branch2)\" = \"" + remoteBranch2OID + "\" && test \"$(git rev-parse refs/remotes/origin/branch3)\" = \"" + sourceOID + "\" && ! git --git-dir=../origin show-ref --verify --quiet refs/heads/local-only")
 		t.Shell().RunShellCommand("git rev-parse HEAD > .git/push-stack-head-after && cp .git/index .git/push-stack-index-after && cp .git/config .git/push-stack-config-after && git diff --binary > .git/push-stack-worktree-after && git status --porcelain --untracked-files=all > .git/push-stack-status-after && cmp .git/push-stack-head-before .git/push-stack-head-after && cmp .git/push-stack-index-before .git/push-stack-index-after && cmp .git/push-stack-config-before .git/push-stack-config-after && cmp .git/push-stack-worktree-before .git/push-stack-worktree-after && cmp .git/push-stack-status-before .git/push-stack-status-after")
 		t.Git().CurrentBranchName("branch3")
 		if t.Git().GetCommitHash("refs/heads/branch1") != branch1OID || t.Git().GetCommitHash("refs/heads/branch2") != branch2OID {

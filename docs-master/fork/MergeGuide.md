@@ -1027,6 +1027,7 @@ the same way:
   (`ReviewBranchRebase` and similar helpers in
   `pkg/integration/components/common.go`).
 - Per-repo config scenarios write `lazygitk.yml`.
+- `sync/push_stacked_branches` now proves single-branch push, and the stack-push success upstream's version covered was removed by design.
 - Scenarios that press Space in Commits to open a commit's files press `v`
   instead; Space toggles the selection there.
 - `controllers/fork_daemon_main_test.go` adds a `TestMain` to the controllers

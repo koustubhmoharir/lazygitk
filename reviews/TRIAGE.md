@@ -66,8 +66,10 @@ Merge-ease refactors (reduce future upstream conflicts, no behaviour change):
 
 Other quality/perf items: 04-F1 (true-colour probe can eat keys typed during
 start-up), 04-F2 (graph cache key hashes the whole history per render), 05-F3,
-02-F3 (suspected popup attribution across workers), 15-F4 (restore graph
-assertions weakened in some modified upstream scenarios), 13-F3 (copy tests stop
-before real handlers). Found during D2: the merge/rebase helper recognises only content-conflict
+02-F3 (suspected popup attribution across workers), 13-F3 (copy tests stop
+before real handlers). **Fixed** 15-F4: `branch/merge_non_fast_forward` asserts
+each merge commit's parents and the commit subjects in order, `sync/push_stacked_branches`
+asserts which remote branches changed, and `worktree/remove_worktree_and_delete_local_and_remote_branch`
+asserts the local, remote and worktree state, all while keeping the fork's refusals and one-branch push. Found during D2: the merge/rebase helper recognises only content-conflict
 messages, so a cherry-pick stopped by an add/add conflict comes back as a plain
 error (selection kept; the conflict flow is not offered). Upstream behaviour.
