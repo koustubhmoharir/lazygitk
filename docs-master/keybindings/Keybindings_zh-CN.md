@@ -347,6 +347,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` s d `` | Checkout detached HEAD |  |
+| `` n b `` | Create/move branch here… | Create or move a local branch to the selected commit without changing HEAD, the index or working files. |
 | `` w b `` | Show branch / tag |  |
 | `` w v `` | Show in Commits |  |
 | `` s c `` | 检出 | 检出选择的标签作为分离的HEAD |
