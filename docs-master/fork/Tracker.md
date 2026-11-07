@@ -15,8 +15,6 @@ see the user guide.
   cherry-pick add/add conflict that the merge helper reports as a plain error.
 - Remaining "01 merge notes" move: `focusPanelTitle` to a fork file, and
   optional extractions in `menu_context.go` and `menu_panel.go`.
-- A completion callback registered by a cherry-pick or move-commits flow stays
-  set if the operation is finished outside lazygitk (review 10, open question).
 
 ## How this tracker works
 

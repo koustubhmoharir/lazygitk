@@ -628,7 +628,11 @@ launch, described under "Merge tool" below.
   continue, skip or abort, in both its subprocess and worker paths, so the
   auto-skip is covered. A continue or skip
   that ends the operation runs the callback once; an abort drops it. Upstream
-  changes to these functions must keep that call.
+  changes to these functions must keep that call. When the operation ends
+  outside lazygitk, the files refresh in `refresh_helper.go` drops a pending
+  callback with its notice (`DropAbandonedOperationStep`), guarded by an epoch
+  and an in-flight count so a refresh cannot drop a step that a lazygitk run is
+  still settling.
 - `helpers/fork_undo_checkout.go`: `CheckoutReflogTarget`, the undo and redo
   checkout (`git_commands/fork_undo_checkout.go`, `ClassifyReflogCheckoutTarget`).
   It replaces upstream's `CheckoutRef` there, which runs plain `git checkout`

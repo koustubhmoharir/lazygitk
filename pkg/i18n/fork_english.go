@@ -30,7 +30,10 @@ type ForkTranslationSet struct {
 	MoveCommitsOldBranchInUse            string
 	MoveCommitsIncomplete                string
 	MoveCommitsOldBranchNotMoved         string
+	MoveCommitsNotFinishedTitle          string
+	MoveCommitsNotFinishedOutside        string
 	CherryPickChangedNote                string
+	CherryPickEndedOutsideLazygitk       string
 	CombineSelected                      string
 	CombineSelectCommits                 string
 	CombineChecking                      string
@@ -444,7 +447,10 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		MoveCommitsOldBranchInUse:             "%s is checked out or reserved in another worktree, so it was not moved. Its commits are still on it, and %s has the moved commits.",
 		MoveCommitsIncomplete:                 "%s was not moved, because %s does not hold one commit for each moved commit (a pick was skipped, or the branch has other commits). Its commits are still on it.",
 		MoveCommitsOldBranchNotMoved:          "The moved commits are on %s, but %s was not moved. Git said: %v",
+		MoveCommitsNotFinishedTitle:           "Move commits not finished",
+		MoveCommitsNotFinishedOutside:         "The cherry-picks onto '{{.newBranch}}' ended outside lazygitk, so '{{.oldBranch}}' was not moved back and still has the commits.",
 		CherryPickChangedNote:                 "The destination or ignored-file risks changed. Review the fresh state before proceeding.",
+		CherryPickEndedOutsideLazygitk:        "The cherry-pick ended outside lazygitk, so the picked commits stay selected.",
 		CombineSelected:                       "Combine selected commits",
 		CombineSelectCommits:                  "Select at least two full commit IDs to combine.",
 		CombineChecking:                       "Inspecting selected commits",

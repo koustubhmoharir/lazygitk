@@ -468,7 +468,8 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   the commits. With the base variant, a conflict stops the cherry-picks, and
   the current branch is moved only after the operation is continued and the
   new branch holds one commit per moved commit; a skipped pick leaves the
-  current branch untouched, and an abort does too.
+  current branch untouched, and an abort does too. If the picks end outside
+  lazygitk, the current branch is not moved back and an alert says so.
 - `s h`, `s m`, `s s` reset the checked-out branch to the selection, with a
   confirmation explaining what the mode does to the index and files.
 - Conflicts and paused rebases are continued, skipped or aborted explicitly
@@ -495,8 +496,9 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   the exact commits and destination before cherry-picking. A successful
   cherry-pick clears the selection. One that stops on conflicts keeps it while
   the operation is in progress, so an abort leaves it for a retry; continuing
-  the operation to its end (`c c`, or the continue menu) clears it. Finishing
-  the last pick with Enter does not clear it: Escape does.
+  the operation to its end (`c c`, or the continue menu) clears it. If the
+  operation ends outside lazygitk, the selection is kept and a notice says so.
+  Finishing the last pick with Enter does not clear it: Escape does.
   There is no separate copy step.
 - Amending an older commit or creating stacked fixups refuses before
   committing if other tracked edits would remain for the rebase.

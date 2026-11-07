@@ -110,6 +110,7 @@ var tests = []*components.IntegrationTest{
 	cherry_pick.CherryPickConflicts,
 	cherry_pick.CherryPickConflictsEmptyCommitAfterResolving,
 	cherry_pick.CherryPickDuringRebase,
+	cherry_pick.CherryPickFinishedOutsideLazygitk,
 	cherry_pick.CherryPickMerge,
 	cherry_pick.CherryPickRange,
 	cherry_pick.ContinueAfterCommittingResolution,

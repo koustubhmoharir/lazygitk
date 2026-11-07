@@ -221,8 +221,14 @@ func (flow *forkCherryPickFlow) waitForOperationFinished() error {
 	if flow.c.Git().Status.WorkingTreeState().None() {
 		return nil
 	}
-	flow.c.Helpers().MergeAndRebase.SetOnOperationFinished(flow.clearPickedSelection)
+	flow.c.Helpers().MergeAndRebase.SetOnOperationFinished(flow.clearPickedSelection, flow.notifyEndedOutsideLazygitk)
 	return nil
+}
+
+// notifyEndedOutsideLazygitk tells the user that the operation a pick left ended
+// outside lazygitk. The selection stays, as the picked commits were not finished here.
+func (flow *forkCherryPickFlow) notifyEndedOutsideLazygitk() {
+	flow.c.Toast(flow.c.Tr.CherryPickEndedOutsideLazygitk)
 }
 
 // clearPickedSelection clears the selection that c p picked, after the pick succeeded.

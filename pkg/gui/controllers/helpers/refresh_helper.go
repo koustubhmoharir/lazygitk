@@ -1425,11 +1425,17 @@ func (self *RefreshHelper) refreshStateFiles(captured capturedFilesState, env re
 	})
 
 	repoState := self.c.State().GetRepoState()
+	// Fork: load the operation-finished epoch before reading the working tree state (see fork_operation_settle.go).
+	operationFinishedEpoch := self.mergeAndRebaseHelper.OperationFinishedEpoch()
 	workingTreeState := env.git.Status.WorkingTreeState()
 	if workingTreeState.None() {
 		// No operation is in progress (any more), so forget that we started one.
 		// This also covers an operation that was finished or aborted externally.
 		repoState.SetMergeOrRebaseStartedInLazygit(false)
+		// Fork: drop a pending operation-finished step whose operation ended outside lazygitk (see fork_operation_settle.go).
+		self.onUIThreadUnlessRepoChanged(env, func() {
+			self.mergeAndRebaseHelper.DropAbandonedOperationStep(operationFinishedEpoch)
+		})
 	}
 
 	if workingTreeState.Any() && len(conflictedPaths) == 0 {

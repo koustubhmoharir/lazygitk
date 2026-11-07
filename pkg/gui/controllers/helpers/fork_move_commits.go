@@ -187,6 +187,11 @@ func (self *RefsHelper) runMoveCommitsFromBase(repository *capturedActionReposit
 				return self.c.WithWaitingStatus(self.c.Tr.MoveCommitsFinishingStatus, func(gocui.Task) error {
 					return self.finishMoveCommitsFromBase(repository, plan, oldName)
 				})
+			}, func() {
+				self.c.Alert(self.c.Tr.MoveCommitsNotFinishedTitle, utils.ResolvePlaceholderString(self.c.Tr.MoveCommitsNotFinishedOutside, map[string]string{
+					"newBranch": name,
+					"oldBranch": oldName,
+				}))
 			})
 			return nil
 		})

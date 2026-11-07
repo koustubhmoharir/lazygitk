@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync/atomic"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
@@ -29,8 +30,13 @@ type MergeAndRebaseHelper struct {
 	// Fork: runs once, on the UI thread, when the operation that a pick stopped on
 	// conflicts left in progress ends by continue or skip (see
 	// settleOperationFinished in fork_operation_settle.go). Only accessed on the UI
-	// thread.
-	onOperationFinished func() error
+	// thread. The fields below it are the guards and the notice for an operation
+	// that ends outside lazygitk (see fork_operation_settle.go).
+	onOperationFinished          func() error
+	onOperationFinishedAbandoned func()
+	onOperationFinishedEpoch     int64
+	operationFinishedEpochs      atomic.Int64
+	operationsInFlight           atomic.Int32
 }
 
 func NewMergeAndRebaseHelper(
@@ -133,6 +139,11 @@ func (self *MergeAndRebaseHelper) genericMergeCommandImpl(command string, showWa
 			self.c.LogCommand(string(todoFile), false)
 		}
 	}
+
+	// Fork: count this run as in flight until settleOperationFinished's UI callback
+	// runs, so a refresh does not drop the step while lazygitk is still settling it.
+	// Nothing returns between here and settleOperationFinished. See fork_operation_settle.go.
+	self.operationsInFlight.Add(1)
 
 	commandType := status.CommandName()
 	selectHeadCommitOnSuccess := command == REBASE_OPTION_CONTINUE &&
