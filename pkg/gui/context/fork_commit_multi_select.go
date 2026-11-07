@@ -160,6 +160,16 @@ func (self *LocalCommitsViewModel) SetSelectionAfterRewrite(idx int) {
 	self.ListCursor.SetSelection(idx)
 }
 
+// ForgetRewrittenCommits removes commits from the set before lazygitk rewrites them by
+// moving them. A drag ends its run when the cursor moves during it, which adds the run to
+// the set; the rewrite would then leave those hashes unreachable and a notice would name
+// them. The moved commits are selected again as the run, so they leave the set.
+func (self *LocalCommitsViewModel) ForgetRewrittenCommits(commits []*models.Commit) {
+	for _, commit := range realCommits(commits) {
+		self.removeFromSet(commit.Hash())
+	}
+}
+
 // ToggleCommitSelection is Space in Commits. With a run in progress it toggles the
 // whole run and ends the run; otherwise it toggles the cursor commit in the set.
 func (self *LocalCommitsViewModel) ToggleCommitSelection() {

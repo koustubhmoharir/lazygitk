@@ -459,6 +459,10 @@ re-apply it if upstream changes that code.
   `SetSelectionAfterRewrite` instead of `SetSelection`. The override would add a
   Shift run to the set first, and the rewrite would then leave those commits
   unreachable. Upstream's use of `SetSelection` there is otherwise unchanged.
+- `controllers/local_commits_controller.go` `move`, which the keys and the
+  drag release both call, calls `ForgetRewrittenCommits` before it rewrites the
+  block. A drag whose cursor moves mid-drag ends its run into the set first, so
+  the moved commits leave the set there and are selected again as the run.
 - `controllers/local_commits_controller.go`, `basic_commits_controller.go` and
   `bisect_controller.go`: `GetKeybindings` returns through
   `guardCommitSelectionBindings`, which disables the commands in

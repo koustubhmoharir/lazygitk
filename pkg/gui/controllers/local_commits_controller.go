@@ -1243,6 +1243,8 @@ func (self *LocalCommitsController) move(
 	}
 
 	commits := self.c.Model().Commits
+	// Fork: the moved commits leave the set, if a drag put them there; see ForgetRewrittenCommits.
+	self.context().ForgetRewrittenCommits(selectedCommits)
 	return self.c.WithWaitingStatusBlockingInput(types.WaitingStatusOpts{
 		Message:              self.c.Tr.MovingStatus,
 		HideWorkingTreeState: true,
