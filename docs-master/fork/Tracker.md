@@ -6,9 +6,10 @@ Their decisions are recorded in the [user guide](Guide.md) and the
 2026-11-07. `r s` (rebase onto the tracking branch) followed on the same day;
 see the user guide.
 
-## Open follow-ups (not started; need the user's go-ahead)
+## Open follow-ups
 
-- Triage §3 quality items: 13-F3 (copy tests stop before real handlers).
+None. The last review follow-ups were finished on 2026-11-07 (see
+[reviews/TRIAGE.md](../../reviews/TRIAGE.md) §3).
 
 ## How this tracker works
 

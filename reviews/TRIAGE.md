@@ -64,12 +64,25 @@ Merge-ease refactors (reduce future upstream conflicts, no behaviour change):
   and `commit_loader.go` (upstream's `Limit` became an int); `fork_commit_scope.go`
   must be ported with it.
 
-Other quality/perf items: 04-F1 (true-colour probe can eat keys typed during
-start-up), 04-F2 (graph cache key hashes the whole history per render), 05-F3,
-02-F3 (suspected popup attribution across workers), 13-F3 (copy tests stop
-before real handlers). **Fixed** 15-F4: `branch/merge_non_fast_forward` asserts
-each merge commit's parents and the commit subjects in order, `sync/push_stacked_branches`
-asserts which remote branches changed, and `worktree/remove_worktree_and_delete_local_and_remote_branch`
-asserts the local, remote and worktree state, all while keeping the fork's refusals and one-branch push. Found during D2: the merge/rebase helper recognises only content-conflict
-messages, so a cherry-pick stopped by an add/add conflict comes back as a plain
-error (selection kept; the conflict flow is not offered). Upstream behaviour.
+Other quality/perf items (all **Fixed** 2026-11-07):
+
+- 04-F1: keys typed during the true-colour probe are replayed to tcell
+  through `colorSchemeTty` instead of being discarded.
+- 04-F2: the pipe set key is memoized per commit list.
+- 05-F3: fixed in batch F (see §1).
+- 02-F3: a popup claims a pending use only from the goroutine that runs its
+  handler, so a worker's popup cannot take another command's use.
+- 13-F3: `ui/fork_copy_file_keys` already checked real clipboard values;
+  `ui/fork_copy_file_range_refused` covers copies with a range (single-file
+  copies are left out of `y`, the path copy is crossed out, all files' diff
+  still works) and `ui/fork_tree_navigation_clears_range` covers tree
+  navigation clearing a range only when it moves.
+- 15-F4: `branch/merge_non_fast_forward` asserts each merge commit's parents
+  and the commit subjects in order, `sync/push_stacked_branches` asserts which
+  remote branches changed, and
+  `worktree/remove_worktree_and_delete_local_and_remote_branch` asserts the
+  local, remote and worktree state, keeping the fork's refusals and one-branch
+  push.
+- Found during D2: a cherry-pick stopped by an add/add (or any non-content)
+  conflict came back as a plain error; the helper now recognises Git's generic
+  `CONFLICT (` line.
