@@ -58,15 +58,19 @@ var ForkCommitsMultiSelectCommands = NewIntegrationTest(NewIntegrationTestArgs{
 		commits.ExplicitSelection(Contains("foxtrot"), Contains("charlie"))
 		commits.LineCount(EqualsInt(7))
 
-		// Commands bound outside the Commits controllers are guarded too: g b, y i.
+		// Commands bound outside the Commits controllers are guarded too: g b, y i. A
+		// crossed-out row of a menu says why and runs nothing; the menu stays open
+		// until Escape closes it.
 		commits.Press(config.Keybinding{"g"})
 		t.ExpectPopup().Menu().Title(Equals("g"))
 		t.Views().Menu().Press(config.Keybinding{"b"})
 		t.ExpectToast(disabled)
+		t.ExpectPopup().Menu().Title(Equals("g")).Cancel()
 		commits.Press(config.Keybinding{"y"})
 		t.ExpectPopup().Menu().Title(Equals("y"))
 		t.Views().Menu().Press(config.Keybinding{"i"})
 		t.ExpectToast(disabled)
+		t.ExpectPopup().Menu().Title(Equals("y")).Cancel()
 		commits.ExplicitSelection(Contains("foxtrot"), Contains("charlie"))
 
 		// Set-aware commands work on the set: c p reviews both commits, and cancelling

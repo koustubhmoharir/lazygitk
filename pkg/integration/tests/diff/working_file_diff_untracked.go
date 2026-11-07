@@ -33,19 +33,24 @@ var WorkingFileDiffUntracked = NewIntegrationTest(NewIntegrationTestArgs{
 			Focus().
 			NavigateToLine(Contains("new.txt"))
 
+		// A crossed-out row of the d menu says why and runs nothing. The menu stays
+		// open, as for any disabled menu item, until Escape closes it.
 		t.Views().Files().Press(config.Keybinding{"d"})
 		t.GlobalPress(config.Keybinding{"w"})
 		t.ExpectToast(Equals("Disabled: untracked file: Git has no base version to compare"))
+		t.ExpectPopup().Menu().Title(Equals("d")).Cancel()
 		t.Views().Files().IsFocused()
 
 		t.Views().Files().Press(config.Keybinding{"d"})
 		t.GlobalPress(config.Keybinding{"s"})
 		t.ExpectToast(Equals("Disabled: untracked file: Git has no base version to compare"))
+		t.ExpectPopup().Menu().Title(Equals("d")).Cancel()
 		t.Views().Files().IsFocused()
 
 		t.Views().Files().Press(config.Keybinding{"d"})
 		t.GlobalPress(config.Keybinding{"c"})
 		t.ExpectToast(Equals("Disabled: untracked file: Git has no base version to compare"))
+		t.ExpectPopup().Menu().Title(Equals("d")).Cancel()
 		t.Views().Files().IsFocused()
 
 		t.Views().Files().
@@ -53,6 +58,7 @@ var WorkingFileDiffUntracked = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().Press(config.Keybinding{"d"})
 		t.GlobalPress(config.Keybinding{"s"})
 		t.ExpectToast(Equals("Disabled: no unstaged changes"))
+		t.ExpectPopup().Menu().Title(Equals("d")).Cancel()
 		t.Views().Files().IsFocused()
 	},
 })
