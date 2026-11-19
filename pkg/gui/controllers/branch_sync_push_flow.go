@@ -47,6 +47,11 @@ func newBranchSyncPushFlow(target *branchSyncTarget, info git_commands.BranchSyn
 	if !strings.HasPrefix(flow.opts.DestinationRef, "refs/heads/") || flow.opts.DestinationRef == "refs/heads/" {
 		flow.opts.DestinationRef = "refs/heads/" + info.Name
 	}
+	// Fork: a branch with no tracking configuration starts with Set upstream on,
+	// so the push records its destination as the upstream. A branch whose
+	// tracking config exists, even for a remote that is no longer configured,
+	// starts off, so existing tracking is never replaced by default.
+	flow.opts.SetUpstream = !info.HasTrackingConfig
 	return flow
 }
 

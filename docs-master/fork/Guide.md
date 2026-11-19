@@ -544,7 +544,9 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
   Branches) directly from the push menu, which shows the commit, remote,
   destination and options. A separate review appears only for replacing
   different tracking and for force-with-lease. A new branch with no push
-  remote uses the repository's only remote without prompting.
+  remote uses the repository's only remote without prompting. Set upstream
+  starts on for a branch with no tracking, so the push records the destination
+  as its upstream; it starts off for a branch that already tracks something.
 - When the destination's remote-tracking branch, as last fetched, has commits
   the branch lacks, **Push this branch** is crossed out and says why; Force
   with reviewed lease remains. The check applies only when pushes and fetches

@@ -30,6 +30,11 @@ var PushAndAutoSetUpstream = NewIntegrationTest(NewIntegrationTestArgs{
 			IsFocused().
 			Press(keys.Universal.Push)
 
+		// Set upstream starts on for a branch with no tracking. Turn it off so
+		// this test still checks that push.autoSetupRemote saves nothing; the
+		// menu reopens after the toggle.
+		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).
+			Select(Contains("set upstream")).Confirm()
 		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).
 			Select(MatchesRegexp("^Choose remote")).Confirm()
 		t.ExpectPopup().Prompt().Title(Equals("Remote name")).InitialText(Equals("origin")).Confirm()

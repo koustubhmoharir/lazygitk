@@ -6,7 +6,7 @@ import (
 )
 
 var ForkPushNewBranchSingleRemote = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "With one remote and no push remote, pushing a new branch starts with that remote: the menu names it and Push this branch pushes without a prompt",
+	Description: "With one remote and no push remote, pushing a new branch starts with that remote: the menu names it, Push this branch pushes without a prompt, and Set upstream is on by default so the branch tracks the remote branch it pushed to",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -44,6 +44,12 @@ var ForkPushNewBranchSingleRemote = NewIntegrationTest(NewIntegrationTestArgs{
 		// No remote prompt opens; the push completes from the menu alone.
 		t.Shell().RunShellCommand("git --git-dir=../origin rev-parse --verify refs/heads/feature > .git/assert-fork-push-feature")
 		t.FileSystem().FileContent(".git/assert-fork-push-feature", Equals(featureOID+"\n"))
+		// Set upstream starts on for a branch with no tracking, so the push
+		// records origin/feature as the upstream.
+		t.Shell().RunShellCommand("git config --get branch.feature.remote > .git/assert-fork-push-feature-remote")
+		t.FileSystem().FileContent(".git/assert-fork-push-feature-remote", Equals("origin\n"))
+		t.Shell().RunShellCommand("git config --get branch.feature.merge > .git/assert-fork-push-feature-merge")
+		t.FileSystem().FileContent(".git/assert-fork-push-feature-merge", Equals("refs/heads/feature\n"))
 		t.Git().CurrentBranchName("master")
 	},
 })

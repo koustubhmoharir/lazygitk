@@ -1,6 +1,7 @@
 package git_commands
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -27,6 +28,11 @@ type BranchSyncInfo struct {
 	UpstreamTrackingRef string
 	PushRemote          string
 	PushRef             string
+	// HasTrackingConfig is true when branch.<name>.remote or branch.<name>.merge
+	// is configured, even if the remote no longer exists. The %(upstream) atoms
+	// above omit such a branch, so callers that must not replace existing
+	// tracking should check this field instead.
+	HasTrackingConfig bool
 	// SoleRemote is the only configured remote, as git remote reports it in
 	// the same snapshot as the branch metadata above. It is empty when zero or
 	// several remotes are configured. A string keeps the struct comparable.
@@ -79,6 +85,17 @@ func (self *SyncCommands) InspectBranchSync(name string) (BranchSyncInfo, error)
 	}
 	if len(remotes) == 1 {
 		info.SoleRemote = remotes[0]
+	}
+	_, previousRemote, previousMerge, err := self.branchUpstreamTrackingSnapshot(name)
+	switch {
+	case errors.Is(err, ErrBranchUpstreamAmbiguous):
+		// Ambiguous or inherited tracking is still tracking. Keep the menu
+		// reachable: the push prepare step refuses to change it and explains why.
+		info.HasTrackingConfig = true
+	case err != nil:
+		return BranchSyncInfo{}, err
+	default:
+		info.HasTrackingConfig = previousRemote != "" || previousMerge != ""
 	}
 	info.Name = name
 	info.HeadRef, info.HeadOID = headRef, headOID

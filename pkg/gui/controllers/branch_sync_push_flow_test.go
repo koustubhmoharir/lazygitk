@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -212,7 +213,7 @@ func TestBranchSyncPushSelectedBranchExecutesWithoutConfirmation(t *testing.T) {
 	if !strings.Contains(menu.Prompt, `"topic"`) || !strings.Contains(menu.Prompt, "origin") || !strings.Contains(menu.Prompt, "topic") {
 		t.Fatalf("menu omitted captured target/defaults: %q", menu.Prompt)
 	}
-	if !strings.Contains(menu.Prompt, "Set upstream for selected branch: false") || !strings.Contains(menu.Prompt, "Check submodules: false") {
+	if !strings.Contains(menu.Prompt, "Set upstream for selected branch: true") || !strings.Contains(menu.Prompt, "Check submodules: false") {
 		t.Fatalf("push defaults were not explicit: %q", menu.Prompt)
 	}
 	if err := menuItem(t, menu, "branch.push-selected.execute").OnPress(); err != nil {
@@ -1105,6 +1106,35 @@ func TestBranchSyncPushDefaultsToSoleRemote(t *testing.T) {
 			}
 			if got := f.ui.prompts[0].InitialContent; got != "" {
 				t.Fatalf("prompt was prefilled with %q, want empty", got)
+			}
+		})
+	}
+}
+
+func TestBranchSyncPushDefaultsSetUpstreamWithoutTracking(t *testing.T) {
+	for _, tc := range []struct {
+		name        string
+		tracking    [][]string
+		wantSetUp   bool
+		wantSummary string
+	}{
+		{name: "no tracking", wantSetUp: true, wantSummary: "Set upstream for selected branch: true"},
+		{name: "existing tracking", tracking: [][]string{{"config", "branch.topic.remote", "origin"}, {"config", "branch.topic.merge", "refs/heads/old"}}, wantSetUp: false, wantSummary: "Set upstream for selected branch: false"},
+		{name: "dangling tracking config", tracking: [][]string{{"config", "branch.topic.remote", "oldremote"}, {"config", "--add", "branch.topic.merge", "refs/heads/old-one"}}, wantSetUp: false, wantSummary: "Set upstream for selected branch: false"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newBranchSyncPushFixture(t)
+			for _, args := range tc.tracking {
+				branchSyncPushGit(t, f.root, args...)
+			}
+			f.open(t, branchSyncSource{name: "topic", selected: true})
+			menu := f.ui.menus[0]
+			if !strings.Contains(menu.Prompt, tc.wantSummary) {
+				t.Fatalf("menu summary %q does not contain %q", menu.Prompt, tc.wantSummary)
+			}
+			want := fmt.Sprintf("(%t)", tc.wantSetUp)
+			if item := menuItem(t, menu, "branch.push-selected.set-upstream"); !strings.HasSuffix(item.Label, want) {
+				t.Fatalf("set-upstream label %q does not end with %q", item.Label, want)
 			}
 		})
 	}
