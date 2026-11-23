@@ -1,13 +1,34 @@
-# Current work: none
+# Current work: highlighted file contents
 
-Browsing a commit's files was finished on 2026-11-24: `v` on a commit offers
-the changed files or all files, the full listing shows file contents in the
-main view, and the commands that need a changed file are crossed out on
-unchanged ones. See the user guide (Browsing a commit's files).
+Agreed with the user on 2026-11-24. Yazi highlights in-process (syntect);
+the Go equivalent is chroma, which ships Catppuccin styles.
 
-## Open follow-ups
+## Behaviour
 
-None.
+- File contents shown in the main view by the full listing (`v f`) are
+  syntax highlighted by a built-in highlighter (chroma), with the Catppuccin
+  style matching the app's theme (Mocha on a dark terminal, Latte on a light
+  one) and line numbers. Nothing needs installing.
+- `git.fileRenderers` configures the renderers, like `git.diffRenderers`:
+  a list whose entries are the built-in highlighter, plain text, or a command
+  that reads the content on stdin (such as `bat --color=always --paging=never
+  --style=numbers --file-name={{filename}}`). Unset or empty means built-in,
+  then plain. A configured list is used as given.
+- `t d n` / `t d p` cycle the file renderers while the main view shows file
+  contents (and the diff renderers otherwise), with the same notification.
+- The language comes from the file name; an unknown type is plain text.
+  Files over 1 MiB are not highlighted by the built-in highlighter (it holds
+  the whole file in memory); they stream as plain text and the title says why.
+  Binary files keep their note and never reach a renderer.
+- A failing command shows its error in the main view, as a failing diff
+  renderer does; there is no notice when no command is configured.
+
+## Tasks
+
+1. Config, renderer cycling, the built-in highlighter and plain text, with
+   tests.
+2. Command renderers (`{{filename}}`, stdin), with tests.
+3. Guide, design and merge-guide updates; close this section.
 
 ## How this tracker works
 
