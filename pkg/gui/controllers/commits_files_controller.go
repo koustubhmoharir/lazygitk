@@ -82,7 +82,7 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 			CommandID:         "commit.discard-file-changes",
 			Verb:              "discard-from-commit",
 			Handler:           self.withItems(self.discard),
-			GetDisabledReason: self.require(self.itemsSelected(self.canDiscardFileChanges)),
+			GetDisabledReason: self.require(self.itemsSelected(self.canDiscardFileChanges, self.changedFilesReason)),
 			Description:       self.c.Tr.Discard,
 			Tooltip:           self.c.Tr.DiscardOldFileChangeTooltip,
 			DisplayOnScreen:   true,
@@ -111,7 +111,7 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 			CommandID:         "diff.history-file.external",
 			Verb:              "external-diff-context",
 			Handler:           self.withItem(self.openDiffTool),
-			GetDisabledReason: self.require(self.singleItemSelected()),
+			GetDisabledReason: self.require(self.singleItemSelected(self.changedFileReason)),
 			Description:       self.c.Tr.HistoricalDiffStickyTool,
 		},
 		{
@@ -119,7 +119,7 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 			CommandID:         "patch.toggle-file-selection",
 			Verb:              "toggle-patch-selection",
 			Handler:           self.withItems(self.toggleForPatch),
-			GetDisabledReason: self.require(self.itemsSelected()),
+			GetDisabledReason: self.require(self.itemsSelected(self.changedFilesReason)),
 			Description:       self.c.Tr.ToggleAddToPatch,
 			Tooltip: utils.ResolvePlaceholderString(self.c.Tr.ToggleAddToPatchTooltip,
 				map[string]string{"doc": constants.Links.Docs.CustomPatchDemo},
@@ -127,11 +127,12 @@ func (self *CommitFilesController) GetKeybindings(opts types.KeybindingsOpts) []
 			DisplayOnScreen: true,
 		},
 		{
-			Keys:        opts.GetKeys(opts.Config.Files.ToggleStagedAll),
-			CommandID:   "patch.toggle-all-file-selection",
-			Verb:        "toggle-all-patch-selection",
-			Handler:     self.withItem(self.toggleAllForPatch),
-			Description: self.c.Tr.ToggleAllInPatch,
+			Keys:              opts.GetKeys(opts.Config.Files.ToggleStagedAll),
+			CommandID:         "patch.toggle-all-file-selection",
+			Verb:              "toggle-all-patch-selection",
+			Handler:           self.withItem(self.toggleAllForPatch),
+			GetDisabledReason: self.require(self.changedRootReason),
+			Description:       self.c.Tr.ToggleAllInPatch,
 			Tooltip: utils.ResolvePlaceholderString(self.c.Tr.ToggleAllInPatchTooltip,
 				map[string]string{"doc": constants.Links.Docs.CustomPatchDemo},
 			),
@@ -228,11 +229,25 @@ func (self *CommitFilesController) GetOnRenderToMain() func() {
 			return
 		}
 
+		// Fork: a folder with no changed file in view shows the reason, never the whole commit's diff.
+		paths := self.pathsForDiff(node)
+		if len(paths) == 0 {
+			self.c.RenderToMainViews(types.RefreshMainOpts{
+				Pair: self.c.MainViewPairs().Normal,
+				Main: &types.ViewUpdateOpts{
+					Title:    self.c.Tr.Patch,
+					SubTitle: self.c.Helpers().Diff.IgnoringWhitespaceSubTitle(),
+					Task:     types.NewRenderStringTask(self.c.Tr.CommitFolderUnchanged),
+				},
+				Secondary: secondaryPatchPanelUpdateOpts(self.c),
+			})
+			return
+		}
+
 		from, to := self.context().GetFromAndToForDiff()
 		from, reverse := self.c.Modes().Diffing.GetFromAndReverseArgsForDiff(from)
 
 		mode := self.c.Helpers().DiffLine.MainViewDiffMode()
-		paths := self.pathsForDiff(node)
 		cmdObj := self.c.Git().WorkingTree.ShowFileDiffCmdObj(from, to, reverse, paths, mode)
 		task := types.NewMainViewDiffTask(cmdObj.GetCmd(), mode)
 
@@ -256,12 +271,18 @@ func (self *CommitFilesController) copyDiffToClipboard(paths []string, toastMess
 	from, to := self.context().GetFromAndToForDiff()
 	from, reverse := self.c.Modes().Diffing.GetFromAndReverseArgsForDiff(from)
 
-	// Fork: literal pathspecs, so a name such as a*.txt copies only that file's
-	// diff; rename ends and directories are literal too (fork_literal_pathspecs.go).
-	cmdObj := self.c.Git().WorkingTree.ShowLiteralFileDiffCmdObj(from, to, reverse, paths, git_commands.DiffModePlain)
-	diff, err := cmdObj.RunWithOutput()
-	if err != nil {
-		return err
+	// Fork: no paths means no changed file in view (a folder in the full listing), and
+	// an empty pathspec would copy the whole commit, so the diff is empty instead.
+	var diff string
+	if len(paths) > 0 {
+		// Fork: literal pathspecs, so a name such as a*.txt copies only that file's
+		// diff; rename ends and directories are literal too (fork_literal_pathspecs.go).
+		cmdObj := self.c.Git().WorkingTree.ShowLiteralFileDiffCmdObj(from, to, reverse, paths, git_commands.DiffModePlain)
+		var err error
+		diff, err = cmdObj.RunWithOutput()
+		if err != nil {
+			return err
+		}
 	}
 	if err := self.c.OS().CopyToClipboard(diff); err != nil {
 		return err
@@ -324,14 +345,12 @@ func (self *CommitFilesController) discard(selectedNodes []*filetree.CommitFileN
 				var filePaths []string
 				selectedNodes = normalisedSelectedCommitFileNodes(selectedNodes)
 
-				for _, node := range selectedNodes {
-					_ = node.ForEachFile(func(file *models.CommitFile) error {
-						// For a rename we discard both the new and the old path,
-						// so that the new file is removed and the old one is
-						// restored.
-						filePaths = append(filePaths, file.Names()...)
-						return nil
-					})
+				// Fork: only the changed files under the selection; unchanged ones are not discarded.
+				for _, file := range self.changedFilesUnder(selectedNodes) {
+					// For a rename we discard both the new and the old path,
+					// so that the new file is removed and the old one is
+					// restored.
+					filePaths = append(filePaths, file.Names()...)
 				}
 
 				// Fork: the start is reviewed for ignored files; see fork_rebase_ignored_review.go.
@@ -446,13 +465,13 @@ func (self *CommitFilesController) toggleForPatch(selectedNodes []*filetree.Comm
 	toggle := func() error {
 		return self.c.WithWaitingStatus(self.c.Tr.UpdatingPatch, func(gocui.Task) error {
 			selectedNodes = normalisedSelectedCommitFileNodes(selectedNodes)
+			// Fork: only the changed files under the selection can be in the patch.
+			changedFiles := self.changedFilesUnder(selectedNodes)
 
 			// Find if any file in the selection is unselected or partially added
-			adding := lo.SomeBy(selectedNodes, func(node *filetree.CommitFileNode) bool {
-				return node.SomeFile(func(file *models.CommitFile) bool {
-					fileStatus := self.c.Git().Patch.PatchBuilder.GetFileStatus(file.Path, refName)
-					return fileStatus == patch.PART || fileStatus == patch.UNSELECTED
-				})
+			adding := lo.SomeBy(changedFiles, func(file *models.CommitFile) bool {
+				fileStatus := self.c.Git().Patch.PatchBuilder.GetFileStatus(file.Path, refName)
+				return fileStatus == patch.PART || fileStatus == patch.UNSELECTED
 			})
 
 			patchOperationFunction := self.c.Git().Patch.PatchBuilder.RemoveFile
@@ -461,11 +480,8 @@ func (self *CommitFilesController) toggleForPatch(selectedNodes []*filetree.Comm
 				patchOperationFunction = self.c.Git().Patch.PatchBuilder.AddFileWhole
 			}
 
-			for _, node := range selectedNodes {
-				err := node.ForEachFile(func(file *models.CommitFile) error {
-					return patchOperationFunction(file.Path, file.PreviousPath)
-				})
-				if err != nil {
+			for _, file := range changedFiles {
+				if err := patchOperationFunction(file.Path, file.PreviousPath); err != nil {
 					return err
 				}
 			}
@@ -572,6 +588,10 @@ func (self *CommitFilesController) expandAll() error {
 }
 
 func (self *CommitFilesController) pathsForDiff(node *filetree.CommitFileNode) []string {
+	// Fork: the full listing passes only the changed files (fork_commit_file_listing_commands.go).
+	if self.context().IsFullListing() {
+		return self.fullListingDiffPaths(node)
+	}
 	return diffPathsForNode(
 		node.Raw(), self.context().GetRoot().Raw(), self.c.Model().CommitFiles, self.context().IsFiltering())
 }

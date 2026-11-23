@@ -1,40 +1,15 @@
-# Current work: browse a commit's files
+# Current work: none
 
-Agreed with the user on 2026-11-23. TortoiseGit's equivalent is the
-Repository Browser at a revision (open, compare with working tree, show log).
+Browsing a commit's files was finished on 2026-11-24: `v` on a commit offers
+the changed files or all files, the full listing shows file contents in the
+main view, and the commands that need a changed file are crossed out on
+unchanged ones. See the user guide (Browsing a commit's files).
 
-## Behaviour
+## Open follow-ups
 
-- In Commits, Reflog and Sub-commits, `v` opens a menu: `d` changed files (the
-  Commit files pane as today) and `f` all files. Outside Commits, Space does
-  the same as `v`. Stash keeps `v` going straight to its changed files. `v`
-  in Reflog currently does nothing (no controller is attached); this work
-  makes it work.
-- `f` needs a single commit; with a range selected it is crossed out.
-- The full listing shows every file in the commit's tree. Files the commit
-  changed keep their status letter and colour, and files it deleted are listed
-  as D, so it is a superset of `d`. Unchanged files show a blank status column,
-  aligned with the others. Its title says it lists all files.
-- Each entry into the full listing starts with folders collapsed (top-level
-  entries visible); flat view still lists every file. Collapsing in the full
-  listing does not change the changed-files listing's folders.
-- In the full listing, a selected file shows its contents at the commit in the
-  main view, not a diff. A file the commit deleted shows its contents before
-  the commit, and the title says so. A binary file shows a one-line note
-  instead of its bytes. A directory or submodule shows the commit's changes
-  under it, as in `d`.
-- Commands in the full listing: `d w`, `d c`, `g v f`, `y c`, `e`, `o` and
-  `w p` work on any file. `d p`, `t d e`, `x` and the custom-patch toggles need
-  a file the commit changed, and are crossed out on an unchanged file with the
-  reason. On a directory they act only on the changed files under it.
-- Filtering Commits to the selected file's history is `w p`, prefilled with
-  the file.
-
-## Tasks
-
-1. Commands in the full listing on unchanged files and directories, with
-   tests.
-2. Finish the guide, design and merge-guide updates; close this section.
+- `sync/push_and_set_upstream`, `sync/push_stacked_branches_current_without_upstream`
+  and `sync/push_selected_branch_with_related_branches` fail on master from
+  before 2026-11-23 (verified at 4ebfda1d2); not yet investigated.
 
 ## How this tracker works
 

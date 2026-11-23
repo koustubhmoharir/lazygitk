@@ -11,6 +11,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gui/filetree"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/stretchr/testify/assert"
 )
 
 // Only selection access is exercised by these guards. Embedding the interface
@@ -320,4 +321,71 @@ func TestHistoricalFileDiffBindingMetadata(t *testing.T) {
 	if len(seen) != len(want) {
 		t.Fatalf("got IDs %v, want %v", seen, want)
 	}
+}
+
+// Fork: in the full listing, a diff against the previous commit needs a file the commit
+// changed. The reason names a file, or a folder with nothing changed under it.
+func TestHistoricalFileDiffFullListingNeedsChangedFiles(t *testing.T) {
+	const oid = "0123456789abcdef0123456789abcdef01234567"
+	commit := historicalTestCommit(oid, "1123456789abcdef0123456789abcdef01234567")
+	files := []*models.CommitFile{
+		{Path: "changed.txt", ChangeStatus: "M"},
+		{Path: "dir/changed.txt", ChangeStatus: "A"},
+		{Path: "dir/unchanged.txt"},
+		{Path: "other/unchanged.txt"},
+		{Path: "unchanged.txt"},
+	}
+	selectNode := func(t *testing.T, vm *filetree.CommitFileTreeViewModel, path string, isFile bool) {
+		t.Helper()
+		for i := 0; i < vm.Len(); i++ {
+			node := vm.Get(i)
+			if node.GetPath() == path && node.IsFile() == isFile {
+				vm.SetSelectedLineIdx(i)
+				return
+			}
+		}
+		t.Fatalf("no node %q", path)
+	}
+
+	for _, tc := range []struct {
+		name     string
+		path     string
+		isFile   bool
+		previous bool
+		wantText string // empty when the command is allowed
+	}{
+		{name: "unchanged file previous disabled", path: "unchanged.txt", isFile: true, previous: true, wantText: "This file is unchanged in this commit."},
+		{name: "unchanged file worktree allowed", path: "unchanged.txt", isFile: true},
+		{name: "changed file previous allowed", path: "changed.txt", isFile: true, previous: true},
+		{name: "folder with changed file previous allowed", path: "dir", previous: true},
+		{name: "folder with nothing changed previous disabled", path: "other", previous: true, wantText: "Nothing under this folder changed in this commit."},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			controller, vm := historicalTestFileController(t, commit, files, true)
+			vm.SetFullListing(true)
+			vm.SetTree()
+			selectNode(t, vm, tc.path, tc.isFile)
+
+			reason := controller.canHistoricalFileDiff(tc.previous, false)
+			if tc.wantText == "" {
+				if reason != nil {
+					t.Fatalf("disabled reason = %q, want allowed", reason.Text)
+				}
+				return
+			}
+			if reason == nil || reason.Text != tc.wantText {
+				t.Fatalf("disabled reason = %v, want %q", reason, tc.wantText)
+			}
+		})
+	}
+}
+
+func TestHistoricalFileDiffChangedFilesListingUnaffectedByUnchangedFiles(t *testing.T) {
+	const oid = "0123456789abcdef0123456789abcdef01234567"
+	commit := historicalTestCommit(oid, "1123456789abcdef0123456789abcdef01234567")
+	// Without the full listing every file is changed, so an unchanged-looking entry is
+	// still a file of the diff and the reason never applies.
+	controller, vm := historicalTestFileController(t, commit, []*models.CommitFile{{Path: "a.txt"}}, false)
+	vm.SetSelectedLineIdx(0)
+	assert.Nil(t, controller.canHistoricalFileDiff(true, false))
 }

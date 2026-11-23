@@ -276,6 +276,11 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   the main view instead of a diff. A file the commit deleted shows its
   contents before the commit, and the title says so. A binary file shows a
   one-line note. A folder or submodule shows the commit's changes under it.
+- In the full listing, `d w`, `d c`, `g v f`, `y c`, `e`, `o` and `w p` work
+  on any file. `d p`, `t d e`, `x` and the custom-patch toggles (`g h t`,
+  `g h a`) need a file the commit changed: on an unchanged file they are
+  crossed out with the reason, and on a folder they act only on the changed
+  files under it (crossed out when there are none).
 - `w p` filters Commits to the commits that changed the selected file.
 
 ### Comparing versions

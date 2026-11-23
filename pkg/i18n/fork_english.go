@@ -18,6 +18,8 @@ type ForkTranslationSet struct {
 	FileContentTitle                     string
 	FileContentDeletedTitle              string
 	BinaryFileNote                       string
+	CommitFileUnchanged                  string
+	CommitFolderUnchanged                string
 	ForkToggleFileStage                  string
 	ForkUnstageSelection                 string
 	ForkRemovePatchSelection             string
@@ -446,6 +448,8 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		FileContentTitle:                      "File content",
 		FileContentDeletedTitle:               "File content before this commit (deleted)",
 		BinaryFileNote:                        "Binary file, not shown",
+		CommitFileUnchanged:                   "This file is unchanged in this commit.",
+		CommitFolderUnchanged:                 "Nothing under this folder changed in this commit.",
 		ForkToggleFileStage:                   "Toggle staging of selected files",
 		ForkUnstageSelection:                  "Unstage selected changes",
 		ForkRemovePatchSelection:              "Remove selected lines from custom patch",

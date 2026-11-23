@@ -8,6 +8,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
+	"github.com/jesseduffield/lazygit/pkg/gui/filetree"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
 )
@@ -19,6 +20,7 @@ type historicalDiffSelection struct {
 	isFile       bool
 	parents      []string
 	deleted      bool
+	node         *filetree.CommitFileNode
 }
 
 func (self *BasicCommitsController) historicalDiffBindings(opts types.KeybindingsOpts) []*types.Binding {
@@ -160,6 +162,7 @@ func (self *CommitFilesController) captureHistoricalFileSelection() (*historical
 	}
 	selection := &historicalDiffSelection{
 		oid: commit.Hash(), path: path, isFile: node.IsFile(), parents: append([]string(nil), commit.Parents()...),
+		node: node,
 	}
 	if node.GetFile() != nil {
 		selection.previousPath = node.GetFile().PreviousPath
@@ -175,6 +178,12 @@ func (self *CommitFilesController) canHistoricalFileDiff(previous, arbitrary boo
 	}
 	if previous && len(selection.parents) == 0 {
 		return &types.DisabledReason{Text: self.c.Tr.HistoricalDiffRootCommit}
+	}
+	// Fork: a diff against the previous commit needs a file the commit changed (fork_commit_file_listing_commands.go).
+	if previous {
+		if reason := self.changedFileReason(selection.node); reason != nil {
+			return reason
+		}
 	}
 	if arbitrary && !selection.isFile {
 		return &types.DisabledReason{Text: self.c.Tr.HistoricalDiffFileOnly}

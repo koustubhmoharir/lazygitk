@@ -13,6 +13,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/i18n"
 	"github.com/jesseduffield/lazygit/pkg/theme"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/samber/lo"
 )
 
 const (
@@ -56,13 +57,20 @@ func commitFilePatchStatus(node *filetree.Node[models.CommitFile], tree *filetre
 	// This is a little convoluted because we're dealing with either a leaf or a non-leaf.
 	// But this code actually applies to both. If it's a leaf, the status will just
 	// be whatever status it is, but if it's a non-leaf it will determine its status
-	// based on the leaves of that subtree
-	if node.EveryFile(func(file *models.CommitFile) bool {
-		return patchBuilder.GetFileStatus(file.Path, tree.GetRef().RefName()) == patch.WHOLE
+	// based on the leaves of that subtree.
+	// Fork: only the files the commit changed can be in the patch, so the unchanged
+	// files of the full listing are left out; a folder with none of them is unselected.
+	files := tree.ChangedFilesUnder(node)
+	if len(files) == 0 {
+		return patch.UNSELECTED
+	}
+	refName := tree.GetRef().RefName()
+	if lo.EveryBy(files, func(file *models.CommitFile) bool {
+		return patchBuilder.GetFileStatus(file.Path, refName) == patch.WHOLE
 	}) {
 		return patch.WHOLE
-	} else if node.EveryFile(func(file *models.CommitFile) bool {
-		return patchBuilder.GetFileStatus(file.Path, tree.GetRef().RefName()) == patch.UNSELECTED
+	} else if lo.EveryBy(files, func(file *models.CommitFile) bool {
+		return patchBuilder.GetFileStatus(file.Path, refName) == patch.UNSELECTED
 	}) {
 		return patch.UNSELECTED
 	}

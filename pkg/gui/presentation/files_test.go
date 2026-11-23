@@ -267,3 +267,56 @@ M file1
 		})
 	}
 }
+
+// Fork: in the full listing a folder's status comes from its changed files only, so a
+// folder whose changed files are all in the patch is whole even with unchanged files
+// beside them, and a folder of unchanged files alone is unselected.
+func TestCommitFilePatchStatusFullListing(t *testing.T) {
+	files := []*models.CommitFile{
+		{Path: "a/x.txt", ChangeStatus: "M"},
+		{Path: "a/y.txt", ChangeStatus: "A"},
+		{Path: "a/b/z.txt"},
+		{Path: "top.txt"},
+	}
+	patchBuilder := patch.NewPatchBuilder(
+		utils.NewDummyLog(),
+		func(from string, to string, reverse bool, filename string, previousPath string) (string, error) {
+			return "", nil
+		},
+		nil,
+	)
+	patchBuilder.Start("from", "to", false, false)
+
+	newViewModel := func(fullListing bool) *filetree.CommitFileTreeViewModel {
+		common := common.NewDummyCommon()
+		viewModel := filetree.NewCommitFileTreeViewModel(func() []*models.CommitFile { return files }, common, true)
+		viewModel.SetRef(models.NewCommit(&utils.StringPool{}, models.NewCommitOpts{Hash: "to"}))
+		viewModel.SetFullListing(fullListing)
+		viewModel.SetTree()
+		return viewModel
+	}
+	nodeAt := func(viewModel *filetree.CommitFileTreeViewModel, internalPath string) *filetree.Node[models.CommitFile] {
+		for _, node := range viewModel.GetAllItems() {
+			if node.GetInternalPath() == internalPath {
+				return node.Raw()
+			}
+		}
+		t.Fatalf("no node at %q", internalPath)
+		return nil
+	}
+
+	full := newViewModel(true)
+	assert.NoError(t, patchBuilder.AddFileWhole("a/x.txt", ""))
+	assert.NoError(t, patchBuilder.AddFileWhole("a/y.txt", ""))
+	// All changed files of "a" are in the patch, but "a/b" also holds an unchanged file.
+	assert.Equal(t, patch.WHOLE, commitFilePatchStatus(nodeAt(full, "./a"), full, patchBuilder))
+	assert.Equal(t, patch.UNSELECTED, commitFilePatchStatus(nodeAt(full, "./a/b"), full, patchBuilder))
+	assert.Equal(t, patch.UNSELECTED, commitFilePatchStatus(nodeAt(full, "./top.txt"), full, patchBuilder))
+	assert.Equal(t, patch.WHOLE, commitFilePatchStatus(nodeAt(full, "./a/x.txt"), full, patchBuilder))
+
+	// Only one of the changed files of "a" in the patch: that is a partial folder.
+	patchBuilder.Reset()
+	patchBuilder.Start("from", "to", false, false)
+	assert.NoError(t, patchBuilder.AddFileWhole("a/x.txt", ""))
+	assert.Equal(t, patch.PART, commitFilePatchStatus(nodeAt(full, "./a"), full, patchBuilder))
+}

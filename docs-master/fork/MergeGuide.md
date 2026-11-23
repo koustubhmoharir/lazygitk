@@ -1021,6 +1021,18 @@ unreachable` marker that names its replacement. Do not reconnect them.
   has a case for it, and `tasks_adapter.go` `newCmdTask` delegates to
   `newCmdTaskWithRender` so the render (`fork_file_content.go`) can read the
   first 8000 bytes to detect a binary file before streaming the rest.
+- Commands in the full listing (`fork_commit_file_listing_commands.go`):
+  `commits_files_controller.go` adds changed-file disabled reasons to `x`,
+  `t d e`, `g h t` and `g h a`; `discard` and `toggleForPatch` act on
+  `changedFilesUnder` instead of every file under the nodes; `pathsForDiff`
+  uses `fullListingDiffPaths`, and `GetOnRenderToMain` and
+  `copyDiffToClipboard` treat an empty path list as nothing changed (an empty
+  pathspec would mean the whole commit). `historical_diff_actions.go`
+  `canHistoricalFileDiff` gates `d p`. `presentation/files.go`
+  `commitFilePatchStatus` counts only changed files
+  (`CommitFileTreeViewModel.ChangedFilesUnder`). An upstream change that
+  iterates the commit files for a diff or patch operation must use the
+  changed files too.
 
 - `controllers/remotes_controller.go` `fetchAndCheckout` (replacement): the
   upstream body is now `fetchAndCheckoutReviewed`, and `fetchAndCheckout` runs
