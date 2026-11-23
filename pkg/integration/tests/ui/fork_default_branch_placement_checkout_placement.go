@@ -98,7 +98,13 @@ var ForkDefaultBranchPlacementCheckoutPlacement = NewIntegrationTest(NewIntegrat
 		remoteBranches := t.Views().RemoteBranches()
 		remoteBranches.IsFocused().NavigateToLine(Contains("master"))
 		placeBranch(remoteBranches)
-		promptName("from-remote")
+		// The prompt starts with the remote branch's name without its remote.
+		t.ExpectPopup().Prompt().
+			Title(Contains("Local branch name at").Contains("(without checkout)")).
+			InitialText(Equals("master")).
+			Clear().
+			Type("from-remote").
+			Confirm()
 		remoteBranches.IsFocused()
 		assertRef("refs/heads/from-remote", t.Git().GetCommitHash("refs/remotes/origin/master"))
 		assertCurrent("master", threeOID)
