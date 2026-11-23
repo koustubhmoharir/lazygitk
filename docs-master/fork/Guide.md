@@ -46,9 +46,9 @@ in the [design principles](Design.md). The generated per-pane reference is
 | `?` | Command palette |
 | `/` | Search the pane (Commits, Sub-commits, diffs) or filter it (other lists and menus); a list pane never scrolls sideways to a match |
 | F3, Shift+F3 | Next, previous search result |
-| `p` | Push the selected branch, or the checked-out branch outside Branches; push the selected tag in Tags |
+| `p` | Push the selected branch; in Commits, the branch whose tip is the selected commit (a menu asks when there are several); otherwise the checked-out branch. Push the selected tag in Tags |
 | `f` | Fetch `origin`, or the only remote; with several remotes and no `origin`, choose one or all from a menu. In Remotes, fetch the selected remote |
-| `g l` | Pull (deliberately no single key) |
+| `g l` | Pull (deliberately no single key); chooses its branch as `p` does |
 | F5 | Reload all repository state and redraw every pane, drawing the commit graph again; never fetches |
 | `u u`, `u r` | Undo, redo (from the reflog) |
 | `s p` | Switch to the previous branch; the menu names it (not in Status, where `s` is for repositories) |
@@ -554,6 +554,11 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
   remote uses the repository's only remote without prompting. Set upstream
   starts on for a branch with no tracking, so the push records the destination
   as its upstream; it starts off for a branch that already tracks something.
+- In Commits, with one commit selected, push and pull act on the local branch
+  whose tip is that commit, as if it were selected in Branches. When several
+  branches point at it, a menu asks which: the checked-out branch is listed
+  first when it is one of them, then the Branches pane's order. With no branch
+  at the commit, or a range selected, they act on the checked-out branch.
 - When the destination's remote-tracking branch, as last fetched, has commits
   the branch lacks, **Push this branch** is crossed out and says why; Force
   with reviewed lease remains. The check applies only when pushes and fetches

@@ -48,7 +48,9 @@ recorded here or in the user guide.
   changed before the operation runs, the flow asks again instead of guessing.
 - **The selected object, not the checked-out one.** Push, fast-forward,
   rename, delete, placement and comparisons act on the selected ref or commit.
-  Actions on the current branch say so in their label.
+  In Commits, push and pull act on the branch at the selected commit, and ask
+  which when several branches are there. Actions on the current branch say so
+  in their label.
 - **A multi-selection is never narrowed silently.** While Commits holds an
   explicit selection, a command either acts on the whole set or is disabled
   with the reason "Clear the selection first (Escape)"; it never falls back to

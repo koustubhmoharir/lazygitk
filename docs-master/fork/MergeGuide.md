@@ -498,7 +498,9 @@ re-apply it if upstream changes that code.
   `copyDiffToClipboard` calls `ShowLiteralFileDiffCmdObj` (literal pathspecs)
   rather than upstream's `ShowFileDiffCmdObj`.
 - `controllers/sync_controller.go` (replacement): push and pull act on the
-  captured focused branch through the branch-sync flows.
+  captured focused branch through the branch-sync flows. In Commits that is
+  the branch at the selected commit, with a menu when several are there
+  (`branch_sync_commit_tip.go`).
 - `controllers/main_view_controller.go`, `working_tree_diff_actions.go`
   (replacement), `merge_conflicts_controller.go`: mode-dependent command
   identities for Space and `x`; `x` confirms discards except the staged-side

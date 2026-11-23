@@ -290,6 +290,9 @@ type ForkTranslationSet struct {
 	BranchSyncPullSelected                string
 	BranchSyncPullCurrent                 string
 	BranchSyncSelectOneLocalBranch        string
+	BranchSyncPushChooseTitle             string
+	BranchSyncPullChooseTitle             string
+	BranchSyncCommitTipPrompt             string
 	BranchSyncNoCurrentLocalBranch        string
 	BranchSyncCaptureTooltip              string
 	BranchSyncUpdateMenu                  string
@@ -706,6 +709,9 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		BranchSyncPullSelected:                "Pull/update selected branch…",
 		BranchSyncPullCurrent:                 "Pull checked-out branch",
 		BranchSyncSelectOneLocalBranch:        "Select exactly one local branch.",
+		BranchSyncPushChooseTitle:             "Push which branch?",
+		BranchSyncPullChooseTitle:             "Pull which branch?",
+		BranchSyncCommitTipPrompt:             "Several local branches point at the selected commit.",
 		BranchSyncNoCurrentLocalBranch:        "There is no checked-out local branch.",
 		BranchSyncCaptureTooltip:              "Uses the branch selected when the action starts; changing selection cannot redirect an open prompt or running operation.",
 		BranchSyncUpdateMenu:                  "Update selected branch without checkout",

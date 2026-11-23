@@ -69,20 +69,27 @@ func (self *SyncController) GetKeybindings(opts types.KeybindingsOpts) []*types.
 
 // Fork: the focused-source entry point replaces the implicit-current push
 // route. Keep it with the binding hook while the wider sync integration lands.
+// A commit with several branch tips opens a menu to choose one of them first.
 func (self *SyncController) handleFocusedBranchPush() error {
-	source, problem := self.focusedBranchSyncSource()
+	sources, problem := self.focusedBranchSyncSources()
 	if disabled := self.branchSyncSourceDisabledReason(problem); disabled != nil {
 		return errors.New(disabled.Text)
 	}
-	return self.pushBranchSource(source)
+	if len(sources) != 1 {
+		return self.chooseCommitTipBranch(sources, true)
+	}
+	return self.pushBranchSource(sources[0])
 }
 
 func (self *SyncController) handleFocusedBranchPull() error {
-	source, problem := self.focusedBranchSyncSource()
+	sources, problem := self.focusedBranchSyncSources()
 	if disabled := self.branchSyncSourceDisabledReason(problem); disabled != nil {
 		return errors.New(disabled.Text)
 	}
-	return self.pullBranchSource(source)
+	if len(sources) != 1 {
+		return self.chooseCommitTipBranch(sources, false)
+	}
+	return self.pullBranchSource(sources[0])
 }
 
 func (self *SyncController) Context() types.Context {

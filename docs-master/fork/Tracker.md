@@ -1,22 +1,13 @@
-# Current work: branch targets from selections
+# Current work: none
 
-Agreed with the user on 2026-11-23.
+Branch targets from selections were finished on 2026-11-23: `n b` prefills
+the name on a remote branch, and push and pull in Commits act on the branch
+at the selected commit. See the user guide (Branches and checkout, Sync) and
+the design principles.
 
-- `n b` on a remote branch prefills the name prompt with the remote branch's
-  name without its remote (`origin/feature` gives `feature`). The text stays
-  editable; an existing local branch of that name gets the usual move warning.
-- In Commits, with one commit selected, `p` and `g l` act on the local branches
-  whose tip is that commit, not on the checked-out branch. One such branch is
-  used directly, as if selected in Branches. Several open a menu to choose
-  one: the checked-out branch first when it is among them, then the Branches
-  pane's order. With no branch at the commit, or a range selected, the keys
-  act on the checked-out branch as before. (TortoiseGit's log offers "Push
-  <branch>" for a commit with branch labels.)
+## Open follow-ups
 
-## Tasks
-
-1. Commit-tip push and pull in Commits, with unit and integration tests.
-2. Guide, design and merge-guide updates; close this section.
+None.
 
 ## How this tracker works
 
