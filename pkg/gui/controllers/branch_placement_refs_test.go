@@ -72,7 +72,7 @@ func TestBranchRefPlacementRejectsRepositoryChangeDuringNameEntry(t *testing.T) 
 	controller, original, root, _ := placementFlowFixture(t)
 	ui := &branchRefPlacementChangingUI{placementFlowUI: original}
 	controller.c.IGuiCommon = ui
-	if err := beginBranchPlacementAtRef(controller.c, "refs/heads/topic"); err != nil {
+	if err := beginBranchPlacementAtRef(controller.c, "refs/heads/topic", ""); err != nil {
 		t.Fatal(err)
 	}
 	ui.runWorker(t)

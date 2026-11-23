@@ -71,6 +71,7 @@ var tests = []*components.IntegrationTest{
 	branch.PlaceAtCommit,
 	branch.PlaceAtCommitChanged,
 	branch.PlaceAtCommitOtherContexts,
+	branch.PlaceAtRemoteBranchPrefillsName,
 	branch.Rebase,
 	branch.RebaseAbortOnConflict,
 	branch.RebaseAndDrop,

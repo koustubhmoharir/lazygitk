@@ -15,9 +15,8 @@ Agreed with the user on 2026-11-23.
 
 ## Tasks
 
-1. `n b` prefill on remote branches, with an integration test.
-2. Commit-tip push and pull in Commits, with unit and integration tests.
-3. Guide, design and merge-guide updates; close this section.
+1. Commit-tip push and pull in Commits, with unit and integration tests.
+2. Guide, design and merge-guide updates; close this section.
 
 ## How this tracker works
 

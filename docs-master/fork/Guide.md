@@ -314,7 +314,9 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - `n b` creates a branch at the selection, or moves an existing one there
   after a warning showing the old and new commits, without touching HEAD, the
   index or files. Branches checked out in any worktree cannot be moved this
-  way; use reset for the current branch.
+  way; use reset for the current branch. On a remote branch the name prompt
+  starts with the remote branch's name without its remote (`origin/feature`
+  gives `feature`); it can be edited.
 - `s c` checks out without a second menu. A branch is switched to directly. A
   commit or tag is always checked out on a branch you name in a prompt (new,
   existing, or the current one), since several branches may point at it; `s d`

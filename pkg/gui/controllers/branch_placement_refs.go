@@ -47,27 +47,28 @@ func (self *BranchesController) beginPlacementAtLocalBranch(branch *models.Branc
 	if branch.DetachedHead && !isFullSelectedCommitOID(ref) {
 		return errors.New(self.c.Tr.PlaceBranchSelectCommit)
 	}
-	return beginBranchPlacementAtRef(self.c, ref)
+	return beginBranchPlacementAtRef(self.c, ref, "")
 }
 
 func (self *RemoteBranchesController) beginPlacementAtRemoteBranch(branch *models.RemoteBranch) error {
-	return beginBranchPlacementAtRef(self.c, branch.FullRefName())
+	return beginBranchPlacementAtRef(self.c, branch.FullRefName(), branch.Name)
 }
 
 // Annotated tags are peeled to their commit by ResolveBranchActionCommit.
 func (self *TagsController) beginPlacementAtTag(tag *models.Tag) error {
-	return beginBranchPlacementAtRef(self.c, tag.FullRefName())
+	return beginBranchPlacementAtRef(self.c, tag.FullRefName(), "")
 }
 
 type branchPlacementRefTarget struct {
-	c          *ControllerCommon
-	git        *commands.GitCommand
-	generation int
-	ref        string
+	c           *ControllerCommon
+	git         *commands.GitCommand
+	generation  int
+	ref         string
+	initialName string
 }
 
-func beginBranchPlacementAtRef(c *ControllerCommon, ref string) error {
-	target := &branchPlacementRefTarget{c: c, git: c.Git(), generation: c.State().GetRepoGeneration(), ref: ref}
+func beginBranchPlacementAtRef(c *ControllerCommon, ref, initialName string) error {
+	target := &branchPlacementRefTarget{c: c, git: c.Git(), generation: c.State().GetRepoGeneration(), ref: ref, initialName: initialName}
 	return target.resolve()
 }
 
@@ -94,7 +95,7 @@ func (target *branchPlacementRefTarget) resolve() error {
 			if err := target.checkRepository(); err != nil {
 				return err
 			}
-			return (&branchPlacementFlow{c: target.c, git: target.git, oid: oid, validateRepository: target.checkRepository}).promptName()
+			return (&branchPlacementFlow{c: target.c, git: target.git, oid: oid, initialName: target.initialName, validateRepository: target.checkRepository}).promptName()
 		})
 		return nil
 	})

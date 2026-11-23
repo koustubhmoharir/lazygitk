@@ -50,6 +50,7 @@ func (flow *branchPlacementFlow) promptName() error {
 	flow.c.Prompt(types.PromptOpts{
 		Title:               fmt.Sprintf(flow.c.Tr.PlaceBranchNamePrompt, utils.ShortHash(flow.oid)),
 		FindSuggestionsFunc: flow.c.Helpers().Suggestions.GetBranchNameSuggestionsFunc(),
+		InitialContent:      flow.initialName,
 		PreserveWhitespace:  true,
 		AllowEditSuggestion: true,
 		HandleClose:         flow.checkRepository,
@@ -64,6 +65,7 @@ type branchPlacementFlow struct {
 	c                  *ControllerCommon
 	git                *commands.GitCommand
 	oid                string
+	initialName        string
 	validateRepository func() error
 }
 
