@@ -25,6 +25,15 @@ type ForkTranslationSet struct {
 	CycleFileRenderersDisabledReason     string
 	CommitFileUnchanged                  string
 	CommitFolderUnchanged                string
+	FolderListingTitle                   string
+	FolderListingEntries                 string
+	FolderListingEntry                   string
+	FolderListingSubmodule               string
+	SubmoduleTitle                       string
+	SubmoduleCommitLabel                 string
+	SubmodulePreviousLabel               string
+	SubmoduleRemoved                     string
+	CycleRenderersNoRendererReason       string
 	ForkToggleFileStage                  string
 	ForkUnstageSelection                 string
 	ForkRemovePatchSelection             string
@@ -460,6 +469,15 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		CycleFileRenderersDisabledReason:      "No other file renderers configured",
 		CommitFileUnchanged:                   "This file is unchanged in this commit.",
 		CommitFolderUnchanged:                 "Nothing under this folder changed in this commit.",
+		FolderListingTitle:                    "Folder: {{.path}}",
+		FolderListingEntries:                  "({{.count}} entries)",
+		FolderListingEntry:                    "(1 entry)",
+		FolderListingSubmodule:                "(submodule)",
+		SubmoduleTitle:                        "Submodule: {{.path}}",
+		SubmoduleCommitLabel:                  "Commit:",
+		SubmodulePreviousLabel:                "Previous:",
+		SubmoduleRemoved:                      "none, removed by this commit",
+		CycleRenderersNoRendererReason:        "Folders and submodules show no diff or file to render",
 		ForkToggleFileStage:                   "Toggle staging of selected files",
 		ForkUnstageSelection:                  "Unstage selected changes",
 		ForkRemovePatchSelection:              "Remove selected lines from custom patch",

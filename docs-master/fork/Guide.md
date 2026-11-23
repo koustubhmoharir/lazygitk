@@ -275,14 +275,21 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - In the full listing, a selected file shows its contents at the commit in
   the main view instead of a diff. A file the commit deleted shows its
   contents before the commit, and the title says so. A binary file shows a
-  one-line note. A folder or submodule shows the commit's changes under it.
+  one-line note.
+- A selected folder (or the root) shows its entries at the commit, as a
+  folder listing: subfolders first with a trailing `/`, then files with their
+  sizes, and the status letter of each entry the commit changed or deleted. A
+  selected submodule shows the commit it records, with its subject when the
+  submodule is checked out, and the previous commit when this commit changed
+  it. In the changed-files listing (`v d`), folders and submodules show diffs.
 - File contents are syntax highlighted, with line numbers, by a built-in
   highlighter in the theme's Catppuccin colours (Mocha on a dark terminal,
   Latte on a light one). The language comes from the file name; an unknown
   type is shown as plain text with line numbers. Files over 1 MiB are not
   highlighted, and the title says so. `t d n` and `t d p` switch between the
   file renderers (built-in highlighting, plain text) while a file's contents
-  are shown, and between the diff renderers otherwise. `git.fileRenderers`
+  are shown, and between the diff renderers otherwise; on a folder listing or
+  a submodule they are crossed out. `git.fileRenderers`
   configures the list. Besides `builtin` and `plain`, an entry can be a
   command (`type: stdinFilter`) that reads the file on stdin, with
   `{{filename}}` replaced by the file's path, for example

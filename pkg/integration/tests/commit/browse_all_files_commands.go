@@ -78,14 +78,15 @@ var BrowseAllFilesCommands = NewIntegrationTest(NewIntegrationTestArgs{
 			Press(keys.Universal.Select)
 		t.ExpectToast(Equals("Disabled: Nothing under this folder changed in this commit."))
 
-		// The folder's diff shows only the change under it.
+		// A folder shows its entries in the main view, not its diff.
 		t.Views().CommitFiles().
 			NavigateToLine(Equals("  ▼ a"))
 		t.Views().Main().
-			Title(Equals("Patch")).
-			Content(Contains("+x changed")).
-			Content(DoesNotContain("y.txt")).
-			Content(DoesNotContain("top.txt"))
+			Title(Equals("Folder: a/ (2 entries)")).
+			TopLines(
+				Equals("  b/"),
+				MatchesRegexp(`^M x\.txt +10 B$`),
+			)
 
 		// Restoring the unchanged top.txt from the commit works without an error.
 		t.Views().CommitFiles().

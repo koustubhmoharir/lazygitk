@@ -1,42 +1,13 @@
-# Current work: highlighted file contents
+# Current work: none
 
-Agreed with the user on 2026-11-24. Yazi highlights in-process (syntect);
-the Go equivalent is chroma, which ships Catppuccin styles.
+Highlighted file contents were finished on 2026-11-24: the full listing
+highlights file contents (built-in chroma, or a configured command such as
+bat), and shows folder listings and submodule commits instead of diffs. See the
+user guide (Browsing a commit's files).
 
-## Behaviour
+## Open follow-ups
 
-- File contents shown in the main view by the full listing (`v f`) are
-  syntax highlighted by a built-in highlighter (chroma), with the Catppuccin
-  style matching the app's theme (Mocha on a dark terminal, Latte on a light
-  one) and line numbers. Nothing needs installing.
-- `git.fileRenderers` configures the renderers, like `git.diffRenderers`:
-  a list whose entries are the built-in highlighter, plain text, or a command
-  that reads the content on stdin (such as `bat --color=always --paging=never
-  --style=numbers --file-name={{filename}}`). Unset or empty means built-in,
-  then plain. A configured list is used as given.
-- `t d n` / `t d p` cycle the file renderers while the main view shows file
-  contents (and the diff renderers otherwise), with the same notification.
-- The language comes from the file name; an unknown type is plain text.
-  Files over 1 MiB are not highlighted by the built-in highlighter (it holds
-  the whole file in memory); they stream as plain text and the title says why.
-  Binary files keep their note and never reach a renderer.
-- A failing command shows its error in the main view, as a failing diff
-  renderer does; there is no notice when no command is configured.
-
-- In the full listing, a selected folder (or the root) shows a folder listing
-  in the main view instead of a diff: its immediate entries, subfolders first
-  with a trailing `/`, then files with their size; files the commit changed or
-  deleted show their status letter. The title names the folder and the number
-  of entries. A selected submodule shows the commit it records at this commit
-  (hash, and the subject when the submodule is checked out and has it), and
-  the previous one when the commit changed it. The changed-files listing keeps
-  showing diffs. (TortoiseGit's Repository Browser shows a folder's entries.)
-
-## Tasks
-
-1. Folder listing and submodule commit in the full listing's main view, with
-   tests.
-2. Guide, design and merge-guide updates; close this section.
+None.
 
 ## How this tracker works
 

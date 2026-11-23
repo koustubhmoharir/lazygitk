@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/filetree"
@@ -17,11 +16,7 @@ import (
 // whether it did. It reports false for anything shown as a diff.
 func (self *CommitFilesController) renderFullListingFileContent(node *filetree.CommitFileNode) bool {
 	from, to := self.context().GetFromAndToForDiff()
-	var file *models.CommitFile
-	if node != nil {
-		file = node.File
-	}
-	show := context.CommitFileShowFor(self.context().IsFullListing(), file, context.CommitFileHasParent(from))
+	show := context.CommitFileShowFor(self.context().IsFullListing(), node, context.CommitFileHasParent(from))
 
 	var rev, title string
 	switch show {

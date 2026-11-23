@@ -42,3 +42,13 @@ func (self *GlobalController) canCycleFileRenderers() *types.DisabledReason {
 	}
 	return nil
 }
+
+// canCycleOnListing is the disabled reason for the cycle keys while the main view shows a
+// folder listing or a submodule: no diff and no file content, so no renderer applies.
+func (self *GlobalController) canCycleOnListing() *types.DisabledReason {
+	commitFiles, ok := self.c.Context().CurrentSide().(*context.CommitFilesContext)
+	if ok && commitFiles.ShowsNoDiff() && !commitFiles.ShowsFileContent() {
+		return &types.DisabledReason{Text: self.c.Tr.CycleRenderersNoRendererReason}
+	}
+	return nil
+}

@@ -268,7 +268,11 @@ func (self *GlobalController) onDiffRenderersChanged() {
 }
 
 func (self *GlobalController) canCycleDiffRenderers() *types.DisabledReason {
-	// Fork: see cycleDiffRenderers.
+	// Fork: see cycleDiffRenderers. A folder listing or a submodule is neither, so the keys
+	// are disabled there (fork_file_renderers.go).
+	if reason := self.canCycleOnListing(); reason != nil {
+		return reason
+	}
 	if self.showsFileContent() {
 		return self.canCycleFileRenderers()
 	}

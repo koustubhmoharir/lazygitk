@@ -229,6 +229,12 @@ func (self *CommitFilesController) GetOnRenderToMain() func() {
 			return
 		}
 
+		// Fork: a folder or a submodule in the full listing shows its listing or commit
+		// (fork_commit_folder.go).
+		if self.renderFullListingFolderOrSubmodule(node) {
+			return
+		}
+
 		// Fork: a folder with no changed file in view shows the reason, never the whole commit's diff.
 		paths := self.pathsForDiff(node)
 		if len(paths) == 0 {

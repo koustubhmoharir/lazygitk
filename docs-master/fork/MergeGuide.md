@@ -1021,6 +1021,15 @@ unreachable` marker that names its replacement. Do not reconnect them.
   has a case for it, and `tasks_adapter.go` `newCmdTask` delegates to
   `newCmdTaskWithRender` so the render (`fork_file_content.go`) can read the
   first 8000 bytes to detect a binary file before streaming the rest.
+- Folder listing and submodule view in the full listing: `GetOnRenderToMain`
+  offers the node to `renderFullListingFolderOrSubmodule`
+  (`controllers/fork_commit_folder.go`, `fork_commit_folder_listing.go`),
+  after file content. They render through `types.LoadedStringTask`, which
+  `main_panels.go` `runTaskForView` runs (`gui/fork_loaded_string.go`).
+  `global_controller.go` `canCycleDiffRenderers` disables the renderer keys
+  there. `git_commands/fork_commit_file_listing.go` `GetTreeEntries` reads a
+  folder's entries with sizes (`ls-tree -l`), and the merge marks changed
+  submodules from the commit's tree.
 - File renderers (`git.fileRenderers`, `config/fork_file_renderers.go`,
   `config/fork_file_renderer_config_manager.go`): `user_config.go` adds the
   setting and `FileRendererConfig`, `user_config_validation.go` validates it,

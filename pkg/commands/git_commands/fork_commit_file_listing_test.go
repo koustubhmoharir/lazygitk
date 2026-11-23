@@ -87,3 +87,54 @@ func TestTreeFilesFromListingRejectsMalformedRecords(t *testing.T) {
 	_, err := treeFilesFromListing("blob-without-tab\x00")
 	assert.Error(t, err)
 }
+
+func TestTreeEntriesFromLongListing(t *testing.T) {
+	output := "100644 blob 1111111111111111111111111111111111111111    312\tnew.go\x00" +
+		"040000 tree 2222222222222222222222222222222222222222       -\tgui\x00" +
+		"160000 commit 3333333333333333333333333333333333333333       -\tlibs/foo\x00" +
+		"100644 blob 4444444444444444444444444444444444444444  12345\tdir with spaces.txt\x00"
+
+	entries, err := treeEntriesFromLongListing(output)
+
+	assert.NoError(t, err)
+	assert.Equal(t, []TreeEntry{
+		{Path: "new.go", Type: "blob", Object: "1111111111111111111111111111111111111111", Size: 312},
+		{Path: "gui", Type: "tree", Object: "2222222222222222222222222222222222222222", Size: -1},
+		{Path: "libs/foo", Type: "commit", Object: "3333333333333333333333333333333333333333", Size: -1},
+		{Path: "dir with spaces.txt", Type: "blob", Object: "4444444444444444444444444444444444444444", Size: 12345},
+	}, entries)
+}
+
+func TestTreeEntriesFromLongListingEmpty(t *testing.T) {
+	entries, err := treeEntriesFromLongListing("")
+	assert.NoError(t, err)
+	assert.Empty(t, entries)
+}
+
+func TestTreeEntriesFromLongListingMalformed(t *testing.T) {
+	_, err := treeEntriesFromLongListing("100644 blob 1111\tnew.go\x00")
+	assert.Error(t, err)
+	_, err = treeEntriesFromLongListing("100644 blob 1111 abc\tnew.go\x00")
+	assert.Error(t, err)
+}
+
+func TestMergeTreePathsMarksChangedSubmodules(t *testing.T) {
+	diffFiles := []*models.CommitFile{
+		{ChangeStatus: "M", Path: "sub"},
+		{ChangeStatus: "A", Path: "added_sub"},
+		{ChangeStatus: "M", Path: "file"},
+	}
+	treeFiles := []*models.CommitFile{
+		{Path: "added_sub", Submodule: true},
+		{Path: "file"},
+		{Path: "sub", Submodule: true},
+	}
+	got := MergeTreePathsIntoCommitFiles(diffFiles, treeFiles, nil)
+	assert.Equal(t, []*models.CommitFile{
+		{ChangeStatus: "M", Path: "sub", Submodule: true},
+		{ChangeStatus: "A", Path: "added_sub", Submodule: true},
+		{ChangeStatus: "M", Path: "file"},
+	}, got)
+	// The diff's own files are not changed.
+	assert.False(t, diffFiles[0].Submodule)
+}

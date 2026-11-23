@@ -6,7 +6,7 @@ import (
 )
 
 var BrowseAllFilesContent = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "In the full listing of a commit's files, a file shows its content, a deleted file its content before the commit, a binary file a note, and a folder its diff",
+	Description:  "In the full listing of a commit's files, a file shows its content, a deleted file its content before the commit, a binary file a note, and a folder its entries",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig:  func(config *config.AppConfig) {},
@@ -90,12 +90,15 @@ var BrowseAllFilesContent = NewIntegrationTest(NewIntegrationTestArgs{
 			Title(Equals("File content")).
 			Content(Equals("Binary file, not shown"))
 
-		// A folder shows the commit's changes under it, as the changed-files listing does.
+		// A folder shows its entries: the subfolder b, then x.txt with its size.
 		t.Views().CommitFiles().
 			NavigateToLine(Equals("  ▼ a"))
 		t.Views().Main().
-			Title(Equals("Patch")).
-			Content(Contains("+x changed"))
+			Title(Equals("Folder: a/ (2 entries)")).
+			TopLines(
+				Equals("  b/"),
+				MatchesRegexp(`^M x\.txt +10 B$`),
+			)
 
 		// 0 focuses the main view on the content, which can be scrolled, and Escape returns.
 		t.Views().CommitFiles().

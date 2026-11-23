@@ -29,6 +29,10 @@ func (gui *Gui) runTaskForView(view *gocui.View, task types.UpdateTask) error {
 	// Fork: content read by the render itself, see fork_file_content.go.
 	case *types.FileContentTask:
 		return gui.newFileContentTask(view, v)
+
+	// Fork: text produced by a render's own goroutine, see fork_loaded_string.go.
+	case *types.LoadedStringTask:
+		return gui.newLoadedStringTask(view, v)
 	}
 
 	return nil
