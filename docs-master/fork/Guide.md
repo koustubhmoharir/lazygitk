@@ -283,7 +283,11 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   highlighted, and the title says so. `t d n` and `t d p` switch between the
   file renderers (built-in highlighting, plain text) while a file's contents
   are shown, and between the diff renderers otherwise. `git.fileRenderers`
-  configures the list.
+  configures the list. Besides `builtin` and `plain`, an entry can be a
+  command (`type: stdinFilter`) that reads the file on stdin, with
+  `{{filename}}` replaced by the file's path, for example
+  `bat --color=always --paging=never --style=numbers --file-name={{filename}}`.
+  If the command fails, its error output appears after whatever it printed.
 - In the full listing, `d w`, `d c`, `g v f`, `y c`, `e`, `o` and `w p` work
   on any file. `d p`, `t d e`, `x` and the custom-patch toggles (`g h t`,
   `g h a`) need a file the commit changed: on an unchanged file they are

@@ -1032,7 +1032,9 @@ unreachable` marker that names its replacement. Do not reconnect them.
   `gui/fork_file_highlight.go` (chroma, vendored). `main_view_render.go`
   `renderSpec` gains `isSuperseded`, set in `tasks_adapter.go`
   `newCmdTaskWithRender`, so a file render can set the main view's subtitle
-  only while it is still current.
+  only while it is still current. A `stdinFilter` file renderer pipes the
+  content through its command (`gui/fork_file_render_cmd.go`), spawned like
+  the diff renderers' stdin filter (`NewShell` with git's environment).
 - Commands in the full listing (`fork_commit_file_listing_commands.go`):
   `commits_files_controller.go` adds changed-file disabled reasons to `x`,
   `t d e`, `g h t` and `g h a`; `discard` and `toggleForPatch` act on

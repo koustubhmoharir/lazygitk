@@ -31,23 +31,28 @@ func (gui *Gui) newFileContentTask(view *gocui.View, task *types.FileContentTask
 		trueColor:       gui.g.TrueColor(),
 	}
 	run := func(spec renderSpec) (startRender, onCloseRender) {
-		return gui.fileContentRender(spec, task.Path, task.Renderer, appearance)
+		return gui.fileContentRender(spec, task, appearance)
 	}
 	return gui.newCmdTaskWithRender(view, task.Cmd, nil, run)
 }
 
 // fileContentRender runs the command as a plain render does, and decides between streaming
 // its output and showing the binary note once it has the first bytes. A text file goes to
-// the built-in renderer when the renderer is that one; any other renderer shows it as it is.
-func (gui *Gui) fileContentRender(spec renderSpec, path string, renderer config.FileRendererType, appearance fileHighlightAppearance) (startRender, onCloseRender) {
+// the built-in renderer when the renderer is that one, and to a stdin filter's command when
+// the renderer is one (see fork_file_render_cmd.go); any other renderer shows it as it is.
+func (gui *Gui) fileContentRender(spec renderSpec, task *types.FileContentTask, appearance fileHighlightAppearance) (startRender, onCloseRender) {
+	if task.Renderer == config.FileRendererType_StdinFilter {
+		return gui.commandFileRender(spec, task.Command, gui.c.Tr.BinaryFileNote)
+	}
+
 	plainStart, plainClose := gui.plainRender(spec)
 	start := func() (tasks.Cmd, io.Reader) {
 		cmd, output := plainStart()
 		cmd, output, isText := sniffFileContent(cmd, output, plainClose, gui.c.Tr.BinaryFileNote)
-		if !isText || renderer != config.FileRendererType_Builtin {
+		if !isText || task.Renderer != config.FileRendererType_Builtin {
 			return cmd, output
 		}
-		return gui.highlightFileStream(spec, cmd, path, output, appearance)
+		return gui.highlightFileStream(spec, cmd, task.Path, output, appearance)
 	}
 	return start, plainClose
 }

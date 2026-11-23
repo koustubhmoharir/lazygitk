@@ -116,3 +116,61 @@ func TestForkFileRendererNamesAreTheTypeNamesWhenUnnamed(t *testing.T) {
 	config.Git.FileRenderers = []FileRendererConfig{{Type: "stdinFilter", Command: "bat --style=plain"}}
 	assert.Equal(t, "bat", newForkFileRendererTestManager(config).CurrentFileRendererName(tr))
 }
+
+func TestUserConfigValidate_fileRendererCommandPlaceholders(t *testing.T) {
+	scenarios := []struct {
+		name    string
+		command string
+		valid   bool
+	}{
+		{name: "no placeholder", command: "bat --style=numbers", valid: true},
+		{name: "filename", command: "bat --file-name={{filename}}", valid: true},
+		{name: "filename with spaces around it", command: "bat --file-name={{ filename }}", valid: true},
+		{name: "filename twice", command: "a {{filename}} b {{filename}}", valid: true},
+		{name: "unknown placeholder", command: "bat {{file}}", valid: false},
+		{name: "dotted placeholder", command: "bat {{.filename}}", valid: false},
+		{name: "pipeline", command: "bat {{filename | printf}}", valid: false},
+		{name: "control structure", command: "{{if .x}}bat{{end}}", valid: false},
+		{name: "unparsable", command: "bat {{filename", valid: false},
+	}
+
+	for _, s := range scenarios {
+		t.Run(s.name, func(t *testing.T) {
+			config := GetDefaultConfig()
+			config.Git.FileRenderers = []FileRendererConfig{{Type: "stdinFilter", Command: s.command}}
+			err := config.Validate()
+
+			if s.valid {
+				assert.NoError(t, err)
+			} else {
+				assert.Error(t, err)
+			}
+		})
+	}
+}
+
+func TestFileRendererCommandResolvesFilenameWithTheGivenQuoting(t *testing.T) {
+	quote := func(s string) string { return "<" + s + ">" }
+	renderer := FileRendererConfig{Type: "stdinFilter", Command: "awk -v f={{filename}} '{print f}' {{ filename }}"}
+
+	command, err := renderer.ResolveCommand("dir/my notes.txt", quote)
+
+	assert.NoError(t, err)
+	assert.Equal(t, "awk -v f=<dir/my notes.txt> '{print f}' <dir/my notes.txt>", command)
+}
+
+func TestFileRendererCommandIsEmptyForARendererWithoutOne(t *testing.T) {
+	config := GetDefaultConfig()
+	config.Git.FileRenderers = []FileRendererConfig{{Type: "plain"}, {Type: "stdinFilter", Command: "cat {{filename}}"}}
+	manager := newForkFileRendererTestManager(config)
+	quote := func(s string) string { return s }
+
+	command, err := manager.CurrentFileRendererCommand("a.txt", quote)
+	assert.NoError(t, err)
+	assert.Equal(t, "", command)
+
+	manager.CycleFileRenderers()
+	command, err = manager.CurrentFileRendererCommand("a.txt", quote)
+	assert.NoError(t, err)
+	assert.Equal(t, "cat a.txt", command)
+}

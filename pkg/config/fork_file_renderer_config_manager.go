@@ -40,6 +40,17 @@ func (self *FileRendererConfigManager) CurrentFileRendererType() FileRendererTyp
 	return self.currentFileRendererConfig().getType()
 }
 
+// CurrentFileRendererCommand returns the command of the current file renderer for the
+// file at path, with its placeholder resolved (see ResolveCommand). It is empty when the
+// current renderer has no command.
+func (self *FileRendererConfigManager) CurrentFileRendererCommand(path string, quote func(string) string) (string, error) {
+	fileRenderer := self.currentFileRendererConfig()
+	if fileRenderer.getType() != FileRendererType_StdinFilter {
+		return "", nil
+	}
+	return fileRenderer.ResolveCommand(path, quote)
+}
+
 func (self *FileRendererConfigManager) CycleFileRenderers() {
 	self.fileRendererIndex = (self.fileRendererIndex + 1) % len(self.effectiveFileRenderers())
 }

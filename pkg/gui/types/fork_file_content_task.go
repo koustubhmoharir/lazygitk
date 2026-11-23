@@ -15,10 +15,12 @@ type FileContentTask struct {
 	Path string
 	// Renderer is the kind of file renderer that shows the text.
 	Renderer config.FileRendererType
+	// Command is the resolved command of a stdinFilter renderer, empty otherwise.
+	Command string
 }
 
 func (t *FileContentTask) IsUpdateTask() {}
 
-func NewFileContentTask(cmd *exec.Cmd, path string, renderer config.FileRendererType) *FileContentTask {
-	return &FileContentTask{Cmd: cmd, Path: path, Renderer: renderer}
+func NewFileContentTask(cmd *exec.Cmd, path string, renderer config.FileRendererType, command string) *FileContentTask {
+	return &FileContentTask{Cmd: cmd, Path: path, Renderer: renderer, Command: command}
 }

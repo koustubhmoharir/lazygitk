@@ -34,11 +34,9 @@ the Go equivalent is chroma, which ships Catppuccin styles.
 
 ## Tasks
 
-1. Command renderers (`{{filename}}`, stdin), with tests. Until then a
-   `stdinFilter` entry renders as plain text.
-2. Folder listing and submodule commit in the full listing's main view, with
+1. Folder listing and submodule commit in the full listing's main view, with
    tests.
-3. Guide, design and merge-guide updates; close this section.
+2. Guide, design and merge-guide updates; close this section.
 
 ## How this tracker works
 

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/filetree"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
@@ -37,13 +38,22 @@ func (self *CommitFilesController) renderFullListingFileContent(node *filetree.C
 	cmdObj := self.c.Git().Commit.ShowFileContentCmdObj(rev, node.GetPath())
 	// Fork: the file renderer is chosen now, on the UI thread, so that the render shows
 	// the one that was current when it was asked for (see fork_file_renderers.go).
-	renderer := self.c.State().GetFileRendererConfigManager().CurrentFileRendererType()
+	fileRendererConfigManager := self.c.State().GetFileRendererConfigManager()
+	renderer := fileRendererConfigManager.CurrentFileRendererType()
+	command, err := fileRendererConfigManager.CurrentFileRendererCommand(node.GetPath(), self.c.OS().Quote)
+	if err != nil {
+		// The commands are checked when the config is loaded, so this is only for a
+		// command that fails for some paths and not for others. Plain text is shown instead.
+		self.c.ErrorToast(err.Error())
+		renderer = config.FileRendererType_Plain
+		command = ""
+	}
 
 	self.c.RenderToMainViews(types.RefreshMainOpts{
 		Pair: self.c.MainViewPairs().Normal,
 		Main: &types.ViewUpdateOpts{
 			Title: title,
-			Task:  types.NewFileContentTask(cmdObj.GetCmd(), node.GetPath(), renderer),
+			Task:  types.NewFileContentTask(cmdObj.GetCmd(), node.GetPath(), renderer, command),
 		},
 		Secondary: secondaryPatchPanelUpdateOpts(self.c),
 	})
