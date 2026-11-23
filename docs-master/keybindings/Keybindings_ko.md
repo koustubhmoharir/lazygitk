@@ -104,6 +104,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Secondary
@@ -144,7 +146,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | New worktree |  |
 | `` <f2> `` | Rename stash |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | View selected item's files |  |
+| `` v, <space> `` | Changed files |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Sub-commits
@@ -178,7 +180,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | View selected item's files |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | 검색 시작 |  |
 
 ## Worktrees
@@ -409,7 +412,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v `` | View selected item's files |  |
+| `` v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | 검색 시작 |  |
 
 ## 커밋 파일

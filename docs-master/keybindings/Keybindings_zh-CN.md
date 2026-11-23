@@ -97,7 +97,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | 聚焦主视图 |  |
-| `` v, <space> `` | 查看提交的文件 |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | 开始搜索 |  |
 
 ## 子模块
@@ -157,6 +158,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | 聚焦主视图 |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | 通过文本过滤当前视图 |  |
 
 ## 提交
@@ -210,7 +213,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | 聚焦主视图 |  |
-| `` v `` | 查看提交的文件 |  |
+| `` v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | 开始搜索 |  |
 
 ## 提交信息
@@ -473,7 +477,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | 新建工作树 |  |
 | `` <f2> `` | 重命名贮藏 |  |
 | `` 0 `` | 聚焦主视图 |  |
-| `` v, <space> `` | 查看提交的文件 |  |
+| `` v, <space> `` | Changed files |  |
 | `` / `` | 通过文本过滤当前视图 |  |
 
 ## 输入提示

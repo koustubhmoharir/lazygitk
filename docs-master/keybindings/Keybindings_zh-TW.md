@@ -152,7 +152,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | 聚焦主檢視 |  |
-| `` v, <space> `` | 檢視所選項目的檔案 |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | 搜尋 |  |
 
 ## 子模組
@@ -232,7 +233,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | 聚焦主檢視 |  |
-| `` v `` | 檢視所選項目的檔案 |  |
+| `` v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | 搜尋 |  |
 
 ## 提交摘要
@@ -283,7 +285,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | 新建工作樹 |  |
 | `` <f2> `` | 重新命名收藏 |  |
 | `` 0 `` | 聚焦主檢視 |  |
-| `` v, <space> `` | 檢視所選項目的檔案 |  |
+| `` v, <space> `` | Changed files |  |
 | `` / `` | 搜尋 |  |
 
 ## 日誌
@@ -317,6 +319,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | 聚焦主檢視 |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | 搜尋 |  |
 
 ## 本地分支

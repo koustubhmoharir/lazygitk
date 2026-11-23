@@ -124,7 +124,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | メインビューにフォーカス |  |
-| `` v `` | ファイルを表示 |  |
+| `` v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | 現在のビューをテキストで検索 |  |
 
 ## コミットファイル
@@ -196,7 +197,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | メインビューにフォーカス |  |
-| `` v, <space> `` | ファイルを表示 |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | 現在のビューをテキストで検索 |  |
 
 ## サブモジュール
@@ -224,7 +226,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | 新しいワークツリー |  |
 | `` <f2> `` | スタッシュの名前を変更 |  |
 | `` 0 `` | メインビューにフォーカス |  |
-| `` v, <space> `` | ファイルを表示 |  |
+| `` v, <space> `` | Changed files |  |
 | `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## ステータス
@@ -420,6 +422,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | メインビューにフォーカス |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## リモート

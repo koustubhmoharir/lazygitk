@@ -190,6 +190,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Коммиты
@@ -243,7 +245,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v `` | Просмотреть файлы выбранного элемента |  |
+| `` v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | Найти |  |
 
 ## Локальные Ветки
@@ -335,7 +338,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Просмотреть файлы выбранного элемента |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | Найти |  |
 
 ## Подмодули
@@ -522,5 +526,5 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | New worktree |  |
 | `` <f2> `` | Переименовать хранилище |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Просмотреть файлы выбранного элемента |  |
+| `` v, <space> `` | Changed files |  |
 | `` / `` | Filter the current view by text |  |

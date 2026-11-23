@@ -257,7 +257,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focar visualização principal |  |
-| `` v `` | Ver arquivos |  |
+| `` v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | Pesquisar na visualização atual por texto |  |
 
 ## Etiquetas
@@ -389,6 +390,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focar visualização principal |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | Filtrar a visualização atual por texto |  |
 
 ## Remotes
@@ -441,7 +444,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | Nova árvore de trabalho |  |
 | `` <f2> `` | Renomear o stash |  |
 | `` 0 `` | Focar visualização principal |  |
-| `` v, <space> `` | Ver arquivos |  |
+| `` v, <space> `` | Changed files |  |
 | `` / `` | Filtrar a visualização atual por texto |  |
 
 ## Status
@@ -487,7 +490,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focar visualização principal |  |
-| `` v, <space> `` | Ver arquivos |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | Pesquisar na visualização atual por texto |  |
 
 ## Submódulos

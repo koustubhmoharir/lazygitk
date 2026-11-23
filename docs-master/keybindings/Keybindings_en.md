@@ -155,7 +155,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v `` | View files |  |
+| `` v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | Search the current view by text |  |
 
 ## Confirmation panel
@@ -340,6 +341,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Remote branches
@@ -422,7 +425,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | New worktree |  |
 | `` <f2> `` | Rename stash |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | View files |  |
+| `` v, <space> `` | Changed files |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Status
@@ -468,7 +471,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | View files |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | Search the current view by text |  |
 
 ## Submodules

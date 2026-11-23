@@ -117,7 +117,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v `` | Wyświetl pliki |  |
+| `` v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | Szukaj w bieżącym widoku po tekście |  |
 
 ## Dodatkowy
@@ -190,6 +191,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Input prompt
@@ -391,7 +394,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | Nowe drzewo pracy |  |
 | `` <f2> `` | Zmień nazwę schowka |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Wyświetl pliki |  |
+| `` v, <space> `` | Changed files |  |
 | `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Status
@@ -437,7 +440,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Wyświetl pliki |  |
+| `` v d, <space> d `` | Changed files |  |
+| `` v f, <space> f `` | All files |  |
 | `` / `` | Szukaj w bieżącym widoku po tekście |  |
 
 ## Submoduły
