@@ -124,6 +124,11 @@ of a stash entry:
 | `y d` | Copy the selected lines |
 | Escape | Back to the side pane |
 
+Line actions (Space, `x`, `y d`, `g p v`, and the hunk and line selection) need
+a diff renderer that says which line each row is. Delta doesn't, so focusing
+keeps delta's view with those actions crossed out, and `t d n` switches to
+Git's diff.
+
 ### Merge conflicts view
 
 | Keys | Action |

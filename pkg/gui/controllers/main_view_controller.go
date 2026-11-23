@@ -658,6 +658,11 @@ func (self *MainViewController) diffSelectionDescriptionText(description string)
 // there is none to act on: a diff view whose diff holds nothing selectable (a binary
 // file, an empty commit) or which is showing a placeholder message.
 func (self *MainViewController) diffSelectionDisabledReason() *types.DisabledReason {
+	// Fork: a renderer whose rows can't be placed has no lines to act on, whatever it
+	// shows; say why rather than that there is nothing to select.
+	if self.context.ContentIsDiff() && !self.c.Helpers().DiffLine.DiffRowsCanBePlaced() {
+		return &types.DisabledReason{Text: self.c.Tr.DiffRendererNamesNoLines}
+	}
 	if !self.context.GetView().Highlight {
 		return &types.DisabledReason{Text: self.c.Tr.NothingToSelectInDiff}
 	}

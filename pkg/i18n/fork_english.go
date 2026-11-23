@@ -16,6 +16,7 @@ type ForkTranslationSet struct {
 	ForkToggleFileStage                  string
 	ForkUnstageSelection                 string
 	ForkRemovePatchSelection             string
+	DiffRendererNamesNoLines             string
 	CheckoutDetached                     string
 	MoveCommitsReadingStatus             string
 	MoveCommitsFinishingStatus           string
@@ -433,6 +434,7 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		ForkToggleFileStage:                   "Toggle staging of selected files",
 		ForkUnstageSelection:                  "Unstage selected changes",
 		ForkRemovePatchSelection:              "Remove selected lines from custom patch",
+		DiffRendererNamesNoLines:              "This diff renderer doesn't say which line each row is; switch renderer with t d n to act on lines",
 		CheckoutDetached:                      "Checkout detached HEAD",
 		MoveCommitsReadingStatus:              "Reading the branch to move commits from",
 		MoveCommitsFinishingStatus:            "Moving the old branch back to its upstream",

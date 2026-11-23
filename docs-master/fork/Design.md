@@ -134,6 +134,9 @@ recorded here or in the user guide.
   frame.
 - Diffs render through delta by default when it is installed, with Git's own
   diff as the next renderer.
+- Focusing a diff never changes its renderer. Acting on lines requires a
+  renderer whose rows can be placed in the file; where one can't, the line
+  actions say so instead.
 - **Focus never rearranges the screen.** A screen mode enlarges the area
   (side panels or main views) where `+` was pressed. Moving focus, by key or
   click, keeps the layout; only focusing a pane that the layout hides shrinks

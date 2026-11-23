@@ -6,7 +6,7 @@ import (
 )
 
 var StageUnderUnsupportedDiffRenderer = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "A diff renderer that says nothing about what it renders is replaced by git's own diff when the main view is focused, so the diff can still be staged from",
+	Description:  "Focusing a diff renderer that says nothing about its rows keeps its output, shows no selection, and explains why Space does nothing; cycling to git's own diff makes the lines stageable",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	SetupConfig: func(cfg *config.AppConfig) {
@@ -14,8 +14,10 @@ var StageUnderUnsupportedDiffRenderer = NewIntegrationTest(NewIntegrationTestArg
 		// `cat -n` numbers every line, which pushes the +/- column off the start of it:
 		// the diff can't be read back from the text, and cat says nothing about what it
 		// is rendering, so there is no way to act on what it produces.
+		// Git's own diff follows it, so that cycling away from cat leaves it.
 		cfg.GetUserConfig().Git.DiffRenderers = []config.DiffRendererConfig{
 			{Command: "cat -n"},
+			{Type: "rawGit"},
 		}
 	},
 	SetupRepo: func(shell *Shell) {
@@ -33,13 +35,33 @@ var StageUnderUnsupportedDiffRenderer = NewIntegrationTest(NewIntegrationTestArg
 			)
 		t.Views().Main().Content(Contains("1  diff --git a/file1 b/file1"))
 
-		// Focusing it to act on it brings git's own diff instead, and the selection goes
-		// on that.
+		// Focusing it keeps the renderer's output. Its rows can't be placed in the file,
+		// so there is no selection, and Space says why nothing is staged.
 		t.Views().Files().Press(keys.Universal.FocusMainView)
 
 		t.Views().Main().
 			IsFocused().
+			Content(Contains("1  diff --git")).
+			SelectionIsHidden().
+			PressPrimaryAction()
+
+		t.ExpectToast(Equals("Disabled: This diff renderer doesn't say which line each row is; switch renderer with t d n to act on lines"))
+
+		t.Views().Files().Lines(
+			Contains("M file1"),
+		)
+
+		// Cycling to git's own diff, which describes its rows, keeps the main view
+		// focused and makes the lines stageable. The selection keeps its line index,
+		// which is the file header here, so the next hunk is taken first.
+		t.Views().Main().
+			Press(keys.Universal.CycleDiffRenderers).
+			IsFocused().
 			Content(DoesNotContain("1  diff --git")).
+			Tap(func() {
+				t.ExpectToast(Equals("Diff renderer: (default) (2 of 2)"))
+			}).
+			Press(keys.Main.NextHunk).
 			SelectedLines(
 				Contains("-three"),
 			).

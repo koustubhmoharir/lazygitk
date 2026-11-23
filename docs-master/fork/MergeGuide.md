@@ -921,6 +921,33 @@ unreachable` marker that names its replacement. Do not reconnect them.
 - `pkg/gui/layout.go`: focus frames. The startup notices are not here any
   more; they are queued by `onNewRepo` (below).
 
+### Diff rendering
+
+- `helpers/diff_line_raw_fallback.go` `MainViewDiffMode`: always returns the
+  rendered mode, so focusing a diff keeps the renderer's output. Upstream
+  returns `DiffModeRaw` while the main view is focused and the renderer's rows
+  can't be placed; that branch is now unused. The rest of the file (including
+  `RenderFocusedMainViewAgain`) is upstream code the fork leaves in place.
+  When merging, check for any upstream change that makes focus re-render with
+  `DiffModeRaw`, and do not reconnect it.
+- `controllers/switch_to_focused_main_view_controller.go` `focusMainViewPane`:
+  unchanged, but its `DiffModeRaw` branch is now dead.
+- `gui/main_panels.go` `diffPaneHasSomethingToSelect` (fork check): when
+  `DiffRowsCanBePlaced` is false, the pane has nothing to select, even where
+  the buffer parses as a unified diff.
+- `controllers/main_view_controller.go` `diffSelectionDisabledReason` (fork
+  check): returns `DiffRendererNamesNoLines` for such a diff, before the
+  "nothing to select" reason. Upstream's line actions use this function, so
+  when merging, check that any new line action that is disabled for an empty
+  selection goes through it too.
+- `pkg/i18n/fork_english.go`: `DiffRendererNamesNoLines` is the fork's
+  string for that reason.
+- Upstream scenarios rewritten for the fork:
+  `main_view/stage_under_unsupported_diff_renderer.go` and
+  `main_view/raw_fallback_under_an_external_diff.go`. They assert that focus
+  keeps the renderer's output with no selection, and that the primary action
+  explains why. Upstream's versions expect the raw diff after focus.
+
 ### Other
 
 - `controllers/remotes_controller.go` `fetchAndCheckout` (replacement): the

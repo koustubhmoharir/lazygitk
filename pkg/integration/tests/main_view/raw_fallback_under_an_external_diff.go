@@ -9,7 +9,7 @@ import (
 )
 
 var RawFallbackUnderAnExternalDiff = NewIntegrationTest(NewIntegrationTestArgs{
-	Description:  "Focusing the main view under an external diff that says nothing about its rows brings git's own diff, keeping the scroll position",
+	Description:  "Focusing the main view under an external diff that says nothing about its rows keeps the renderer's output and scroll position, shows no selection, and the primary action explains why",
 	ExtraCmdArgs: []string{},
 	Skip:         false,
 	Width:        120,
@@ -52,12 +52,19 @@ var RawFallbackUnderAnExternalDiff = NewIntegrationTest(NewIntegrationTestArgs{
 				t.Views().Files().Press(keys.Universal.FocusMainView)
 			}).
 			IsFocused().
-			// Focusing the view to act on it brings git's own diff instead — the
-			// renderer's rows can't be placed in the file — and leaves the view at the
-			// offset it was at, rather than at the top.
-			Content(Contains("+LINE05")).
-			Content(DoesNotContain("EXT-1")).
+			// Focusing the view to act on it keeps the renderer's output, which has no
+			// rows that can be placed in the file, so there is no selection. The view
+			// stays at the offset it was at, rather than going to the top.
+			Content(Contains("EXT-1")).
+			Content(DoesNotContain("+LINE05")).
 			OriginY(6).
-			SelectionIsActive()
+			SelectionIsHidden().
+			PressPrimaryAction()
+
+		t.ExpectToast(Equals("Disabled: This diff renderer doesn't say which line each row is; switch renderer with t d n to act on lines"))
+
+		t.Views().Files().Lines(
+			Contains("M file1"),
+		)
 	},
 })

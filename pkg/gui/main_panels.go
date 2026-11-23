@@ -487,6 +487,13 @@ func (gui *Gui) diffPaneHasSomethingToSelect(
 		return false, true
 	}
 
+	// Fork: a renderer that doesn't say which line each row is leaves nothing to select,
+	// even where the buffer parses as a unified diff (see ViewHasChangeLines). Its rows
+	// can't be placed, so the pane shows no selection and the line actions say why.
+	if !gui.helpers.DiffLine.DiffRowsCanBePlaced() {
+		return false, true
+	}
+
 	if !contentIsComplete && mainContext.HasSelectableContent() {
 		// This render has already found something to select, and its content only grows
 		// from here, so there is nothing to ask again — nor to read the diff for. An

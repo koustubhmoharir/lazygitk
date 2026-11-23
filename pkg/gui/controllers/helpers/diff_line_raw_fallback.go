@@ -20,16 +20,14 @@ import (
 // Browsing keeps the renderer's version; only acting on it needs one we can follow.
 
 // MainViewDiffMode says how a side panel should produce the diff it renders into the
-// main view: as the user configured it, or as git's own — while the main view holds
-// focus and what the renderer would produce couldn't be acted on.
+// main view: as the user configured it.
 //
-// Every panel that renders a diff into the main view asks, so that a re-render while
-// focused — after staging a hunk, say — stays with git's own diff rather than flipping
-// back to the renderer's.
+// Fork: upstream returns git's raw diff here while the main view is focused and the
+// renderer's rows can't be placed. The fork always keeps the renderer's output, since
+// the user wants focusing a diff to leave it as it is; a renderer that can't be acted on
+// instead gets no selection and a disabled-action reason (see DiffRowsCanBePlaced).
+// Upstream's raw branch in focusMainViewPane is therefore never taken.
 func (self *DiffLineHelper) MainViewDiffMode() git_commands.DiffMode {
-	if self.mainViewIsFocused() && self.diffNeedsMetadata() && !self.diffRendererEmitsMetadata() {
-		return git_commands.DiffModeRaw
-	}
 	return git_commands.DiffModeRendered
 }
 
