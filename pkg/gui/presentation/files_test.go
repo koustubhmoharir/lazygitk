@@ -170,6 +170,17 @@ func TestRenderCommitFileTree(t *testing.T) {
 			expected:     []string{"A test"},
 		},
 		{
+			// Fork: files the commit did not change (full listing) have no status
+			// letter, and their names line up with the changed files'.
+			name: "unchanged file aligned with changed file",
+			files: []*models.CommitFile{
+				{Path: "changed", ChangeStatus: "M"},
+				{Path: "untouched", ChangeStatus: ""},
+			},
+			showRootItem: false,
+			expected:     []string{"M changed", "  untouched"},
+		},
+		{
 			name: "renamed file",
 			files: []*models.CommitFile{
 				{Path: "new.txt", PreviousPath: "old.txt", ChangeStatus: "R"},

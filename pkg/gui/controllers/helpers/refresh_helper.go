@@ -1098,6 +1098,9 @@ type capturedCommitFilesState struct {
 	// without that — after which anything that refreshes the panel would otherwise be
 	// asking for the files of nothing.
 	hasCommit bool
+	// Fork: whether the panel lists every file of the commit, not only the changed
+	// ones; see refreshCommitFilesContext.
+	fullListing bool
 }
 
 // captureCommitFilesState reads the commit-files refresh's diff endpoints into
@@ -1110,7 +1113,7 @@ func (self *RefreshHelper) captureCommitFilesState() capturedCommitFilesState {
 
 	from, to := commitFilesContext.GetFromAndToForDiff()
 	from, reverse := self.c.Modes().Diffing.GetFromAndReverseArgsForDiff(from)
-	return capturedCommitFilesState{from: from, to: to, reverse: reverse, hasCommit: true}
+	return capturedCommitFilesState{from: from, to: to, reverse: reverse, hasCommit: true, fullListing: commitFilesContext.IsFullListing()}
 }
 
 func (self *RefreshHelper) refreshCommitFilesContext(captured capturedCommitFilesState, env refreshEnv) error {
@@ -1121,6 +1124,15 @@ func (self *RefreshHelper) refreshCommitFilesContext(captured capturedCommitFile
 	files, err := env.git.Loaders.CommitFileLoader.GetFilesInDiff(captured.from, captured.to, captured.reverse)
 	if err != nil {
 		return err
+	}
+	if captured.fullListing {
+		// Fork: the full listing adds the rest of the tree of the commit (the
+		// changed files keep their statuses), so it is a superset of the diff.
+		treePaths, err := env.git.Loaders.CommitFileLoader.GetFilesInTree(captured.to)
+		if err != nil {
+			return err
+		}
+		files = git_commands.MergeTreePathsIntoCommitFiles(files, treePaths)
 	}
 	self.onUIThreadUnlessRepoChanged(env, func() {
 		self.c.Model().CommitFiles = files

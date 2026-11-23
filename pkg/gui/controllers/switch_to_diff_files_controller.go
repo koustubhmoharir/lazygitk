@@ -5,6 +5,7 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
+	"github.com/jesseduffield/lazygit/pkg/gui/filetree"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 )
 
@@ -28,6 +29,19 @@ type SwitchToDiffFilesController struct {
 
 	// what this panel offers on the diff it shows in the focused main view
 	diffActions *CommitDiffActions
+
+	// Fork: see WithoutDoubleClick.
+	keyOnly bool
+}
+
+// Fork: WithoutDoubleClick makes this controller a key-only route. The context's own
+// controller already owns its double-click action and its focused main view diff
+// source, and both may be set only once per context. Reflog is the case: its
+// double-click enters its sub-commits, as upstream, and its own controller shows the
+// reflog entry's diff. Only v and Space list the commit's changed files there.
+func (self *SwitchToDiffFilesController) WithoutDoubleClick() *SwitchToDiffFilesController {
+	self.keyOnly = true
+	return self
 }
 
 func NewSwitchToDiffFilesController(
@@ -75,9 +89,19 @@ func (self *SwitchToDiffFilesController) GetKeybindings(opts types.KeybindingsOp
 			Keys:              opts.GetKeys(opts.Config.Universal.GoInto),
 			Handler:           self.enter,
 			GetDisabledReason: self.canEnter,
-			Description:       self.c.Tr.ViewItemFiles,
+			Description:       self.c.Tr.ChangedFiles,
 			CommandID:         "navigation.open-diff-files",
 			Verb:              "view-files",
+		},
+		// Fork: navigation.open-tree-files lists every file of the commit. It has no
+		// key of its own: its paths come from the v and Space menus (see
+		// fork_command_projection.go).
+		{
+			Handler:           self.enterFullListing,
+			GetDisabledReason: self.canEnterFullListing,
+			Description:       self.c.Tr.AllFiles,
+			CommandID:         "navigation.open-tree-files",
+			Verb:              "view-all-files",
 		},
 	}
 
@@ -89,6 +113,9 @@ func (self *SwitchToDiffFilesController) Context() types.Context {
 }
 
 func (self *SwitchToDiffFilesController) GetOnDoubleClick() func() error {
+	if self.keyOnly {
+		return nil
+	}
 	return func() error {
 		if self.canEnter() == nil {
 			return self.enter()
@@ -99,10 +126,22 @@ func (self *SwitchToDiffFilesController) GetOnDoubleClick() func() error {
 }
 
 func (self *SwitchToDiffFilesController) GetFocusedMainViewDiffSource() types.FocusedMainViewDiffSource {
+	if self.keyOnly {
+		return nil
+	}
 	return self.diffActions
 }
 
 func (self *SwitchToDiffFilesController) enter() error {
+	return self.enterListing(false)
+}
+
+// Fork: enterFullListing lists every file of the selected commit (see canEnterFullListing).
+func (self *SwitchToDiffFilesController) enterFullListing() error {
+	return self.enterListing(true)
+}
+
+func (self *SwitchToDiffFilesController) enterListing(fullListing bool) error {
 	ref := self.context.GetSelectedRef()
 	refsRange := self.context.GetSelectedRefRangeForDiffFiles()
 	commitFilesContext := self.c.Contexts().CommitFiles
@@ -111,6 +150,8 @@ func (self *SwitchToDiffFilesController) enter() error {
 
 	commitFilesContext.ClearFilter()
 	commitFilesContext.ReInit(ref, refsRange)
+	// Fork: the listing mode is set after ReInit, which keeps the mode on refreshes.
+	commitFilesContext.SetFullListingMode(fullListing)
 	commitFilesContext.SetSelection(0)
 	commitFilesContext.SetCanRebase(canRebase)
 	commitFilesContext.SetParentContext(self.context)
@@ -120,19 +161,45 @@ func (self *SwitchToDiffFilesController) enter() error {
 	self.c.Refresh(types.RefreshOptions{
 		Scope: []types.RefreshableView{types.COMMIT_FILES},
 		Then: func() error {
+			// Fork: a full listing starts collapsed, once its tree is built.
+			if fullListing {
+				commitFilesContext.CommitFileTreeViewModel.CollapseDirectoriesBelowRoot()
+			}
 			if filterPath := self.c.Modes().Filtering.GetPath(); filterPath != "" {
 				path, err := filepath.Rel(self.c.Git().RepoPaths.RepoPath(), filterPath)
 				if err != nil {
 					path = filterPath
 				}
+				showRootItem := self.c.UserConfig().Gui.ShowRootItemInFileTree
+				if fullListing {
+					// Fork: the filtered path must be visible, so expand the folders above it.
+					commitFilesContext.CommitFileTreeViewModel.ExpandToPath(
+						filetree.InternalTreePathForFilePath(filepath.ToSlash(path), showRootItem))
+				}
 				commitFilesContext.CommitFileTreeViewModel.SelectPath(
-					filepath.ToSlash(path), self.c.UserConfig().Gui.ShowRootItemInFileTree)
+					filepath.ToSlash(path), showRootItem)
+			}
+			if fullListing {
+				// Fork: the collapse changed the rows after the list was rendered.
+				self.c.PostRefreshUpdate(commitFilesContext)
 			}
 			self.c.Context().Push(commitFilesContext, types.OnFocusOpts{})
 			return nil
 		},
 	})
 	return nil
+}
+
+// Fork: canEnterFullListing needs one commit: a range is crossed out, and so is a
+// stash entry, which has no commit tree.
+func (self *SwitchToDiffFilesController) canEnterFullListing() *types.DisabledReason {
+	if self.context.GetSelectedRefRangeForDiffFiles() != nil {
+		return &types.DisabledReason{Text: self.c.Tr.SelectOneCommitForAllFiles}
+	}
+	if _, isStash := self.context.GetSelectedRef().(*models.StashEntry); isStash {
+		return &types.DisabledReason{Text: self.c.Tr.SelectedItemDoesNotHaveFiles}
+	}
+	return self.canEnter()
 }
 
 func (self *SwitchToDiffFilesController) canEnter() *types.DisabledReason {

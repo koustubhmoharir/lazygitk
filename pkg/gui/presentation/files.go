@@ -293,6 +293,11 @@ func getCommitFileLine(
 			symbolStyle = getColorForChangeStatus(symbol)
 		}
 
+		// Fork: a file the commit did not change (full listing) has no status letter;
+		// a blank keeps its name aligned with the changed files.
+		if symbol == "" {
+			symbol = " "
+		}
 		output += symbolStyle.Sprint(symbol) + " "
 	}
 

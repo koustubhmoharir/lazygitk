@@ -40,6 +40,12 @@ type CommitFileTreeViewModel struct {
 	canRebase bool
 
 	searchHistory *utils.HistoryBuffer[string]
+
+	// Fork: whether the tree lists every file of the commit rather than only the
+	// changed ones, and the folder state of each listing. See commit_file_listing.go.
+	fullListing      bool
+	changedCollapsed *CollapsedPaths
+	fullCollapsed    *CollapsedPaths
 }
 
 var _ ICommitFileTreeViewModel = &CommitFileTreeViewModel{}
@@ -54,6 +60,8 @@ func NewCommitFileTreeViewModel(getFiles func() []*models.CommitFile, common *co
 		refRange:        nil,
 		canRebase:       false,
 		searchHistory:   utils.NewHistoryBuffer[string](1000),
+		// Fork: the changed-files listing starts with the tree's own folder state.
+		changedCollapsed: fileTree.CollapsedPaths(),
 	}
 }
 

@@ -16,6 +16,11 @@ type CommitFilesContext struct {
 	*filetree.CommitFileTreeViewModel
 	*ListContextTrait
 	*DynamicTitleBuilder
+
+	// Fork: the title formats of the changed-files and full listings. See
+	// SetFullListingMode in commit_files_listing.go.
+	changedTitleFormat  string
+	allFilesTitleFormat string
 }
 
 var (
@@ -72,6 +77,8 @@ func NewCommitFilesContext(c *ContextCommon) *CommitFilesContext {
 	ctx := &CommitFilesContext{
 		CommitFileTreeViewModel: viewModel,
 		DynamicTitleBuilder:     NewDynamicTitleBuilder(c.Tr.CommitFilesDynamicTitle),
+		changedTitleFormat:      c.Tr.CommitFilesDynamicTitle,
+		allFilesTitleFormat:     c.Tr.AllFilesDynamicTitle,
 		ListContextTrait: &ListContextTrait{
 			Context: NewSimpleContext(
 				NewBaseContext(NewBaseContextOpts{

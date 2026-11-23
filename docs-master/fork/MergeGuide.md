@@ -155,6 +155,10 @@ re-apply it if upstream changes that code.
 
 ### Git commands
 
+- `git_commands/commit_file_loader.go`: `GetFilesInTree` (`ls-tree -r -z
+  --name-only --full-tree`) for the full listing of a commit's files; the merge
+  with the diff is in `fork_commit_file_listing.go`.
+
 - `git_commands/captured_combine_plan.go`: a selection that is not in HEAD's
   history fails with `CombineCommitsNotInHeadError`, which lists the commits.
   The combine flow (`controllers/fork_combine.go`, `planError`) turns it into
@@ -341,6 +345,14 @@ re-apply it if upstream changes that code.
 - `pkg/gui/types/keybindings.go`: `Binding` gains `CommandID`,
   `CommandIDFunc`, `Verb`, `VerbFunc`, `CommandPaths`, `DefaultCommand` and
   `CommandActive`.
+- `keymap/default_paths.go` and `fork_command_projection.go`: `v d`/`v f`
+  (and `space d`/`space f` outside Commits) route the changed-files and full
+  listings in Commits, Sub-commits and Reflog; Stash keeps a direct `v`/Space.
+  These routes are always default routes (`forkListingDefaultRoutes`), so an
+  explicit key of another command wins through the prefix menu's explicit-leaf
+  rule. An explicit legacy `goInto` is added as a separate explicit binding
+  (`forkListingLegacyRoutes`) only where upstream bound it to the changed
+  files: Commits, Sub-commits and Stash, never Reflog.
 - `pkg/gui/keybindings.go` (replacement): bindings pass once through
   `projectForkBindings` (`fork_command_projection.go`), which assigns the
   catalogue paths. `resetKeybindings` registers fork commands, key labels and
@@ -563,9 +575,18 @@ re-apply it if upstream changes that code.
 - `controllers/switch_to_sub_commits_controller.go`: `WithoutDoubleClick`, so
   Worktrees can show commits on `v` while its double-click still switches.
   A context accepts only one double-click handler; a second one panics.
+- `controllers/switch_to_diff_files_controller.go`: adds
+  `navigation.open-tree-files` (the full listing of a commit's files) beside
+  `navigation.open-diff-files`; both enter through `enterListing`, which sets
+  the listing mode after `ReInit` and, for the full listing, collapses its
+  folders once the tree is built. `WithoutDoubleClick` makes it a key-only
+  route that also gives up the focused main-view diff source, because Reflog's
+  own controller owns both.
 - `pkg/gui/controllers.go`: attaches the fork controllers: Files inspection,
-  Worktrees commits, and `RefCommitCopyController` for Branches, Remote
-  branches and Tags.
+  Worktrees commits, `RefCommitCopyController` for Branches, Remote
+  branches and Tags, and a key-only `SwitchToDiffFilesController` for Reflog
+  (upstream gives Reflog no changed-files route; its double-click keeps
+  entering Sub-commits).
 
 ### Difftool launches
 
@@ -618,6 +639,15 @@ launch, described under "Merge tool" below.
 - `keymap/default_paths.go`: `d m` routes to that command.
 
 ### Helpers (replacements)
+
+- `helpers/refresh_helper.go` `captureCommitFilesState` and
+  `refreshCommitFilesContext`: in the full listing
+  (`CommitFileTreeViewModel.IsFullListing`), the diff's files are merged with
+  the commit's tree (`GetFilesInTree`, `MergeTreePathsIntoCommitFiles`), so
+  `Model().CommitFiles` holds unchanged files with an empty `ChangeStatus`.
+  Code that treats `Model().CommitFiles` as the diff's file list must skip
+  them. Both refresh routes (the `COMMIT_FILES` scope and
+  `refreshCommitsAndCommitFiles`) go through it, so the mode survives refreshes.
 
 - `helpers/merge_and_rebase_helper.go`: upstream's merge and rebase menus are
   removed; `CreateRebaseOptionsMenu`, `RebaseOntoRef`,
@@ -972,6 +1002,15 @@ unreachable` marker that names its replacement. Do not reconnect them.
 
 ### Other
 
+- Full listing of a commit's files: `filetree/commit_file_tree.go` adds two
+  unexported methods to `ICommitFileTree`, and
+  `filetree/commit_file_tree_view_model.go` holds the listing mode and one
+  `CollapsedPaths` per listing (`filetree/commit_file_listing.go` swaps them).
+  `context/commit_files_context.go` keeps both title formats
+  (`context/commit_files_listing.go`). `presentation/files.go`
+  `getCommitFileLine` renders a blank status for an unchanged file so names
+  stay aligned.
+
 - `controllers/remotes_controller.go` `fetchAndCheckout` (replacement): the
   upstream body is now `fetchAndCheckoutReviewed`, and `fetchAndCheckout` runs
   the refspec review from `controllers/fork_fetch.go` before it, so every
@@ -1048,7 +1087,7 @@ In `pkg/gui/controllers/`: `confirmation_controller.go`,
 `rename_similarity_threshold_controller.go`, `search_controller.go`,
 `search_prompt_controller.go`, `side_window_controller.go`,
 `snake_controller.go`, `status_controller.go`, `submodules_controller.go`,
-`suggestions_controller.go`, `switch_to_diff_files_controller.go`,
+`suggestions_controller.go`,
 `workspace_reset_controller.go`, `worktrees_controller.go`. In `helpers/`:
 `branches_helper.go`, `diff_line_file_menu.go`, `worktree_helper.go`. Also
 `pkg/gui/extras_panel.go`.

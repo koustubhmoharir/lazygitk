@@ -93,6 +93,8 @@ var ForkCopyFileKeys = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("first"),
 			).
 			Press(config.Keybinding{"v"})
+		t.ExpectPopup().Menu().Title(Equals("v"))
+		t.Views().Menu().Press(config.Keybinding{"d"})
 
 		commitFiles := t.Views().CommitFiles().
 			IsFocused().

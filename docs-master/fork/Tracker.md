@@ -32,12 +32,11 @@ Repository Browser at a revision (open, compare with working tree, show log).
 
 ## Tasks
 
-1. Full-listing mode: loader, merge with the diff's statuses, persistence
-   across refreshes, title, collapsed start, rendering, content in the main
-   view, and the `v` menu (including Reflog), with tests.
+1. Content in the main view for the full listing (files, deleted files,
+   binary files), with tests.
 2. Commands in the full listing on unchanged files and directories, with
    tests.
-3. Guide, design and merge-guide updates; close this section.
+3. Finish the guide, design and merge-guide updates; close this section.
 
 ## How this tracker works
 

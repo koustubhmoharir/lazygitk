@@ -208,6 +208,14 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	for _, id := range []string{"file.enter", "remote.view-branches", "navigation.open-commits", "navigation.open-diff-files", "navigation.open-history-file-diff", "navigation.focus-diff", "submodule.enter"} {
 		add(id, "space")
 	}
+	// Fork: the commit listings' v and Space open a menu: d lists the changed files
+	// and f every file of the commit. The bare v and Space above stay for Stash;
+	// the projection keeps the menu routes in Commits, Sub-commits and Reflog
+	// (forkListingPaths in fork_command_projection.go).
+	add("navigation.open-diff-files", "v d")
+	add("navigation.open-diff-files", "space d")
+	add("navigation.open-tree-files", "v f")
+	add("navigation.open-tree-files", "space f")
 	// 0 focuses the main view from any pane that has one, after the
 	// inspection keys so labels list v first; Files uses the focus-only ID.
 	add("navigation.focus-diff navigation.focus-main", "0")

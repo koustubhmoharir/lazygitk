@@ -62,7 +62,11 @@ func TestForkDefaultPathsDoNotOfferUnrelatedSameKeyActions(t *testing.T) {
 
 func newForkKeymapTestGui(t testing.TB) *Gui {
 	t.Helper()
-	cfg := config.NewDummyAppConfig()
+	return newForkKeymapTestGuiWithConfig(t, config.NewDummyAppConfig())
+}
+
+func newForkKeymapTestGuiWithConfig(t testing.TB, cfg *config.AppConfig) *Gui {
+	t.Helper()
 	cmn := common.NewDummyCommonWithUserConfigAndAppState(cfg.GetUserConfig(), cfg.GetAppState())
 	gui, err := NewGui(cmn, cfg, &git_commands.GitVersion{Major: 2, Minor: 51}, nil, false, t.TempDir(), nil)
 	if err != nil {
@@ -260,4 +264,149 @@ func TestForkProjectionLegacyModeKeyStaysLiveWithSpecificOverride(t *testing.T) 
 	id = "patch.toggle-selection"
 	assert.Equal(t, []*types.Binding{byID["patch.toggle-selection"]}, forkApplicableBindings(bindings))
 	assert.False(t, byID["patch.toggle-selection"].DefaultCommand)
+}
+
+// Fork: item 1 of "browse a commit's files". Commits, Sub-commits and Reflog open the
+// changed-files and full listings from v (a menu, d and f); Sub-commits and Reflog
+// open the same menu on Space too. Stash keeps v and Space as a direct leaf and
+// offers no full listing.
+func TestForkListingRoutesByPane(t *testing.T) {
+	gui := newForkKeymapTestGui(t)
+	bindings, err := gui.projectForkBindings([]*types.Binding{
+		{CommandID: "navigation.open-diff-files", ViewName: "commits"},
+		{CommandID: "navigation.open-tree-files", ViewName: "commits"},
+		{CommandID: "selection.commit.toggle", ViewName: "commits"},
+		{CommandID: "navigation.open-diff-files", ViewName: "subCommits"},
+		{CommandID: "navigation.open-tree-files", ViewName: "subCommits"},
+		{CommandID: "navigation.open-diff-files", ViewName: "reflogCommits"},
+		{CommandID: "navigation.open-tree-files", ViewName: "reflogCommits"},
+		{CommandID: "navigation.open-diff-files", ViewName: "stash"},
+		{CommandID: "navigation.open-tree-files", ViewName: "stash"},
+		{CommandID: "navigation.open-commits", ViewName: "reflogCommits"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, []string{"v d"}, bindings[0].KeyLabels())
+	assert.Equal(t, []string{"v f"}, bindings[1].KeyLabels())
+	assert.Equal(t, []string{"<space>"}, bindings[2].KeyLabels(), "Space keeps toggling the commit selection in Commits")
+	assert.Equal(t, []string{"v d", "<space> d"}, bindings[3].KeyLabels())
+	assert.Equal(t, []string{"v f", "<space> f"}, bindings[4].KeyLabels())
+	assert.Equal(t, []string{"v d", "<space> d"}, bindings[5].KeyLabels())
+	assert.Equal(t, []string{"v f", "<space> f"}, bindings[6].KeyLabels())
+	assert.Equal(t, []string{"v", "<space>"}, bindings[7].KeyLabels(), "Stash keeps v and Space as a direct leaf")
+	assert.Empty(t, bindings[8].KeyLabels(), "Stash has no full listing")
+	assert.Empty(t, bindings[9].KeyLabels(), "Reflog's v and Space open the changed files, not the sub-commits")
+}
+
+// A menu pane must not have a leaf at v or Space next to the menu's children.
+func TestForkListingMenuIsAPrefixNode(t *testing.T) {
+	gui := newForkKeymapTestGui(t)
+	bindings, err := gui.projectForkBindings([]*types.Binding{
+		{CommandID: "navigation.open-diff-files", ViewName: "commits"},
+		{CommandID: "navigation.open-tree-files", ViewName: "commits"},
+		{CommandID: "selection.commit.toggle", ViewName: "commits"},
+		{CommandID: "navigation.open-diff-files", ViewName: "subCommits"},
+		{CommandID: "navigation.open-tree-files", ViewName: "subCommits"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Commits keeps Space as the selection toggle, so only v is a menu there.
+	menuKeys := map[string][]gocui.Key{
+		"commits":    {gocui.NewKeyRune('v')},
+		"subCommits": {gocui.NewKeyRune('v'), gocui.NewKeyRune(' ')},
+	}
+	for view, keys := range menuKeys {
+		tree := keymap.BuildCommandTree(bindings, view)
+		for _, key := range keys {
+			node := commandTreeChild(tree, key)
+			if node == nil {
+				t.Fatalf("%s: no menu under %s", view, types.CommandPathLabel([]gocui.Key{key}))
+			}
+			if len(node.Bindings) != 0 {
+				t.Errorf("%s: %s is both a leaf and a menu", view, types.CommandPathLabel([]gocui.Key{key}))
+			}
+			var children []string
+			for _, edge := range node.Children {
+				children = append(children, config.LabelForKey(edge.Key))
+			}
+			assert.ElementsMatch(t, []string{"d", "f"}, children, view)
+		}
+	}
+}
+
+func commandTreeChild(tree *keymap.CommandTree, key gocui.Key) *keymap.CommandTree {
+	for _, edge := range tree.Children {
+		if edge.Key == key {
+			return edge.Tree
+		}
+	}
+	return nil
+}
+
+// Fork: an explicit legacy goInto makes the changed-files command explicit. The fork's
+// listing routes stay default routes, and goInto is a separate explicit route only in
+// the panes where upstream bound it.
+func TestForkListingExplicitGoIntoIsSeparateFromDefaultRoutes(t *testing.T) {
+	t.Setenv(config.HonourKeyConfigEnvVar, "1")
+	path := filepath.Join(t.TempDir(), "config.yml")
+	if err := os.WriteFile(path, []byte("keybinding:\n  universal:\n    goInto: '<enter>'\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := config.NewDummyAppConfigWithKeybindingFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	gui := newForkKeymapTestGuiWithConfig(t, cfg)
+	var originals []*types.Binding
+	for _, view := range []string{"commits", "subCommits", "reflogCommits", "stash"} {
+		originals = append(originals, &types.Binding{CommandID: "navigation.open-diff-files", ViewName: view})
+	}
+	bindings, err := gui.projectForkBindings(originals)
+	if err != nil {
+		t.Fatal(err)
+	}
+	routesOf := func(view string, explicit bool) []string {
+		var labels []string
+		for _, binding := range bindings {
+			if binding.ViewName == view && binding.DefaultCommand != explicit {
+				labels = append(labels, binding.KeyLabels()...)
+			}
+		}
+		return labels
+	}
+	assert.Equal(t, []string{"v d"}, routesOf("commits", false), "default routes stay default; Space is the selection toggle in Commits")
+	assert.Equal(t, []string{"<enter>"}, routesOf("commits", true), "goInto is explicit in Commits")
+	assert.Equal(t, []string{"<enter>"}, routesOf("subCommits", true), "goInto is explicit in Sub-commits")
+	assert.Equal(t, []string{"<enter>"}, routesOf("stash", true), "goInto is explicit in Stash")
+	assert.Empty(t, routesOf("reflogCommits", true), "Reflog's goInto belongs to open-commits, not the changed files")
+	assert.Equal(t, []string{"v d", "<space> d"}, routesOf("reflogCommits", false), "Reflog keeps its menu routes")
+}
+
+// Fork: an explicit claim of Space by another command in the same pane (here the
+// configured checkout key) wins over the listing menu, as it did over the old bare
+// Space route. The explicit leaf must have no explicit descendants, so that the
+// prefix menu's explicit-leaf rule keeps the leaf.
+func TestForkListingYieldsToExplicitSpaceClaim(t *testing.T) {
+	gui := newForkKeymapTestGui(t)
+	bindings, err := gui.projectForkBindings([]*types.Binding{
+		{CommandID: "navigation.open-diff-files", ViewName: "reflogCommits"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	checkout := &types.Binding{CommandID: "commit.checkout-menu", ViewName: "reflogCommits", DefaultCommand: false}
+	checkout.SetCommandPaths([][]gocui.Key{{gocui.NewKeyRune(' ')}})
+	bindings = append(bindings, checkout)
+
+	tree := keymap.BuildCommandTree(bindings, "reflogCommits")
+	node := commandTreeChild(tree, gocui.NewKeyRune(' '))
+	if node == nil {
+		t.Fatal("no Space route")
+	}
+	if len(node.Bindings) != 1 || node.Bindings[0] != checkout {
+		t.Fatalf("Space should hold only the explicit checkout leaf, got %d bindings", len(node.Bindings))
+	}
+	assert.False(t, forkExplicitDescendants(node), "the listing menu under Space must stay default so the explicit leaf wins")
 }

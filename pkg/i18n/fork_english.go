@@ -198,6 +198,10 @@ type ForkTranslationSet struct {
 	CreateMoveBranchHere                  string
 	CreateBranchAndCheckout               string
 	RebaseOntoSelectedCommit              string
+	ChangedFiles                          string
+	AllFiles                              string
+	AllFilesDynamicTitle                  string
+	SelectOneCommitForAllFiles            string
 	SelectedRebaseTooltip                 string
 	SelectedRebaseSelectCommit            string
 	SelectedRebaseRepositoryChanged       string
@@ -616,6 +620,10 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		CreateMoveBranchHere:                  "Create/move branch here…",
 		CreateBranchAndCheckout:               "Create branch and check it out…",
 		RebaseOntoSelectedCommit:              "Rebase current branch onto this commit…",
+		ChangedFiles:                          "Changed files",
+		AllFiles:                              "All files",
+		AllFilesDynamicTitle:                  "All files (%s)",
+		SelectOneCommitForAllFiles:            "Select one commit to list all its files.",
 		SelectedRebaseTooltip:                 "Rebase the checked-out branch onto the selected commit. Requires no tracked changes; never stashes or updates other branch refs. Independent of the marked base.",
 		SelectedRebaseSelectCommit:            "Select one actual commit to rebase the current branch onto.",
 		SelectedRebaseRepositoryChanged:       "The repository changed. Start the rebase action again.",

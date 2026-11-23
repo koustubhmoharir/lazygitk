@@ -252,6 +252,10 @@ func (gui *Gui) resetHelpersAndControllers() {
 			common, context,
 		))
 	}
+	// Fork: v in Reflog lists the commit's changed files (browse a commit's
+	// files). Its double-click keeps entering sub-commits, as upstream.
+	controllers.AttachControllers(gui.State.Contexts.ReflogCommits,
+		controllers.NewSwitchToDiffFilesController(common, gui.State.Contexts.ReflogCommits).WithoutDoubleClick())
 
 	for _, context := range []types.Context{
 		gui.State.Contexts.Status,

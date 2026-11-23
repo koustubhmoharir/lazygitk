@@ -75,8 +75,8 @@ in the [design principles](Design.md). The generated per-pane reference is
 | Shift+Up, Shift+Down; Shift+K, Shift+J | Extend the selection |
 | `v`, Space | Inspect or drill down (Space toggles staging in Files and the selection in Commits instead) |
 
-Inspection opens a branch's or tag's commits, a commit's or stash entry's
-files, a file's diff, a remote's branches, a worktree's commits (without
+Inspection opens a branch's or tag's commits, a commit's files (a menu: `d`
+changed files, `f` all files), a stash entry's files, a file's diff, a remote's branches, a worktree's commits (without
 switching to it) or a submodule (Escape returns to the parent repository).
 
 ### Files
@@ -148,7 +148,8 @@ Git's diff.
 
 | Keys | Action |
 | --- | --- |
-| `v` (and Space outside Commits) | Show the commit's files |
+| `v d` (and Space `d` outside Commits) | Show the files the commit changed |
+| `v f` (and Space `f` outside Commits) | Show all files at the commit |
 | `d w`, `d p`, `d c` | Difftool against the working tree, the previous commit, or a pasted commit hash |
 | `s c` | Check out the commit on a branch: a name prompt that lists the branches already at the commit first; a new name is created there, and a name that points elsewhere is moved here after a warning |
 | `s d` | Check out the commit as a detached HEAD |
@@ -259,6 +260,19 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   prompt that follows it. Configuration can turn any of these back on.
 - The commit log shows every branch's history (`git.log.showWholeGraph:
   true`); set it to `false` to show only the current branch.
+
+### Browsing a commit's files
+
+- `v` on a commit in Commits, Reflog or Sub-commits opens a menu: `d` lists
+  the files the commit changed, `f` every file at the commit. Outside Commits,
+  Space opens the same menu. In Stash, `v` lists the entry's changed files
+  directly.
+- The full listing (`f`) needs one commit; with a range selected it is
+  crossed out. Files the commit changed keep their status letter, and files it
+  deleted are listed as D; unchanged files have a blank status. Folders start
+  collapsed on every entry, and collapsing them does not change the
+  changed-files listing's folders.
+- `w p` filters Commits to the commits that changed the selected file.
 
 ### Comparing versions
 

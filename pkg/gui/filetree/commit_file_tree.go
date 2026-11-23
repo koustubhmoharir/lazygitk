@@ -17,6 +17,10 @@ type ICommitFileTree interface {
 	GetRoot() *CommitFileNode
 	SetTextFilter(filter string, useFuzzySearch bool)
 	GetTextFilter() string
+	// Fork: makes the given folder state the one the tree uses (commit_file_listing.go).
+	setCollapsedPaths(*CollapsedPaths)
+	// Fork: collapses every folder except the root item (commit_file_listing.go).
+	collapseDirectoriesBelowRoot()
 }
 
 type CommitFileTree struct {

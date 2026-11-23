@@ -43,6 +43,23 @@ func (self *CommitFileLoader) GetFilesInDiff(from string, to string, reverse boo
 	return getCommitFilesFromFilenames(filenames), nil
 }
 
+// Fork: GetFilesInTree lists every path in the tree of ref, for the full listing
+// of a commit's files (see MergeTreePathsIntoCommitFiles). --full-tree makes the
+// listing independent of the working directory.
+func (self *CommitFileLoader) GetFilesInTree(ref string) ([]string, error) {
+	cmdArgs := NewGitCmd("ls-tree").
+		Arg("-r", "-z", "--name-only", "--full-tree").
+		Arg(ref).
+		ToArgv()
+
+	output, err := self.cmd.New(cmdArgs).DontLog().RunWithOutput()
+	if err != nil {
+		return nil, err
+	}
+
+	return nulPaths([]byte(output)), nil
+}
+
 // filenames string is something like "MM\x00file1\x00MU\x00file2\x00AA\x00file3\x00"
 // so we need to split it by the null character and then map each status-name pair
 // to a commit file. Renames (and copies) are special: their status is followed by

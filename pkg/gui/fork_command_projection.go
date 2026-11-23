@@ -62,6 +62,14 @@ func (gui *Gui) projectForkBindings(bindings []*types.Binding) ([]*types.Binding
 				return nil, err
 			}
 			output = append(output, &copy)
+			// Fork: an explicit legacy key of a listing command is its own explicit route,
+			// kept apart from the default listing routes (see forkListingLegacyRoutes).
+			if legacy := gui.forkListingLegacyRoutes(&copy); len(legacy) > 0 {
+				explicitCopy := copy
+				explicitCopy.SetCommandPaths(legacy)
+				explicitCopy.DefaultCommand = false
+				output = append(output, &explicitCopy)
+			}
 			continue
 		}
 		for _, variant := range variants {
@@ -113,6 +121,13 @@ func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string) erro
 	}
 	if !known {
 		paths = forkNavigationPaths(binding.CommandID)
+	}
+	if forkListingCommand(binding.CommandID) && !gui.forkCommandOverridden(binding.CommandID) {
+		// Fork: the listing routes are the fork's default routes, so an explicit
+		// legacy goInto does not make them explicit (its own route is added by
+		// projectForkBindings). Explicit claims of their keys by other commands win
+		// through the usual explicit-leaf rule of the prefix menu.
+		paths, explicit = forkListingDefaultRoutes(binding.CommandID, binding.ViewName), false
 	}
 	if binding.CommandID == "commit.search" {
 		// Fork: the history-loading search replaces the generic search handler
@@ -230,6 +245,74 @@ func forkWithoutSpaceKey(paths [][]gocui.Key) [][]gocui.Key {
 			continue
 		}
 		kept = append(kept, path)
+	}
+	return kept
+}
+
+// forkListingCommand is the changed-files and full-listing pair (item 1 of
+// "browse a commit's files"), which Commits, Sub-commits and Reflog reach by v and
+// Space as a menu, and Stash reaches by a direct v and Space.
+func forkListingCommand(id string) bool {
+	return id == "navigation.open-diff-files" || id == "navigation.open-tree-files"
+}
+
+// forkCommandOverridden reports whether CommandBindings sets the keys of a command
+// itself, which replaces every route the fork gives it.
+func (gui *Gui) forkCommandOverridden(id string) bool {
+	_, overridden := gui.c.UserConfig().CommandBindings[id]
+	return overridden
+}
+
+// forkListingDefaultRoutes returns the fork's default routes of a listing command in a
+// pane: the menu routes, or Stash's direct v and Space.
+func forkListingDefaultRoutes(id, view string) [][]gocui.Key {
+	defaults, _ := keymap.DefaultPaths(id)
+	return forkListingPaths(id, view, defaults)
+}
+
+// forkListingLegacyRoutes returns the explicitly configured legacy key (goInto) of
+// a listing command, as its own route. Upstream bound goInto to the changed-files
+// listing only in Commits, Sub-commits and Stash; in Reflog it opens Sub-commits, so
+// no goInto route is given there. Returns nil when the key is not explicit.
+func (gui *Gui) forkListingLegacyRoutes(binding *types.Binding) [][]gocui.Key {
+	id := binding.CommandID
+	if id != "navigation.open-diff-files" || gui.forkCommandOverridden(id) {
+		return nil
+	}
+	switch binding.ViewName {
+	case "commits", "subCommits", "stash":
+	default:
+		return nil
+	}
+	paths, explicit, known, err := keymap.ResolvePaths(gui.c.UserConfig(), id, id, binding.ViewName)
+	if err != nil || !known || !explicit {
+		return nil
+	}
+	return paths
+}
+
+// forkListingPaths chooses the routes of a listing command for a pane. Commits
+// has v as the menu prefix and keeps Space for toggling the selection. Sub-commits
+// and Reflog open the same menu on both v and Space. Stash keeps v and Space as a
+// direct leaf for its changed files, with no menu, and the full listing is not
+// offered there. The bare v and Space paths would be a leaf beside the menu's
+// children, which the command tree does not allow, so the menu panes drop them.
+func forkListingPaths(id, view string, paths [][]gocui.Key) [][]gocui.Key {
+	var kept [][]gocui.Key
+	for _, path := range paths {
+		switch view {
+		case "commits", "subCommits", "reflogCommits":
+			if len(path) != 2 {
+				continue
+			}
+			if path[0] == gocui.NewKeyRune('v') || (view != "commits" && path[0] == gocui.NewKeyRune(' ')) {
+				kept = append(kept, path)
+			}
+		case "stash":
+			if id == "navigation.open-diff-files" && len(path) == 1 {
+				kept = append(kept, path)
+			}
+		}
 	}
 	return kept
 }

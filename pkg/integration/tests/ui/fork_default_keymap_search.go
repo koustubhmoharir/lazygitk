@@ -38,6 +38,8 @@ var ForkDefaultKeymapSearch = NewIntegrationTest(NewIntegrationTestArgs{
 			Press(config.Keybinding{"N"})
 		t.ExpectPopup().Menu().Title(Equals("n")).Cancel()
 		commits.IsFocused().PressEscape().NavigateToLine(Contains("keyboard new commit done")).Press(config.Keybinding{"v"})
+		t.ExpectPopup().Menu().Title(Equals("v"))
+		t.Views().Menu().Press(config.Keybinding{"d"})
 		t.Views().CommitFiles().IsFocused().PressEnter().IsFocused()
 		t.Views().CommitMessage().IsInvisible()
 		t.Views().CommitFiles().PressEscape()
@@ -48,7 +50,10 @@ var ForkDefaultKeymapSearch = NewIntegrationTest(NewIntegrationTestArgs{
 		t.ExpectPopup().Menu().Title(Equals("Keybindings")).Cancel()
 		t.Views().MenuFilter().IsInvisible()
 		t.ExpectPopup().Menu().Title(Equals("Keybindings")).Cancel()
+		// Letters are case-insensitive, so V is v: it opens the same v menu.
 		commits.IsFocused().Press(config.Keybinding{"V"})
+		t.ExpectPopup().Menu().Title(Equals("v"))
+		t.Views().Menu().Press(config.Keybinding{"d"})
 		t.Views().CommitFiles().IsFocused()
 	},
 })

@@ -131,6 +131,8 @@ exit 0
 		assertToolInputs("before\n", "historical\n")
 
 		t.Views().Commits().Press(config.Keybinding{"v"})
+		t.ExpectPopup().Menu().Title(Equals("v"))
+		t.Views().Menu().Press(config.Keybinding{"d"})
 		t.Views().CommitFiles().
 			IsFocused().
 			NavigateToLine(Contains("sample.txt"))

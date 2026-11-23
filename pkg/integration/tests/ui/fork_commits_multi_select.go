@@ -110,23 +110,31 @@ var ForkCommitsMultiSelect = NewIntegrationTest(NewIntegrationTestArgs{
 		commits.NoMarkedLines()
 		commits.SelectedLines(Contains("echo"))
 
-		// v still inspects in Commits: the commit's files open, and Escape returns.
+		// v still inspects in Commits: its menu lists the changed files, and Escape returns.
 		commits.Press(config.Keybinding{"v"})
+		t.ExpectPopup().Menu().Title(Equals("v"))
+		t.Views().Menu().Press(config.Keybinding{"d"})
 		t.Views().CommitFiles().IsFocused()
 		t.Views().CommitFiles().Press(config.Keybinding{"<esc>"})
 		commits.IsFocused()
 
-		// Sub-commits keeps Space as inspect: Space opens the selected commit's files.
+		// Sub-commits keeps Space as inspect: Space opens the same menu as v, and d lists the changed files.
 		t.Views().Branches().Focus().NavigateToLine(Contains("side")).
 			Press(config.Keybinding{"v"})
 		t.Views().SubCommits().IsFocused().
 			Press(space)
+		t.ExpectPopup().Menu().Title(Equals("<space>"))
+		t.Views().Menu().Press(config.Keybinding{"d"})
 		t.Views().CommitFiles().IsFocused()
 		t.Views().CommitFiles().Press(config.Keybinding{"<esc>"})
 
-		// Reflog has no inspect route in upstream either, so Space does nothing there.
+		// Reflog's Space opens the same menu as its v, so d lists the changed files.
 		t.Views().ReflogCommits().Focus().
 			Press(space)
+		t.ExpectPopup().Menu().Title(Equals("<space>"))
+		t.Views().Menu().Press(config.Keybinding{"d"})
+		t.Views().CommitFiles().IsFocused()
+		t.Views().CommitFiles().Press(config.Keybinding{"<esc>"})
 		t.Views().ReflogCommits().IsFocused()
 	},
 })
