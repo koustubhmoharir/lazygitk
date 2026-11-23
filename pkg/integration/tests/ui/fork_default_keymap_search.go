@@ -42,8 +42,9 @@ var ForkDefaultKeymapSearch = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().CommitMessage().IsInvisible()
 		t.Views().CommitFiles().PressEscape()
 		commits.IsFocused().Press(config.Keybinding{"?"})
-		t.ExpectPopup().Menu().Title(Equals("Keybindings")).Filter("Pull checked-out branch")
-		t.Views().Menu().SelectedLine(Contains("g l").Contains("Pull checked-out branch"))
+		// The selected commit is master's tip, so pull targets that branch as selected.
+		t.ExpectPopup().Menu().Title(Equals("Keybindings")).Filter("Pull/update selected branch")
+		t.Views().Menu().SelectedLine(Contains("g l").Contains("Pull/update selected branch"))
 		t.ExpectPopup().Menu().Title(Equals("Keybindings")).Cancel()
 		t.Views().MenuFilter().IsInvisible()
 		t.ExpectPopup().Menu().Title(Equals("Keybindings")).Cancel()
