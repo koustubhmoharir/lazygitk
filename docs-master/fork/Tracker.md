@@ -1,13 +1,43 @@
-# Current work: none
+# Current work: browse a commit's files
 
-Branch targets from selections were finished on 2026-11-23: `n b` prefills
-the name on a remote branch, and push and pull in Commits act on the branch
-at the selected commit. See the user guide (Branches and checkout, Sync) and
-the design principles.
+Agreed with the user on 2026-11-23. TortoiseGit's equivalent is the
+Repository Browser at a revision (open, compare with working tree, show log).
 
-## Open follow-ups
+## Behaviour
 
-None.
+- In Commits, Reflog and Sub-commits, `v` opens a menu: `d` changed files (the
+  Commit files pane as today) and `f` all files. Outside Commits, Space does
+  the same as `v`. Stash keeps `v` going straight to its changed files. `v`
+  in Reflog currently does nothing (no controller is attached); this work
+  makes it work.
+- `f` needs a single commit; with a range selected it is crossed out.
+- The full listing shows every file in the commit's tree. Files the commit
+  changed keep their status letter and colour, and files it deleted are listed
+  as D, so it is a superset of `d`. Unchanged files show a blank status column,
+  aligned with the others. Its title says it lists all files.
+- Each entry into the full listing starts with folders collapsed (top-level
+  entries visible); flat view still lists every file. Collapsing in the full
+  listing does not change the changed-files listing's folders.
+- In the full listing, a selected file shows its contents at the commit in the
+  main view, not a diff. A file the commit deleted shows its contents before
+  the commit, and the title says so. A binary file shows a one-line note
+  instead of its bytes. A directory or submodule shows the commit's changes
+  under it, as in `d`.
+- Commands in the full listing: `d w`, `d c`, `g v f`, `y c`, `e`, `o` and
+  `w p` work on any file. `d p`, `t d e`, `x` and the custom-patch toggles need
+  a file the commit changed, and are crossed out on an unchanged file with the
+  reason. On a directory they act only on the changed files under it.
+- Filtering Commits to the selected file's history is `w p`, prefilled with
+  the file.
+
+## Tasks
+
+1. Full-listing mode: loader, merge with the diff's statuses, persistence
+   across refreshes, title, collapsed start, rendering, content in the main
+   view, and the `v` menu (including Reflog), with tests.
+2. Commands in the full listing on unchanged files and directories, with
+   tests.
+3. Guide, design and merge-guide updates; close this section.
 
 ## How this tracker works
 
