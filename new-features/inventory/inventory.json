@@ -543,7 +543,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 100,
+      "line": 105,
       "owner": "branchSyncPushFlow.showMenu",
       "fields": {
         "CommandID": "\"branch.push-selected.execute\"",
@@ -557,7 +557,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 106,
+      "line": 111,
       "owner": "branchSyncPushFlow.showMenu",
       "fields": {
         "CommandID": "\"branch.push-selected.remote\"",
@@ -571,7 +571,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 107,
+      "line": 112,
       "owner": "branchSyncPushFlow.showMenu",
       "fields": {
         "CommandID": "\"branch.push-selected.destination\"",
@@ -585,7 +585,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 108,
+      "line": 113,
       "owner": "branchSyncPushFlow.showMenu",
       "fields": {
         "CommandID": "\"branch.push-selected.set-upstream\"",
@@ -598,7 +598,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 109,
+      "line": 114,
       "owner": "branchSyncPushFlow.showMenu",
       "fields": {
         "CommandID": "\"branch.push-selected.submodules\"",
@@ -611,7 +611,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 117,
+      "line": 122,
       "owner": "branchSyncPushFlow.showMenu",
       "fields": {
         "CommandID": "\"branch.push-selected.force-with-lease\"",
@@ -625,7 +625,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 253,
+      "line": 258,
       "owner": "branchSyncPushFlow.reviewAmbiguousUpstream",
       "fields": {
         "CommandID": "\"branch.push-selected.upstream-cancel\"",
@@ -638,7 +638,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 254,
+      "line": 259,
       "owner": "branchSyncPushFlow.reviewAmbiguousUpstream",
       "fields": {
         "CommandID": "\"branch.push-selected.without-upstream\"",
@@ -652,7 +652,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 277,
+      "line": 282,
       "owner": "branchSyncPushFlow.review",
       "fields": {
         "CommandID": "\"branch.push-selected.force-confirm\"",
@@ -666,7 +666,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 283,
+      "line": 288,
       "owner": "branchSyncPushFlow.review",
       "fields": {
         "CommandID": "\"branch.push-selected.force-cancel\"",
@@ -680,7 +680,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 408,
+      "line": 413,
       "owner": "branchSyncPushFlow.execute",
       "fields": {
         "CommandID": "\"branch.push-selected.multiple-urls-approve\"",
@@ -694,7 +694,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 414,
+      "line": 419,
       "owner": "branchSyncPushFlow.execute",
       "fields": {
         "CommandID": "\"branch.push-selected.multiple-urls-cancel\"",
@@ -708,7 +708,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/branch_sync_push_flow.go",
-      "line": 417,
+      "line": 422,
       "owner": "branchSyncPushFlow.execute",
       "fields": {
         "CommandID": "fmt.Sprintf(\"branch.push-selected.destination-%d\", i)",
@@ -8822,7 +8822,7 @@
     {
       "kind": "SetEditKeybindings",
       "file": "pkg/gui/gui.go",
-      "line": 585,
+      "line": 592,
       "owner": "Gui.onUserConfigLoaded",
       "fields": {
         "arguments": "gui.g.SetEditKeybindings(\n\tconfig.GetValidatedKeyBindingKeys(userConfig.Keybinding.Universal.MoveWordLeft),\n\tconfig.GetValidatedKeyBindingKeys(userConfig.Keybinding.Universal.MoveWordRight),\n\tconfig.GetValidatedKeyBindingKeys(userConfig.Keybinding.Universal.BackspaceWord),\n\tconfig.GetValidatedKeyBindingKeys(userConfig.Keybinding.Universal.ForwardDeleteWord),\n)"
@@ -13904,7 +13904,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/gui.go",
-      "line": 807,
+      "line": 814,
       "owner": "parseScreenModeArg",
       "fields": {
         "key": "\"half\""
@@ -13913,7 +13913,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/gui.go",
-      "line": 809,
+      "line": 816,
       "owner": "parseScreenModeArg",
       "fields": {
         "key": "\"full\""
@@ -13922,7 +13922,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/gui.go",
-      "line": 823,
+      "line": 830,
       "owner": "initialContext",
       "fields": {
         "key": "appTypes.GitArgStatus"
@@ -13932,7 +13932,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/gui.go",
-      "line": 825,
+      "line": 832,
       "owner": "initialContext",
       "fields": {
         "key": "appTypes.GitArgBranch"
@@ -13942,7 +13942,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/gui.go",
-      "line": 827,
+      "line": 834,
       "owner": "initialContext",
       "fields": {
         "key": "appTypes.GitArgLog"
@@ -13952,7 +13952,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/gui.go",
-      "line": 829,
+      "line": 836,
       "owner": "initialContext",
       "fields": {
         "key": "appTypes.GitArgStash"
@@ -13962,7 +13962,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/gui.go",
-      "line": 1386,
+      "line": 1394,
       "owner": "Gui.terminalHasLightBackground",
       "fields": {
         "key": "\"dark\""
@@ -13971,7 +13971,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/gui.go",
-      "line": 1388,
+      "line": 1396,
       "owner": "Gui.terminalHasLightBackground",
       "fields": {
         "key": "\"light\""
