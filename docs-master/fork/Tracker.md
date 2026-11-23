@@ -15,13 +15,12 @@ sentences. Agreed behaviour (2026-11-23):
 Design: strings carry role markers (Go helpers that wrap text in private-use
 delimiters with a role). The popup and menu-prompt code resolves them to theme
 styles just before display, before the height is measured. Upstream call sites
-stay untouched; upstream English strings are marked through overrides in
-`fork_english.go` and recorded in the merge guide.
+stay untouched; upstream English strings are marked in place at startup by a
+table of substrings (`pkg/i18n/fork_upstream_prompt_marks.go`), whose test
+flags upstream wording drift.
 
 ## Tasks
 
-3. Mark the upstream confirmation prompts through `fork_english.go`
-   overrides.
 4. Mark the review and decision menu prompts.
 5. User guide, design principles and merge guide.
 

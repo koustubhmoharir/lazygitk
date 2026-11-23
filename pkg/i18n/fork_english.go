@@ -833,4 +833,6 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 	set.MustExitFilterModePrompt = "Command not available while the commit log is filtered. Exit filter mode?"
 	set.MoveCommitsToNewBranchFromMainPrompt = "This will take all unpushed commits and move them to a new branch (off of " + promptmark.Branch("{{.baseBranchName}}") + "). The current branch is then moved back to its upstream branch. Nothing is stashed: commit or discard tracked changes first. Do you want to continue?"
 	set.IntroPopupMessage = forkIntroPopupMessage
+	// Fork: mark values and warnings in upstream prompts without changing their text.
+	markUpstreamPrompts(set)
 }
