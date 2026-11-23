@@ -1,11 +1,23 @@
-# Current work: none
+# Current work: branch targets from selections
 
-Coloured confirmation prompts were finished on 2026-11-23; see the user
-guide (Appearance) and the design principles.
+Agreed with the user on 2026-11-23.
 
-## Open follow-ups
+- `n b` on a remote branch prefills the name prompt with the remote branch's
+  name without its remote (`origin/feature` gives `feature`). The text stays
+  editable; an existing local branch of that name gets the usual move warning.
+- In Commits, with one commit selected, `p` and `g l` act on the local branches
+  whose tip is that commit, not on the checked-out branch. One such branch is
+  used directly, as if selected in Branches. Several open a menu to choose
+  one: the checked-out branch first when it is among them, then the Branches
+  pane's order. With no branch at the commit, or a range selected, the keys
+  act on the checked-out branch as before. (TortoiseGit's log offers "Push
+  <branch>" for a commit with branch labels.)
 
-None.
+## Tasks
+
+1. `n b` prefill on remote branches, with an integration test.
+2. Commit-tip push and pull in Commits, with unit and integration tests.
+3. Guide, design and merge-guide updates; close this section.
 
 ## How this tracker works
 
