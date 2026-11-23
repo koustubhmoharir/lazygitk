@@ -50,8 +50,13 @@ func newBranchSyncPushFlow(target *branchSyncTarget, info git_commands.BranchSyn
 	// Fork: a branch with no tracking configuration starts with Set upstream on,
 	// so the push records its destination as the upstream. A branch whose
 	// tracking config exists, even for a remote that is no longer configured,
-	// starts off, so existing tracking is never replaced by default.
-	flow.opts.SetUpstream = !info.HasTrackingConfig
+	// starts off, so existing tracking is never replaced by default. A
+	// configured push remote (branch.<name>.pushRemote or remote.pushDefault)
+	// means a triangular workflow: pull from one place, push to another. Setting
+	// upstream on push would make the branch track its push destination, so it
+	// starts off and stays a visible toggle. The raw PushRemote counts here, not
+	// flow.opts.Remote, which SoleRemote may have filled in.
+	flow.opts.SetUpstream = !info.HasTrackingConfig && info.PushRemote == ""
 	return flow
 }
 

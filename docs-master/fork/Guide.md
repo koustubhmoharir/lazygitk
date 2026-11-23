@@ -576,7 +576,11 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
   different tracking and for force-with-lease. A new branch with no push
   remote uses the repository's only remote without prompting. Set upstream
   starts on for a branch with no tracking, so the push records the destination
-  as its upstream; it starts off for a branch that already tracks something.
+  as its upstream. It starts off for a branch that already tracks something,
+  and for one with a configured push remote (`branch.<name>.pushRemote` or
+  `remote.pushDefault`): that is a triangular setup, where the branch pulls
+  from one place and pushes to another, so the push destination should not
+  become its upstream.
 - In Commits, with one commit selected, push and pull act on the local branch
   whose tip is that commit, as if it were selected in Branches. When several
   branches point at it, a menu asks which: the checked-out branch is listed

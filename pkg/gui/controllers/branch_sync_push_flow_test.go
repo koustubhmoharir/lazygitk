@@ -200,6 +200,8 @@ func menuItem(t *testing.T, menu types.CreateMenuOptions, id string) *types.Menu
 
 func TestBranchSyncPushSelectedBranchExecutesWithoutConfirmation(t *testing.T) {
 	f := newBranchSyncPushFixture(t)
+	// Without a push remote, Set upstream starts on for a branch with no tracking.
+	branchSyncPushGit(t, f.root, "config", "--unset", "branch.topic.pushRemote")
 	source := branchSyncSource{name: "topic", selected: true}
 	if err := f.sync.pushBranchSource(source); err != nil {
 		t.Fatal(err)
@@ -1115,16 +1117,23 @@ func TestBranchSyncPushDefaultsToSoleRemote(t *testing.T) {
 func TestBranchSyncPushDefaultsSetUpstreamWithoutTracking(t *testing.T) {
 	for _, tc := range []struct {
 		name        string
+		pushRemote  string
 		tracking    [][]string
 		wantSetUp   bool
 		wantSummary string
 	}{
-		{name: "no tracking", wantSetUp: true, wantSummary: "Set upstream for selected branch: true"},
+		{name: "no tracking, sole remote", wantSetUp: true, wantSummary: "Set upstream for selected branch: true"},
+		{name: "no tracking, push remote", pushRemote: "origin", wantSetUp: false, wantSummary: "Set upstream for selected branch: false"},
+		{name: "tracking, push remote", pushRemote: "origin", tracking: [][]string{{"config", "branch.topic.remote", "origin"}, {"config", "branch.topic.merge", "refs/heads/old"}}, wantSetUp: false, wantSummary: "Set upstream for selected branch: false"},
 		{name: "existing tracking", tracking: [][]string{{"config", "branch.topic.remote", "origin"}, {"config", "branch.topic.merge", "refs/heads/old"}}, wantSetUp: false, wantSummary: "Set upstream for selected branch: false"},
 		{name: "dangling tracking config", tracking: [][]string{{"config", "branch.topic.remote", "oldremote"}, {"config", "--add", "branch.topic.merge", "refs/heads/old-one"}}, wantSetUp: false, wantSummary: "Set upstream for selected branch: false"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			f := newBranchSyncPushFixture(t)
+			branchSyncPushGit(t, f.root, "config", "--unset", "branch.topic.pushRemote")
+			if tc.pushRemote != "" {
+				branchSyncPushGit(t, f.root, "config", "branch.topic.pushRemote", tc.pushRemote)
+			}
 			for _, args := range tc.tracking {
 				branchSyncPushGit(t, f.root, args...)
 			}
