@@ -10719,7 +10719,7 @@
       "line": 19,
       "owner": "SyncController.branchSyncSelectedContext",
       "fields": {
-        "key": "context.SUB_COMMITS_CONTEXT_KEY"
+        "key": "context.LOCAL_BRANCHES_CONTEXT_KEY"
       }
     },
     {
@@ -10737,7 +10737,7 @@
       "line": 19,
       "owner": "SyncController.branchSyncSelectedContext",
       "fields": {
-        "key": "context.LOCAL_BRANCHES_CONTEXT_KEY"
+        "key": "context.SUB_COMMITS_CONTEXT_KEY"
       }
     },
     {
@@ -11154,7 +11154,7 @@
       "line": 1007,
       "owner": "FilesController.openFileConflictMenu",
       "fields": {
-        "key": "\"UD\""
+        "key": "\"DU\""
       }
     },
     {
@@ -11163,16 +11163,7 @@
       "line": 1007,
       "owner": "FilesController.openFileConflictMenu",
       "fields": {
-        "key": "\"DU\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/controllers/files_controller.go",
-      "line": 1011,
-      "owner": "FilesController.openFileConflictMenu",
-      "fields": {
-        "key": "\"UA\""
+        "key": "\"UD\""
       }
     },
     {
@@ -11182,6 +11173,15 @@
       "owner": "FilesController.openFileConflictMenu",
       "fields": {
         "key": "\"AU\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/files_controller.go",
+      "line": 1011,
+      "owner": "FilesController.openFileConflictMenu",
+      "fields": {
+        "key": "\"UA\""
       }
     },
     {
@@ -11565,7 +11565,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/fork_commit_file_content.go",
-      "line": 27,
+      "line": 23,
       "owner": "CommitFilesController.renderFullListingFileContent",
       "fields": {
         "key": "context.CommitFileShowContent"
@@ -11574,10 +11574,46 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/fork_commit_file_content.go",
-      "line": 30,
+      "line": 26,
       "owner": "CommitFilesController.renderFullListingFileContent",
       "fields": {
         "key": "context.CommitFileShowDeletedContent"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/fork_commit_folder.go",
+      "line": 33,
+      "owner": "CommitFilesController.renderFullListingFolderOrSubmodule",
+      "fields": {
+        "key": "context.CommitFileShowFolder"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/fork_commit_folder.go",
+      "line": 35,
+      "owner": "CommitFilesController.renderFullListingFolderOrSubmodule",
+      "fields": {
+        "key": "context.CommitFileShowSubmodule"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/fork_commit_folder_listing.go",
+      "line": 53,
+      "owner": "folderListingRows",
+      "fields": {
+        "key": "\"tree\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/fork_commit_folder_listing.go",
+      "line": 55,
+      "owner": "folderListingRows",
+      "fields": {
+        "key": "\"commit\""
       }
     },
     {
@@ -11829,7 +11865,7 @@
       "line": 332,
       "owner": "ConfirmationHelper.ResizeCurrentPopupPanels",
       "fields": {
-        "key": "self.c.Contexts().Suggestions"
+        "key": "self.c.Contexts().Prompt"
       }
     },
     {
@@ -11838,7 +11874,7 @@
       "line": 332,
       "owner": "ConfirmationHelper.ResizeCurrentPopupPanels",
       "fields": {
-        "key": "self.c.Contexts().Prompt"
+        "key": "self.c.Contexts().Suggestions"
       }
     },
     {
@@ -13637,7 +13673,7 @@
       "line": 359,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"selection.list.extend-down\""
+        "key": "\"selection.diff.extend-down\""
       }
     },
     {
@@ -13646,7 +13682,7 @@
       "line": 359,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"selection.diff.extend-down\""
+        "key": "\"selection.list.extend-down\""
       }
     },
     {
@@ -14088,7 +14124,16 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 175,
+      "line": 34,
+      "owner": "Gui.runTaskForView",
+      "fields": {
+        "key": "*types.LoadedStringTask"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/main_panels.go",
+      "line": 179,
       "owner": "Gui.handOverMainSection",
       "fields": {
         "key": "gui.State.MainPanes == types.MainPaneOnly \u0026\u0026 panes == types.SecondaryPaneOnly"
@@ -14097,7 +14142,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 177,
+      "line": 181,
       "owner": "Gui.handOverMainSection",
       "fields": {
         "key": "gui.State.MainPanes == types.SecondaryPaneOnly \u0026\u0026 panes == types.MainPaneOnly"
@@ -14106,7 +14151,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 190,
+      "line": 194,
       "owner": "mainPanesFor",
       "fields": {
         "key": "opts.Secondary == nil"
@@ -14115,7 +14160,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 192,
+      "line": 196,
       "owner": "mainPanesFor",
       "fields": {
         "key": "opts.Main == nil"
@@ -14124,7 +14169,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 308,
+      "line": 312,
       "owner": "diffTaskCommandKey",
       "fields": {
         "key": "*types.RunCommandTask"
@@ -14133,7 +14178,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 310,
+      "line": 314,
       "owner": "diffTaskCommandKey",
       "fields": {
         "key": "*types.RunDiffRendererTask"
@@ -14142,7 +14187,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 522,
+      "line": 526,
       "owner": "Gui.mainContextForView",
       "fields": {
         "key": "gui.Views.Main"
@@ -14151,7 +14196,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 524,
+      "line": 528,
       "owner": "Gui.mainContextForView",
       "fields": {
         "key": "gui.Views.Secondary"
@@ -14553,15 +14598,6 @@
       "line": 583,
       "owner": "getHashColor",
       "fields": {
-        "key": "models.StatusConflicted"
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/presentation/commits.go",
-      "line": 583,
-      "owner": "getHashColor",
-      "fields": {
         "key": "models.StatusRebasing"
       }
     },
@@ -14572,6 +14608,15 @@
       "owner": "getHashColor",
       "fields": {
         "key": "models.StatusCherryPickingOrReverting"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/presentation/commits.go",
+      "line": 583,
+      "owner": "getHashColor",
+      "fields": {
+        "key": "models.StatusConflicted"
       }
     },
     {
@@ -14754,7 +14799,7 @@
       "line": 330,
       "owner": "getColorForChangeStatus",
       "fields": {
-        "key": "\"M\""
+        "key": "\"R\""
       }
     },
     {
@@ -14763,7 +14808,7 @@
       "line": 330,
       "owner": "getColorForChangeStatus",
       "fields": {
-        "key": "\"R\""
+        "key": "\"M\""
       }
     },
     {
