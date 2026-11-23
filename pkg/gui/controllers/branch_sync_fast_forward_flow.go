@@ -10,6 +10,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 // fastForwardRun is one `g f` invocation (roadmap item 16). Each captured
@@ -273,7 +274,7 @@ func (run *fastForwardRun) finishUI() error {
 	}
 	lines := make([]string, 0, len(run.skipped))
 	for _, skip := range run.skipped {
-		lines = append(lines, skip.name+": "+skip.reason)
+		lines = append(lines, promptmark.Branch(skip.name)+": "+skip.reason)
 	}
 	run.target.c.Alert(run.target.c.Tr.BranchSyncFastForwardSkippedTitle, strings.Join(lines, "\n"))
 	return nil

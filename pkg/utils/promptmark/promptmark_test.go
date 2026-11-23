@@ -120,3 +120,42 @@ func TestMalformedDelimiterPairsDoNotPanic(t *testing.T) {
 		}, "input %q", in)
 	}
 }
+
+func TestRefAsClassifiesByKindOfRef(t *testing.T) {
+	const sha1 = "0123456789abcdef0123456789abcdef01234567"
+	const sha256 = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+	cases := map[string]struct {
+		ref  string
+		role rune
+	}{
+		"local branch ref":     {"refs/heads/main", 'b'},
+		"remote branch ref":    {"refs/remotes/origin/main", 'r'},
+		"tag ref":              {"refs/tags/v1.0", 't'},
+		"full sha-1 object id": {sha1, 'h'},
+		"full sha-256 id":      {sha256, 'h'},
+		"short branch name":    {"main", 'b'},
+		"short hash":           {"0123456", 'b'},
+		"sha-1 length, upper":  {"0123456789ABCDEF0123456789ABCDEF01234567", 'b'},
+		"sha-1 length, other":  {"0123456789abcdef0123456789abcdef0123456g", 'b'},
+		"sha-1 minus one":      {sha1[:39], 'b'},
+		"sha-1 plus one":       {sha1 + "0", 'b'},
+		"sha-256 minus one":    {sha256[:63], 'b'},
+		"empty ref":            {"", 'b'},
+		"HEAD":                 {"HEAD", 'b'},
+		"upstream expression":  {"@{upstream}", 'b'},
+	}
+	for name, c := range cases {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, "<"+string(c.role)+":x>", Resolve(RefAs(c.ref, "x"), brackets))
+			assert.Equal(t, "x", Strip(RefAs(c.ref, "x")))
+		})
+	}
+}
+
+func TestRefMarksTheRefItself(t *testing.T) {
+	assert.Equal(t, "<b:refs/heads/main>", Resolve(Ref("refs/heads/main"), brackets))
+	assert.Equal(t, "<r:refs/remotes/origin/main>", Resolve(Ref("refs/remotes/origin/main"), brackets))
+	assert.Equal(t, "<t:refs/tags/v1.0>", Resolve(Ref("refs/tags/v1.0"), brackets))
+	assert.Equal(t, "<h:0123456789abcdef0123456789abcdef01234567>", Resolve(Ref("0123456789abcdef0123456789abcdef01234567"), brackets))
+	assert.Equal(t, "<b:feature>", Resolve(Ref("feature"), brackets))
+}

@@ -13,6 +13,7 @@ import (
 	guicontext "github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 func (ui *branchActionMergeUI) LogCommand(string, bool) {}
@@ -276,7 +277,7 @@ func TestBranchActionDeleteFlowBothWarnsAndKeepsLocalOnRemoteRejection(t *testin
 	if len(f.ui.confirms) != 1 {
 		t.Fatalf("compound delete confirmations=%d", len(f.ui.confirms))
 	}
-	prompt := f.ui.confirms[0].Prompt
+	prompt := promptmark.Strip(f.ui.confirms[0].Prompt)
 	if !strings.Contains(prompt, fmt.Sprintf("%q", "refs/heads/topic")) || !strings.Contains(prompt, f.sourceOID) || !strings.Contains(prompt, "origin -> refs/heads/topic") {
 		t.Fatalf("compound approval omitted force or remote destination: %q", prompt)
 	}
@@ -336,7 +337,7 @@ func TestBranchActionDeleteFlowBothExcludesScheduledCacheAndPreservesCheckout(t 
 	if len(f.ui.confirms) != 1 {
 		t.Fatalf("compound confirmations=%d", len(f.ui.confirms))
 	}
-	prompt := f.ui.confirms[0].Prompt
+	prompt := promptmark.Strip(f.ui.confirms[0].Prompt)
 	if !strings.Contains(prompt, "history not preserved") || !strings.Contains(prompt, "Delete these local branches anyway?") {
 		t.Fatalf("compound warning omitted force-delete rationale: %q", prompt)
 	}

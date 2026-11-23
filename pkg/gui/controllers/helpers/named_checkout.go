@@ -10,6 +10,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 func (self *RefsHelper) namedCheckoutItem(oid string) *types.MenuItem {
@@ -110,10 +111,10 @@ func (flow *namedCheckoutFlow) present(plan git_commands.NamedCheckoutPlan, chan
 	}
 	head := "HEAD"
 	if plan.HeadRef() != "" {
-		head = fmt.Sprintf("%q", strings.TrimPrefix(plan.HeadRef(), "refs/heads/"))
+		head = promptmark.Branch(fmt.Sprintf("%q", strings.TrimPrefix(plan.HeadRef(), "refs/heads/")))
 	}
 	if plan.HeadOID() != "" {
-		head += " (" + utils.ShortHash(plan.HeadOID()) + ")"
+		head += " (" + promptmark.Hash(utils.ShortHash(plan.HeadOID())) + ")"
 	} else {
 		head += " (" + flow.c.Tr.NoCommitsThisBranch + ")"
 	}

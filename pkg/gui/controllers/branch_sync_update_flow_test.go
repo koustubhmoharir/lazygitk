@@ -9,6 +9,7 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 func TestBranchSyncUpdateSelectedBranchFetchAndFastForward(t *testing.T) {
@@ -223,7 +224,7 @@ func TestBranchSyncUpdateQueuedLocalPreparationCapturesInputs(t *testing.T) {
 	if len(f.ui.confirms) != 1 {
 		t.Fatalf("confirmations=%d", len(f.ui.confirms))
 	}
-	if !strings.Contains(f.ui.confirms[0].Prompt, `local branch "topic"`) {
+	if !strings.Contains(promptmark.Strip(f.ui.confirms[0].Prompt), `local branch "topic"`) {
 		t.Fatalf("review used mutable flow data: %s", f.ui.confirms[0].Prompt)
 	}
 }

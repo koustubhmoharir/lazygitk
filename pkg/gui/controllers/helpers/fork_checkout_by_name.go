@@ -9,6 +9,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 // Fork: the palette action "Checkout by name". Upstream's CheckoutRef and
@@ -108,7 +109,7 @@ func (flow *CheckoutByNameFlow) confirmCreate(name string) error {
 	c := flow.refs.c
 	c.Confirm(types.ConfirmOpts{
 		Title:       c.Tr.BranchNotFoundTitle,
-		Prompt:      fmt.Sprintf("%s %s?", c.Tr.BranchNotFoundPrompt, name),
+		Prompt:      fmt.Sprintf("%s %s?", c.Tr.BranchNotFoundPrompt, promptmark.Branch(name)),
 		HandleClose: flow.CheckRepository,
 		HandleConfirm: func() error {
 			if err := flow.CheckRepository(); err != nil {

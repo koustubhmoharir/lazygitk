@@ -16,6 +16,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/common"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 // fakeIGuiCommon keeps this test focused on the popup/worker seam. Any GUI
@@ -281,7 +282,7 @@ func TestNamedCheckoutHeadIdentityChangeRequiresFreshConfirmation(t *testing.T) 
 	if len(f.ui.confirms) != 1 {
 		t.Fatal("expected initial move confirmation")
 	}
-	if !strings.Contains(f.ui.confirms[0].Prompt, `"main" (`+f.oid[:8]+`)`) {
+	if !strings.Contains(promptmark.Strip(f.ui.confirms[0].Prompt), `"main" (`+f.oid[:8]+`)`) {
 		t.Fatalf("initial confirmation omitted current checkout identity: %s", f.ui.confirms[0].Prompt)
 	}
 	if err := f.ui.confirms[0].HandleConfirm(); err != nil {
@@ -302,7 +303,7 @@ func TestNamedCheckoutHeadIdentityChangeRequiresFreshConfirmation(t *testing.T) 
 	if len(f.ui.confirms) != 2 || f.ui.confirms[1].Title != f.c.Tr.NamedCheckoutChangedTitle {
 		t.Fatal("HEAD identity change did not require fresh confirmation")
 	}
-	if !strings.Contains(f.ui.confirms[1].Prompt, `"same-oid" (`+f.oid[:8]+`)`) {
+	if !strings.Contains(promptmark.Strip(f.ui.confirms[1].Prompt), `"same-oid" (`+f.oid[:8]+`)`) {
 		t.Fatalf("fresh confirmation omitted changed HEAD identity/OID: %s", f.ui.confirms[1].Prompt)
 	}
 	if len(f.ui.workers) != 0 {

@@ -8,6 +8,7 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -187,7 +188,7 @@ func TestCheckoutByNameUnknownNameOffersCreationWithoutCheckout(t *testing.T) {
 		t.Fatalf("expected the create confirmation, got %d", len(ui.confirms))
 	}
 	assert.Equal(t, f.c.Tr.BranchNotFoundTitle, ui.confirms[0].Title)
-	assert.Equal(t, f.c.Tr.BranchNotFoundPrompt+" new-branch?", ui.confirms[0].Prompt)
+	assert.Equal(t, f.c.Tr.BranchNotFoundPrompt+" "+promptmark.Branch("new-branch")+"?", ui.confirms[0].Prompt)
 	ref, head := checkoutByNameHead(t, f)
 	assert.Equal(t, "refs/heads/main", ref)
 	assert.Equal(t, f.oid, head)

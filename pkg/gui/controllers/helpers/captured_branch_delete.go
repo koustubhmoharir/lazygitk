@@ -10,6 +10,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 	"github.com/samber/lo"
 )
 
@@ -144,7 +145,7 @@ func (flow *capturedBranchDeleteFlow) checkNative() error {
 func (flow *capturedBranchDeleteFlow) prompt() string {
 	lines := make([]string, 0, len(flow.context.Targets()))
 	for _, target := range flow.context.Targets() {
-		lines = append(lines, fmt.Sprintf("%s (%s)", target.SourceRef(), target.SourceOID()))
+		lines = append(lines, fmt.Sprintf("%s (%s)", promptmark.Branch(target.SourceRef()), promptmark.Hash(target.SourceOID())))
 	}
 	head := fmt.Sprintf(flow.repository.c.Tr.BranchActionDeleteSources, strings.Join(lines, "\n"))
 	target := flow.context.Targets()[0]
@@ -272,7 +273,7 @@ func quotedSources(plan git_commands.BranchActionLocalDeletePlan) []string {
 	var lines []string
 	for _, source := range plan.Sources() {
 		if !source.Merged {
-			lines = append(lines, fmt.Sprintf("%q (%s)", source.Info.FullRef, source.Target.SourceOID()))
+			lines = append(lines, fmt.Sprintf("%s (%s)", promptmark.Branch(fmt.Sprintf("%q", source.Info.FullRef)), promptmark.Hash(source.Target.SourceOID())))
 		}
 	}
 	return lines
@@ -434,7 +435,7 @@ func (flow *capturedBranchDeleteFlow) prepareRemote(mode capturedBranchDeleteMod
 func (flow *capturedBranchDeleteFlow) remotePromptLines() string {
 	lines := make([]string, 0, len(flow.remoteTargets))
 	for _, selection := range flow.remoteTargets {
-		lines = append(lines, fmt.Sprintf("%q: %s -> %s", selection.Target.SourceRef(), selection.Remote, selection.RemoteRef))
+		lines = append(lines, fmt.Sprintf("%s: %s -> %s", promptmark.Branch(fmt.Sprintf("%q", selection.Target.SourceRef())), promptmark.Remote(selection.Remote), promptmark.RemoteBranch(selection.RemoteRef)))
 	}
 	return strings.Join(lines, "\n")
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 	"github.com/samber/lo"
 )
 
@@ -117,7 +118,7 @@ func forkReviewFetchRefspecs(c *ControllerCommon, remotes []string, fetch func()
 
 func forkFetchRefspecPrompt(c *ControllerCommon, risks []git_commands.FetchRefspecRisk) string {
 	lines := lo.Map(risks, func(risk git_commands.FetchRefspecRisk, _ int) string {
-		return fmt.Sprintf("- %s: %s", risk.Remote, risk.Refspec)
+		return fmt.Sprintf("- %s: %s", promptmark.Remote(risk.Remote), risk.Refspec)
 	})
 	return fmt.Sprintf(c.Tr.ForkFetchRefspecPrompt, strings.Join(lines, "\n"))
 }

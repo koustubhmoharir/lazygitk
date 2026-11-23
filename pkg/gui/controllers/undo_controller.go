@@ -8,6 +8,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 // Quick summary of how this all works:
@@ -118,7 +119,7 @@ func (self *UndoController) reflogUndo() error {
 			// existing branch, so this confirmation is the only one.
 			self.c.Confirm(types.ConfirmOpts{
 				Title:  self.c.Tr.Actions.Undo,
-				Prompt: fmt.Sprintf(self.c.Tr.UndoCheckoutPrompt, action.from),
+				Prompt: fmt.Sprintf(self.c.Tr.UndoCheckoutPrompt, promptmark.Ref(action.from)),
 				HandleConfirm: func() error {
 					self.c.LogAction(self.c.Tr.Actions.Undo)
 					return self.c.Helpers().Refs.CheckoutReflogTarget(action.from, undoEnvVars)
@@ -159,7 +160,7 @@ func (self *UndoController) reflogRedo() error {
 			// Fork: replaces CheckoutRef, as in reflogUndo. See CheckoutReflogTarget.
 			self.c.Confirm(types.ConfirmOpts{
 				Title:  self.c.Tr.Actions.Redo,
-				Prompt: fmt.Sprintf(self.c.Tr.UndoCheckoutPrompt, action.to),
+				Prompt: fmt.Sprintf(self.c.Tr.UndoCheckoutPrompt, promptmark.Ref(action.to)),
 				HandleConfirm: func() error {
 					self.c.LogAction(self.c.Tr.Actions.Redo)
 					return self.c.Helpers().Refs.CheckoutReflogTarget(action.to, redoEnvVars)

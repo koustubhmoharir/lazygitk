@@ -9,6 +9,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 type capturedMergeChoice struct {
@@ -79,8 +80,11 @@ func (flow *capturedMergeFlow) check() error {
 func (flow *capturedMergeFlow) prompt(choice capturedMergeChoice) string {
 	target := flow.review.Target()
 	mode := choice.label
+	sourceRef := target.SourceRef()
 	text := fmt.Sprintf(flow.repository.c.Tr.BranchActionMergeReviewPrompt,
-		ShortBranchName(target.HeadRef()), target.HeadOID(), ShortBranchName(target.SourceRef()), target.SourceRef(), target.SourceOID(), mode)
+		ShortBranchName(target.HeadRef()), target.HeadOID(),
+		promptmark.RefAs(sourceRef, fmt.Sprintf("%q", ShortBranchName(sourceRef))), promptmark.RefAs(sourceRef, sourceRef),
+		target.SourceOID(), mode)
 	args := flow.review.Arguments()
 	if len(args) > 0 {
 		quoted := make([]string, len(args))

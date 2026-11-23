@@ -14,6 +14,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 // branchSyncFastForwardUI records the end-of-run alert. The pull fixture's UI
@@ -95,7 +96,7 @@ func branchSyncFastForwardSingleAlert(t *testing.T, f *branchSyncPushFixture, ui
 	if ui.alerts[0].title != f.sync.c.Tr.BranchSyncFastForwardSkippedTitle {
 		t.Fatalf("alert title %q", ui.alerts[0].title)
 	}
-	return strings.Split(ui.alerts[0].message, "\n")
+	return strings.Split(promptmark.Strip(ui.alerts[0].message), "\n")
 }
 
 func branchSyncFastForwardWorktreeBytes(t *testing.T, root string) ([]byte, []byte) {

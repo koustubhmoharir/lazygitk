@@ -20,7 +20,6 @@ stay untouched; upstream English strings are marked through overrides in
 
 ## Tasks
 
-2. Mark the fork's confirmation prompts (fork strings and fork call sites).
 3. Mark the upstream confirmation prompts through `fork_english.go`
    overrides.
 4. Mark the review and decision menu prompts.

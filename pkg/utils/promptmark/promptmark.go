@@ -76,6 +76,39 @@ func Count(s string) string { return mark(RoleCount, s) }
 // Warn marks s as a destructive or irreversible consequence.
 func Warn(s string) string { return mark(RoleWarn, s) }
 
+// RefAs marks text that names ref with the role of the kind of ref: a full ref
+// by its prefix (refs/heads/ is a branch, refs/remotes/ a remote branch,
+// refs/tags/ a tag), a full object ID as a hash, and anything else, such as a
+// short branch name from a reflog entry, as a branch.
+func RefAs(ref, text string) string {
+	switch {
+	case strings.HasPrefix(ref, "refs/remotes/"):
+		return RemoteBranch(text)
+	case strings.HasPrefix(ref, "refs/tags/"):
+		return Tag(text)
+	case isFullObjectID(ref):
+		return Hash(text)
+	default:
+		return Branch(text)
+	}
+}
+
+// Ref marks ref, as its own text, with the role of the kind of ref. See RefAs.
+func Ref(ref string) string { return RefAs(ref, ref) }
+
+// isFullObjectID reports whether s is a full SHA-1 or SHA-256 object ID.
+func isFullObjectID(s string) bool {
+	if len(s) != 40 && len(s) != 64 {
+		return false
+	}
+	for _, r := range s {
+		if (r < '0' || r > '9') && (r < 'a' || r > 'f') {
+			return false
+		}
+	}
+	return true
+}
+
 func mark(role Role, s string) string {
 	if s == "" {
 		return ""

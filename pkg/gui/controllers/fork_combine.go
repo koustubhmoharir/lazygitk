@@ -13,6 +13,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 func (self *BasicCommitsController) combineSelectedBinding() *types.Binding {
@@ -113,7 +114,7 @@ func (flow *forkCombineFlow) review(plan git_commands.CapturedCombinePlan, chang
 	if len(paths) > 0 {
 		quoted := make([]string, len(paths))
 		for i, path := range paths {
-			quoted[i] = fmt.Sprintf("%q", path)
+			quoted[i] = promptmark.Path(fmt.Sprintf("%q", path))
 		}
 		flow.c.Confirm(types.ConfirmOpts{
 			Title:         flow.c.Tr.CombineIgnoredTitle,
@@ -135,7 +136,7 @@ func (flow *forkCombineFlow) reviewApproved(plan git_commands.CapturedCombinePla
 	lines := make([]string, 0, len(selected))
 	for i, commit := range selected {
 		subject, _, _ := strings.Cut(commit.Message, "\n")
-		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, commit.OID, subject))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, promptmark.Hash(commit.OID), subject))
 	}
 	headRef := strings.TrimPrefix(plan.HeadRef(), "refs/heads/")
 	if headRef == "" {

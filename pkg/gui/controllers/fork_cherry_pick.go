@@ -11,6 +11,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 func forkCherryPickBinding(c *ControllerCommon) *types.Binding {
@@ -132,7 +133,7 @@ func (flow *forkCherryPickFlow) review(plan git_commands.CherryPickPlan, changed
 	}
 	if risks := plan.IgnoredFiles(); len(risks) > 0 && !flow.ignoredApproved {
 		flow.c.Confirm(types.ConfirmOpts{
-			Title: flow.c.Tr.SelectedRebaseIgnoredTitle, Prompt: flow.c.Tr.CherryPickIgnoredPrompt + "\n\n- " + strings.Join(risks, "\n- "),
+			Title: flow.c.Tr.SelectedRebaseIgnoredTitle, Prompt: flow.c.Tr.CherryPickIgnoredPrompt + "\n\n- " + strings.Join(markedPaths(risks), "\n- "),
 			HandleClose: flow.checkRepository,
 			HandleConfirm: func() error {
 				flow.ignoredApproved = true
@@ -151,9 +152,9 @@ func (flow *forkCherryPickFlow) review(plan git_commands.CherryPickPlan, changed
 	}
 	lines := make([]string, 0, len(plan.Commits()))
 	for i, commit := range plan.Commits() {
-		line := fmt.Sprintf("%d. %s %s", i+1, commit.OID, commit.Subject)
+		line := fmt.Sprintf("%d. %s %s", i+1, promptmark.Hash(commit.OID), commit.Subject)
 		if len(commit.Parents) > 1 {
-			line += fmt.Sprintf(flow.c.Tr.CherryPickMergeParentDetail, plan.Mainline(), commit.Parents[plan.Mainline()-1])
+			line += fmt.Sprintf(flow.c.Tr.CherryPickMergeParentDetail, plan.Mainline(), promptmark.Hash(commit.Parents[plan.Mainline()-1]))
 		}
 		lines = append(lines, line)
 	}
@@ -163,6 +164,15 @@ func (flow *forkCherryPickFlow) review(plan git_commands.CherryPickPlan, changed
 	}
 	flow.c.Confirm(types.ConfirmOpts{Title: flow.c.Tr.CherryPick, Prompt: prompt, HandleClose: flow.checkRepository, HandleConfirm: func() error { return flow.apply(plan) }})
 	return nil
+}
+
+// markedPaths marks each ignored path in a prompt list.
+func markedPaths(paths []string) []string {
+	marked := make([]string, len(paths))
+	for i, path := range paths {
+		marked[i] = promptmark.Path(path)
+	}
+	return marked
 }
 
 func (flow *forkCherryPickFlow) apply(plan git_commands.CherryPickPlan) error {

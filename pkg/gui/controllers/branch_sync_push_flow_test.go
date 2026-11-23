@@ -18,6 +18,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 func TestBranchSyncPushSafeURLDisplay(t *testing.T) {
@@ -1190,7 +1191,7 @@ func TestBranchSyncPushForceLeaseReviewNamesUnmatchedTracking(t *testing.T) {
 			if err := f.ui.runUI(t); err != nil {
 				t.Fatal(err)
 			}
-			prompt := f.ui.menus[len(f.ui.menus)-1].Prompt
+			prompt := promptmark.Strip(f.ui.menus[len(f.ui.menus)-1].Prompt)
 			if !strings.Contains(prompt, "using lease \"refs/remotes/origin/topic\"") {
 				t.Fatalf("lease review does not name the tracking lease: %s", prompt)
 			}

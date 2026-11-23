@@ -7,6 +7,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 // Fork: a hard reset reviews the untracked and ignored files it would overwrite
@@ -225,8 +226,11 @@ func (flow *branchActionResetFlow) prompt() string {
 	if oid == "" {
 		oid = flow.target.c.Tr.BranchActionUnbornHead
 	}
+	sourceRef := flow.snapshot.SourceRef()
 	return fmt.Sprintf(flow.target.c.Tr.BranchActionResetReviewPrompt,
-		head, oid, flow.label, flow.snapshot.SourceRef(), flow.snapshot.SourceOID())
+		promptmark.Branch(fmt.Sprintf("%q", head)), promptmark.Hash(oid),
+		promptmark.RefAs(sourceRef, fmt.Sprintf("%q", flow.label)), promptmark.RefAs(sourceRef, sourceRef),
+		promptmark.Hash(flow.snapshot.SourceOID()))
 }
 
 func (flow *branchActionResetFlow) menu() error {

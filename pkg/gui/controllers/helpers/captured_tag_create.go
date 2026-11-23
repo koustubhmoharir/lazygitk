@@ -9,6 +9,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 type capturedTagCreateFlow struct {
@@ -117,7 +118,7 @@ func (flow *capturedTagCreateFlow) review() error {
 		"confirmKey": c.UserConfig().Keybinding.Universal.Confirm.String(),
 	})
 	prompt += "\n\n" + fmt.Sprintf(c.Tr.BranchActionTagCreateReview,
-		flow.plan.Name(), flow.plan.OldOID(), flow.plan.Target().SourceRef(), flow.plan.Target().SourceOID())
+		flow.plan.Name(), flow.plan.OldOID(), promptmark.Ref(flow.plan.Target().SourceRef()), flow.plan.Target().SourceOID())
 	c.Confirm(types.ConfirmOpts{
 		Title: c.Tr.ForceTag, Prompt: prompt, HandleClose: flow.cancel,
 		HandleConfirm: func() error { return flow.execute(flow.plan.WithOverwriteApproved()) },
