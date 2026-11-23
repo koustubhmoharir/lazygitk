@@ -1,27 +1,7 @@
-# Current work: coloured confirmation prompts
+# Current work: none
 
-Confirmation popups are hard to read: the whole prompt is bold and the values
-in it (branch names, hashes, paths, keys) are plain text inside long
-sentences. Agreed behaviour (2026-11-23):
-
-- The prompt sentence is regular weight. Values are coloured as the panes
-  colour them: local branch cyan bold (branch heads in Commits); remote and
-  remote branch yellow (upstream in Branches); tag magenta bold; hash yellow;
-  path bold; key in the options bar's key colour; count bold.
-- Destructive or irreversible consequences ("is not fully merged", "cannot
-  be undone", "force push") are bold red.
-- Error alerts keep their existing red bold.
-
-Design: strings carry role markers (Go helpers that wrap text in private-use
-delimiters with a role). The popup and menu-prompt code resolves them to theme
-styles just before display, before the height is measured. Upstream call sites
-stay untouched; upstream English strings are marked in place at startup by a
-table of substrings (`pkg/i18n/fork_upstream_prompt_marks.go`), whose test
-flags upstream wording drift.
-
-## Tasks
-
-5. User guide, design principles and merge guide.
+Coloured confirmation prompts were finished on 2026-11-23; see the user
+guide (Appearance) and the design principles.
 
 ## Open follow-ups
 

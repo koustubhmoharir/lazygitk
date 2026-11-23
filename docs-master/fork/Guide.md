@@ -631,6 +631,11 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
   brighter for the changed words, so that syntax colours such as comments stay
   readable; with only 256 colours, delta keeps its own. A delta setting in
   your git config (`[delta]` or a delta feature) wins.
+- Confirmation and menu prompts are regular weight, with their values in the
+  colours the panes use: local branches cyan bold, remotes, remote branches
+  and hashes yellow, tags magenta bold, paths and counts bold, and keys in the
+  options bar's colour. Consequences that destroy work or cannot be undone
+  ("is not fully merged", "cannot be undone", "force push") are bold red.
 - lazygitk uses true colour when `COLORTERM` says the terminal has it, or
   when the terminal says so itself at startup, as Windows Terminal does
   inside WSL, where `COLORTERM` is usually unset.

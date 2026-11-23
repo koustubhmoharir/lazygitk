@@ -137,6 +137,10 @@ recorded here or in the user guide.
 - Focusing a diff never changes its renderer. Acting on lines requires a
   renderer whose rows can be placed in the file; where one can't, the line
   actions say so instead.
+- Prompts highlight what the decision is about: each value in a confirmation
+  or menu prompt is styled by its kind, as the panes style it, and each
+  destructive or irreversible consequence is bold red. The sentence itself is
+  plain. New prompts mark their values and consequences (`promptmark`).
 - **Focus never rearranges the screen.** A screen mode enlarges the area
   (side panels or main views) where `+` was pressed. Moving focus, by key or
   click, keeps the layout; only focusing a pane that the layout hides shrinks
