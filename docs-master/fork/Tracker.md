@@ -23,11 +23,22 @@ the Go equivalent is chroma, which ships Catppuccin styles.
 - A failing command shows its error in the main view, as a failing diff
   renderer does; there is no notice when no command is configured.
 
+- In the full listing, a selected folder (or the root) shows a folder listing
+  in the main view instead of a diff: its immediate entries, subfolders first
+  with a trailing `/`, then files with their size; files the commit changed or
+  deleted show their status letter. The title names the folder and the number
+  of entries. A selected submodule shows the commit it records at this commit
+  (hash, and the subject when the submodule is checked out and has it), and
+  the previous one when the commit changed it. The changed-files listing keeps
+  showing diffs. (TortoiseGit's Repository Browser shows a folder's entries.)
+
 ## Tasks
 
 1. Command renderers (`{{filename}}`, stdin), with tests. Until then a
    `stdinFilter` entry renders as plain text.
-2. Guide, design and merge-guide updates; close this section.
+2. Folder listing and submodule commit in the full listing's main view, with
+   tests.
+3. Guide, design and merge-guide updates; close this section.
 
 ## How this tracker works
 
