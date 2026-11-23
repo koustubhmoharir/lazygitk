@@ -7,9 +7,7 @@ unchanged ones. See the user guide (Browsing a commit's files).
 
 ## Open follow-ups
 
-- `sync/push_and_set_upstream`, `sync/push_stacked_branches_current_without_upstream`
-  and `sync/push_selected_branch_with_related_branches` fail on master from
-  before 2026-11-23 (verified at 4ebfda1d2); not yet investigated.
+None.
 
 ## How this tracker works
 
