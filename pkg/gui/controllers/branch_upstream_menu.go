@@ -11,6 +11,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 type capturedUpstreamMenu struct {
@@ -102,7 +103,8 @@ func (captured *capturedUpstreamMenu) menu() error {
 	}
 	upstreamReview := c.Tr.UpstreamGenericName
 	if captured.upstreamOID != "" {
-		upstreamReview = fmt.Sprintf("%q at %s", captured.upstreamRef, captured.upstreamOID)
+		// Fork: the upstream ref's role follows its kind (see promptmark.RefAs).
+		upstreamReview = promptmark.RefAs(captured.upstreamRef, fmt.Sprintf("%q", captured.upstreamRef)) + " at " + promptmark.Hash(captured.upstreamOID)
 	} else if captured.upstreamDisabled != nil {
 		upstreamReview = captured.upstreamDisabled.Text
 	}

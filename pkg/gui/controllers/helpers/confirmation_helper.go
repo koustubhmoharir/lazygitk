@@ -506,7 +506,8 @@ func (self *ConfirmationHelper) IsPopupPanelFocused() bool {
 }
 
 func (self *ConfirmationHelper) TooltipForMenuItem(menuItem *types.MenuItem) string {
-	tooltip := menuItem.Tooltip
+	// Fork: a tooltip may reuse a marked prompt; resolve its role markers.
+	tooltip := theme.ResolvePromptMarks(menuItem.Tooltip)
 	if menuItem.DisabledReason != nil && menuItem.DisabledReason.Text != "" {
 		if tooltip != "" {
 			tooltip += "\n\n"

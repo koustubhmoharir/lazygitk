@@ -84,6 +84,17 @@ var upstreamPromptMarks = []upstreamPromptMark{
 	{func(s *TranslationSet) *string { return &s.ForceDeleteBranchMessage }, "{{.selectedBranchName}}", promptmark.Branch},
 	{func(s *TranslationSet) *string { return &s.ForceDeleteBranchMessage }, "is not fully merged", promptmark.Warn},
 	{func(s *TranslationSet) *string { return &s.ForceDeleteBranchesMessage }, "are not fully merged", promptmark.Warn},
+
+	{func(s *TranslationSet) *string { return &s.SubmoduleMergeConflictDescription }, "{{.path}}", promptmark.Path},
+
+	{func(s *TranslationSet) *string { return &s.AmendCommitWithConflictsMenuPrompt }, "amend the last finished commit", promptmark.Warn},
+
+	{func(s *TranslationSet) *string { return &s.MoveCommitsToNewBranchMenuPrompt }, "{{.baseBranchName}}", promptmark.Branch},
+
+	{func(s *TranslationSet) *string { return &s.WorktreeLocationPromptCheckout }, "{{.branchName}}", promptmark.Branch},
+	{func(s *TranslationSet) *string { return &s.WorktreeLocationPromptTrackingBranch }, "{{.name}}", promptmark.Branch},
+	{func(s *TranslationSet) *string { return &s.WorktreeLocationPromptTrackingBranch }, "{{.ref}}", promptmark.RemoteBranch},
+	{func(s *TranslationSet) *string { return &s.WorktreeLocationPromptNewBranch }, "{{.name}}", promptmark.Branch},
 }
 
 // markUpstreamPrompts applies upstreamPromptMarks to set. An entry whose

@@ -319,7 +319,7 @@ func (flow *capturedBranchDeleteFlow) chooseRemote(mode capturedBranchDeleteMode
 			return flow.chooseRemote(mode, index+1)
 		}})
 	}
-	return flow.repository.c.Menu(types.CreateMenuOptions{Title: flow.repository.c.Tr.BranchActionDeleteChooseRemoteRef, Prompt: fmt.Sprintf("%s\n%s", flow.prompt(), choices.Remote()), Items: items, HideCancel: true, OnCancel: flow.check})
+	return flow.repository.c.Menu(types.CreateMenuOptions{Title: flow.repository.c.Tr.BranchActionDeleteChooseRemoteRef, Prompt: fmt.Sprintf("%s\n%s", flow.prompt(), promptmark.Remote(choices.Remote())), Items: items, HideCancel: true, OnCancel: flow.check})
 }
 
 func (flow *capturedBranchDeleteFlow) manualRemote(mode capturedBranchDeleteMode, index int, reason error) error {

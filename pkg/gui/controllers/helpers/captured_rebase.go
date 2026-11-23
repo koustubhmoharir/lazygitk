@@ -10,6 +10,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 type capturedRebaseFlow struct {
@@ -129,8 +130,16 @@ func (flow *capturedRebaseFlow) prompt(source git_commands.BranchActionTarget, m
 	if base == "" {
 		base = flow.repository.c.Tr.BranchActionRebaseDefaultRange
 	}
+	// Fork: the source may be a branch, remote branch, tag or object ID, so its
+	// role follows the kind of ref. The marked base is a commit.
+	if flow.markedBase != "" {
+		base = promptmark.Hash(base)
+	}
+	sourceRef := source.SourceRef()
 	return fmt.Sprintf(flow.repository.c.Tr.BranchActionRebaseReviewPrompt,
-		strings.TrimPrefix(source.HeadRef(), "refs/heads/"), source.HeadOID(), ShortBranchName(source.SourceRef()), source.SourceRef(), source.SourceOID(), mode, base)
+		strings.TrimPrefix(source.HeadRef(), "refs/heads/"), source.HeadOID(),
+		promptmark.RefAs(sourceRef, fmt.Sprintf("%q", ShortBranchName(sourceRef))), promptmark.RefAs(sourceRef, sourceRef),
+		source.SourceOID(), mode, base)
 }
 
 func (flow *capturedRebaseFlow) menu() error {

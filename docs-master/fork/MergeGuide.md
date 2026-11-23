@@ -959,6 +959,12 @@ unreachable` marker that names its replacement. Do not reconnect them.
   values stand out; error alerts colour themselves in `popup_handler.go`.
 - `gui/menu_panel.go` `createMenu`: resolves the markers of a menu prompt
   before it is wrapped and measured.
+- `controllers/helpers/confirmation_helper.go` `TooltipForMenuItem`: resolves
+  the markers of a menu item's tooltip, which may reuse a marked prompt; both
+  the tooltip's measurement and its content come from this function.
+- `pkg/i18n/fork_upstream_prompt_marks.go` marks upstream English prompts in
+  place by substring; its test fails when an upstream rewording removes a
+  marked substring. Update or drop the entry then.
 - When merging, check that any new upstream path that displays a popup or
   menu prompt goes through one of these points.
 

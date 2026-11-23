@@ -21,7 +21,6 @@ flags upstream wording drift.
 
 ## Tasks
 
-4. Mark the review and decision menu prompts.
 5. User guide, design principles and merge guide.
 
 ## Open follow-ups
