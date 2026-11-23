@@ -1,15 +1,36 @@
-# Current work: none
+# Current work: coloured confirmation prompts
 
-The fork review fixes are finished (see [reviews/TRIAGE.md](../../reviews/TRIAGE.md)).
-Their decisions are recorded in the [user guide](Guide.md) and the
-[design principles](Design.md). The full integration suite passed on
-2026-11-07. `r s` (rebase onto the tracking branch) followed on the same day;
-see the user guide.
+Confirmation popups are hard to read: the whole prompt is bold and the values
+in it (branch names, hashes, paths, keys) are plain text inside long
+sentences. Agreed behaviour (2026-11-23):
+
+- The prompt sentence is regular weight. Values are coloured as the panes
+  colour them: local branch cyan bold (branch heads in Commits); remote and
+  remote branch yellow (upstream in Branches); tag magenta bold; hash yellow;
+  path bold; key in the options bar's key colour; count bold.
+- Destructive or irreversible consequences ("is not fully merged", "cannot
+  be undone", "force push") are bold red.
+- Error alerts keep their existing red bold.
+
+Design: strings carry role markers (Go helpers that wrap text in private-use
+delimiters with a role). The popup and menu-prompt code resolves them to theme
+styles just before display, before the height is measured. Upstream call sites
+stay untouched; upstream English strings are marked through overrides in
+`fork_english.go` and recorded in the merge guide.
+
+## Tasks
+
+1. Marker helpers, resolver, the hook in the confirmation and menu prompt
+   paths, and regular-weight prompt text; unit tests.
+2. Mark the fork's confirmation prompts (fork strings and fork call sites).
+3. Mark the upstream confirmation prompts through `fork_english.go`
+   overrides.
+4. Mark the review and decision menu prompts.
+5. User guide, design principles and merge guide.
 
 ## Open follow-ups
 
-None. The last review follow-ups were finished on 2026-11-07 (see
-[reviews/TRIAGE.md](../../reviews/TRIAGE.md) §3).
+None.
 
 ## How this tracker works
 
