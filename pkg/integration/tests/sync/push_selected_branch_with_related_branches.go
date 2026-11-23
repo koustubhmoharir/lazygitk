@@ -78,6 +78,11 @@ var PushSelectedBranchWithRelatedBranches = NewIntegrationTest(NewIntegrationTes
 		assertNoStackPush()
 		assertNoStackPush()
 		assertNoSavedUpstreams()
+		// topic has only branch.topic.pushRemote, not tracking config, so Set
+		// upstream starts on. Turn it off so this push saves no upstream; the
+		// menu reopens after the toggle.
+		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).
+			Select(Contains("set upstream")).Confirm()
 		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).Select(Contains("Push this branch")).Confirm()
 		t.Views().Remotes().Focus().NavigateToLine(Contains("origin")).PressEnter()
 		t.Views().RemoteBranches().IsFocused().NavigateToLine(Contains("topic")).PressEnter()

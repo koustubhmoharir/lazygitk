@@ -27,8 +27,8 @@ var PushAndSetUpstream = NewIntegrationTest(NewIntegrationTestArgs{
 			IsFocused().
 			Press(keys.Universal.Push)
 
-		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).
-			Select(Contains("Toggle set upstream for selected local branch")).Confirm()
+		// Set upstream starts on for a branch without tracking config, so the
+		// push saves the upstream without toggling it.
 		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).
 			Select(MatchesRegexp("^Choose remote")).Confirm()
 		t.ExpectPopup().Prompt().Title(Equals("Remote name")).InitialText(Equals("origin")).Confirm()

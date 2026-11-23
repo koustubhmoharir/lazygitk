@@ -30,6 +30,10 @@ var PushStackedBranchesCurrentWithoutUpstream = NewIntegrationTest(NewIntegratio
 		t.Views().Files().IsFocused().Press(keys.Universal.Push)
 		t.ExpectPopup().Menu().Title(Equals("Push selected branch"))
 		t.Views().Menu().Content(DoesNotContain("Push all").DoesNotContain("stacked below"))
+		// branch4 has no tracking config, so Set upstream starts on. Turn it off
+		// so this push does not save an upstream; the menu reopens after the toggle.
+		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).
+			Select(Contains("set upstream")).Confirm()
 		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).Select(MatchesRegexp("^Choose remote")).Confirm()
 		t.Shell().RunShellCommand("! git --git-dir=../origin show-ref --verify --quiet refs/heads/branch4 && test \"$(git --git-dir=../origin rev-parse refs/heads/branch1)\" = \"" + remoteBranch1OID + "\" && test \"$(git --git-dir=../origin rev-parse refs/heads/branch2)\" = \"" + remoteBranch2OID + "\" && test \"$(git --git-dir=../origin rev-parse refs/heads/branch3)\" = \"" + remoteBranch3OID + "\"")
 		t.ExpectPopup().Prompt().Title(Equals("Remote name")).InitialText(Equals("origin")).Confirm()
