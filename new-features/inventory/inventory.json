@@ -4428,7 +4428,7 @@
     {
       "kind": "MenuItem",
       "file": "pkg/gui/controllers/helpers/refresh_helper.go",
-      "line": 1884,
+      "line": 1897,
       "owner": "RefreshHelper.promptForBaseGithubRepo",
       "fields": {
         "CommandID": "\"config.set-base-github-remote\"",
@@ -11563,6 +11563,24 @@
     },
     {
       "kind": "case",
+      "file": "pkg/gui/controllers/fork_commit_file_content.go",
+      "line": 27,
+      "owner": "CommitFilesController.renderFullListingFileContent",
+      "fields": {
+        "key": "context.CommitFileShowContent"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/fork_commit_file_content.go",
+      "line": 30,
+      "owner": "CommitFilesController.renderFullListingFileContent",
+      "fields": {
+        "key": "context.CommitFileShowDeletedContent"
+      }
+    },
+    {
+      "kind": "case",
       "file": "pkg/gui/controllers/fork_commit_scope_filters.go",
       "line": 61,
       "owner": "LocalCommitsController.applyRefScopeFilterFromCommit",
@@ -11747,6 +11765,15 @@
       "line": 49,
       "owner": "ResetCurrentToCapturedSourceMode",
       "fields": {
+        "key": "\"hard\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/helpers/captured_reset.go",
+      "line": 49,
+      "owner": "ResetCurrentToCapturedSourceMode",
+      "fields": {
         "key": "\"mixed\""
       }
     },
@@ -11757,15 +11784,6 @@
       "owner": "ResetCurrentToCapturedSourceMode",
       "fields": {
         "key": "\"soft\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/controllers/helpers/captured_reset.go",
-      "line": 49,
-      "owner": "ResetCurrentToCapturedSourceMode",
-      "fields": {
-        "key": "\"hard\""
       }
     },
     {
@@ -11810,7 +11828,7 @@
       "line": 332,
       "owner": "ConfirmationHelper.ResizeCurrentPopupPanels",
       "fields": {
-        "key": "self.c.Contexts().Prompt"
+        "key": "self.c.Contexts().Suggestions"
       }
     },
     {
@@ -11819,16 +11837,7 @@
       "line": 332,
       "owner": "ConfirmationHelper.ResizeCurrentPopupPanels",
       "fields": {
-        "key": "self.c.Contexts().Suggestions"
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/controllers/helpers/confirmation_helper.go",
-      "line": 334,
-      "owner": "ConfirmationHelper.ResizeCurrentPopupPanels",
-      "fields": {
-        "key": "self.c.Contexts().CommitDescription"
+        "key": "self.c.Contexts().Prompt"
       }
     },
     {
@@ -11838,6 +11847,15 @@
       "owner": "ConfirmationHelper.ResizeCurrentPopupPanels",
       "fields": {
         "key": "self.c.Contexts().CommitMessage"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/controllers/helpers/confirmation_helper.go",
+      "line": 334,
+      "owner": "ConfirmationHelper.ResizeCurrentPopupPanels",
+      "fields": {
+        "key": "self.c.Contexts().CommitDescription"
       }
     },
     {
@@ -12432,7 +12450,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/helpers/refresh_helper.go",
-      "line": 1252,
+      "line": 1265,
       "owner": "RefreshHelper.refreshBranches",
       "fields": {
         "key": "types.KeepBranchSelectionByName"
@@ -12441,7 +12459,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/controllers/helpers/refresh_helper.go",
-      "line": 1262,
+      "line": 1275,
       "owner": "RefreshHelper.refreshBranches",
       "fields": {
         "key": "types.SelectCheckedOutBranch"
@@ -13600,7 +13618,7 @@
       "line": 357,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"selection.list.extend-up\""
+        "key": "\"selection.diff.extend-up\""
       }
     },
     {
@@ -13609,7 +13627,7 @@
       "line": 357,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"selection.diff.extend-up\""
+        "key": "\"selection.list.extend-up\""
       }
     },
     {
@@ -13726,16 +13744,7 @@
       "line": 381,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"commit.cancel-drag\""
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/fork_command_projection.go",
-      "line": 381,
-      "owner": "forkNavigationPaths",
-      "fields": {
-        "key": "\"app.cancel\""
+        "key": "\"navigation.diff.escape\""
       }
     },
     {
@@ -13753,7 +13762,16 @@
       "line": 381,
       "owner": "forkNavigationPaths",
       "fields": {
-        "key": "\"navigation.diff.escape\""
+        "key": "\"app.cancel\""
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/fork_command_projection.go",
+      "line": 381,
+      "owner": "forkNavigationPaths",
+      "fields": {
+        "key": "\"commit.cancel-drag\""
       }
     },
     {
@@ -14060,7 +14078,16 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 171,
+      "line": 30,
+      "owner": "Gui.runTaskForView",
+      "fields": {
+        "key": "*types.FileContentTask"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/main_panels.go",
+      "line": 175,
       "owner": "Gui.handOverMainSection",
       "fields": {
         "key": "gui.State.MainPanes == types.MainPaneOnly \u0026\u0026 panes == types.SecondaryPaneOnly"
@@ -14069,7 +14096,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 173,
+      "line": 177,
       "owner": "Gui.handOverMainSection",
       "fields": {
         "key": "gui.State.MainPanes == types.SecondaryPaneOnly \u0026\u0026 panes == types.MainPaneOnly"
@@ -14078,7 +14105,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 186,
+      "line": 190,
       "owner": "mainPanesFor",
       "fields": {
         "key": "opts.Secondary == nil"
@@ -14087,7 +14114,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 188,
+      "line": 192,
       "owner": "mainPanesFor",
       "fields": {
         "key": "opts.Main == nil"
@@ -14096,7 +14123,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 304,
+      "line": 308,
       "owner": "diffTaskCommandKey",
       "fields": {
         "key": "*types.RunCommandTask"
@@ -14105,7 +14132,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 306,
+      "line": 310,
       "owner": "diffTaskCommandKey",
       "fields": {
         "key": "*types.RunDiffRendererTask"
@@ -14114,7 +14141,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 518,
+      "line": 522,
       "owner": "Gui.mainContextForView",
       "fields": {
         "key": "gui.Views.Main"
@@ -14123,7 +14150,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/main_panels.go",
-      "line": 520,
+      "line": 524,
       "owner": "Gui.mainContextForView",
       "fields": {
         "key": "gui.Views.Secondary"
@@ -14525,6 +14552,15 @@
       "line": 583,
       "owner": "getHashColor",
       "fields": {
+        "key": "models.StatusConflicted"
+      }
+    },
+    {
+      "kind": "case",
+      "file": "pkg/gui/presentation/commits.go",
+      "line": 583,
+      "owner": "getHashColor",
+      "fields": {
         "key": "models.StatusRebasing"
       }
     },
@@ -14535,15 +14571,6 @@
       "owner": "getHashColor",
       "fields": {
         "key": "models.StatusCherryPickingOrReverting"
-      }
-    },
-    {
-      "kind": "case",
-      "file": "pkg/gui/presentation/commits.go",
-      "line": 583,
-      "owner": "getHashColor",
-      "fields": {
-        "key": "models.StatusConflicted"
       }
     },
     {
