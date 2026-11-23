@@ -1546,7 +1546,7 @@
         "CommandID": "\"commit.discard-file-changes\"",
         "Description": "self.c.Tr.Discard",
         "DisplayOnScreen": "true",
-        "GetDisabledReason": "self.require(self.itemsSelected(self.canDiscardFileChanges))",
+        "GetDisabledReason": "self.require(self.itemsSelected(self.canDiscardFileChanges, self.changedFilesReason))",
         "Handler": "self.withItems(self.discard)",
         "Keys": "opts.GetKeys(opts.Config.Universal.Remove)",
         "Verb": "\"discard-from-commit\""
@@ -1592,7 +1592,7 @@
       "fields": {
         "CommandID": "\"diff.history-file.external\"",
         "Description": "self.c.Tr.HistoricalDiffStickyTool",
-        "GetDisabledReason": "self.require(self.singleItemSelected())",
+        "GetDisabledReason": "self.require(self.singleItemSelected(self.changedFileReason))",
         "Handler": "self.withItem(self.openDiffTool)",
         "Keys": "opts.GetKeys(opts.Config.Universal.OpenDiffTool)",
         "Verb": "\"external-diff-context\""
@@ -1608,7 +1608,7 @@
         "CommandID": "\"patch.toggle-file-selection\"",
         "Description": "self.c.Tr.ToggleAddToPatch",
         "DisplayOnScreen": "true",
-        "GetDisabledReason": "self.require(self.itemsSelected())",
+        "GetDisabledReason": "self.require(self.itemsSelected(self.changedFilesReason))",
         "Handler": "self.withItems(self.toggleForPatch)",
         "Keys": "opts.GetKeys(opts.Config.Universal.Select)",
         "Verb": "\"toggle-patch-selection\""
@@ -1623,6 +1623,7 @@
       "fields": {
         "CommandID": "\"patch.toggle-all-file-selection\"",
         "Description": "self.c.Tr.ToggleAllInPatch",
+        "GetDisabledReason": "self.require(self.changedRootReason)",
         "Handler": "self.withItem(self.toggleAllForPatch)",
         "Keys": "opts.GetKeys(opts.Config.Files.ToggleStagedAll)",
         "Verb": "\"toggle-all-patch-selection\""
@@ -1632,7 +1633,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/commits_files_controller.go",
-      "line": 139,
+      "line": 140,
       "owner": "CommitFilesController.GetKeybindings",
       "fields": {
         "CommandID": "\"navigation.open-history-file-diff\"",
@@ -1647,7 +1648,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/commits_files_controller.go",
-      "line": 148,
+      "line": 149,
       "owner": "CommitFilesController.GetKeybindings",
       "fields": {
         "CommandID": "\"ui.file-tree.toggle\"",
@@ -1661,7 +1662,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/commits_files_controller.go",
-      "line": 156,
+      "line": 157,
       "owner": "CommitFilesController.GetKeybindings",
       "fields": {
         "CommandID": "\"ui.file-tree.collapse-all\"",
@@ -1676,7 +1677,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/commits_files_controller.go",
-      "line": 165,
+      "line": 166,
       "owner": "CommitFilesController.GetKeybindings",
       "fields": {
         "CommandID": "\"ui.file-tree.expand-all\"",
@@ -4674,7 +4675,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/historical_diff_actions.go",
-      "line": 26,
+      "line": 28,
       "owner": "BasicCommitsController.historicalDiffBindings",
       "fields": {
         "CommandID": "\"diff.commit.worktree\"",
@@ -4690,7 +4691,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/historical_diff_actions.go",
-      "line": 33,
+      "line": 35,
       "owner": "BasicCommitsController.historicalDiffBindings",
       "fields": {
         "CommandID": "\"diff.commit.previous\"",
@@ -4705,7 +4706,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/historical_diff_actions.go",
-      "line": 40,
+      "line": 42,
       "owner": "BasicCommitsController.historicalDiffBindings",
       "fields": {
         "CommandID": "\"diff.commit.selected-commit\"",
@@ -4720,7 +4721,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/historical_diff_actions.go",
-      "line": 114,
+      "line": 116,
       "owner": "CommitFilesController.historicalDiffBindings",
       "fields": {
         "CommandID": "\"diff.history-file.worktree\"",
@@ -4736,7 +4737,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/historical_diff_actions.go",
-      "line": 121,
+      "line": 123,
       "owner": "CommitFilesController.historicalDiffBindings",
       "fields": {
         "CommandID": "\"diff.history-file.previous\"",
@@ -4751,7 +4752,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/historical_diff_actions.go",
-      "line": 128,
+      "line": 130,
       "owner": "CommitFilesController.historicalDiffBindings",
       "fields": {
         "CommandID": "\"diff.history-file.working-file\"",
@@ -4767,7 +4768,7 @@
     {
       "kind": "Binding",
       "file": "pkg/gui/controllers/historical_diff_actions.go",
-      "line": 135,
+      "line": 137,
       "owner": "CommitFilesController.historicalDiffBindings",
       "fields": {
         "CommandID": "\"diff.history-file.selected-commit\"",
@@ -14621,7 +14622,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 197,
+      "line": 205,
       "owner": "fileLabel",
       "fields": {
         "key": "file == nil"
@@ -14630,7 +14631,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 199,
+      "line": 207,
       "owner": "fileLabel",
       "fields": {
         "key": "isSubmodule"
@@ -14639,7 +14640,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 201,
+      "line": 209,
       "owner": "fileLabel",
       "fields": {
         "key": "file.IsWorktree"
@@ -14648,7 +14649,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 203,
+      "line": 211,
       "owner": "fileLabel",
       "fields": {
         "key": "file.DirectoryKind == models.RemovedSubmodule"
@@ -14657,7 +14658,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 205,
+      "line": 213,
       "owner": "fileLabel",
       "fields": {
         "key": "file.DirectoryKind == models.NestedRepository"
@@ -14666,7 +14667,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 216,
+      "line": 224,
       "owner": "formatFileStatus",
       "fields": {
         "key": "\"?\""
@@ -14675,7 +14676,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 218,
+      "line": 226,
       "owner": "formatFileStatus",
       "fields": {
         "key": "\" \""
@@ -14684,7 +14685,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 267,
+      "line": 275,
       "owner": "getCommitFileLine",
       "fields": {
         "key": "patch.WHOLE"
@@ -14693,7 +14694,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 269,
+      "line": 277,
       "owner": "getCommitFileLine",
       "fields": {
         "key": "patch.PART"
@@ -14702,7 +14703,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 271,
+      "line": 279,
       "owner": "getCommitFileLine",
       "fields": {
         "key": "patch.UNSELECTED"
@@ -14711,7 +14712,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 287,
+      "line": 295,
       "owner": "getCommitFileLine",
       "fields": {
         "key": "patch.WHOLE"
@@ -14721,7 +14722,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 289,
+      "line": 297,
       "owner": "getCommitFileLine",
       "fields": {
         "key": "patch.PART"
@@ -14731,7 +14732,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 291,
+      "line": 299,
       "owner": "getCommitFileLine",
       "fields": {
         "key": "patch.UNSELECTED"
@@ -14741,7 +14742,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 320,
+      "line": 328,
       "owner": "getColorForChangeStatus",
       "fields": {
         "key": "\"A\""
@@ -14750,7 +14751,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 322,
+      "line": 330,
       "owner": "getColorForChangeStatus",
       "fields": {
         "key": "\"M\""
@@ -14759,7 +14760,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 322,
+      "line": 330,
       "owner": "getColorForChangeStatus",
       "fields": {
         "key": "\"R\""
@@ -14768,7 +14769,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 324,
+      "line": 332,
       "owner": "getColorForChangeStatus",
       "fields": {
         "key": "\"D\""
@@ -14777,7 +14778,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 326,
+      "line": 334,
       "owner": "getColorForChangeStatus",
       "fields": {
         "key": "\"C\""
@@ -14786,7 +14787,7 @@
     {
       "kind": "case",
       "file": "pkg/gui/presentation/files.go",
-      "line": 328,
+      "line": 336,
       "owner": "getColorForChangeStatus",
       "fields": {
         "key": "\"T\""
