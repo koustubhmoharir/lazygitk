@@ -9,6 +9,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/theme"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 	"github.com/samber/lo"
 )
 
@@ -157,7 +158,8 @@ func (self *ConfirmationHelper) prepareConfirmationPanel(
 	self.c.Views().Confirmation.FgColor = theme.GocuiDefaultTextColor
 
 	self.c.ResetViewOrigin(self.c.Views().Confirmation)
-	self.c.SetViewContent(self.c.Views().Confirmation, style.AttrBold.Sprint(strings.TrimSpace(opts.Prompt)))
+	// Fork: the prompt is regular weight. Error alerts colour themselves (popup_handler.go).
+	self.c.SetViewContent(self.c.Views().Confirmation, strings.TrimSpace(opts.Prompt))
 }
 
 func (self *ConfirmationHelper) preparePromptPanel(
@@ -217,8 +219,9 @@ func (self *ConfirmationHelper) CreatePopupPanel(ctx goContext.Context, opts typ
 
 		self.preparePromptPanel(
 			types.ConfirmOpts{
-				Title:               opts.Title,
-				Prompt:              opts.Prompt,
+				Title: opts.Title,
+				// Fork: the text is user-editable, so role markers are dropped (see fork_prompt_marks.go).
+				Prompt:              promptmark.Strip(opts.Prompt),
 				FindSuggestionsFunc: opts.FindSuggestionsFunc,
 				Mask:                opts.Mask,
 			})
@@ -235,8 +238,9 @@ func (self *ConfirmationHelper) CreatePopupPanel(ctx goContext.Context, opts typ
 
 		self.prepareConfirmationPanel(
 			types.ConfirmOpts{
-				Title:  opts.Title,
-				Prompt: opts.Prompt,
+				Title: opts.Title,
+				// Fork: resolve role markers before the panel is measured and displayed.
+				Prompt: theme.ResolvePromptMarks(opts.Prompt),
 			})
 
 		context = self.c.Contexts().Confirmation

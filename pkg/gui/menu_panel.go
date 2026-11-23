@@ -81,7 +81,8 @@ func (gui *Gui) createMenu(opts types.CreateMenuOptions) error {
 	}
 
 	gui.State.Contexts.Menu.SetMenuItems(opts.Items, opts.ColumnAlignment)
-	gui.State.Contexts.Menu.SetPrompt(opts.Prompt)
+	// Fork: resolve role markers before the prompt is wrapped and measured (see fork_prompt_marks.go).
+	gui.State.Contexts.Menu.SetPrompt(theme.ResolvePromptMarks(opts.Prompt))
 	gui.State.Contexts.Menu.SetAllowFilteringKeybindings(opts.AllowFilteringKeybindings)
 	gui.State.Contexts.Menu.SetKeybindingsTakePrecedence(!opts.KeepConflictingKeybindings)
 	gui.State.Contexts.Menu.SetFilterAsYouType(opts.FilterAsYouType)

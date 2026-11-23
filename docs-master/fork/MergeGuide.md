@@ -948,6 +948,20 @@ unreachable` marker that names its replacement. Do not reconnect them.
   keeps the renderer's output with no selection, and that the primary action
   explains why. Upstream's versions expect the raw diff after focus.
 
+### Prompt role markers
+
+- `pkg/utils/promptmark` (fork) marks spans of prompt text with a role
+  (branch, hash, path, key, warning...); `pkg/theme/fork_prompt_marks.go`
+  resolves them to the panes' styles. Markers must never reach the screen raw.
+- `controllers/helpers/confirmation_helper.go` `CreatePopupPanel`: resolves
+  the markers of a non-editable prompt and strips them from an editable one.
+  `prepareConfirmationPanel` no longer bolds the whole prompt, so the marked
+  values stand out; error alerts colour themselves in `popup_handler.go`.
+- `gui/menu_panel.go` `createMenu`: resolves the markers of a menu prompt
+  before it is wrapped and measured.
+- When merging, check that any new upstream path that displays a popup or
+  menu prompt goes through one of these points.
+
 ### Other
 
 - `controllers/remotes_controller.go` `fetchAndCheckout` (replacement): the
