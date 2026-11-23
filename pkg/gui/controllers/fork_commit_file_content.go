@@ -35,12 +35,15 @@ func (self *CommitFilesController) renderFullListingFileContent(node *filetree.C
 	}
 
 	cmdObj := self.c.Git().Commit.ShowFileContentCmdObj(rev, node.GetPath())
+	// Fork: the file renderer is chosen now, on the UI thread, so that the render shows
+	// the one that was current when it was asked for (see fork_file_renderers.go).
+	renderer := self.c.State().GetFileRendererConfigManager().CurrentFileRendererType()
 
 	self.c.RenderToMainViews(types.RefreshMainOpts{
 		Pair: self.c.MainViewPairs().Normal,
 		Main: &types.ViewUpdateOpts{
 			Title: title,
-			Task:  types.NewFileContentTask(cmdObj.GetCmd()),
+			Task:  types.NewFileContentTask(cmdObj.GetCmd(), node.GetPath(), renderer),
 		},
 		Secondary: secondaryPatchPanelUpdateOpts(self.c),
 	})

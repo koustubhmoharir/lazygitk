@@ -228,12 +228,25 @@ func (self *GlobalController) prevScreenMode() error {
 }
 
 func (self *GlobalController) cycleDiffRenderers() error {
+	// Fork: while the main view shows file contents, these cycle the file renderers
+	// instead (see fork_file_renderers.go).
+	if self.showsFileContent() {
+		self.c.State().GetFileRendererConfigManager().CycleFileRenderers()
+		self.onFileRenderersChanged()
+		return nil
+	}
 	self.c.State().GetDiffRendererConfigManager().CycleDiffRenderers()
 	self.onDiffRenderersChanged()
 	return nil
 }
 
 func (self *GlobalController) cycleDiffRenderersBackward() error {
+	// Fork: see cycleDiffRenderers.
+	if self.showsFileContent() {
+		self.c.State().GetFileRendererConfigManager().CycleFileRenderersBackward()
+		self.onFileRenderersChanged()
+		return nil
+	}
 	self.c.State().GetDiffRendererConfigManager().CycleDiffRenderersBackward()
 	self.onDiffRenderersChanged()
 	return nil
@@ -255,6 +268,10 @@ func (self *GlobalController) onDiffRenderersChanged() {
 }
 
 func (self *GlobalController) canCycleDiffRenderers() *types.DisabledReason {
+	// Fork: see cycleDiffRenderers.
+	if self.showsFileContent() {
+		return self.canCycleFileRenderers()
+	}
 	_, total := self.c.State().GetDiffRendererConfigManager().CurrentDiffRendererIndex()
 	if total <= 1 {
 		return &types.DisabledReason{

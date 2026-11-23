@@ -276,6 +276,14 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   the main view instead of a diff. A file the commit deleted shows its
   contents before the commit, and the title says so. A binary file shows a
   one-line note. A folder or submodule shows the commit's changes under it.
+- File contents are syntax highlighted, with line numbers, by a built-in
+  highlighter in the theme's Catppuccin colours (Mocha on a dark terminal,
+  Latte on a light one). The language comes from the file name; an unknown
+  type is shown as plain text with line numbers. Files over 1 MiB are not
+  highlighted, and the title says so. `t d n` and `t d p` switch between the
+  file renderers (built-in highlighting, plain text) while a file's contents
+  are shown, and between the diff renderers otherwise. `git.fileRenderers`
+  configures the list.
 - In the full listing, `d w`, `d c`, `g v f`, `y c`, `e`, `o` and `w p` work
   on any file. `d p`, `t d e`, `x` and the custom-patch toggles (`g h t`,
   `g h a`) need a file the commit changed: on an unchanged file they are

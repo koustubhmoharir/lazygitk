@@ -329,6 +329,27 @@ type GitConfig struct {
 	//
 	// See https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_DiffRenderers.md for more information.
 	DiffRenderers []DiffRendererConfig `yaml:"diffRenderers"`
+	// Array of file renderers, which show the content of a file in the full listing of a commit's files. They are cycled with the diff renderer keys while the main view shows a file's content. Each entry has the following format:
+	// [dev] The following documentation is duplicated from the FileRendererConfig struct below.
+	//
+	//   # The type of file renderer. One of: 'builtin' | 'plain' | 'stdinFilter'
+	//   # 'builtin' highlights the file's syntax, with line numbers.
+	//   # 'plain' shows the file as it is.
+	//   # 'stdinFilter' runs 'command' with the file's content on stdin.
+	//   type: "builtin"
+	//
+	//   # A name for the file renderer, shown in the notification when cycling
+	//   # renderers. If not set, the name is derived from the first word of the
+	//   # command, or from the type.
+	//   name: ""
+	//
+	//   # The command to use for rendering the file. Only applicable if the type
+	//   # is 'stdinFilter', where it is required.
+	//   command: ""
+	//
+	// If unset or empty, the file renderers are 'builtin' followed by 'plain'.
+	// A non-empty list is used as it is.
+	FileRenderers []FileRendererConfig `yaml:"fileRenderers"`
 	// Config relating to committing
 	Commit CommitConfig `yaml:"commit"`
 	// Config relating to merging
@@ -419,6 +440,18 @@ type DiffRendererConfig struct {
 	// Fork: builds the command of the fork's default delta renderer in place of
 	// Command, see fork_diff_renderers.go. Never set in a user's config.
 	forkResolveCommand func(DiffRendererValues) string
+}
+
+// Fork: a file renderer shows the content of a file in the full listing of a commit's
+// files. See git.fileRenderers.
+// [dev] This documentation is duplicated in the GitConfig struct. If you make changes here, make them there too.
+type FileRendererConfig struct {
+	// The type of file renderer. One of: 'builtin' | 'plain' | 'stdinFilter'
+	Type string `yaml:"type" jsonschema:"enum=builtin,enum=plain,enum=stdinFilter"`
+	// A name for the file renderer, shown in the notification when cycling renderers. If not set, the name is derived from the first word of the command, or from the type.
+	Name string `yaml:"name"`
+	// The command to use for rendering the file, which reads the file's content on stdin. Only applicable if the type is 'stdinFilter', where it is required.
+	Command string `yaml:"command"`
 }
 
 type CommitConfig struct {

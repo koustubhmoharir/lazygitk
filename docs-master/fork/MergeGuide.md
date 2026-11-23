@@ -1021,6 +1021,18 @@ unreachable` marker that names its replacement. Do not reconnect them.
   has a case for it, and `tasks_adapter.go` `newCmdTask` delegates to
   `newCmdTaskWithRender` so the render (`fork_file_content.go`) can read the
   first 8000 bytes to detect a binary file before streaming the rest.
+- File renderers (`git.fileRenderers`, `config/fork_file_renderers.go`,
+  `config/fork_file_renderer_config_manager.go`): `user_config.go` adds the
+  setting and `FileRendererConfig`, `user_config_validation.go` validates it,
+  and `gui.go` / `types/common.go` add `GetFileRendererConfigManager` to the
+  state accessor. `global_controller.go` `cycleDiffRenderers`,
+  `cycleDiffRenderersBackward` and `canCycleDiffRenderers` act on the file
+  renderers while the main view shows file content
+  (`controllers/fork_file_renderers.go`). The built-in highlighter is
+  `gui/fork_file_highlight.go` (chroma, vendored). `main_view_render.go`
+  `renderSpec` gains `isSuperseded`, set in `tasks_adapter.go`
+  `newCmdTaskWithRender`, so a file render can set the main view's subtitle
+  only while it is still current.
 - Commands in the full listing (`fork_commit_file_listing_commands.go`):
   `commits_files_controller.go` adds changed-file disabled reasons to `x`,
   `t d e`, `g h t` and `g h a`; `discard` and `toggleForPatch` act on

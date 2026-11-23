@@ -51,7 +51,14 @@ func (gui *Gui) newCmdTaskWithRender(view *gocui.View, cmd *exec.Cmd, prefix typ
 			return nil
 		}
 
-		spec := renderSpec{view: view, cmd: cmd, width: gui.renderWidth(view)}
+		// Fork: a render that is superseded reports so, for the renders that need to know
+		// whether their content is still wanted (see fork_file_content.go).
+		spec := renderSpec{
+			view:         view,
+			cmd:          cmd,
+			width:        gui.renderWidth(view),
+			isSuperseded: func() bool { return manager.IsSuperseded(reservation) },
+		}
 		return gui.newTaskForRender(reservation, spec, prefix, cmdStr, run)
 	})
 

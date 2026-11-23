@@ -71,6 +71,8 @@ type Gui struct {
 	State *GuiRepoState
 
 	diffRendererConfig *config.DiffRendererConfigManager
+	// Fork: the file renderers of the full listing of a commit's files (fork_file_renderers.go).
+	fileRendererConfig *config.FileRendererConfigManager
 
 	CustomCommandsClient *custom_commands.Client
 
@@ -224,6 +226,11 @@ func (self *StateAccessor) GetRepoGeneration() int {
 
 func (self *StateAccessor) GetDiffRendererConfigManager() *config.DiffRendererConfigManager {
 	return self.gui.diffRendererConfig
+}
+
+// Fork: GetFileRendererConfigManager returns the file renderers of the full listing (fork_file_renderers.go).
+func (self *StateAccessor) GetFileRendererConfigManager() *config.FileRendererConfigManager {
+	return self.gui.fileRendererConfig
 }
 
 func (self *StateAccessor) GetShowExtrasWindow() bool {
@@ -939,6 +946,7 @@ func NewGui(
 	// Fork: delta styles set in the git config win over the palette colours of
 	// the default delta renderer (fork_delta_config.go).
 	gui.diffRendererConfig.SetForkGitDeltaConfig(gui.forkGitDeltaConfig)
+	gui.fileRendererConfig = config.NewFileRendererConfigManager(func() *config.UserConfig { return gui.UserConfig() })
 
 	// Fork: the tracker and store need gui.c for logging, so they are set up
 	// after it. Popups created earlier only call the hook once a command runs.

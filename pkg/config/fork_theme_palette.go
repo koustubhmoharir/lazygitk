@@ -47,3 +47,9 @@ func forkThemePalette(lightBackground bool) ThemeConfig {
 func ForkPaletteBlue(lightBackground bool) string {
 	return lo.Ternary(lightBackground, "#1e66f5", "#89b4fa")
 }
+
+// ForkPaletteSubtext returns the palette's Subtext0, a subdued text colour: Mocha's on a
+// dark background and Latte's on a light one. The fork uses it for line numbers.
+func ForkPaletteSubtext(lightBackground bool) string {
+	return lo.Ternary(lightBackground, "#6c6f85", "#a6adc8")
+}

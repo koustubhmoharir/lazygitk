@@ -471,6 +471,8 @@ type IStateAccessor interface {
 	GetRepoPathStack() *utils.Stack[RepoLocation]
 	GetRepoState() IRepoStateAccessor
 	GetDiffRendererConfigManager() *config.DiffRendererConfigManager
+	// Fork: the file renderers of the full listing of a commit's files.
+	GetFileRendererConfigManager() *config.FileRendererConfigManager
 	// tells us whether we're currently updating lazygit
 	GetUpdating() bool
 	SetUpdating(bool)

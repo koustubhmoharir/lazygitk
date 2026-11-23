@@ -66,14 +66,14 @@ var BrowseAllFilesContent = NewIntegrationTest(NewIntegrationTestArgs{
 			NavigateToLine(Equals("    top.txt"))
 		t.Views().Main().
 			Title(Equals("File content")).
-			Content(Equals("top"))
+			Content(Equals("1 top"))
 
 		// A modified file shows its new content, not a diff.
 		t.Views().CommitFiles().
 			NavigateToLine(Equals("    M x.txt"))
 		t.Views().Main().
 			Title(Equals("File content")).
-			Content(Equals("x changed")).
+			Content(Equals("1 x changed")).
 			Content(DoesNotContain("@@"))
 
 		// A deleted file shows what it was before the commit.
@@ -81,7 +81,7 @@ var BrowseAllFilesContent = NewIntegrationTest(NewIntegrationTestArgs{
 			NavigateToLine(Equals("  D gone.txt"))
 		t.Views().Main().
 			Title(Equals("File content before this commit (deleted)")).
-			Content(Equals("gone"))
+			Content(Equals("1 gone"))
 
 		// A binary file shows a note instead of its bytes.
 		t.Views().CommitFiles().
@@ -103,7 +103,7 @@ var BrowseAllFilesContent = NewIntegrationTest(NewIntegrationTestArgs{
 			Press(config.Keybinding{"0"})
 		t.Views().Main().
 			IsFocused().
-			Content(Equals("x changed"))
+			Content(Equals("1 x changed"))
 		t.Views().Main().PressEscape()
 		t.Views().CommitFiles().IsFocused()
 

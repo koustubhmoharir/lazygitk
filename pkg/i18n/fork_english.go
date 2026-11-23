@@ -18,6 +18,11 @@ type ForkTranslationSet struct {
 	FileContentTitle                     string
 	FileContentDeletedTitle              string
 	BinaryFileNote                       string
+	FileContentNotHighlightedLarge       string
+	BuiltinFileRendererName              string
+	PlainFileRendererName                string
+	SelectedFileRenderers                string
+	CycleFileRenderersDisabledReason     string
 	CommitFileUnchanged                  string
 	CommitFolderUnchanged                string
 	ForkToggleFileStage                  string
@@ -448,6 +453,11 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		FileContentTitle:                      "File content",
 		FileContentDeletedTitle:               "File content before this commit (deleted)",
 		BinaryFileNote:                        "Binary file, not shown",
+		FileContentNotHighlightedLarge:        "Not highlighted: larger than 1 MiB",
+		BuiltinFileRendererName:               "Built-in highlighting",
+		PlainFileRendererName:                 "Plain text",
+		SelectedFileRenderers:                 "File renderer: {{.name}} ({{.current}} of {{.total}})",
+		CycleFileRenderersDisabledReason:      "No other file renderers configured",
 		CommitFileUnchanged:                   "This file is unchanged in this commit.",
 		CommitFolderUnchanged:                 "Nothing under this folder changed in this commit.",
 		ForkToggleFileStage:                   "Toggle staging of selected files",

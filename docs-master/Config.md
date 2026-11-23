@@ -437,6 +437,29 @@ git:
   # for more information.
   diffRenderers: []
 
+  # Array of file renderers, which show the content of a file in the full listing
+  # of a commit's files. They are cycled with the diff renderer keys while the
+  # main view shows a file's content. Each entry has the following format:
+  #
+  #   # The type of file renderer. One of: 'builtin' | 'plain' | 'stdinFilter'
+  #   # 'builtin' highlights the file's syntax, with line numbers.
+  #   # 'plain' shows the file as it is.
+  #   # 'stdinFilter' runs 'command' with the file's content on stdin.
+  #   type: "builtin"
+  #
+  #   # A name for the file renderer, shown in the notification when cycling
+  #   # renderers. If not set, the name is derived from the first word of the
+  #   # command, or from the type.
+  #   name: ""
+  #
+  #   # The command to use for rendering the file. Only applicable if the type
+  #   # is 'stdinFilter', where it is required.
+  #   command: ""
+  #
+  # If unset or empty, the file renderers are 'builtin' followed by 'plain'.
+  # A non-empty list is used as it is.
+  fileRenderers: []
+
   # Config relating to committing
   commit:
     # If true, pass '--signoff' flag when committing

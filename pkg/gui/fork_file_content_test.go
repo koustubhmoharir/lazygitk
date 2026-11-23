@@ -37,8 +37,9 @@ func TestSniffFileContentStreamsTextAndReadsOnlyAPrefix(t *testing.T) {
 	cmd := &fakeFileCmd{}
 	closed := false
 
-	gotCmd, gotOutput := sniffFileContent(cmd, output, func() { closed = true }, "note")
+	gotCmd, gotOutput, isText := sniffFileContent(cmd, output, func() { closed = true }, "note")
 
+	assert.True(t, isText)
 	assert.Equal(t, 8000, output.read, "only the detection prefix is read before the view takes over")
 	assert.False(t, cmd.terminated)
 	assert.False(t, closed)
@@ -54,8 +55,9 @@ func TestSniffFileContentShowsNoteForBinaryAndStopsTheCommand(t *testing.T) {
 	cmd := &fakeFileCmd{}
 	closed := false
 
-	gotCmd, gotOutput := sniffFileContent(cmd, output, func() { closed = true }, "Binary file, not shown")
+	gotCmd, gotOutput, isText := sniffFileContent(cmd, output, func() { closed = true }, "Binary file, not shown")
 
+	assert.False(t, isText)
 	assert.True(t, cmd.terminated)
 	assert.True(t, cmd.waited)
 	assert.True(t, closed)
@@ -89,7 +91,7 @@ func TestSniffFileContentDetectsNulAsGitDoes(t *testing.T) {
 				content[tt.nulAt] = 0
 			}
 			cmd := &fakeFileCmd{}
-			_, output := sniffFileContent(cmd, bytes.NewReader(content), func() {}, "note")
+			_, output, _ := sniffFileContent(cmd, bytes.NewReader(content), func() {}, "note")
 			assert.Equal(t, tt.binary, cmd.terminated)
 			shown, err := io.ReadAll(output)
 			assert.NoError(t, err)

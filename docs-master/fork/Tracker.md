@@ -25,10 +25,9 @@ the Go equivalent is chroma, which ships Catppuccin styles.
 
 ## Tasks
 
-1. Config, renderer cycling, the built-in highlighter and plain text, with
-   tests.
-2. Command renderers (`{{filename}}`, stdin), with tests.
-3. Guide, design and merge-guide updates; close this section.
+1. Command renderers (`{{filename}}`, stdin), with tests. Until then a
+   `stdinFilter` entry renders as plain text.
+2. Guide, design and merge-guide updates; close this section.
 
 ## How this tracker works
 

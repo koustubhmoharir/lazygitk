@@ -21,6 +21,9 @@ import (
 type renderSpec struct {
 	view *gocui.View
 	cmd  *exec.Cmd
+	// Fork: reports whether a newer render has been asked for since this one. Only set for
+	// a render made by newCmdTaskWithRender; see showFileNotHighlighted.
+	isSuperseded func() bool
 	// The width the renderer lays its rendering out to, and the width the view
 	// counts its own wrapping against. Read after the layout pass, which
 	// settles it.

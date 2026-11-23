@@ -46,9 +46,9 @@ func CommitFileShowFor(fullListing bool, file *models.CommitFile, hasParent bool
 	return CommitFileShowContent
 }
 
-// showsFileContent reports whether the selection is shown as file content rather than as
+// ShowsFileContent reports whether the selection is shown as file content rather than as
 // a diff.
-func (self *CommitFilesContext) showsFileContent() bool {
+func (self *CommitFilesContext) ShowsFileContent() bool {
 	if self.GetRef() == nil {
 		return false
 	}

@@ -133,6 +133,7 @@ var tests = []*components.IntegrationTest{
 	commit.BrowseAllFilesCommands,
 	commit.BrowseAllFilesContent,
 	commit.BrowseAllFilesFromReflog,
+	commit.BrowseAllFilesHighlighted,
 	commit.Checkout,
 	commit.CheckoutAsBranch,
 	commit.CheckoutAsBranchChanged,

@@ -35,7 +35,7 @@ var (
 func (self *CommitFilesContext) GetDiffMainViewType() types.DiffMainViewType {
 	// Fork: a file shown as its content in the full listing is no diff (see
 	// fork_commit_file_content.go).
-	if self.showsFileContent() {
+	if self.ShowsFileContent() {
 		return types.DiffMainViewTypeNone
 	}
 	return types.DiffMainViewTypePatchBuilding

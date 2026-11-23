@@ -60,6 +60,10 @@ func (config *UserConfig) Validate() error {
 	if err := validateDiffRenderers(config.Git.DiffRenderers); err != nil {
 		return err
 	}
+	// Fork: see fork_file_renderers.go.
+	if err := validateFileRenderers(config.Git.FileRenderers); err != nil {
+		return err
+	}
 	if err := validateKeybindings(config.Keybinding); err != nil {
 		return err
 	}
