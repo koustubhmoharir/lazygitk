@@ -272,6 +272,10 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   deleted are listed as D; unchanged files have a blank status. Folders start
   collapsed on every entry, and collapsing them does not change the
   changed-files listing's folders.
+- In the full listing, a selected file shows its contents at the commit in
+  the main view instead of a diff. A file the commit deleted shows its
+  contents before the commit, and the title says so. A binary file shows a
+  one-line note. A folder or submodule shows the commit's changes under it.
 - `w p` filters Commits to the commits that changed the selected file.
 
 ### Comparing versions

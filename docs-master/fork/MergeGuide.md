@@ -156,8 +156,10 @@ re-apply it if upstream changes that code.
 ### Git commands
 
 - `git_commands/commit_file_loader.go`: `GetFilesInTree` (`ls-tree -r -z
-  --name-only --full-tree`) for the full listing of a commit's files; the merge
-  with the diff is in `fork_commit_file_listing.go`.
+  --full-tree`, default format, since `--format` needs Git 2.36) for the full
+  listing of a commit's files; the parsing and the merge with the diff are in
+  `fork_commit_file_listing.go`. `models/commit_file.go` gains `Submodule`, set
+  only by the full listing.
 
 - `git_commands/captured_combine_plan.go`: a selection that is not in HEAD's
   history fails with `CombineCommitsNotInHeadError`, which lists the commits.
@@ -1010,6 +1012,15 @@ unreachable` marker that names its replacement. Do not reconnect them.
   (`context/commit_files_listing.go`). `presentation/files.go`
   `getCommitFileLine` renders a blank status for an unchanged file so names
   stay aligned.
+- File content in the full listing: `commits_files_controller.go`
+  `GetOnRenderToMain` first offers the node to `renderFullListingFileContent`
+  (`fork_commit_file_content.go`), and `CommitFilesContext.GetDiffMainViewType`
+  returns `DiffMainViewTypeNone` while content is shown, so main-view diff
+  actions stay off. The decision is `context.CommitFileShowFor`. The content
+  renders through `types.FileContentTask`: `main_panels.go` `runTaskForView`
+  has a case for it, and `tasks_adapter.go` `newCmdTask` delegates to
+  `newCmdTaskWithRender` so the render (`fork_file_content.go`) can read the
+  first 8000 bytes to detect a binary file before streaming the rest.
 
 - `controllers/remotes_controller.go` `fetchAndCheckout` (replacement): the
   upstream body is now `fetchAndCheckoutReviewed`, and `fetchAndCheckout` runs

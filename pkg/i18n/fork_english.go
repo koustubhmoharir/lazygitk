@@ -15,6 +15,9 @@ import "github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 // fields are promoted, so callers use them as if they were on TranslationSet.
 type ForkTranslationSet struct {
 	FocusPanel                           string
+	FileContentTitle                     string
+	FileContentDeletedTitle              string
+	BinaryFileNote                       string
 	ForkToggleFileStage                  string
 	ForkUnstageSelection                 string
 	ForkRemovePatchSelection             string
@@ -440,6 +443,9 @@ Press {{confirmationKey}} to get started.
 func forkEnglishTranslationSet(set *TranslationSet) {
 	set.ForkTranslationSet = ForkTranslationSet{
 		FocusPanel:                            "Focus %s panel",
+		FileContentTitle:                      "File content",
+		FileContentDeletedTitle:               "File content before this commit (deleted)",
+		BinaryFileNote:                        "Binary file, not shown",
 		ForkToggleFileStage:                   "Toggle staging of selected files",
 		ForkUnstageSelection:                  "Unstage selected changes",
 		ForkRemovePatchSelection:              "Remove selected lines from custom patch",

@@ -32,11 +32,9 @@ Repository Browser at a revision (open, compare with working tree, show log).
 
 ## Tasks
 
-1. Content in the main view for the full listing (files, deleted files,
-   binary files), with tests.
-2. Commands in the full listing on unchanged files and directories, with
+1. Commands in the full listing on unchanged files and directories, with
    tests.
-3. Finish the guide, design and merge-guide updates; close this section.
+2. Finish the guide, design and merge-guide updates; close this section.
 
 ## How this tracker works
 

@@ -43,12 +43,13 @@ func (self *CommitFileLoader) GetFilesInDiff(from string, to string, reverse boo
 	return getCommitFilesFromFilenames(filenames), nil
 }
 
-// Fork: GetFilesInTree lists every path in the tree of ref, for the full listing
-// of a commit's files (see MergeTreePathsIntoCommitFiles). --full-tree makes the
-// listing independent of the working directory.
-func (self *CommitFileLoader) GetFilesInTree(ref string) ([]string, error) {
+// Fork: GetFilesInTree lists every path in the tree of ref, for the full listing of a
+// commit's files (see MergeTreePathsIntoCommitFiles). --full-tree makes the listing
+// independent of the working directory. Each entry says whether it is a submodule:
+// ls-tree lists a submodule as a commit object, without descending into it.
+func (self *CommitFileLoader) GetFilesInTree(ref string) ([]*models.CommitFile, error) {
 	cmdArgs := NewGitCmd("ls-tree").
-		Arg("-r", "-z", "--name-only", "--full-tree").
+		Arg("-r", "-z", "--full-tree").
 		Arg(ref).
 		ToArgv()
 
@@ -57,7 +58,7 @@ func (self *CommitFileLoader) GetFilesInTree(ref string) ([]string, error) {
 		return nil, err
 	}
 
-	return nulPaths([]byte(output)), nil
+	return treeFilesFromListing(output)
 }
 
 // filenames string is something like "MM\x00file1\x00MU\x00file2\x00AA\x00file3\x00"

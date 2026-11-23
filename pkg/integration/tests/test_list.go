@@ -130,6 +130,7 @@ var tests = []*components.IntegrationTest{
 	commit.AmendWhenThereAreConflictsAndContinue,
 	commit.AutoWrapMessage,
 	commit.BrowseAllFiles,
+	commit.BrowseAllFilesContent,
 	commit.BrowseAllFilesFromReflog,
 	commit.Checkout,
 	commit.CheckoutAsBranch,

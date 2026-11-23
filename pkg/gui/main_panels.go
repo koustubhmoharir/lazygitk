@@ -25,6 +25,10 @@ func (gui *Gui) runTaskForView(view *gocui.View, task types.UpdateTask) error {
 
 	case *types.RunDiffRendererTask:
 		return gui.newRenderTask(view, v.Cmd, v.Prefix)
+
+	// Fork: content read by the render itself, see fork_file_content.go.
+	case *types.FileContentTask:
+		return gui.newFileContentTask(view, v)
 	}
 
 	return nil

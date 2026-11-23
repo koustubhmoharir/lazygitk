@@ -13,6 +13,12 @@ import (
 )
 
 func (gui *Gui) newCmdTask(view *gocui.View, cmd *exec.Cmd, prefix types.Prefix) error {
+	return gui.newCmdTaskWithRender(view, cmd, prefix, gui.plainRender)
+}
+
+// Fork: newCmdTaskWithRender is newCmdTask with the way the command is run given, so that
+// a render can look at the output before the view takes it (see fork_file_content.go).
+func (gui *Gui) newCmdTaskWithRender(view *gocui.View, cmd *exec.Cmd, prefix types.Prefix, run runRender) error {
 	cmdStr := strings.Join(cmd.Args, " ")
 	gui.c.Log.WithField(
 		"command",
@@ -46,7 +52,7 @@ func (gui *Gui) newCmdTask(view *gocui.View, cmd *exec.Cmd, prefix types.Prefix)
 		}
 
 		spec := renderSpec{view: view, cmd: cmd, width: gui.renderWidth(view)}
-		return gui.newTaskForRender(reservation, spec, prefix, cmdStr, gui.plainRender)
+		return gui.newTaskForRender(reservation, spec, prefix, cmdStr, run)
 	})
 
 	return nil

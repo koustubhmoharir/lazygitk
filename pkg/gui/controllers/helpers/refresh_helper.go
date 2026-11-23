@@ -1093,6 +1093,9 @@ type capturedCommitFilesState struct {
 	from    string
 	to      string
 	reverse bool
+	// Fork: the commit's parent, as the commit files panel knows it (not the diff's
+	// from, which a diffing mode can change); see refreshCommitFilesContext.
+	parent string
 	// Whether there is a commit to load the files of at all. The panel is only ever
 	// pointed at one by being entered, and a patch can now be built from a commit's diff
 	// without that — after which anything that refreshes the panel would otherwise be
@@ -1112,8 +1115,9 @@ func (self *RefreshHelper) captureCommitFilesState() capturedCommitFilesState {
 	}
 
 	from, to := commitFilesContext.GetFromAndToForDiff()
+	parent := from
 	from, reverse := self.c.Modes().Diffing.GetFromAndReverseArgsForDiff(from)
-	return capturedCommitFilesState{from: from, to: to, reverse: reverse, hasCommit: true, fullListing: commitFilesContext.IsFullListing()}
+	return capturedCommitFilesState{from: from, to: to, reverse: reverse, parent: parent, hasCommit: true, fullListing: commitFilesContext.IsFullListing()}
 }
 
 func (self *RefreshHelper) refreshCommitFilesContext(captured capturedCommitFilesState, env refreshEnv) error {
@@ -1127,12 +1131,21 @@ func (self *RefreshHelper) refreshCommitFilesContext(captured capturedCommitFile
 	}
 	if captured.fullListing {
 		// Fork: the full listing adds the rest of the tree of the commit (the
-		// changed files keep their statuses), so it is a superset of the diff.
-		treePaths, err := env.git.Loaders.CommitFileLoader.GetFilesInTree(captured.to)
+		// changed files keep their statuses), so it is a superset of the diff. The
+		// parent's tree is read only when a file was deleted, to tell whether it was a
+		// submodule.
+		treeFiles, err := env.git.Loaders.CommitFileLoader.GetFilesInTree(captured.to)
 		if err != nil {
 			return err
 		}
-		files = git_commands.MergeTreePathsIntoCommitFiles(files, treePaths)
+		var fromTreeFiles []*models.CommitFile
+		if lo.ContainsBy(files, (*models.CommitFile).Deleted) && captured.parent != models.EmptyTreeCommitHash {
+			fromTreeFiles, err = env.git.Loaders.CommitFileLoader.GetFilesInTree(captured.parent)
+			if err != nil {
+				return err
+			}
+		}
+		files = git_commands.MergeTreePathsIntoCommitFiles(files, treeFiles, fromTreeFiles)
 	}
 	self.onUIThreadUnlessRepoChanged(env, func() {
 		self.c.Model().CommitFiles = files

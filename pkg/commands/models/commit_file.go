@@ -8,6 +8,10 @@ type CommitFile struct {
 	PreviousPath string
 
 	ChangeStatus string // e.g. 'A' for added or 'M' for modified. This is based on the result from git diff --name-status
+
+	// Fork: whether the entry is a submodule (a gitlink), which is a commit rather
+	// than file content. Only set by the full listing of a commit's files.
+	Submodule bool
 }
 
 func (f *CommitFile) ID() string {

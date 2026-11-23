@@ -223,6 +223,11 @@ func (self *CommitFilesController) GetOnRenderToMain() func() {
 			return
 		}
 
+		// Fork: in the full listing a file shows its content, not a diff (fork_commit_file_content.go).
+		if self.renderFullListingFileContent(node) {
+			return
+		}
+
 		from, to := self.context().GetFromAndToForDiff()
 		from, reverse := self.c.Modes().Diffing.GetFromAndReverseArgsForDiff(from)
 
