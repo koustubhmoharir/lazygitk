@@ -1,13 +1,52 @@
-# Current work: none
+# Current work: consistent Enter, Space and `v`
 
-Highlighted file contents were finished on 2026-11-24: the full listing
-highlights file contents (built-in chroma, or a configured command such as
-bat), and shows folder listings and submodule commits instead of diffs. See the
-user guide (Browsing a commit's files).
+Enter, Space and `v` meant different things in different panes (Enter
+committed in Files and did nothing elsewhere; Space staged, selected, opened a
+menu or inspected; `v` was sometimes a key and sometimes a prefix). Agreed with
+the user on 2026-11-25:
 
-## Open follow-ups
+- **Enter goes in**: it opens a layer that Escape leaves (a list, a focused
+  diff, conflict resolution, a submodule). Branches, Remote branches, Tags and
+  Worktrees: commits; Remotes: branches; Commits, Sub-commits, Reflog and
+  Stash: the changed files; Commit files: the file's diff or contents; Status:
+  the main view; Submodules: enter. In Files, Enter focuses the diff (also on
+  a directory), resolves a conflicted file and enters a submodule entry, as
+  `v` did. Enter does nothing in the main views and the merge conflicts view.
+  Switching worktree stays `s w`: it has nothing to return to.
+- **Space toggles** and never navigates: staging in Files and the diff views,
+  the selection in Commits, Sub-commits and Reflog (Sub-commits and Reflog
+  gain Commits' selection model), the file in the custom patch in Commit files
+  (as `g h t`), lines in the patch, conflict hunks. Elsewhere Space does
+  nothing, including regular menus (upstream runs the item).
+- **`v` chooses how to go in**, as a menu, only where there is more than one
+  way; Enter is its first entry. Commits, Sub-commits, Reflog and Stash: `v d`
+  changed files, `v f` all files. Files: on a conflicted file `r` resolve
+  here, `m` merge tool, `d` show the diff; on a submodule entry `s` enter the
+  submodule, `d` show the diff. Elsewhere `v` is unbound.
+- **`c` commits or continues, in Files only.** With no operation in progress
+  it commits (the message box, as Enter did). During a merge, cherry-pick,
+  revert or rebase it continues, except at a rebase stop that is not a
+  conflict (an edit stop, `rebase-merge/amend` present) with staged changes,
+  where it commits: Git would refuse to continue after a reset, and would
+  otherwise amend silently, which `a` offers explicitly. The options bar and
+  `?` name the action `c` does now. `c p` has no route in Files; `c p` and
+  `c c` stay as they are elsewhere.
 
-None.
+Acceptance: each pane's keys behave as above, the options bar and `?` show
+them, and the Guide, Design ("Shared roles") and merge guide say so. The full
+integration suite passes.
+
+## Tasks
+
+1. Enter as the inspection key in every pane; `v` and Space no longer inspect
+   (the `v d` / `v f` menus stay in Commits, Sub-commits and Reflog).
+2. Files: `c` commit or continue; Enter no longer commits; the Files `v` menu
+   for conflicted and submodule entries.
+3. Space: patch toggle in Commit files; nothing in regular menus.
+4. Space selection in Sub-commits and Reflog.
+5. Stash `v d` / `v f` menu, if the full listing works for a stash entry.
+6. Design and merge-guide updates, full integration suite; close this
+   section.
 
 ## How this tracker works
 
