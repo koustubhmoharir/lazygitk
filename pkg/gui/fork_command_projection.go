@@ -223,7 +223,7 @@ func forkInspectionPaths(id, view string, paths [][]gocui.Key) [][]gocui.Key {
 	if view == "files" {
 		// Files' focus-diff is the Enter inspector (FilesController.InspectSelected)
 		// and only that. 0 belongs to the focus-only navigation.focus-main route, and
-		// v is unbound in Files until task 1b gives it a menu.
+		// v opens Files' inspection menu (file.inspect.* in fork_files_inspect_menu.go).
 		return [][]gocui.Key{{enterKey()}}
 	}
 	return append([][]gocui.Key{{enterKey()}}, forkWithoutInspectionKeys(paths)...)
@@ -236,7 +236,7 @@ func enterKey() gocui.Key {
 // forkWithoutInspectionKeys drops the single-key inspection routes (Enter and v)
 // from a pane's non-preferred inspector, keeping its own keys such as focus-diff's
 // 0 and the v menus of the commit listings. Space is not an inspection key.
-// Files' focus-diff keeps no v route, so v is unbound there.
+// Files' focus-diff keeps no v route: v there is the file.inspect.* menu.
 func forkWithoutInspectionKeys(paths [][]gocui.Key) [][]gocui.Key {
 	var kept [][]gocui.Key
 	for _, path := range paths {

@@ -785,6 +785,7 @@ var tests = []*components.IntegrationTest{
 	ui.ForkDefaultFilesCContinueMerge,
 	ui.ForkDefaultFilesCRebaseEdit,
 	ui.ForkDefaultFilesEnterAndCommit,
+	ui.ForkDefaultFilesInspectMenu,
 	ui.ForkDefaultHintLabels,
 	ui.ForkDefaultHistoryOperationsRebaseMerge,
 	ui.ForkDefaultHistoryOperationsResets,

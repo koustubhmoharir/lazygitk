@@ -426,6 +426,10 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d s `` | Diff with staged version |  |
 | `` d c `` | Diff with commit… |  |
 | `` d m `` | Open merge tool |  |
+| `` v r `` | Resolve conflict |  |
+| `` v s `` | Enter submodule |  |
+| `` v m `` | Open merge tool |  |
+| `` v d `` | Show diff |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
 | `` <enter> `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |

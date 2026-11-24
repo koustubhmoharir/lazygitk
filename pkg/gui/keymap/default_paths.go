@@ -154,6 +154,14 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	// (fork_command_projection.go).
 	add("remote.view-branches navigation.open-commits navigation.open-diff-files navigation.open-history-file-diff navigation.focus-diff file.enter submodule.enter", "enter")
 	add("navigation.focus-diff", "v")
+	// Fork: in Files, v chooses how to go into a conflicted file or submodule entry
+	// (fork_files_inspect_menu.go). Declared in menu order: r, s, m, d. Inapplicable
+	// routes are left out, so other entries get no menu. v d also lists the commit
+	// listings' changed files, but those routes are in other views.
+	add("file.inspect.resolve", "v r")
+	add("file.inspect.submodule", "v s")
+	add("file.inspect.merge-tool", "v m")
+	add("file.inspect.diff", "v d")
 	// Fork: repository and worktree switching live under s (roadmap items 14 and 18).
 	add("repo.switch-menu", "s r")
 	add("repo.open-path", "s n")

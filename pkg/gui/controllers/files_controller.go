@@ -265,6 +265,8 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 	// Fork: d w / d s / d c compare the selected working file or directory (see working_file_diff_actions.go).
 	bindings = append(bindings, self.workingFileDiffBindings()...)
 	bindings = append(bindings, self.mergeToolBindings()...)
+	// Fork: the v menu's routes to a conflicted file or submodule entry (fork_files_inspect_menu.go).
+	bindings = append(bindings, self.inspectMenuBindings()...)
 	return append(bindings, treeNavigationBindings(
 		self.c.Tr.CollapseTreeNode,
 		self.c.Tr.ExpandTreeNode,

@@ -353,6 +353,9 @@ re-apply it if upstream changes that code.
   `commit.create` has no default route: Files' `c` is the fork's
   `file.commit-or-continue` (`controllers/fork_file_commit_or_continue.go`,
   registered in `files_controller.go` beside upstream's commit binding).
+  Files' `v` menu (`v r`, `v s`, `v m`, `v d`) is
+  `controllers/fork_files_inspect_menu.go`, also registered there; its routes
+  are inapplicable except on conflicted and submodule entries.
 - `keymap/command_tree.go`: in a view, a local complete path hides the default
   global routes that extend it (`shadowGlobalRoutes`), so Files' `c` hides the
   global `c c` and `c p`; `CommandTree.Shadowed` stops their labels from

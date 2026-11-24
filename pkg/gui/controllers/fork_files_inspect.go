@@ -1,6 +1,9 @@
 package controllers
 
-import "github.com/jesseduffield/lazygit/pkg/gui/keymap"
+import (
+	"github.com/jesseduffield/lazygit/pkg/commands/models"
+	"github.com/jesseduffield/lazygit/pkg/gui/keymap"
+)
 
 // Fork: InspectSelected is the Files inspection key's handler (see
 // SwitchToFocusedMainViewController.WithInspect). It focuses the selected file's
@@ -12,17 +15,37 @@ func (self *FilesController) InspectSelected() error {
 	node := self.context().GetSelected()
 	if node != nil && node.File != nil && !self.focusDiffIsExplicit() {
 		if self.conflictNeedsResolutionDialog(node.File) {
-			return self.openConflictResolutionMenu(node.File)
+			return self.resolveConflictedFile(node.File)
 		}
-		submoduleConfigs := self.c.Model().Submodules
-		if node.File.IsSubmodule(submoduleConfigs) {
-			return self.c.Helpers().Repos.EnterSubmodule(node.File.SubmoduleConfig(submoduleConfigs))
+		if self.isSubmoduleEntry(node.File) {
+			return self.enterSubmodule(node.File)
 		}
 		if node.File.HasInlineMergeConflicts {
-			return self.switchToMerge()
+			return self.resolveConflictedFile(node.File)
 		}
 	}
 	return focusMainView(self.c, self.context(), -1)
+}
+
+// resolveConflictedFile is Enter's resolution of a conflicted file, also the v
+// menu's resolve route (fork_files_inspect_menu.go): the resolution menu where
+// the conflict needs a dialog, otherwise the merge conflicts view.
+func (self *FilesController) resolveConflictedFile(file *models.File) error {
+	if self.conflictNeedsResolutionDialog(file) {
+		return self.openConflictResolutionMenu(file)
+	}
+	return self.c.Helpers().MergeConflicts.SwitchToMerge(file)
+}
+
+// isSubmoduleEntry reports whether a file entry is a submodule.
+func (self *FilesController) isSubmoduleEntry(file *models.File) bool {
+	return file.IsSubmodule(self.c.Model().Submodules)
+}
+
+// enterSubmodule enters a submodule entry, also the v menu's submodule route.
+func (self *FilesController) enterSubmodule(file *models.File) error {
+	submoduleConfigs := self.c.Model().Submodules
+	return self.c.Helpers().Repos.EnterSubmodule(file.SubmoduleConfig(submoduleConfigs))
 }
 
 func (self *FilesController) focusDiffIsExplicit() bool {

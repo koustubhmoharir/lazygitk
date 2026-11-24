@@ -86,6 +86,7 @@ switching to it) or a submodule (Escape returns to the parent repository).
 | Space | Stage or unstage the selected files or directory; select the root to stage everything |
 | Enter | Inspect: focus the diff (also of a directory), open conflict resolution, or enter a submodule |
 | `c` | Commit; while an operation is in progress, continue it (see below) |
+| `v` | On a conflicted file: `r` resolve here, `m` merge tool, `d` show the diff; on a submodule entry: `s` enter it, `d` show the diff (nothing on other entries) |
 | `a` | Amend the last commit |
 | Left, Right | Collapse the directory or select its parent; expand it or select its first child |
 | `x` | Discard changes, always with confirmation |
@@ -732,6 +733,6 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
 | Ctrl+J / Ctrl+K move commit | `>` / `<` |
 | `y` copy menus with submenus | Flat `y` menu |
 | Space or Enter to switch worktree | `s w` |
-| Space to enter a submodule | Enter |
+| Space to enter a submodule | Enter (in Files, also `v s`) |
 | Space / `b` / `z` in the merge view | Space / `g h b` / `u u` |
 | `{` / `}` diff context | `t d -` / `t d +` |

@@ -406,6 +406,10 @@ type ForkTranslationSet struct {
 	OpenRepoByPath                        string
 	InspectFile                           string
 	InspectFileTooltip                    string
+	InspectResolveConflict                string
+	InspectEnterSubmodule                 string
+	InspectShowDiff                       string
+	InspectNotApplicable                  string
 	CheckoutPreviousBranchNamed           string
 	NoPreviousBranch                      string
 	PreviousCheckoutUnavailable           string
@@ -848,6 +852,10 @@ func forkEnglishTranslationSet(set *TranslationSet) {
 		OpenRepoByPath:                        "Open repository by path",
 		InspectFile:                           "Inspect file",
 		InspectFileTooltip:                    "Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule.",
+		InspectResolveConflict:                "Resolve conflict",
+		InspectEnterSubmodule:                 "Enter submodule",
+		InspectShowDiff:                       "Show diff",
+		InspectNotApplicable:                  "Not available for this entry",
 		CheckoutPreviousBranchNamed:           "Switch to previous branch: %s",
 		NoPreviousBranch:                      "No branch was checked out before the current one.",
 		PreviousCheckoutUnavailable:           "The previous checkout %q is no longer a local branch or a commit, so s p cannot return to it. Check out the target explicitly.",
