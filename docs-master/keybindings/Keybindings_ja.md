@@ -124,7 +124,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | メインビューにフォーカス |  |
-| `` v d `` | Changed files |  |
+| `` <enter>, v d `` | Changed files |  |
 | `` v f `` | All files |  |
 | `` / `` | 現在のビューをテキストで検索 |  |
 
@@ -144,7 +144,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d e `` | Diff using current comparison mode |  |
 | `` g h t `` | パッチに含めるファイルを切り替え | ファイルがカスタムパッチに含まれるかどうかを切り替えます。https://github.com/jesseduffield/lazygit#rebase-magic-custom-patchesを参照してください。 |
 | `` g h a `` | すべてのファイルを切り替え | コミットのすべてのファイルをカスタムパッチに追加/削除します。https://github.com/jesseduffield/lazygit#rebase-magic-custom-patchesを参照してください。 |
-| `` v, <space> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
+| `` <enter> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
 | `` t t t `` | ファイルツリービューを切り替え | ファイル表示をフラット表示とツリー表示で切り替えます。フラット表示はすべてのファイルパスを一覧で表示し、ツリー表示はディレクトリごとにファイルをグループ化します。<br><br>デフォルトは設定ファイル内の 'gui.showFileTree' キーで変更できます。 |
 | `` t t c `` | すべてのファイルを折りたたむ | ファイルツリー内のすべてのディレクトリを折りたたみます |
 | `` t t e `` | すべてのファイルを展開 | ファイルツリー内のすべてのディレクトリを展開します |
@@ -197,8 +197,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | メインビューにフォーカス |  |
-| `` v d, <space> d `` | Changed files |  |
-| `` v f, <space> f `` | All files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | 現在のビューをテキストで検索 |  |
 
 ## サブモジュール
@@ -206,7 +206,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | サブモジュール名をクリップボードにコピー |  |
-| `` v, <space> `` | 入る | サブモジュールに入ります。サブモジュールに入った後、`<esc>`を押して親リポジトリに戻ることができます。 |
+| `` <enter> `` | 入る | サブモジュールに入ります。サブモジュールに入った後、`<esc>`を押して親リポジトリに戻ることができます。 |
 | `` <delete> `` | 削除 | 選択したサブモジュールとそれに対応するディレクトリを削除します。 |
 | `` g u s `` | 更新 | 選択したサブモジュールを更新します。 |
 | `` n s `` | 新しいサブモジュール |  |
@@ -226,7 +226,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | 新しいワークツリー |  |
 | `` <f2> `` | スタッシュの名前を変更 |  |
 | `` 0 `` | メインビューにフォーカス |  |
-| `` v, <space> `` | Changed files |  |
+| `` <enter> `` | Changed files |  |
 | `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## ステータス
@@ -239,7 +239,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s r `` | 最近のリポジトリをチェックアウト |  |
 | `` t l n `` | ブランチログの表示モードを順に切り替え |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
-| `` v, <space>, 0 `` | メインビューにフォーカス |  |
+| `` <enter>, 0 `` | メインビューにフォーカス |  |
 
 ## セカンダリ
 
@@ -294,7 +294,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` p `` | タグをプッシュ | 選択したタグをリモートにプッシュします。リモートを選択するよう促されます。 |
 | `` t d e `` | 外部差分ツールを開く（git difftool） |  |
 | `` 0 `` | メインビューにフォーカス |  |
-| `` v, <space> `` | コミットを表示 |  |
+| `` <enter> `` | コミットを表示 |  |
 | `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## ファイル
@@ -305,7 +305,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | Toggle staging of selected files | 選択したファイルのステージ状態を切り替えます。 |
 | `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
 | `` w s `` | ステータスでファイルをフィルタリング |  |
-| `` <enter> `` | コミット | ステージされた変更をコミットします。 |
+| `` c `` | コミット | ステージされた変更をコミットします。 |
 | `` g e n `` | pre-commitフックなしで変更をコミット |  |
 | `` a `` | 直前のコミットを修正 |  |
 | `` g e c `` | Gitエディタを使用して変更をコミット |  |
@@ -332,7 +332,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d m `` | Open merge tool |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
-| `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
+| `` <enter> `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
 | `` 0 `` | メインビューにフォーカス |  |
 | `` / `` | 現在のビューをテキストでフィルタリング |  |
 
@@ -422,15 +422,15 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | メインビューにフォーカス |  |
-| `` v d, <space> d `` | Changed files |  |
-| `` v f, <space> f `` | All files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## リモート
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` v, <space> `` | ブランチを表示 |  |
+| `` <enter> `` | ブランチを表示 |  |
 | `` n r `` | 新しいリモート |  |
 | `` <delete> `` | 削除 | 選択したリモートを削除します。そのリモートからのリモートブランチを追跡しているローカルブランチは影響を受けません。 |
 | `` e `` | 編集 | 選択したリモートの名前またはURLを編集します。 |
@@ -465,7 +465,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t s o `` | 並び順 |  |
 | `` t d e `` | 外部差分ツールを開く（git difftool） |  |
 | `` 0 `` | メインビューにフォーカス |  |
-| `` v, <space> `` | コミットを表示 |  |
+| `` <enter> `` | コミットを表示 |  |
 | `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## ローカルブランチ
@@ -507,7 +507,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g t `` | アップストリームオプションを表示 | ブランチのアップストリームに関連するオプションを表示します（例：アップストリームの設定/解除やアップストリームへのリセット）。 |
 | `` t d e `` | 外部差分ツールを開く（git difftool） |  |
 | `` 0 `` | メインビューにフォーカス |  |
-| `` v, <space> `` | コミットを表示 |  |
+| `` <enter> `` | コミットを表示 |  |
 | `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## ワークツリー
@@ -518,7 +518,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s w `` | チェックアウト（切り替え） | 選択したワークツリーをチェックアウト（切り替え）します。 |
 | `` o `` | エディタで開く |  |
 | `` <delete> `` | 削除 | 選択したワークツリーを削除します。これはワークツリーのディレクトリとワークツリーに関するメタデータの両方を.gitディレクトリから削除します。 |
-| `` v, <space> `` | コミットを表示 |  |
+| `` <enter> `` | コミットを表示 |  |
 | `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## 確認パネル

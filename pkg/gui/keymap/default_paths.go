@@ -59,7 +59,6 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("branch.checkout remote-branch.checkout tag.checkout commit.checkout-menu", "s c")
 	add("commit.checkout-detached", "s d")
 	add("branch.place-at-selected-commit", "n b")
-	add("commit.create", "enter")
 	add("file.ignore-menu", "i")
 	add("branch.reflog-undo conflict.undo", "u u")
 	add("branch.reflog-redo", "u r")
@@ -84,7 +83,11 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	// / filters in panes without search; no pane offers both. It replaces t f t.
 	add("filter.open", "/")
 	add("commit.cherry-pick", "c p")
+	// Fork: c c continues from any pane, but c is Files' commit-or-continue key
+	// (file.commit-or-continue), so the command tree hides c c in Files.
 	add("operation.continue-in-progress", "c c")
+	// Fork: in Files, c commits or continues (fork_file_commit_or_continue.go).
+	add("file.commit-or-continue", "c")
 	add("commit.combine-selected", "g c")
 	// Fork: one flat copy menu. Each second key has the same meaning in every
 	// panel that offers it. Nested copy menus keep no default route.
@@ -146,9 +149,9 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("submodule.bulk-menu", "g u b")
 	add("branch.reset-upstream-menu", "g z u")
 	add("worktree.discard-menu", "g z w")
-	// Fork: Enter goes in (the inspection key) in every side pane except Files,
-	// where Enter commits. v is Files' focus-diff key; the projection narrows
-	// each pane to its own inspection key (fork_command_projection.go).
+	// Fork: Enter goes in (the inspection key) in every side pane, Files included.
+	// The projection narrows each pane to its own inspection key
+	// (fork_command_projection.go).
 	add("remote.view-branches navigation.open-commits navigation.open-diff-files navigation.open-history-file-diff navigation.focus-diff file.enter submodule.enter", "enter")
 	add("navigation.focus-diff", "v")
 	// Fork: repository and worktree switching live under s (roadmap items 14 and 18).
@@ -218,7 +221,9 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 
 	// Replaced normal routes, and nested copy menus that moved into the flat y
 	// menu, intentionally remain recognized with no path.
-	for _, id := range strings.Fields("file.refresh file.copy-menu history-file.copy-menu commit.copy-attribute-menu commit.squash-down commit.mark-fixup commit.set-fixup-message commit.create-fixup-menu commit.autosquash commit.find-fixup-target branch.create-and-checkout branch.reset-menu branch.checkout-by-name filter.options-menu branch.checkout-previous branch.force-checkout file.toggle-stage-all diff.primary-selection diff.discard-selection") {
+	// commit.create lost its Enter route: Files commits through c (see
+	// file.commit-or-continue) and the palette keeps the command.
+	for _, id := range strings.Fields("commit.create file.refresh file.copy-menu history-file.copy-menu commit.copy-attribute-menu commit.squash-down commit.mark-fixup commit.set-fixup-message commit.create-fixup-menu commit.autosquash commit.find-fixup-target branch.create-and-checkout branch.reset-menu branch.checkout-by-name filter.options-menu branch.checkout-previous branch.force-checkout file.toggle-stage-all diff.primary-selection diff.discard-selection") {
 		if _, exists := paths[id]; !exists {
 			paths[id] = nil
 		}

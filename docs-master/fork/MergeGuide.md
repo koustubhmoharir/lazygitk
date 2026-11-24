@@ -348,8 +348,15 @@ re-apply it if upstream changes that code.
   `CommandIDFunc`, `Verb`, `VerbFunc`, `CommandPaths`, `DefaultCommand` and
   `CommandActive`.
 - `keymap/default_paths.go` and `fork_command_projection.go`: Enter is the
-  inspection key of every side pane except Files, where it commits and `v`
-  inspects (`forkInspectionPaths`, `forkPreferredInspector`). `v d`/`v f`
+  inspection key of every side pane (`forkInspectionPaths`,
+  `forkPreferredInspector`); in Files it runs `InspectSelected`.
+  `commit.create` has no default route: Files' `c` is the fork's
+  `file.commit-or-continue` (`controllers/fork_file_commit_or_continue.go`,
+  registered in `files_controller.go` beside upstream's commit binding).
+- `keymap/command_tree.go`: in a view, a local complete path hides the default
+  global routes that extend it (`shadowGlobalRoutes`), so Files' `c` hides the
+  global `c c` and `c p`; `CommandTree.Shadowed` stops their labels from
+  falling back to the global route (`fork_command_key_labels.go`). `v d`/`v f`
   route the changed-files and full listings in Commits, Sub-commits and
   Reflog, beside Enter for the changed files; Stash has Enter only.
   These routes are always default routes (`forkListingDefaultRoutes`), so an
@@ -386,7 +393,8 @@ re-apply it if upstream changes that code.
   hint filters (`localFirstForkHintBindings`, `forkHintBindingInContext`) are in
   `fork_command_hints.go`. The operation-in-progress block adds the
   `operation.continue-in-progress` hint after the `g o` hint, so it renders
-  first (`fork_command_hints.go`).
+  first (`fork_command_hints.go`). It is left out where Files' `c`
+  (`file.commit-or-continue`) shows the action itself.
 - `pkg/cheatsheet/generate.go`: labels from `binding.KeyLabels()`.
 - `controllers/list_controller_trait.go`: selection disabled reasons are
   `Inapplicable`, so an unusable key does nothing quietly.

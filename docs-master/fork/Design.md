@@ -54,7 +54,7 @@ recorded here or in the user guide.
 - **A multi-selection is never narrowed silently.** While Commits holds an
   explicit selection, a command either acts on the whole set or is disabled
   with the reason "Clear the selection first (Escape)"; it never falls back to
-  the cursor commit. Only inspection (`v` and the main view) follows the
+  the cursor commit. Only inspection (Enter, `v` and the main view) follows the
   cursor, which the gutter marks.
   The set is kept by commit identity: commits hidden by a filter, beyond the
   loaded list or rewritten elsewhere stay selected and counted, and a notice
@@ -112,12 +112,15 @@ recorded here or in the user guide.
   or three-key paths. Deliberate friction is kept where it prevents surprises:
   pull has no single key, and moving commits needs the shifted `<` / `>`.
 - **Shared roles.**
-  - Space toggles the selection where the pane edits something (staging in
-    Files and in the diff, patch inclusion, conflict-hunk picking) and
-    inspects elsewhere.
-  - `v` inspects or drills down: a branch's commits, a commit's files, a
-    file's diff, a submodule.
-  - Enter commits, and only in Files.
+  - Enter goes in: it opens a layer that Escape leaves (a list, a focused
+    diff, conflict resolution, a submodule). Switching worktree is not going
+    in: nothing returns from it.
+  - Space toggles membership (staged, selected, in the patch, picked) and
+    never navigates; where nothing toggles, it does nothing.
+  - `v` chooses how to go in, as a menu, only where there is more than one
+    way; Enter is its first entry.
+  - `c` in Files commits, or continues the operation in progress; it is never
+    a commit shortcut elsewhere.
   - `/` opens the pane's text tool: search where the pane has search, filter
     where it has a filter.
   - Escape leaves the current layer or mode; it never aborts a Git operation

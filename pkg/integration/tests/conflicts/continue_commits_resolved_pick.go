@@ -7,7 +7,7 @@ import (
 )
 
 var ContinueCommitsResolvedPick = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "c c commits a conflict resolved and staged in a cherry-pick, with its original message, then applies the remaining picks",
+	Description: "c continues a cherry-pick whose conflict was resolved and staged, committing it with its original message, then applies the remaining picks",
 	SetupConfig: shared.UseDefaultKeymap,
 	SetupRepo: func(shell *Shell) {
 		shell.
@@ -33,7 +33,7 @@ var ContinueCommitsResolvedPick = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Branches().
 			Focus().
 			NavigateToLine(Contains("topic")).
-			Press(config.Keybinding{"v"})
+			Press(config.Keybinding{"<enter>"})
 
 		t.Views().SubCommits().
 			IsFocused().
@@ -59,9 +59,6 @@ var ContinueCommitsResolvedPick = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			Focus().
 			Press(config.Keybinding{"c"})
-
-		t.ExpectPopup().Menu().Title(Equals("c"))
-		t.Views().Menu().Press(config.Keybinding{"c"})
 
 		t.Views().Status().Content(DoesNotContain("cherry-picking"))
 		// The branch's own commits are shown too, so check only the newest rows.

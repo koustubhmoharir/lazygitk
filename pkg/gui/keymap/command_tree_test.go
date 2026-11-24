@@ -34,6 +34,48 @@ func TestBuildCommandTreeLocalBindingShadowsGlobalOnlyAtExactPath(t *testing.T) 
 	assert.Equal(t, []*types.Binding{globalSibling}, childTree(t, g, key('b')).Bindings)
 }
 
+// Fork: in Files, the local c leaf hides the global default c c and c p, which
+// extend it, so no continuation of c is offered there. Other views keep them.
+func TestBuildCommandTreeLocalLeafHidesGlobalDefaultExtensionsInItsView(t *testing.T) {
+	continueOp := &types.Binding{CommandID: "operation.continue-in-progress", DefaultCommand: true, CommandPaths: [][]gocui.Key{{key('c'), key('c')}}}
+	cherryPick := &types.Binding{CommandID: "commit.cherry-pick", DefaultCommand: true, CommandPaths: [][]gocui.Key{{key('c'), key('p')}}}
+	commitOrContinue := &types.Binding{CommandID: "file.commit-or-continue", ViewName: "files", DefaultCommand: true, Keys: []gocui.Key{key('c')}}
+	bindings := []*types.Binding{continueOp, cherryPick, commitOrContinue}
+
+	files := BuildCommandTree(bindings, "files")
+	c := childTree(t, files, key('c'))
+	assert.Equal(t, []*types.Binding{commitOrContinue}, c.Bindings)
+	assert.Empty(t, c.Children, "a local leaf must not gain global continuations")
+
+	commits := BuildCommandTree(bindings, "commits")
+	assert.Empty(t, childTree(t, commits, key('c')).Bindings)
+	assert.Equal(t, []*types.Binding{continueOp}, childTree(t, childTree(t, commits, key('c')), key('c')).Bindings)
+	assert.Equal(t, []*types.Binding{cherryPick}, childTree(t, childTree(t, commits, key('c')), key('p')).Bindings)
+
+	global := BuildCommandTree(bindings, "")
+	assert.Equal(t, []*types.Binding{continueOp}, childTree(t, childTree(t, global, key('c')), key('c')).Bindings)
+}
+
+// The rule is about complete local paths: a local multi-key route hides only the
+// global routes that extend it, and explicit global routes keep their precedence.
+func TestBuildCommandTreeLocalShadowingIsLimitedToExtensionsOfCompletePaths(t *testing.T) {
+	explicitContinue := &types.Binding{CommandID: "operation.continue-in-progress", DefaultCommand: false, CommandPaths: [][]gocui.Key{{key('c'), key('c')}}}
+	defaultExtension := &types.Binding{CommandID: "global.default", DefaultCommand: true, CommandPaths: [][]gocui.Key{{key('g'), key('a'), key('b')}}}
+	defaultSibling := &types.Binding{CommandID: "global.sibling", DefaultCommand: true, CommandPaths: [][]gocui.Key{{key('g'), key('b')}}}
+	defaultPrefixOnly := &types.Binding{CommandID: "global.prefix", DefaultCommand: true, CommandPaths: [][]gocui.Key{{key('g')}}}
+	local := &types.Binding{ViewName: "files", DefaultCommand: true, CommandPaths: [][]gocui.Key{{key('g'), key('a')}}}
+	root := BuildCommandTree([]*types.Binding{explicitContinue, defaultExtension, defaultSibling, defaultPrefixOnly, local}, "files")
+
+	c := childTree(t, root, key('c'))
+	assert.Equal(t, []*types.Binding{explicitContinue}, childTree(t, c, key('c')).Bindings, "explicit global routes keep their precedence")
+
+	g := childTree(t, root, key('g'))
+	assert.Equal(t, []*types.Binding{defaultSibling}, childTree(t, g, key('b')).Bindings)
+	a := childTree(t, g, key('a'))
+	assert.Equal(t, []*types.Binding{local}, a.Bindings)
+	assert.Empty(t, a.Children, "g a b extends the local g a, so it is hidden")
+}
+
 func TestBuildCommandTreeRetainsSameViewCandidateOrder(t *testing.T) {
 	first := &types.Binding{ViewName: "files", Keys: []gocui.Key{key('x')}}
 	second := &types.Binding{ViewName: "files", Keys: []gocui.Key{key('x')}}

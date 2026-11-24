@@ -18,7 +18,7 @@ var DraftRecallIgnoresUsedMessages = NewIntegrationTest(NewIntegrationTestArgs{
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
 		t.Views().Files().
 			IsFocused().
-			PressEnter()
+			Press(config.Keybinding{"c"})
 
 		t.ExpectPopup().CommitMessagePanel().
 			InitialText(Equals("")).

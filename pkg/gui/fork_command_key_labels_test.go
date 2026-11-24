@@ -125,3 +125,25 @@ func TestForkCommandKeyLabelsAgreeWithDisplayRoutes(t *testing.T) {
 		}
 	}
 }
+
+// Fork: in Files the local c leaf shadows the global c c, so continue has no label
+// there (the global fallback must not show c c), while other panes keep c c.
+func TestForkCommandKeyLabelsShadowGlobalRoutesInLocalView(t *testing.T) {
+	continueOp := &types.Binding{CommandID: "operation.continue-in-progress", DefaultCommand: true, CommandPaths: [][]gocui.Key{{gocui.NewKeyRune('c'), gocui.NewKeyRune('c')}}}
+	commitOrContinue := &types.Binding{CommandID: "file.commit-or-continue", ViewName: "files", DefaultCommand: true, Keys: []gocui.Key{gocui.NewKeyRune('c')}}
+
+	gui := &Gui{}
+	gui.setForkCommandBindings([]*types.Binding{continueOp, commitOrContinue}, nil)
+	if got := gui.commandKeyLabel("file.commit-or-continue", "files"); got != "c" {
+		t.Fatalf("Files commit-or-continue label %q, want c", got)
+	}
+	if got := gui.commandKeyLabel("operation.continue-in-progress", "files"); got != "" {
+		t.Fatalf("Files continue label %q, want none", got)
+	}
+	if got := gui.commandKeyLabel("operation.continue-in-progress", "commits"); got != "c c" {
+		t.Fatalf("Commits continue label %q, want c c", got)
+	}
+	if got := gui.commandKeyLabel("operation.continue-in-progress", ""); got != "c c" {
+		t.Fatalf("global continue label %q, want c c", got)
+	}
+}

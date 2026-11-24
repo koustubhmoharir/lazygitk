@@ -6,7 +6,7 @@ import (
 )
 
 var ForkDefaultKeymapFilesTree = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "Real default keys: Files tree arrows, scoped Space/Enter with Ctrl-word editing in the commit message, and pane/tab navigation",
+	Description: "Real default keys: Files tree arrows, scoped Space and c with Ctrl-word editing in the commit message, and pane/tab navigation",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -40,7 +40,7 @@ var ForkDefaultKeymapFilesTree = NewIntegrationTest(NewIntegrationTestArgs{
 		files.Press(config.Keybinding{"r"}).Press(config.Keybinding{"R"}).IsFocused()
 		t.Views().Menu().IsInvisible()
 		t.Views().Confirmation().IsInvisible()
-		files.Press(config.Keybinding{"<space>"}).PressEnter()
+		files.Press(config.Keybinding{"<space>"}).Press(config.Keybinding{"c"})
 		panel := t.ExpectPopup().CommitMessagePanel().Type("keyboard commit")
 		t.Views().CommitMessage().Press(config.Keybinding{"<ctrl+left>"})
 		panel.Type("new ")

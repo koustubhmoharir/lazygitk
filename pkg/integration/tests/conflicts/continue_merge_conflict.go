@@ -7,7 +7,7 @@ import (
 )
 
 var ContinueMergeConflict = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "c c concludes a conflicted merge that was started outside lazygitk, with the status line naming merge",
+	Description: "c concludes a conflicted merge that was started outside lazygitk, with the status line naming merge",
 	SetupConfig: shared.UseDefaultKeymap,
 	SetupRepo: func(shell *Shell) {
 		shell.
@@ -36,9 +36,6 @@ var ContinueMergeConflict = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().Files().
 			Press(config.Keybinding{"c"})
-
-		t.ExpectPopup().Menu().Title(Equals("c"))
-		t.Views().Menu().Press(config.Keybinding{"c"})
 
 		t.Views().Status().Content(DoesNotContain("merging"))
 		t.Views().Commits().

@@ -48,6 +48,17 @@ func effectiveModeHint(bindings []*types.Binding, commandID, description, fallba
 	return bindingInfo{description: description, style: color}
 }
 
+// forkFileCommitOrContinueRouted reports whether the bindings of the focused view
+// give a key to file.commit-or-continue, the Files route that commits or continues.
+func forkFileCommitOrContinueRouted(bindings []*types.Binding) bool {
+	for _, binding := range bindings {
+		if binding.GetCommandID() == "file.commit-or-continue" && len(binding.KeyLabels()) > 0 {
+			return true
+		}
+	}
+	return false
+}
+
 func appendModeHint(options []bindingInfo, hint bindingInfo) []bindingInfo {
 	if hint.key == "" {
 		return options

@@ -2,6 +2,7 @@ package keymap
 
 import (
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 
@@ -19,6 +20,10 @@ type CommandTree struct {
 	// them only after a leaf's handler declines with ErrKeybindingNotHandled.
 	Fallbacks []*types.Binding
 	Children  []CommandEdge
+	// Shadowed, set on the root only, lists the default global bindings with a route
+	// that a view-local route hides (see shadowGlobalRoutes). They have no route in
+	// the view, so labels must not fall back to their global route.
+	Shadowed []*types.Binding
 }
 
 // CommandEdge connects a key to the subtree for routes beginning with it.
@@ -31,19 +36,14 @@ type CommandEdge struct {
 // precede defaults; within either class, local routes precede global routes.
 // Ownership applies to complete paths, never an entire shared prefix.
 func BuildCommandTree(bindings []*types.Binding, view string) *CommandTree {
-	type route struct {
-		binding *types.Binding
-		path    []gocui.Key
-	}
-
-	var routes []route
+	var routes []commandRoute
 	for _, binding := range bindings {
 		if binding == nil || (binding.ViewName != "" && binding.ViewName != view) {
 			continue
 		}
 		for _, key := range binding.Keys {
 			if !gocui.IsMouseKey(key) {
-				routes = append(routes, route{binding: binding, path: []gocui.Key{gocui.NormalizeCommandKey(key)}})
+				routes = append(routes, commandRoute{binding: binding, path: []gocui.Key{gocui.NormalizeCommandKey(key)}})
 			}
 		}
 		for _, path := range binding.CommandPaths {
@@ -59,12 +59,14 @@ func BuildCommandTree(bindings []*types.Binding, view string) *CommandTree {
 				normalized = append(normalized, gocui.NormalizeCommandKey(key))
 			}
 			if len(normalized) > 0 {
-				routes = append(routes, route{binding: binding, path: normalized})
+				routes = append(routes, commandRoute{binding: binding, path: normalized})
 			}
 		}
 	}
 
-	root := &CommandTree{}
+	routes, shadowed := shadowGlobalRoutes(routes, view)
+
+	root := &CommandTree{Shadowed: shadowed}
 	seen := make(map[*types.Binding]map[*CommandTree]struct{})
 	for _, item := range routes {
 		node := root
@@ -84,6 +86,53 @@ func BuildCommandTree(bindings []*types.Binding, view string) *CommandTree {
 	pruneCommandTreeOwners(root, view)
 	sortCommandTree(root, nil)
 	return root
+}
+
+// commandRoute is one normalized path by which a binding is reached.
+type commandRoute struct {
+	binding *types.Binding
+	path    []gocui.Key
+}
+
+// shadowGlobalRoutes implements the local-shadows-global rule of BuildCommandTree.
+// In view, a complete local path P hides every default global route that strictly
+// extends P: a local single key such as Files' c hides the global c c and c p, so
+// those keys mean nothing in that pane. Global routes that do not extend a local
+// path are kept, and so are explicit global routes, which keep the precedence of
+// pruneCommandTreeOwners. The rule works on the tree, so labels and prefix menus
+// that read the tree agree with it.
+func shadowGlobalRoutes(routes []commandRoute, view string) ([]commandRoute, []*types.Binding) {
+	if view == "" {
+		return routes, nil
+	}
+	local := make(map[string]struct{})
+	for _, item := range routes {
+		if item.binding.ViewName == view {
+			local[commandPathID(item.path)] = struct{}{}
+		}
+	}
+	var shadowed []*types.Binding
+	kept := routes[:0]
+	for _, item := range routes {
+		if item.binding.ViewName == "" && item.binding.DefaultCommand && extendsLocalPath(item.path, local) {
+			if !slices.Contains(shadowed, item.binding) {
+				shadowed = append(shadowed, item.binding)
+			}
+			continue
+		}
+		kept = append(kept, item)
+	}
+	return kept, shadowed
+}
+
+// extendsLocalPath reports whether a proper prefix of path is a local complete path.
+func extendsLocalPath(path []gocui.Key, local map[string]struct{}) bool {
+	for i := 1; i < len(path); i++ {
+		if _, ok := local[commandPathID(path[:i])]; ok {
+			return true
+		}
+	}
+	return false
 }
 
 func pruneCommandTreeOwners(tree *CommandTree, view string) {

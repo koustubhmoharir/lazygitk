@@ -39,7 +39,8 @@ func forkCommandLabelsForView(core, custom []*types.Binding, view string) map[st
 	shortest := make(map[string]int)
 	// Labels are cached per keybinding reset and read from worker goroutines, so
 	// they cannot evaluate live applicability; forkStaticallyApplicable is used.
-	for _, route := range forkEffectiveRoutes(keymap.BuildCommandTree(core, view), forkStaticallyApplicable) {
+	tree := keymap.BuildCommandTree(core, view)
+	for _, route := range forkEffectiveRoutes(tree, forkStaticallyApplicable) {
 		if len(route.path) > 0 && claimed[route.path[0]] {
 			continue
 		}
@@ -50,6 +51,13 @@ func forkCommandLabelsForView(core, custom []*types.Binding, view string) map[st
 		}
 		shortest[id] = len(route.path)
 		labels[id] = types.CommandPathLabel(route.path)
+	}
+	// A global default route that the view's local route shadows is not reachable
+	// here, so the command gets an empty label that stops the global fallback.
+	for _, binding := range tree.Shadowed {
+		if _, ok := labels[binding.CommandID]; !ok {
+			labels[binding.CommandID] = ""
+		}
 	}
 	return labels
 }
@@ -62,13 +70,14 @@ func forkStaticallyApplicable(*types.Binding) bool {
 
 // commandKeyLabel returns the effective label of commandID in view, falling back
 // to the global view when view does not route it, or "" when it has no key.
+// A command whose global route the view shadows has "" in view and no fallback.
 // Upstream legacy key fields are not consulted: they do not describe the
 // command paths that normal panes dispatch.
 func (gui *Gui) commandKeyLabel(commandID, view string) string {
 	gui.forkCommandLabelsMu.Lock()
 	defer gui.forkCommandLabelsMu.Unlock()
 
-	if label := gui.forkCommandLabelsLocked(view)[commandID]; label != "" {
+	if label, ok := gui.forkCommandLabelsLocked(view)[commandID]; ok {
 		return label
 	}
 	if view != "" {

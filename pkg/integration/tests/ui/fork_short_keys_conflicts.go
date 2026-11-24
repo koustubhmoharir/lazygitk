@@ -32,7 +32,7 @@ var ForkShortKeysConflicts = NewIntegrationTest(NewIntegrationTestArgs{
 			Lines(
 				Contains("UU file").IsSelected(),
 			)
-		t.Views().Files().Press(config.Keybinding{"v"})
+		t.Views().Files().Press(config.Keybinding{"<enter>"})
 
 		conflicts := t.Views().MergeConflicts()
 		conflicts.

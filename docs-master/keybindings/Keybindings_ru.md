@@ -81,7 +81,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s w `` | Switch | Switch to the selected worktree. |
 | `` o `` | Open in editor |  |
 | `` <delete> `` | Remove | Remove the selected worktree. This will both delete the worktree's directory, as well as metadata about the worktree in the .git directory. |
-| `` v, <space> `` | Просмотреть коммиты |  |
+| `` <enter> `` | Просмотреть коммиты |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Вторичный
@@ -190,8 +190,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v d, <space> d `` | Changed files |  |
-| `` v f, <space> f `` | All files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Коммиты
@@ -245,7 +245,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v d `` | Changed files |  |
+| `` <enter>, v d `` | Changed files |  |
 | `` v f `` | All files |  |
 | `` / `` | Найти |  |
 
@@ -288,7 +288,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g t `` | View upstream options | View options relating to the branch's upstream e.g. setting/unsetting the upstream and resetting to the upstream. |
 | `` t d e `` | Open external diff tool (git difftool) |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Просмотреть коммиты |  |
+| `` <enter> `` | Просмотреть коммиты |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Меню
@@ -338,8 +338,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v d, <space> d `` | Changed files |  |
-| `` v f, <space> f `` | All files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | Найти |  |
 
 ## Подмодули
@@ -347,7 +347,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Скопировать название подмодуля в буфер обмена |  |
-| `` v, <space> `` | Enter | Ввести подмодуль |
+| `` <enter> `` | Enter | Ввести подмодуль |
 | `` <delete> `` | Remove | Remove the selected submodule and its corresponding directory. |
 | `` g u s `` | Update | Обновить подмодуль |
 | `` n s `` | Добавить новый подмодуль |  |
@@ -382,7 +382,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d e `` | Diff using current comparison mode |  |
 | `` g h t `` | Переключить файлы включённые в патч | Toggle whether the file is included in the custom patch. See https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches. |
 | `` g h a `` | Переключить все файлы, включённые в патч | Add/remove all commit's files to custom patch. See https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches. |
-| `` v, <space> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
+| `` <enter> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
 | `` t t t `` | Переключить вид дерева файлов | Toggle file view between flat and tree layout. Flat layout shows all file paths in a single list, tree layout groups files by directory.<br><br>The default can be changed in the config file with the key 'gui.showFileTree'. |
 | `` t t c `` | Collapse all files | Collapse all directories in the files tree |
 | `` t t e `` | Expand all files | Expand all directories in the file tree |
@@ -405,7 +405,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s r `` | Переключиться на последний репозиторий |  |
 | `` t l n `` | Show/cycle all branch logs |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
-| `` v, <space>, 0 `` | Focus main view |  |
+| `` <enter>, 0 `` | Focus main view |  |
 
 ## Теги
 
@@ -432,7 +432,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` p `` | Отправить тег | Push the selected tag to a remote. You'll be prompted to select a remote. |
 | `` t d e `` | Open external diff tool (git difftool) |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Просмотреть коммиты |  |
+| `` <enter> `` | Просмотреть коммиты |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Удалённые ветки
@@ -462,14 +462,14 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t s o `` | Порядок сортировки |  |
 | `` t d e `` | Open external diff tool (git difftool) |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Просмотреть коммиты |  |
+| `` <enter> `` | Просмотреть коммиты |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Удалённые репозитории
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` v, <space> `` | View branches |  |
+| `` <enter> `` | View branches |  |
 | `` n r `` | Добавить новую удалённую ветку |  |
 | `` <delete> `` | Remove | Remove the selected remote. Any local branches tracking a remote branch from the remote will be unaffected. |
 | `` e `` | Edit | Редактировать удалённый репозитории |
@@ -485,7 +485,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | Toggle staging of selected files | Toggle staged for selected file. |
 | `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
 | `` w s `` | Фильтровать файлы (проиндексированные/непроиндексированные) |  |
-| `` <enter> `` | Сохранить изменения | Commit staged changes. |
+| `` c `` | Сохранить изменения | Commit staged changes. |
 | `` g e n `` | Закоммитить изменения без предварительного хука коммита |  |
 | `` a `` | Правка последнего коммита |  |
 | `` g e c `` | Сохранить изменения с помощью редактора git |  |
@@ -512,7 +512,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d m `` | Open merge tool |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
-| `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
+| `` <enter> `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
 | `` 0 `` | Focus main view |  |
 | `` / `` | Filter the current view by text |  |
 
@@ -526,5 +526,5 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | New worktree |  |
 | `` <f2> `` | Переименовать хранилище |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Changed files |  |
+| `` <enter> `` | Changed files |  |
 | `` / `` | Filter the current view by text |  |

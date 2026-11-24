@@ -119,9 +119,9 @@ func TestForkProjectionContextControlsAndExplicitCommandOverride(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, []string{"<enter>"}, bindings[0].KeyLabels())
+	assert.Empty(t, bindings[0].KeyLabels(), "commit.create keeps no route in Files: c commits or continues")
 	assert.Empty(t, bindings[1].KeyLabels())
-	assert.Equal(t, []string{"v"}, bindings[2].KeyLabels())
+	assert.Equal(t, []string{"<enter>"}, bindings[2].KeyLabels(), "Files' Enter inspects, and v is unbound")
 	assert.Empty(t, bindings[2].Tag)
 	assert.Empty(t, bindings[3].KeyLabels(), "Files inspection must not invoke enterFile's submodule/dir side effects")
 	assert.Equal(t, []string{"<enter>"}, bindings[4].KeyLabels())

@@ -24,7 +24,7 @@ var DraftCancelWhileShownKeepsTypedText = NewIntegrationTest(NewIntegrationTestA
 
 		t.Views().Files().
 			Focus().
-			PressEnter()
+			Press(config.Keybinding{"c"})
 		t.ExpectPopup().CommitMessagePanel().
 			InitialText(Equals("")).
 			Type("typed text").

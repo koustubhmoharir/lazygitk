@@ -74,7 +74,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | Toggle staging of selected files | Toggle staged for selected file. |
 | `` g h c `` | Bekijk merge conflict opties | Bekijk opties voor het oplossen van mergeconflicten. |
 | `` w s `` | Filter bestanden op status |  |
-| `` <enter> `` | Commit veranderingen | Commit gestagede wijzigingen. |
+| `` c `` | Commit veranderingen | Commit gestagede wijzigingen. |
 | `` g e n `` | Commit veranderingen zonder pre-commit hook |  |
 | `` a `` | Wijzig laatste commit |  |
 | `` g e c `` | Commit veranderingen met de git editor |  |
@@ -101,7 +101,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d m `` | Open merge tool |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
-| `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
+| `` <enter> `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
 | `` 0 `` | Focus main view |  |
 | `` / `` | Filter the current view by text |  |
 
@@ -152,7 +152,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g t `` | View upstream options | View options relating to the branch's upstream e.g. setting/unsetting the upstream and resetting to the upstream. |
 | `` t d e `` | Open externe diff applicatie (git difftool) |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Bekijk commits |  |
+| `` <enter> `` | Bekijk commits |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Commit bericht
@@ -180,7 +180,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d e `` | Diff using current comparison mode |  |
 | `` g h t `` | Toggle bestand inbegrepen in patch | Toggle whether the file is included in the custom patch. See https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches. |
 | `` g h a `` | Toggle all files | Add/remove all commit's files to custom patch. See https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches. |
-| `` v, <space> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
+| `` <enter> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
 | `` t t t `` | Toggle bestandsboom weergave | Toggle file view between flat and tree layout. Flat layout shows all file paths in a single list, tree layout groups files by directory.<br><br>The default can be changed in the config file with the key 'gui.showFileTree'. |
 | `` t t c `` | Collapse all files | Collapse all directories in the files tree |
 | `` t t e `` | Vouw alle bestanden uit | Vouw alle mappen in de bestandsstructuur uit |
@@ -244,7 +244,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v d `` | Changed files |  |
+| `` <enter>, v d `` | Changed files |  |
 | `` v f `` | All files |  |
 | `` / `` | Start met zoeken |  |
 
@@ -341,8 +341,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v d, <space> d `` | Changed files |  |
-| `` v f, <space> f `` | All files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Remote branches
@@ -372,14 +372,14 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t s o `` | Sort order |  |
 | `` t d e `` | Open externe diff applicatie (git difftool) |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Bekijk commits |  |
+| `` <enter> `` | Bekijk commits |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Remotes
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` v, <space> `` | Bekijk branches |  |
+| `` <enter> `` | Bekijk branches |  |
 | `` n r `` | Voeg een nieuwe remote toe |  |
 | `` <delete> `` | Verwijderen | Verwijder de geselecteerde remote. Locale branches die een branch tracken van de remote worden niet aangepast. |
 | `` e `` | Edit | Wijzig remote |
@@ -425,7 +425,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | New worktree |  |
 | `` <f2> `` | Hernoem stash |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Changed files |  |
+| `` <enter> `` | Changed files |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Status
@@ -438,7 +438,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s r `` | Wissel naar een recente repo |  |
 | `` t l n `` | Show/cycle all branch logs |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
-| `` v, <space>, 0 `` | Focus main view |  |
+| `` <enter>, 0 `` | Focus main view |  |
 
 ## Sub-commits
 
@@ -471,8 +471,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v d, <space> d `` | Changed files |  |
-| `` v f, <space> f `` | All files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | Start met zoeken |  |
 
 ## Submodules
@@ -480,7 +480,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Kopieer submodule naam naar klembord |  |
-| `` v, <space> `` | Enter | Enter submodule |
+| `` <enter> `` | Enter | Enter submodule |
 | `` <delete> `` | Verwijderen | Remove the selected submodule and its corresponding directory. |
 | `` g u s `` | Update | Update selected submodule. |
 | `` n s `` | Voeg nieuwe submodule toe |  |
@@ -515,7 +515,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` p `` | Tag pushen | Push de geselecteerde tag naar een remote. Je krijgt de optie een remote te selecteren. |
 | `` t d e `` | Open externe diff applicatie (git difftool) |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Bekijk commits |  |
+| `` <enter> `` | Bekijk commits |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Worktrees
@@ -526,5 +526,5 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s w `` | Switch | Switch to the selected worktree. |
 | `` o `` | Openen in editor |  |
 | `` <delete> `` | Verwijderen | Remove the selected worktree. This will both delete the worktree's directory, as well as metadata about the worktree in the .git directory. |
-| `` v, <space> `` | Bekijk commits |  |
+| `` <enter> `` | Bekijk commits |  |
 | `` / `` | Filter the current view by text |  |

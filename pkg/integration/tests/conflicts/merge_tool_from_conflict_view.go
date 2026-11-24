@@ -23,7 +23,7 @@ var MergeToolFromConflictView = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			NavigateToLine(Contains("file1")).
-			Press(config.Keybinding{"v"})
+			Press(config.Keybinding{"<enter>"})
 
 		t.Views().MergeConflicts().
 			IsFocused().

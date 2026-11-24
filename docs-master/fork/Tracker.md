@@ -38,8 +38,7 @@ integration suite passes.
 
 ## Tasks
 
-1. Files: `c` commit or continue; Enter no longer commits; the Files `v` menu
-   for conflicted and submodule entries.
+1. The Files `v` menu for conflicted and submodule entries.
 2. Space: patch toggle in Commit files; nothing in regular menus.
 3. Space selection in Sub-commits and Reflog.
 4. Stash `v d` / `v f` menu, if the full listing works for a stash entry.

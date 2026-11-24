@@ -7,7 +7,7 @@ import (
 )
 
 var ContinueAfterCommittedPick = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "c c continues a cherry-pick sequence after the conflicting pick was committed by hand, applying the remaining picks",
+	Description: "c continues a cherry-pick sequence after the conflicting pick was committed by hand, applying the remaining picks",
 	SetupConfig: shared.UseDefaultKeymap,
 	SetupRepo: func(shell *Shell) {
 		shell.
@@ -33,7 +33,7 @@ var ContinueAfterCommittedPick = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Branches().
 			Focus().
 			NavigateToLine(Contains("topic")).
-			Press(config.Keybinding{"v"})
+			Press(config.Keybinding{"<enter>"})
 
 		t.Views().SubCommits().
 			IsFocused().
@@ -57,7 +57,7 @@ var ContinueAfterCommittedPick = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			SelectedLine(Contains("file")).
-			Press(config.Keybinding{"v"})
+			Press(config.Keybinding{"<enter>"})
 
 		t.Views().MergeConflicts().
 			IsFocused().
@@ -69,9 +69,11 @@ var ContinueAfterCommittedPick = NewIntegrationTest(NewIntegrationTestArgs{
 			SelectedLine(Contains("file")).
 			PressPrimaryAction()
 
-		// Enter commits in Files in this fork.
+		// c continues a cherry-pick, so the hand commit uses g e n (commit without hooks).
 		t.Views().Files().
-			Press(config.Keybinding{"<enter>"})
+			Press(config.Keybinding{"g"})
+		t.Views().Menu().Press(config.Keybinding{"e"})
+		t.Views().Menu().Press(config.Keybinding{"n"})
 
 		t.ExpectPopup().CommitMessagePanel().Type("resolved one").Confirm()
 
@@ -80,9 +82,6 @@ var ContinueAfterCommittedPick = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			Focus().
 			Press(config.Keybinding{"c"})
-
-		t.ExpectPopup().Menu().Title(Equals("c"))
-		t.Views().Menu().Press(config.Keybinding{"c"})
 
 		t.Views().Status().Content(DoesNotContain("cherry-picking"))
 		// The branch's own commits are shown too, so check only the newest rows.

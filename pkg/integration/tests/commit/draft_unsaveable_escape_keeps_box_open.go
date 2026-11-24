@@ -46,7 +46,7 @@ var DraftUnsaveableEscapeKeepsBoxOpen = NewIntegrationTest(NewIntegrationTestArg
 
 		t.Views().Files().
 			Focus().
-			PressEnter()
+			Press(config.Keybinding{"c"})
 		t.ExpectPopup().CommitMessagePanel().
 			InitialText(Equals("")).
 			SelectPreviousMessage().

@@ -117,7 +117,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v d `` | Changed files |  |
+| `` <enter>, v d `` | Changed files |  |
 | `` v f `` | All files |  |
 | `` / `` | Szukaj w bieżącym widoku po tekście |  |
 
@@ -157,7 +157,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s w `` | Przełącz | Przełącz do wybranego drzewa pracy. |
 | `` o `` | Otwórz w edytorze |  |
 | `` <delete> `` | Usuń | Usuń wybrane drzewo pracy. To usunie zarówno katalog drzewa pracy, jak i metadane o drzewie pracy w katalogu .git. |
-| `` v, <space> `` | Pokaż commity |  |
+| `` <enter> `` | Pokaż commity |  |
 | `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Dziennik reflog
@@ -191,8 +191,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v d, <space> d `` | Changed files |  |
-| `` v f, <space> f `` | All files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Input prompt
@@ -241,7 +241,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g t `` | Pokaż opcje upstream | Pokaż opcje dotyczące upstream gałęzi, np. ustawianie/usuwanie upstream i resetowanie do upstream. |
 | `` t d e `` | Otwórz zewnętrzne narzędzie różnic (git difftool) |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Pokaż commity |  |
+| `` <enter> `` | Pokaż commity |  |
 | `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Menu
@@ -315,7 +315,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | Toggle staging of selected files | Przełącz zatwierdzenie dla wybranego pliku. |
 | `` g h c `` | View merge conflict options | View options for resolving merge conflicts. |
 | `` w s `` | Filtruj pliki według statusu |  |
-| `` <enter> `` | Commit | Zatwierdź zmiany zatwierdzone. |
+| `` c `` | Commit | Zatwierdź zmiany zatwierdzone. |
 | `` g e n `` | Zatwierdź zmiany bez hooka pre-commit |  |
 | `` a `` | Popraw ostatni commit |  |
 | `` g e c `` | Zatwierdź zmiany używając edytora git |  |
@@ -342,7 +342,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d m `` | Open merge tool |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
-| `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
+| `` <enter> `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
 | `` 0 `` | Focus main view |  |
 | `` / `` | Filtruj bieżący widok po tekście |  |
 
@@ -362,7 +362,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d e `` | Diff using current comparison mode |  |
 | `` g h t `` | Przełącz plik włączony w łatkę | Przełącz, czy plik jest włączony w niestandardową łatkę. Zobacz https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches. |
 | `` g h a `` | Przełącz wszystkie pliki | Dodaj/usuń wszystkie pliki commita do niestandardowej łatki. Zobacz https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches. |
-| `` v, <space> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
+| `` <enter> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
 | `` t t t `` | Przełącz widok drzewa plików | Toggle file view between flat and tree layout. Flat layout shows all file paths in a single list, tree layout groups files by directory.<br><br>The default can be changed in the config file with the key 'gui.showFileTree'. |
 | `` t t c `` | Collapse all files | Collapse all directories in the files tree |
 | `` t t e `` | Expand all files | Expand all directories in the file tree |
@@ -394,7 +394,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | Nowe drzewo pracy |  |
 | `` <f2> `` | Zmień nazwę schowka |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Changed files |  |
+| `` <enter> `` | Changed files |  |
 | `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Status
@@ -407,7 +407,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s r `` | Przełącz na ostatnie repozytorium |  |
 | `` t l n `` | Show/cycle all branch logs |  |
 | `` t l p `` | Show/cycle all branch logs (reverse) |  |
-| `` v, <space>, 0 `` | Focus main view |  |
+| `` <enter>, 0 `` | Focus main view |  |
 
 ## Sub-commity
 
@@ -440,8 +440,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | Focus main view |  |
-| `` v d, <space> d `` | Changed files |  |
-| `` v f, <space> f `` | All files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | Szukaj w bieżącym widoku po tekście |  |
 
 ## Submoduły
@@ -449,7 +449,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | Kopiuj nazwę submodułu do schowka |  |
-| `` v, <space> `` | Wejdź | Wejdź do submodułu. Po wejściu do submodułu możesz nacisnąć `<esc>`, aby wrócić do repozytorium nadrzędnego. |
+| `` <enter> `` | Wejdź | Wejdź do submodułu. Po wejściu do submodułu możesz nacisnąć `<esc>`, aby wrócić do repozytorium nadrzędnego. |
 | `` <delete> `` | Usuń | Usuń wybrany submoduł i odpowiadający mu katalog. |
 | `` g u s `` | Aktualizuj | Aktualizuj wybrany submoduł. |
 | `` n s `` | Nowy submoduł |  |
@@ -484,14 +484,14 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` p `` | Wyślij tag | Wyślij wybrany tag do zdalnego. Zostaniesz poproszony o wybranie zdalnego. |
 | `` t d e `` | Otwórz zewnętrzne narzędzie różnic (git difftool) |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Pokaż commity |  |
+| `` <enter> `` | Pokaż commity |  |
 | `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Zdalne
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` v, <space> `` | Wyświetl gałęzie |  |
+| `` <enter> `` | Wyświetl gałęzie |  |
 | `` n r `` | Nowy zdalny |  |
 | `` <delete> `` | Usuń | Usuń wybrany zdalny. Wszelkie lokalne gałęzie śledzące gałąź zdalną z tego zdalnego nie zostaną dotknięte. |
 | `` e `` | Edytuj | Edytuj nazwę lub URL wybranego zdalnego. |
@@ -526,5 +526,5 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t s o `` | Kolejność sortowania |  |
 | `` t d e `` | Otwórz zewnętrzne narzędzie różnic (git difftool) |  |
 | `` 0 `` | Focus main view |  |
-| `` v, <space> `` | Pokaż commity |  |
+| `` <enter> `` | Pokaż commity |  |
 | `` / `` | Filtruj bieżący widok po tekście |  |

@@ -7,7 +7,7 @@ import (
 )
 
 var ContinueRefusesUnmerged = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "c c refuses to continue a cherry-pick while a file is unmerged, including after its markers are removed but before it is staged",
+	Description: "c refuses to continue a cherry-pick while a file is unmerged, including after its markers are removed but before it is staged",
 	SetupConfig: shared.UseDefaultKeymap,
 	SetupRepo: func(shell *Shell) {
 		shell.
@@ -33,7 +33,7 @@ var ContinueRefusesUnmerged = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Branches().
 			Focus().
 			NavigateToLine(Contains("topic")).
-			Press(config.Keybinding{"v"})
+			Press(config.Keybinding{"<enter>"})
 
 		t.Views().SubCommits().
 			IsFocused().
@@ -68,9 +68,6 @@ var ContinueRefusesUnmerged = NewIntegrationTest(NewIntegrationTestArgs{
 			IsFocused().
 			Press(config.Keybinding{"c"})
 
-		t.ExpectPopup().Menu().Title(Equals("c"))
-		t.Views().Menu().Press(config.Keybinding{"c"})
-
 		t.ExpectPopup().Alert().
 			Title(Equals("Error")).
 			Content(Contains("Cannot continue yet. These files are still unmerged; resolve them and stage them first:\n\n- file")).
@@ -82,9 +79,6 @@ var ContinueRefusesUnmerged = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			Press(config.Keybinding{"c"})
-
-		t.ExpectPopup().Menu().Title(Equals("c"))
-		t.Views().Menu().Press(config.Keybinding{"c"})
 
 		t.ExpectPopup().Alert().
 			Title(Equals("Error")).

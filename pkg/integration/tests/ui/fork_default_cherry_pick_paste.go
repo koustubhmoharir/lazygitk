@@ -73,11 +73,12 @@ var ForkDefaultCherryPickPaste = NewIntegrationTest(NewIntegrationTestArgs{
 		t.FileSystem().FileContent("actual-log", Equals("p3\np1\nbase\n"))
 		commits.ExplicitSelection()
 
-		// With no selection, c in Files opens no menu and changes nothing.
+		// With no selection, c in Files is commit (no operation is in progress), which
+		// refuses an empty index: it opens no menu and changes nothing.
 		pastedHead := t.Git().GetCommitHash("HEAD")
 		t.Views().Files().Focus().Press(config.Keybinding{"c"})
+		t.ExpectPopup().Alert().Title(Equals("Error")).Content(Contains("No files staged")).Confirm()
 		t.Views().Menu().IsInvisible()
-		t.Views().Confirmation().IsInvisible()
 		t.Views().Prompt().IsInvisible()
 		t.Views().Files().IsFocused()
 		if got := t.Git().GetCommitHash("HEAD"); got != pastedHead {

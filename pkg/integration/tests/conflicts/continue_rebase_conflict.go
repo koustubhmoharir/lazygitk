@@ -7,7 +7,7 @@ import (
 )
 
 var ContinueRebaseConflict = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "c c continues a conflicted rebase that was started outside lazygitk, with the status line naming rebase",
+	Description: "c continues a conflicted rebase that was started outside lazygitk, with the status line naming rebase",
 	SetupConfig: shared.UseDefaultKeymap,
 	SetupRepo: func(shell *Shell) {
 		shell.
@@ -37,9 +37,6 @@ var ContinueRebaseConflict = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().Files().
 			Press(config.Keybinding{"c"})
-
-		t.ExpectPopup().Menu().Title(Equals("c"))
-		t.Views().Menu().Press(config.Keybinding{"c"})
 
 		t.Views().Status().Content(DoesNotContain("rebasing"))
 		t.Views().Commits().

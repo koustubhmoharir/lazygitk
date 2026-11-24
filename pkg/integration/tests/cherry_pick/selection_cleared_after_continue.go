@@ -7,7 +7,7 @@ import (
 )
 
 var SelectionClearedAfterContinue = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "A pick that stopped on conflicts keeps its selection, and c c that continues the operation to its end clears it",
+	Description: "A pick that stopped on conflicts keeps its selection, and c that continues the operation to its end clears it",
 	SetupConfig: shared.UseDefaultKeymap,
 	SetupRepo: func(shell *Shell) {
 		shell.
@@ -40,11 +40,11 @@ var SelectionClearedAfterContinue = NewIntegrationTest(NewIntegrationTestArgs{
 		commits.ExplicitSelection(Contains("s3"), Contains("s1"))
 
 		// Resolve the conflict by taking the picked side, then stage the file.
-		// With the default keys, v opens a conflicted file (Enter commits in Files).
+		// With the default keys, Enter opens a conflicted file.
 		t.Views().Files().
 			IsFocused().
 			SelectedLine(Contains("file")).
-			Press(config.Keybinding{"v"})
+			Press(config.Keybinding{"<enter>"})
 
 		t.Views().MergeConflicts().
 			IsFocused().
@@ -56,12 +56,10 @@ var SelectionClearedAfterContinue = NewIntegrationTest(NewIntegrationTestArgs{
 			SelectedLine(Contains("file")).
 			PressPrimaryAction()
 
-		// c c continues the pick of s1, then picks s3, and the operation ends.
+		// c continues the pick of s1, then picks s3, and the operation ends.
 		t.Views().Files().
 			IsFocused().
 			Press(config.Keybinding{"c"})
-		t.ExpectPopup().Menu().Title(Equals("c"))
-		t.Views().Menu().Press(config.Keybinding{"c"})
 
 		t.Views().Status().
 			Content(DoesNotContain("cherry-picking"))

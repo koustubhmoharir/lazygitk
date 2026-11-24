@@ -86,9 +86,13 @@ func (self *OptionsMapMgr) renderContextOptionsMap() {
 	if state := self.c.Model().WorkingTreeStateAtLastCommitRefresh; state.Any() {
 		optionsMap = appendModeHint(optionsMap, effectiveModeHint(displayBindings, "branch.merge-rebase-menu", state.OptionsMapTitle(self.c.Tr), state.OptionsMapTitle(self.c.Tr), modeHintBindings, style.FgYellow))
 		// Fork: c c continues the operation. It is added after g o, so that
-		// appendModeHint's prepending puts it first in the options bar.
-		continueHint := fmt.Sprintf(self.c.Tr.ContinueOperationHint, state.CommandName())
-		optionsMap = appendModeHint(optionsMap, effectiveModeHint(displayBindings, "operation.continue-in-progress", continueHint, continueHint, modeHintBindings, style.FgYellow))
+		// appendModeHint's prepending puts it first in the options bar. In Files, c
+		// is the operation's key (file.commit-or-continue) and is shown itself, so
+		// the global hint, which would fall back to the palette key, is left out.
+		if !forkFileCommitOrContinueRouted(displayBindings) {
+			continueHint := fmt.Sprintf(self.c.Tr.ContinueOperationHint, state.CommandName())
+			optionsMap = appendModeHint(optionsMap, effectiveModeHint(displayBindings, "operation.continue-in-progress", continueHint, continueHint, modeHintBindings, style.FgYellow))
+		}
 	}
 
 	if self.c.Git().Patch.PatchBuilder.Active() {

@@ -152,8 +152,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | 聚焦主檢視 |  |
-| `` v d, <space> d `` | Changed files |  |
-| `` v f, <space> f `` | All files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | 搜尋 |  |
 
 ## 子模組
@@ -161,7 +161,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | 複製子模組名稱到剪貼簿 |  |
-| `` v, <space> `` | 進入 | 進入子模組 |
+| `` <enter> `` | 進入 | 進入子模組 |
 | `` <delete> `` | 刪除 | 刪除選定的子模組及其相應的目錄。 |
 | `` g u s `` | 更新 | 更新子模組 |
 | `` n s `` | 新增子模組 |  |
@@ -179,7 +179,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s w `` | 切換 | 切換到選中的工作樹。 |
 | `` o `` | 在編輯器中開啟 |  |
 | `` <delete> `` | 刪除 | 刪除選定的工作樹。這將刪除工作樹的目錄以及 .git 目錄中有關工作樹的後設資料。 |
-| `` v, <space> `` | 檢視提交 |  |
+| `` <enter> `` | 檢視提交 |  |
 | `` / `` | 搜尋 |  |
 
 ## 提交
@@ -233,7 +233,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | 聚焦主檢視 |  |
-| `` v d `` | Changed files |  |
+| `` <enter>, v d `` | Changed files |  |
 | `` v f `` | All files |  |
 | `` / `` | 搜尋 |  |
 
@@ -262,7 +262,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d e `` | Diff using current comparison mode |  |
 | `` g h t `` | 切換檔案是否包含在補丁中 | 切換檔案是否包含在自定義補丁中。請參閱 https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches。 |
 | `` g h a `` | 切換所有檔案是否包含在補丁中 | 新增或刪除所有提交中的檔案到自定義的補丁中。請參閱 https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches。 |
-| `` v, <space> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
+| `` <enter> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
 | `` t t t `` | 顯示檔案樹狀視圖 | 在平面佈局和樹佈局之間切換檔案檢視。平面佈局在單個列表中顯示所有檔案路徑，樹佈局按目錄分組檔案。<br><br>可以在設定檔中使用 'gui.showFileTree' 鍵更改預設設定。 |
 | `` t t c `` | 摺疊全部檔案 | 摺疊檔案樹中的全部目錄 |
 | `` t t e `` | 展開全部檔案 | 展開檔案樹中的全部目錄 |
@@ -285,7 +285,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | 新建工作樹 |  |
 | `` <f2> `` | 重新命名收藏 |  |
 | `` 0 `` | 聚焦主檢視 |  |
-| `` v, <space> `` | Changed files |  |
+| `` <enter> `` | Changed files |  |
 | `` / `` | 搜尋 |  |
 
 ## 日誌
@@ -319,8 +319,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | 聚焦主檢視 |  |
-| `` v d, <space> d `` | Changed files |  |
-| `` v f, <space> f `` | All files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | 搜尋 |  |
 
 ## 本地分支
@@ -362,7 +362,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g t `` | 檢視遠端設定 | 檢視有關遠端分支的設定（例如重設至遠端） |
 | `` t d e `` | 開啟外部差異工具 (git difftool) |  |
 | `` 0 `` | 聚焦主檢視 |  |
-| `` v, <space> `` | 檢視提交 |  |
+| `` <enter> `` | 檢視提交 |  |
 | `` / `` | 搜尋 |  |
 
 ## 標籤
@@ -390,7 +390,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` p `` | 推送標籤 | 推送選擇的標籤到遠端。您將在彈窗中選擇一個遠端。 |
 | `` t d e `` | 開啟外部差異工具 (git difftool) |  |
 | `` 0 `` | 聚焦主檢視 |  |
-| `` v, <space> `` | 檢視提交 |  |
+| `` <enter> `` | 檢視提交 |  |
 | `` / `` | 搜尋 |  |
 
 ## 檔案
@@ -401,7 +401,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | Toggle staging of selected files | 切換所選檔案的暫存狀態。 |
 | `` g h c `` | 檢視合併衝突選項 | 檢視用於解決合併衝突的選項。 |
 | `` w s `` | 篩選檔案 (預存/未預存) |  |
-| `` <enter> `` | 提交變更 | 提交暫存區變更 |
+| `` c `` | 提交變更 | 提交暫存區變更 |
 | `` g e n `` | 沒有預提交 hook 就提交更改 |  |
 | `` a `` | 修改上次提交 |  |
 | `` g e c `` | 使用 git 編輯器提交變更 |  |
@@ -428,7 +428,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d m `` | Open merge tool |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
-| `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
+| `` <enter> `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
 | `` 0 `` | 聚焦主檢視 |  |
 | `` / `` | 搜尋 |  |
 
@@ -470,7 +470,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s r `` | 切換到最近使用的版本庫 |  |
 | `` t l n `` | 顯示/迴圈所有分支日誌 |  |
 | `` t l p `` | 顯示/迴圈所有分支日誌（反向） |  |
-| `` v, <space>, 0 `` | 聚焦主檢視 |  |
+| `` <enter>, 0 `` | 聚焦主檢視 |  |
 
 ## 確認面板
 
@@ -491,7 +491,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` v, <space> `` | 檢視分支 |  |
+| `` <enter> `` | 檢視分支 |  |
 | `` n r `` | 新增遠端 |  |
 | `` <delete> `` | 刪除 | 刪除選中的遠端。從遠端跟蹤遠端分支的任何本地分支都不會受到影響。 |
 | `` e `` | 編輯 | 編輯遠端 |
@@ -526,5 +526,5 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t s o `` | 排序規則 |  |
 | `` t d e `` | 開啟外部差異工具 (git difftool) |  |
 | `` 0 `` | 聚焦主檢視 |  |
-| `` v, <space> `` | 檢視提交 |  |
+| `` <enter> `` | 檢視提交 |  |
 | `` / `` | 搜尋 |  |

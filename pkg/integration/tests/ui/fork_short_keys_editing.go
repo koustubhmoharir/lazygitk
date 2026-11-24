@@ -59,7 +59,7 @@ var ForkShortKeysEditing = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Files().
 			IsFocused().
 			NavigateToLine(Contains("file.txt")).
-			Press(config.Keybinding{"v"})
+			Press(config.Keybinding{"<enter>"})
 
 		t.Views().Main().
 			IsFocused().

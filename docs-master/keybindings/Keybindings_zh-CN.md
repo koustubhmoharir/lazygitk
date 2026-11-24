@@ -97,8 +97,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | 聚焦主视图 |  |
-| `` v d, <space> d `` | Changed files |  |
-| `` v f, <space> f `` | All files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | 开始搜索 |  |
 
 ## 子模块
@@ -106,7 +106,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | Key | Action | Info |
 |-----|--------|-------------|
 | `` y n `` | 复制子模块名称到剪贴板 |  |
-| `` v, <space> `` | 进入 | 输入子模块 |
+| `` <enter> `` | 进入 | 输入子模块 |
 | `` <delete> `` | 删除 | 删除选定的子模块及其相应的目录 |
 | `` g u s `` | 更新 | 更新子模块 |
 | `` n s `` | 添加新的子模块 |  |
@@ -124,7 +124,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s w `` | 切换 | 切换到选中的工作树 |
 | `` o `` | 在编辑器中编写 |  |
 | `` <delete> `` | 删除 | 删除选定的工作树。这将删除工作树的目录以及 .git 目录中有关工作树的元数据。 |
-| `` v, <space> `` | 查看提交 |  |
+| `` <enter> `` | 查看提交 |  |
 | `` / `` | 通过文本过滤当前视图 |  |
 
 ## 引用日志
@@ -158,8 +158,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | 聚焦主视图 |  |
-| `` v d, <space> d `` | Changed files |  |
-| `` v f, <space> f `` | All files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | 通过文本过滤当前视图 |  |
 
 ## 提交
@@ -213,7 +213,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` y a `` | Copy commit author |  |
 | `` y t `` | Copy commit tags |  |
 | `` 0 `` | 聚焦主视图 |  |
-| `` v d `` | Changed files |  |
+| `` <enter>, v d `` | Changed files |  |
 | `` v f `` | All files |  |
 | `` / `` | 开始搜索 |  |
 
@@ -242,7 +242,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t d e `` | Diff using current comparison mode |  |
 | `` g h t `` | 补丁中包含的切换文件 | 切换文件是否包含在自定义补丁中。请参阅 https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches。 |
 | `` g h a `` | 操作所有文件 | 添加或删除所有提交中的文件到自定义的补丁中。请参阅 https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches。 |
-| `` v, <space> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
+| `` <enter> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
 | `` t t t `` | 切换文件树视图 | 在平面布局和树布局之间切换文件视图。平面布局在单个列表中显示所有文件路径，树布局按目录分组文件。<br><br>可以在配置文件中使用 'gui.showFileTree' 键更改默认设置。 |
 | `` t t c `` | 折叠全部文件 | 折叠文件树中的全部目录 |
 | `` t t e `` | 展开全部文件 | 展开文件树中的全部目录 |
@@ -263,7 +263,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` <space> `` | Toggle staging of selected files | 为选定的文件切换暂存状态 |
 | `` g h c `` | 查看合并冲突选项 | 查看用于解决合并冲突的选项。 |
 | `` w s `` | 通过状态过滤文件 |  |
-| `` <enter> `` | 提交变更 | 提交暂存文件 |
+| `` c `` | 提交变更 | 提交暂存文件 |
 | `` g e n `` | 提交变更而无需预先提交钩子 |  |
 | `` a `` | 修补最后一次提交 |  |
 | `` g e c `` | 使用 Git 编辑器提交变更 |  |
@@ -290,7 +290,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` d m `` | Open merge tool |  |
 | `` <left> `` | Collapse directory or select parent |  |
 | `` <right> `` | Expand directory or select first child |  |
-| `` v `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
+| `` <enter> `` | Inspect file | Focus the selected file's diff. A conflicted file opens its resolution, and a submodule entry enters the submodule. |
 | `` 0 `` | 聚焦主视图 |  |
 | `` / `` | 通过文本过滤当前视图 |  |
 
@@ -333,7 +333,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` g t `` | 查看上游选项 | 查看与分支上游相关的选项，例如设置/取消设置上游和重置为上游。 |
 | `` t d e `` | 使用外部差异比较工具(git difftool) |  |
 | `` 0 `` | 聚焦主视图 |  |
-| `` v, <space> `` | 查看提交 |  |
+| `` <enter> `` | 查看提交 |  |
 | `` / `` | 通过文本过滤当前视图 |  |
 
 ## 标签
@@ -361,7 +361,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` p `` | 推送标签 | 推送选择的标签到远端。您将在弹窗中选择一个远端。 |
 | `` t d e `` | 使用外部差异比较工具(git difftool) |  |
 | `` 0 `` | 聚焦主视图 |  |
-| `` v, <space> `` | 查看提交 |  |
+| `` <enter> `` | 查看提交 |  |
 | `` / `` | 通过文本过滤当前视图 |  |
 
 ## 次要
@@ -449,7 +449,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` s r `` | 切换到最近的仓库 |  |
 | `` t l n `` | 显示/循环所有分支日志 |  |
 | `` t l p `` | 显示/循环所有分支日志（反向） |  |
-| `` v, <space>, 0 `` | 聚焦主视图 |  |
+| `` <enter>, 0 `` | 聚焦主视图 |  |
 
 ## 确认面板
 
@@ -477,7 +477,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | 新建工作树 |  |
 | `` <f2> `` | 重命名贮藏 |  |
 | `` 0 `` | 聚焦主视图 |  |
-| `` v, <space> `` | Changed files |  |
+| `` <enter> `` | Changed files |  |
 | `` / `` | 通过文本过滤当前视图 |  |
 
 ## 输入提示
@@ -491,7 +491,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 
 | Key | Action | Info |
 |-----|--------|-------------|
-| `` v, <space> `` | 查看分支 |  |
+| `` <enter> `` | 查看分支 |  |
 | `` n r `` | 添加新的远程仓库 |  |
 | `` <delete> `` | 删除 | 删除选中的远程。从远程跟踪远程分支的任何本地分支都不会受到影响。 |
 | `` e `` | 编辑(Edit) | 编辑远程仓库 |
@@ -526,5 +526,5 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` t s o `` | 排序 |  |
 | `` t d e `` | 使用外部差异比较工具(git difftool) |  |
 | `` 0 `` | 聚焦主视图 |  |
-| `` v, <space> `` | 查看提交 |  |
+| `` <enter> `` | 查看提交 |  |
 | `` / `` | 通过文本过滤当前视图 |  |

@@ -72,6 +72,9 @@ func (self *FilesController) GetKeybindings(opts types.KeybindingsOpts) []*types
 			Description: self.c.Tr.CopyToClipboardMenu,
 			OpensMenu:   true,
 		},
+		// Fork: c commits or continues; commit.create keeps no default route here
+		// (see forkFileCommitOrContinueBinding).
+		forkFileCommitOrContinueBinding(self.c, opts, self.c.Helpers().WorkingTree.HandleCommitPress),
 		{
 			Keys:            opts.GetKeys(opts.Config.Files.CommitChanges),
 			CommandID:       "commit.create",

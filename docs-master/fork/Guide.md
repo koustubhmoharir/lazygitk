@@ -53,7 +53,7 @@ in the [design principles](Design.md). The generated per-pane reference is
 | `u u`, `u r` | Undo, redo (from the reflog) |
 | `s p` | Switch to the previous branch; the menu names it (not in Status, where `s` is for repositories) |
 | `c p` | Cherry-pick the selected commits, after reviewing the list; a successful pick clears the selection, and one that stops on conflicts keeps it |
-| `c c` | Continue the cherry-pick, rebase, merge or revert in progress, from any pane; refuses while files are unmerged |
+| `c c` | Continue the cherry-pick, rebase, merge or revert in progress, from any pane but Files (where `c` does it); refuses while files are unmerged |
 | `:` | Run a shell command |
 | `=` or `+`, `-` | Next, previous screen mode (normal, half, full) of the focused area: the side panels, or the main views |
 | `q` | Quit |
@@ -73,7 +73,7 @@ in the [design principles](Design.md). The generated per-pane reference is
 | Alt+Up, Alt+Down | Scroll the main view without moving the selection |
 | Alt+Left, Alt+Right | Scroll left, right |
 | Shift+Up, Shift+Down; Shift+K, Shift+J | Extend the selection |
-| Enter | Go in: inspect or drill down (in Files, Enter commits and `v` inspects) |
+| Enter | Go in: inspect or drill down |
 
 Inspection opens a branch's or tag's commits, a commit's changed files (`v`
 opens a menu: `d` changed files, `f` all files), a stash entry's files, a file's diff, a remote's branches, a worktree's commits (without
@@ -84,9 +84,9 @@ switching to it) or a submodule (Escape returns to the parent repository).
 | Keys | Action |
 | --- | --- |
 | Space | Stage or unstage the selected files or directory; select the root to stage everything |
-| Enter | Commit (Enter does nothing in other panes) |
+| Enter | Inspect: focus the diff (also of a directory), open conflict resolution, or enter a submodule |
+| `c` | Commit; while an operation is in progress, continue it (see below) |
 | `a` | Amend the last commit |
-| `v` | Inspect the file: focus its diff, open conflict resolution, or enter a submodule |
 | Left, Right | Collapse the directory or select its parent; expand it or select its first child |
 | `x` | Discard changes, always with confirmation |
 | `i` | Ignore or exclude |
@@ -521,13 +521,18 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 - `s h`, `s m`, `s s` reset the checked-out branch to the selection, with a
   confirmation explaining what the mode does to the index and files.
 - Conflicts and paused rebases are continued, skipped or aborted explicitly
-  from `g o`. `c c` continues the operation in progress from any pane, and
+  from `g o`. `c c` continues the operation in progress from any pane but
+  Files, where `c` does (and commits when nothing is in progress). Continuing
   commits a resolved pick first if it is not committed yet. While any file is
-  still unmerged, `c c` refuses and names the files, including a file whose
-  conflict markers are gone but which is not staged; stage it first. While an
-  operation is in progress, the status line shows `c c` as "Continue
-  cherry-pick", "Continue merge", "Continue rebase" or "Continue revert",
-  before `g o`'s hint. Without an operation, `c c` is faded and does nothing. Escape never
+  still unmerged, it refuses and names the files, including a file whose
+  conflict markers are gone but which is not staged; stage it first. At a
+  rebase stop that is not a conflict (an edit stop) with staged changes, `c`
+  in Files commits them as a new commit instead of continuing: Git would
+  refuse to continue after a reset, and would otherwise amend them silently
+  (`a` amends explicitly). While an operation is in progress, the status line
+  shows `c c` (`c` in Files, when it continues) as "Continue cherry-pick",
+  "Continue merge", "Continue rebase" or "Continue revert", before `g o`'s
+  hint. Without an operation, `c c` is faded and does nothing. Escape never
   aborts. Committing the resolution of a pick in a cherry-pick or revert
   sequence leaves that operation in progress, with skip unavailable.
 
@@ -714,10 +719,9 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
 | --- | --- |
 | `P` push, `p` pull | `p` push, `g l` pull |
 | `R` refresh, `r` rebase | F5 refresh, `r` rebase |
-| Enter to inspect | Enter, except in Files, where Enter commits and `v` inspects |
 | Left/Right or Tab between panes | `h`/`l` or numbers; Tab changes tabs |
 | `n`/`N` search results | F3 / Shift+F3 |
-| `d` delete, `R` rename, `r` reword, `c` commit | Delete, F2, F2, Enter in Files |
+| `d` delete, `R` rename, `r` reword | Delete, F2, F2 |
 | Space to check out a branch | `s c` |
 | `-` previous branch | `s p` |
 | `c` checkout by name | "Checkout by name" in `?`; normally select the branch and `s c` |
@@ -728,7 +732,6 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
 | Ctrl+J / Ctrl+K move commit | `>` / `<` |
 | `y` copy menus with submenus | Flat `y` menu |
 | Space or Enter to switch worktree | `s w` |
-| Enter or Space to enter a submodule | Enter in Submodules; `v` on it in Files |
-| Enter to resolve a conflicted file | `v` |
+| Space to enter a submodule | Enter |
 | Space / `b` / `z` in the merge view | Space / `g h b` / `u u` |
 | `{` / `}` diff context | `t d -` / `t d +` |

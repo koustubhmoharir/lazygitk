@@ -17,14 +17,14 @@ var DraftClearedWhenUsed = NewIntegrationTest(NewIntegrationTestArgs{
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
 		// Submitting the shown draft uses it up, and keeps the text Up replaced.
-		t.Views().Files().IsFocused().PressEnter()
+		t.Views().Files().IsFocused().Press(config.Keybinding{"c"})
 		t.ExpectPopup().CommitMessagePanel().
 			InitialText(Equals("")).
 			Type("commit draft").
 			Cancel()
 		t.FileSystem().PathPresent(".git/LAZYGITK_COMMIT_DRAFTS")
 
-		t.Views().Files().Focus().PressEnter()
+		t.Views().Files().Focus().Press(config.Keybinding{"c"})
 		t.ExpectPopup().CommitMessagePanel().
 			InitialText(Equals("commit draft")).
 			Type(" more").
@@ -51,7 +51,7 @@ var DraftClearedWhenUsed = NewIntegrationTest(NewIntegrationTestArgs{
 		t.FileSystem().PathPresent(".git/LAZYGITK_COMMIT_DRAFTS")
 
 		t.Views().Files().Focus().NavigateToLine(Contains("otherfile")).PressPrimaryAction()
-		t.Views().Files().Focus().PressEnter()
+		t.Views().Files().Focus().Press(config.Keybinding{"c"})
 		t.ExpectPopup().CommitMessagePanel().
 			InitialText(Equals("")).
 			Type("other text").

@@ -15,7 +15,7 @@ var DraftSurvivesNewCommitPrefill = NewIntegrationTest(NewIntegrationTestArgs{
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
 		t.Views().Files().
 			IsFocused().
-			PressEnter()
+			Press(config.Keybinding{"c"})
 
 		t.ExpectPopup().CommitMessagePanel().
 			InitialText(Equals("")).
@@ -26,7 +26,7 @@ var DraftSurvivesNewCommitPrefill = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.Views().Files().
 			Focus().
-			PressEnter()
+			Press(config.Keybinding{"c"})
 
 		t.ExpectPopup().CommitMessagePanel().
 			InitialText(Equals("my commit message")).

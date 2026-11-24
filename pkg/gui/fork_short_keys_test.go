@@ -69,8 +69,9 @@ func TestForkShortKeysDefaultRoutes(t *testing.T) {
 		}
 	})
 
-	t.Run("files pane splits v and 0 between inspect and focus-main", func(t *testing.T) {
-		assert.Equal(t, "v", gui.commandKeyLabel("navigation.focus-diff", "files"))
+	t.Run("files pane splits Enter and 0 between inspect and focus-main", func(t *testing.T) {
+		assert.Equal(t, "<enter>", gui.commandKeyLabel("navigation.focus-diff", "files"))
+		assert.Equal(t, "c", gui.commandKeyLabel("file.commit-or-continue", "files"))
 		assert.Equal(t, "0", gui.commandKeyLabel("navigation.focus-main", "files"))
 	})
 

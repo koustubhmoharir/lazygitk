@@ -7,7 +7,7 @@ import (
 )
 
 var ForkDefaultConflicts = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "Real default v inspection, t n c/t p c conflict navigation, g h p/g h b hunk picks and u u undo in the merge conflicts view",
+	Description: "Real default Enter inspection, t n c/t p c conflict navigation, g h p/g h b hunk picks and u u undo in the merge conflicts view",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -48,13 +48,13 @@ var ForkDefaultConflicts = NewIntegrationTest(NewIntegrationTestArgs{
 			}
 		}
 
-		// 1. Files: "v" is the default inspection key; Enter commits in Files.
+		// 1. Files: Enter is the default inspection key; c commits or continues.
 		t.Views().Files().
 			IsFocused().
 			Lines(
 				Contains("UU file").IsSelected(),
 			)
-		t.Views().Files().Press(config.Keybinding{"v"})
+		t.Views().Files().Press(config.Keybinding{"<enter>"})
 
 		conflicts := t.Views().MergeConflicts()
 		conflicts.
