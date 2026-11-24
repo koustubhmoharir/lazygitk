@@ -91,9 +91,9 @@ var ForkFetchFromAnyPane = NewIntegrationTest(NewIntegrationTestArgs{
 
 		// Focused main diff: f fetches origin again.
 		pushRemoteCommit("origin", "origin 4")
-		// v focuses the diff of the selected pane's item (navigation.focus-diff).
+		// Enter focuses the diff of the selected pane's item (navigation.focus-diff).
 		t.Views().Status().Focus().
-			Press(config.Keybinding{"v"})
+			PressEnter()
 		t.Views().Main().IsFocused().
 			Press(config.Keybinding{"f"})
 		t.Views().Branches().

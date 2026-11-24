@@ -33,7 +33,7 @@ func TestDefaultPathsUserRoutes(t *testing.T) {
 		{"diff.unstage-selection", "space"},
 		{"branch.place-at-selected-commit", "n b"},
 		{"app.refresh", "f5"},
-		{"navigation.focus-diff", "v"},
+		{"navigation.focus-diff", "enter"},
 		{"navigation.diff.previous-hunk", "["},
 		{"navigation.diff.previous-file", "{"},
 		{"navigation.conflict.previous", "["},
@@ -184,9 +184,9 @@ func TestDefaultPathsRepositorySwitchingRoutes(t *testing.T) {
 }
 
 // Fork: roadmap item 18. Worktree switching moves to s w, and submodule entry
-// is inspection (v and Space), so no default route remains under t r.
+// is inspection (Enter), so no default route remains under t r.
 func TestDefaultPathsSubmoduleEnterAndWorktreeSwitchRoutes(t *testing.T) {
-	for id, want := range map[string]string{"worktree.switch": "s w", "submodule.enter": "v"} {
+	for id, want := range map[string]string{"worktree.switch": "s w", "submodule.enter": "enter"} {
 		paths, ok := DefaultPaths(id)
 		if !ok || len(paths) == 0 || pathString(paths[0]) != want {
 			t.Errorf("DefaultPaths(%q) = (%v, %t), want first path %q", id, paths, ok, want)
@@ -197,7 +197,7 @@ func TestDefaultPathsSubmoduleEnterAndWorktreeSwitchRoutes(t *testing.T) {
 	for _, path := range paths {
 		got = append(got, pathString(path))
 	}
-	assert.Equal(t, []string{"v", "space"}, got)
+	assert.Equal(t, []string{"enter"}, got)
 	for id, paths := range defaultPaths {
 		for _, path := range paths {
 			if label := pathString(path); label == "t r" || strings.HasPrefix(label, "t r ") {

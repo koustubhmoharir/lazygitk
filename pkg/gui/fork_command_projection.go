@@ -175,16 +175,7 @@ func (gui *Gui) projectForkBinding(binding *types.Binding, sourceID string) erro
 			paths = nil
 		}
 		if forkInspectionCommand(binding.CommandID) {
-			if binding.CommandID != forkPreferredInspector(binding.ViewName) {
-				paths = forkWithoutInspectionKeys(paths)
-			} else if binding.ViewName == "files" {
-				// 0 belongs to Files' focus-only navigation.focus-main route.
-				paths = [][]gocui.Key{{gocui.NewKeyRune('v')}}
-			} else if binding.ViewName == "commits" {
-				// Fork: Space toggles the commit selection in Commits (selection.commit.toggle);
-				// v still inspects there.
-				paths = forkWithoutSpaceKey(paths)
-			}
+			paths = forkInspectionPaths(binding.CommandID, binding.ViewName, paths)
 		}
 		if strings.HasPrefix(binding.CommandID, "navigation.focus-panel.") {
 			// Each numbered jump has the same verb/ID but a different target.
@@ -224,24 +215,32 @@ func forkInspectionCommand(id string) bool {
 	return false
 }
 
-// forkWithoutInspectionKeys drops the shared v/Space inspection routes from a
-// pane's non-preferred inspector, keeping its own keys such as focus-diff's 0.
+// forkInspectionPaths chooses the routes of an inspection command in a pane. The
+// pane's preferred inspector gets the pane's inspection key: Enter, except in
+// Files, where Enter commits and v inspects. Other inspectors lose their inspection
+// keys but keep their own routes, such as focus-diff's 0 in Status.
+func forkInspectionPaths(id, view string, paths [][]gocui.Key) [][]gocui.Key {
+	if id != forkPreferredInspector(view) {
+		return forkWithoutInspectionKeys(paths)
+	}
+	if view == "files" {
+		// 0 belongs to Files' focus-only navigation.focus-main route.
+		return [][]gocui.Key{{gocui.NewKeyRune('v')}}
+	}
+	return append([][]gocui.Key{{enterKey()}}, forkWithoutInspectionKeys(paths)...)
+}
+
+func enterKey() gocui.Key {
+	return gocui.NewKeyName(gocui.KeyEnter)
+}
+
+// forkWithoutInspectionKeys drops the single-key inspection routes (Enter and v)
+// from a pane's non-preferred inspector, keeping its own keys such as focus-diff's
+// 0 and the v menus of the commit listings. Space is not an inspection key.
 func forkWithoutInspectionKeys(paths [][]gocui.Key) [][]gocui.Key {
 	var kept [][]gocui.Key
 	for _, path := range paths {
-		if len(path) == 1 && (path[0] == gocui.NewKeyRune('v') || path[0] == gocui.NewKeyRune(' ')) {
-			continue
-		}
-		kept = append(kept, path)
-	}
-	return kept
-}
-
-// forkWithoutSpaceKey drops the Space route from a pane's inspection route, keeping its v.
-func forkWithoutSpaceKey(paths [][]gocui.Key) [][]gocui.Key {
-	var kept [][]gocui.Key
-	for _, path := range paths {
-		if len(path) == 1 && path[0] == gocui.NewKeyRune(' ') {
+		if len(path) == 1 && (path[0] == enterKey() || path[0] == gocui.NewKeyRune('v')) {
 			continue
 		}
 		kept = append(kept, path)
@@ -250,8 +249,9 @@ func forkWithoutSpaceKey(paths [][]gocui.Key) [][]gocui.Key {
 }
 
 // forkListingCommand is the changed-files and full-listing pair (item 1 of
-// "browse a commit's files"), which Commits, Sub-commits and Reflog reach by v and
-// Space as a menu, and Stash reaches by a direct v and Space.
+// "browse a commit's files"). Commits, Sub-commits and Reflog reach the full listing
+// by the v menu and the changed files by Enter, and Stash reaches its changed files by
+// Enter alone.
 func forkListingCommand(id string) bool {
 	return id == "navigation.open-diff-files" || id == "navigation.open-tree-files"
 }
@@ -264,7 +264,7 @@ func (gui *Gui) forkCommandOverridden(id string) bool {
 }
 
 // forkListingDefaultRoutes returns the fork's default routes of a listing command in a
-// pane: the menu routes, or Stash's direct v and Space.
+// pane: the Enter and v menu routes, or Stash's Enter.
 func forkListingDefaultRoutes(id, view string) [][]gocui.Key {
 	defaults, _ := keymap.DefaultPaths(id)
 	return forkListingPaths(id, view, defaults)
@@ -291,25 +291,24 @@ func (gui *Gui) forkListingLegacyRoutes(binding *types.Binding) [][]gocui.Key {
 	return paths
 }
 
-// forkListingPaths chooses the routes of a listing command for a pane. Commits
-// has v as the menu prefix and keeps Space for toggling the selection. Sub-commits
-// and Reflog open the same menu on both v and Space. Stash keeps v and Space as a
-// direct leaf for its changed files, with no menu, and the full listing is not
-// offered there. The bare v and Space paths would be a leaf beside the menu's
-// children, which the command tree does not allow, so the menu panes drop them.
+// forkListingPaths chooses the routes of a listing command for a pane. Commits,
+// Sub-commits and Reflog use v as the menu prefix: v d lists the changed files
+// and v f every file. Their Enter lists the changed files directly. Stash has no
+// menu: Enter lists its changed files, and the full listing is not offered
+// there. Other panes have no listing route.
 func forkListingPaths(id, view string, paths [][]gocui.Key) [][]gocui.Key {
 	var kept [][]gocui.Key
 	for _, path := range paths {
 		switch view {
 		case "commits", "subCommits", "reflogCommits":
-			if len(path) != 2 {
-				continue
+			if len(path) == 2 && path[0] == gocui.NewKeyRune('v') {
+				kept = append(kept, path)
 			}
-			if path[0] == gocui.NewKeyRune('v') || (view != "commits" && path[0] == gocui.NewKeyRune(' ')) {
+			if id == "navigation.open-diff-files" && len(path) == 1 && path[0] == enterKey() {
 				kept = append(kept, path)
 			}
 		case "stash":
-			if id == "navigation.open-diff-files" && len(path) == 1 {
+			if id == "navigation.open-diff-files" && len(path) == 1 && path[0] == enterKey() {
 				kept = append(kept, path)
 			}
 		}
@@ -332,10 +331,10 @@ func forkPreferredInspector(view string) string {
 	case "worktrees":
 		return "navigation.open-commits"
 	}
-	// Unlike file.enter, this never toggles a directory: it focuses the
-	// read-only details already rendered there. Files keeps this route for
-	// its non-submodule entries; FilesController.InspectSelected enters a
-	// submodule entry itself.
+	// Status and the views without a listing fall through to focus-diff. Unlike
+	// file.enter, this never toggles a directory: it focuses the read-only details
+	// already rendered there. Files keeps this route for its non-submodule entries;
+	// FilesController.InspectSelected enters a submodule entry itself.
 	return "navigation.focus-diff"
 }
 

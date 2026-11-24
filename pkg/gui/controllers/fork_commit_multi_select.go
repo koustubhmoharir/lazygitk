@@ -8,8 +8,8 @@ import (
 // Fork: multi-select mode in Commits (item 24). Space toggles a commit in the explicit
 // set, or the whole run in progress, and Escape clears the filter, then the set. The
 // state is in context/fork_commit_multi_select.go. Only Commits has these routes:
-// Reflog and Sub-commits keep Space as inspect, and Space in Commits is no longer the
-// inspect route (see fork_command_projection.go).
+// Reflog and Sub-commits have no Space route, and Commits inspects with Enter and v
+// (see fork_command_projection.go).
 
 // forkSelectionHashes returns the hashes that a command on the selection of source acts
 // on. In Commits with a set or a run, that is the whole selection, including the members

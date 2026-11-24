@@ -80,7 +80,7 @@ var ForkFlatCheckout = NewIntegrationTest(NewIntegrationTestArgs{
 			Lines(
 				Contains("origin").IsSelected(),
 			).
-			Press(config.Keybinding{"v"})
+			PressEnter()
 		remoteBranches := t.Views().RemoteBranches()
 		remoteBranches.IsFocused().NavigateToLine(Contains("remote-only"))
 		chordS(remoteBranches, "c")
@@ -96,7 +96,7 @@ var ForkFlatCheckout = NewIntegrationTest(NewIntegrationTestArgs{
 			Lines(
 				Contains("origin").IsSelected(),
 			).
-			Press(config.Keybinding{"v"})
+			PressEnter()
 		remoteBranches.IsFocused().NavigateToLine(Contains("shared"))
 		chordS(remoteBranches, "c")
 		t.Views().Menu().IsInvisible()

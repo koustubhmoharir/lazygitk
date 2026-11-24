@@ -73,10 +73,10 @@ in the [design principles](Design.md). The generated per-pane reference is
 | Alt+Up, Alt+Down | Scroll the main view without moving the selection |
 | Alt+Left, Alt+Right | Scroll left, right |
 | Shift+Up, Shift+Down; Shift+K, Shift+J | Extend the selection |
-| `v`, Space | Inspect or drill down (Space toggles staging in Files and the selection in Commits instead) |
+| Enter | Go in: inspect or drill down (in Files, Enter commits and `v` inspects) |
 
-Inspection opens a branch's or tag's commits, a commit's files (a menu: `d`
-changed files, `f` all files), a stash entry's files, a file's diff, a remote's branches, a worktree's commits (without
+Inspection opens a branch's or tag's commits, a commit's changed files (`v`
+opens a menu: `d` changed files, `f` all files), a stash entry's files, a file's diff, a remote's branches, a worktree's commits (without
 switching to it) or a submodule (Escape returns to the parent repository).
 
 ### Files
@@ -148,8 +148,8 @@ Git's diff.
 
 | Keys | Action |
 | --- | --- |
-| `v d` (and Space `d` outside Commits) | Show the files the commit changed |
-| `v f` (and Space `f` outside Commits) | Show all files at the commit |
+| Enter, `v d` | Show the files the commit changed |
+| `v f` | Show all files at the commit |
 | `d w`, `d p`, `d c` | Difftool against the working tree, the previous commit, or a pasted commit hash |
 | `s c` | Check out the commit on a branch: a name prompt that lists the branches already at the commit first; a new name is created there, and a name that points elsewhere is moved here after a warning |
 | `s d` | Check out the commit as a detached HEAD |
@@ -189,7 +189,7 @@ Commits only:
 
 | Keys | Action |
 | --- | --- |
-| `v`, Space | Show the file's diff |
+| Enter | Show the file's diff |
 | `d w`, `d p`, `d c` | Difftool against the working file, the previous commit, or a pasted commit hash |
 | `t d f` | Difftool against any working file you choose |
 | `g v f` | Restore this version of the file into the working tree |
@@ -203,7 +203,7 @@ Commits only:
 
 | Keys | Action |
 | --- | --- |
-| `v`, Space | Show the commits |
+| Enter | Show the commits |
 | `s c` | Switch to the branch; for a remote branch, to its local branch, creating it to track the remote one if needed. On a tag, the name prompt as for a commit |
 | `s d` | Check out its commit as a detached HEAD |
 | `n b` | Create or move a branch at its commit without checking out; on a tag, at the commit it points to (an annotated tag is peeled) |
@@ -227,11 +227,11 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 
 | Pane | Keys |
 | --- | --- |
-| Remotes | `v`/Space branches; `f` fetch it (after the review below, if any); `n r` new remote; `n f` add a fork remote; `e` edit; Delete remove |
-| Stash | `v`/Space files; `g s a` apply; `g s p` pop; Delete drop; F2 rename; `n w` new worktree |
-| Worktrees | `v`/Space its commits; `s w` switch to it; `n w` new; `o` open in editor; Delete remove |
-| Submodules | `v`/Space enter; `n s` new; `e` edit URL; Delete remove; `g u s`, `g u i`, `g u b` update, initialize, bulk options |
-| Status | `s r` recent repositories; `s n` open a repository by path; `v`/Space focus the main view; `t a c` edit config; `t a u` check for updates; `t l n`, `t l p` all-branch logs |
+| Remotes | Enter branches; `f` fetch it (after the review below, if any); `n r` new remote; `n f` add a fork remote; `e` edit; Delete remove |
+| Stash | Enter files; `g s a` apply; `g s p` pop; Delete drop; F2 rename; `n w` new worktree |
+| Worktrees | Enter its commits; `s w` switch to it; `n w` new; `o` open in editor; Delete remove |
+| Submodules | Enter enters it; `n s` new; `e` edit URL; Delete remove; `g u s`, `g u i`, `g u b` update, initialize, bulk options |
+| Status | `s r` recent repositories; `s n` open a repository by path; Enter focuses the main view; `t a c` edit config; `t a u` check for updates; `t l n`, `t l p` all-branch logs |
 
 ### Prefix menus
 
@@ -263,10 +263,9 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 
 ### Browsing a commit's files
 
-- `v` on a commit in Commits, Reflog or Sub-commits opens a menu: `d` lists
-  the files the commit changed, `f` every file at the commit. Outside Commits,
-  Space opens the same menu. In Stash, `v` lists the entry's changed files
-  directly.
+- Enter on a commit in Commits, Reflog or Sub-commits lists the files the
+  commit changed. `v` opens a menu: `d` lists the changed files, `f` every
+  file at the commit. In Stash, Enter lists the entry's changed files.
 - The full listing (`f`) needs one commit; with a range selected it is
   crossed out. Files the commit changed keep their status letter, and files it
   deleted are listed as D; unchanged files have a blank status. Folders start
@@ -715,7 +714,7 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
 | --- | --- |
 | `P` push, `p` pull | `p` push, `g l` pull |
 | `R` refresh, `r` rebase | F5 refresh, `r` rebase |
-| Enter to inspect | `v` or Space; Enter commits only in Files |
+| Enter to inspect | Enter, except in Files, where Enter commits and `v` inspects |
 | Left/Right or Tab between panes | `h`/`l` or numbers; Tab changes tabs |
 | `n`/`N` search results | F3 / Shift+F3 |
 | `d` delete, `R` rename, `r` reword, `c` commit | Delete, F2, F2, Enter in Files |
@@ -729,7 +728,7 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
 | Ctrl+J / Ctrl+K move commit | `>` / `<` |
 | `y` copy menus with submenus | Flat `y` menu |
 | Space or Enter to switch worktree | `s w` |
-| Enter or Space to enter a submodule | `v` or Space in Submodules; `v` on it in Files |
+| Enter or Space to enter a submodule | Enter in Submodules; `v` on it in Files |
 | Enter to resolve a conflicted file | `v` |
 | Space / `b` / `z` in the merge view | Space / `g h b` / `u u` |
 | `{` / `}` diff context | `t d -` / `t d +` |

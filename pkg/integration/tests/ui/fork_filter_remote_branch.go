@@ -54,10 +54,10 @@ var ForkFilterRemoteBranch = NewIntegrationTest(NewIntegrationTestArgs{
 
 		// Case 2: from Remote branches. The remote branch origin/feat is selected, so
 		// w b shows it with its history, and Commits opens on its tip.
-		// v lists the remote's branches. In the real defaults Enter does not open them.
+		// Enter lists the remote's branches.
 		t.Views().Remotes().Focus().
 			Lines(Contains("origin").IsSelected()).
-			Press(config.Keybinding{"v"})
+			PressEnter()
 
 		t.Views().RemoteBranches().
 			IsFocused().

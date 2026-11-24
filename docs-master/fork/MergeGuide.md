@@ -347,9 +347,11 @@ re-apply it if upstream changes that code.
 - `pkg/gui/types/keybindings.go`: `Binding` gains `CommandID`,
   `CommandIDFunc`, `Verb`, `VerbFunc`, `CommandPaths`, `DefaultCommand` and
   `CommandActive`.
-- `keymap/default_paths.go` and `fork_command_projection.go`: `v d`/`v f`
-  (and `space d`/`space f` outside Commits) route the changed-files and full
-  listings in Commits, Sub-commits and Reflog; Stash keeps a direct `v`/Space.
+- `keymap/default_paths.go` and `fork_command_projection.go`: Enter is the
+  inspection key of every side pane except Files, where it commits and `v`
+  inspects (`forkInspectionPaths`, `forkPreferredInspector`). `v d`/`v f`
+  route the changed-files and full listings in Commits, Sub-commits and
+  Reflog, beside Enter for the changed files; Stash has Enter only.
   These routes are always default routes (`forkListingDefaultRoutes`), so an
   explicit key of another command wins through the prefix menu's explicit-leaf
   rule. An explicit legacy `goInto` is added as a separate explicit binding
@@ -575,7 +577,7 @@ re-apply it if upstream changes that code.
 - `controllers/switch_to_focused_main_view_controller.go`: `WithInspect` makes
   Files' `v` inspect, and adds the focus-only `navigation.focus-main` (`0`).
 - `controllers/switch_to_sub_commits_controller.go`: `WithoutDoubleClick`, so
-  Worktrees can show commits on `v` while its double-click still switches.
+  Worktrees can show commits on Enter while its double-click still switches.
   A context accepts only one double-click handler; a second one panics.
 - `controllers/switch_to_diff_files_controller.go`: adds
   `navigation.open-tree-files` (the full listing of a commit's files) beside

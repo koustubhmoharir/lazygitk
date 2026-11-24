@@ -6,7 +6,7 @@ import (
 )
 
 var ForkShortKeysSwitching = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "Real default switching keys: s p switches to the previous branch and back, v and Space in Worktrees show a linked worktree's commits without switching, and g s a applies a stash and keeps it",
+	Description: "Real default switching keys: s p switches to the previous branch and back, Enter in Worktrees shows a linked worktree's commits without switching and Space does not, and g s a applies a stash and keeps it",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -66,7 +66,7 @@ var ForkShortKeysSwitching = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Menu().Press(config.Keybinding{"p"})
 		t.Git().CurrentBranchName("master")
 
-		// 2. v in Worktrees shows the linked worktree's commits without switching.
+		// 2. Enter in Worktrees shows the linked worktree's commits without switching.
 		worktrees := t.Views().Worktrees()
 		worktrees.
 			Focus().
@@ -75,7 +75,7 @@ var ForkShortKeysSwitching = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("linked-worktree"),
 			).
 			NavigateToLine(Contains("linked-worktree")).
-			Press(config.Keybinding{"v"})
+			PressEnter()
 		t.Views().SubCommits().
 			IsFocused().
 			Content(Contains("linked commit"))
@@ -86,15 +86,10 @@ var ForkShortKeysSwitching = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().SubCommits().PressEscape()
 		t.Views().Worktrees().IsFocused()
 
-		// Space does the same.
+		// Space does not show the commits.
 		t.Views().Worktrees().
 			Press(config.Keybinding{"<space>"})
-		t.Views().SubCommits().
-			IsFocused().
-			Content(Contains("linked commit"))
-		t.Views().Status().Content(DoesNotContain("linked-worktree"))
-		t.Git().CurrentBranchName("master")
-		t.Views().SubCommits().PressEscape()
+		t.Views().SubCommits().IsInvisible()
 		t.Views().Worktrees().IsFocused()
 
 		// 3. g s a applies the stash: the change returns to Files and the stash

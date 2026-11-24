@@ -73,7 +73,7 @@ var ForkCopyRefCommitKeys = NewIntegrationTest(NewIntegrationTestArgs{
 			Lines(
 				Contains("origin").IsSelected(),
 			).
-			Press(config.Keybinding{"v"})
+			PressEnter()
 		remoteBranches := t.Views().RemoteBranches().
 			IsFocused().
 			NavigateToLine(Contains("feature"))

@@ -49,7 +49,7 @@ var ForkTerminalTitle = NewIntegrationTest(NewIntegrationTestArgs{
 			Lines(
 				Contains("my_submodule_name").IsSelected(),
 			).
-			Press(config.Keybinding{"v"})
+			PressEnter()
 		t.ExpectToast(Equals("Opened my_submodule_path"))
 		t.Views().Status().Content(Contains("my_submodule_path"))
 		assertTitleEndsWith("my_submodule_path")

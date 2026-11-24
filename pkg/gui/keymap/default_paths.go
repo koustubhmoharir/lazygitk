@@ -146,7 +146,11 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("submodule.bulk-menu", "g u b")
 	add("branch.reset-upstream-menu", "g z u")
 	add("worktree.discard-menu", "g z w")
-	add("remote.view-branches navigation.open-commits navigation.open-diff-files navigation.open-history-file-diff navigation.focus-diff file.enter submodule.enter", "v")
+	// Fork: Enter goes in (the inspection key) in every side pane except Files,
+	// where Enter commits. v is Files' focus-diff key; the projection narrows
+	// each pane to its own inspection key (fork_command_projection.go).
+	add("remote.view-branches navigation.open-commits navigation.open-diff-files navigation.open-history-file-diff navigation.focus-diff file.enter submodule.enter", "enter")
+	add("navigation.focus-diff", "v")
 	// Fork: repository and worktree switching live under s (roadmap items 14 and 18).
 	add("repo.switch-menu", "s r")
 	add("repo.open-path", "s n")
@@ -199,25 +203,17 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	add("selection.diff.toggle-hunk", "t h s")
 	add("selection.diff.toggle-range selection.list.toggle-range", "t h r")
 
-	// Fork: in Commits Space toggles the commit selection instead of inspecting
-	// (item 24); the projection drops Space from the Commits inspection route.
+	// Fork: Space toggles the commit selection in Commits (selection.commit.toggle).
+	// No inspection command has a Space route (Enter and v inspect instead).
 	add("selection.commit.toggle", "space")
 
-	// Space outside Files shares the inspection route; the main controller
-	// projects the contextual route to the appropriate command.
-	for _, id := range []string{"file.enter", "remote.view-branches", "navigation.open-commits", "navigation.open-diff-files", "navigation.open-history-file-diff", "navigation.focus-diff", "submodule.enter"} {
-		add(id, "space")
-	}
-	// Fork: the commit listings' v and Space open a menu: d lists the changed files
-	// and f every file of the commit. The bare v and Space above stay for Stash;
-	// the projection keeps the menu routes in Commits, Sub-commits and Reflog
-	// (forkListingPaths in fork_command_projection.go).
+	// Fork: the commit listings' v opens a menu: d lists the changed files and f
+	// every file of the commit. Commits, Sub-commits and Reflog keep it; the
+	// projection drops it elsewhere (forkListingPaths in fork_command_projection.go).
 	add("navigation.open-diff-files", "v d")
-	add("navigation.open-diff-files", "space d")
 	add("navigation.open-tree-files", "v f")
-	add("navigation.open-tree-files", "space f")
 	// 0 focuses the main view from any pane that has one, after the
-	// inspection keys so labels list v first; Files uses the focus-only ID.
+	// inspection keys so labels list enter first; Files uses the focus-only ID.
 	add("navigation.focus-diff navigation.focus-main", "0")
 
 	// Replaced normal routes, and nested copy menus that moved into the flat y

@@ -94,7 +94,7 @@ var ForkDefaultBranchPlacementCheckoutPlacement = NewIntegrationTest(NewIntegrat
 			Lines(
 				Contains("origin").IsSelected(),
 			).
-			Press(config.Keybinding{"v"})
+			PressEnter()
 		remoteBranches := t.Views().RemoteBranches()
 		remoteBranches.IsFocused().NavigateToLine(Contains("master"))
 		placeBranch(remoteBranches)

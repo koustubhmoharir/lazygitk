@@ -6,7 +6,7 @@ import (
 )
 
 var ForkDefaultEnterKeys = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "v and Space enter a submodule from Submodules and v enters a submodule entry in Files, with Escape returning to the parent; s w switches to the selected worktree; t has no r route",
+	Description: "Enter enters a submodule from Submodules and Space does not, v enters a submodule entry in Files, with Escape returning to the parent; s w switches to the selected worktree; t has no r route",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -46,28 +46,25 @@ var ForkDefaultEnterKeys = NewIntegrationTest(NewIntegrationTestArgs{
 
 		assertInParentRepo()
 
-		// a. v in Submodules enters the submodule; Escape returns to the parent.
+		// a. Enter in Submodules enters the submodule; Escape returns to the parent.
 		t.Views().Submodules().Focus().
 			Lines(
 				Contains("my_submodule_name").IsSelected(),
 			).
-			Press(config.Keybinding{"v"})
+			PressEnter()
 		t.ExpectToast(Equals("Opened my_submodule_path"))
 		assertInSubmodule()
 		t.Views().Files().IsFocused().PressEscape()
 		t.ExpectToast(Equals("Opened repo"))
 		assertInParentRepo()
 
-		// b. Space in Submodules enters the submodule as well; Escape returns.
+		// b. Space in Submodules does not enter the submodule.
 		t.Views().Submodules().Focus().
 			Lines(
 				Contains("my_submodule_name").IsSelected(),
 			).
 			Press(config.Keybinding{"<space>"})
-		t.ExpectToast(Equals("Opened my_submodule_path"))
-		assertInSubmodule()
-		t.Views().Files().IsFocused().PressEscape()
-		t.ExpectToast(Equals("Opened repo"))
+		t.Views().Submodules().IsFocused()
 		assertInParentRepo()
 
 		// c. v on the modified submodule entry in Files enters the submodule.

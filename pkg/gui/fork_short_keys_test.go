@@ -78,7 +78,7 @@ func TestForkShortKeysDefaultRoutes(t *testing.T) {
 		assert.Equal(t, "0", gui.commandKeyLabel("navigation.focus-diff", "localBranches"))
 	})
 
-	t.Run("worktrees open commits is v and space", func(t *testing.T) {
+	t.Run("worktrees open commits is enter", func(t *testing.T) {
 		var found []*types.Binding
 		for _, binding := range bindings {
 			if binding.CommandID == "navigation.open-commits" && binding.ViewName == "worktrees" {
@@ -86,7 +86,7 @@ func TestForkShortKeysDefaultRoutes(t *testing.T) {
 			}
 		}
 		if assert.Len(t, found, 1) {
-			assert.ElementsMatch(t, []string{"v", "<space>"}, found[0].KeyLabels())
+			assert.Equal(t, []string{"<enter>"}, found[0].KeyLabels())
 		}
 	})
 

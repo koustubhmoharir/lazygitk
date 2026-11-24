@@ -77,10 +77,10 @@ var ForkDefaultBrowseAllFiles = NewIntegrationTest(NewIntegrationTestArgs{
 			)
 		t.Views().CommitFiles().PressEscape()
 
-		// Space in Reflog opens the same menu as v.
+		// v in Reflog opens the same menu as v in Commits.
 		t.Views().ReflogCommits().Focus().
-			Press(config.Keybinding{"<space>"})
-		t.ExpectPopup().Menu().Title(Equals("<space>"))
+			Press(config.Keybinding{"v"})
+		t.ExpectPopup().Menu().Title(Equals("v"))
 		t.Views().Menu().Press(config.Keybinding{"f"})
 		t.Views().CommitFiles().
 			IsFocused().

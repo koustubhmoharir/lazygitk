@@ -124,14 +124,13 @@ func TestForkProjectionContextControlsAndExplicitCommandOverride(t *testing.T) {
 	assert.Equal(t, []string{"v"}, bindings[2].KeyLabels())
 	assert.Empty(t, bindings[2].Tag)
 	assert.Empty(t, bindings[3].KeyLabels(), "Files inspection must not invoke enterFile's submodule/dir side effects")
-	assert.Equal(t, []string{"v", "<space>"}, bindings[4].KeyLabels())
+	assert.Equal(t, []string{"<enter>"}, bindings[4].KeyLabels())
 	assert.Equal(t, []string{"<f6>"}, bindings[5].KeyLabels())
 	assert.False(t, bindings[5].DefaultCommand)
 }
 
-// Fork: roadmap item 18. Submodules enter on v and Space. Worktrees shows its
-// commits on v and Space (item 22), focus-diff keeps only 0 there, and worktree
-// switching is s w.
+// Fork: roadmap item 18. Submodules enter on Enter. Worktrees shows its commits
+// on Enter, focus-diff keeps only 0 there, and worktree switching is s w.
 func TestForkSubmoduleEnterAndWorktreeSwitchRoutes(t *testing.T) {
 	gui := newForkKeymapTestGui(t)
 	bindings, err := gui.projectForkBindings([]*types.Binding{
@@ -143,10 +142,10 @@ func TestForkSubmoduleEnterAndWorktreeSwitchRoutes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, []string{"v", "<space>"}, bindings[0].KeyLabels())
+	assert.Equal(t, []string{"<enter>"}, bindings[0].KeyLabels())
 	assert.Equal(t, []string{"0"}, bindings[1].KeyLabels())
 	assert.Equal(t, []string{"s w"}, bindings[2].KeyLabels())
-	assert.Equal(t, []string{"v", "<space>"}, bindings[3].KeyLabels())
+	assert.Equal(t, []string{"<enter>"}, bindings[3].KeyLabels())
 }
 
 func TestForkRefreshAliasSharesGlobalIdentityAndOverrides(t *testing.T) {
@@ -267,9 +266,8 @@ func TestForkProjectionLegacyModeKeyStaysLiveWithSpecificOverride(t *testing.T) 
 }
 
 // Fork: item 1 of "browse a commit's files". Commits, Sub-commits and Reflog open the
-// changed-files and full listings from v (a menu, d and f); Sub-commits and Reflog
-// open the same menu on Space too. Stash keeps v and Space as a direct leaf and
-// offers no full listing.
+// changed files on Enter and the menu of v (d for the changed files, f for every
+// file). Stash opens its changed files on Enter and offers no full listing.
 func TestForkListingRoutesByPane(t *testing.T) {
 	gui := newForkKeymapTestGui(t)
 	bindings, err := gui.projectForkBindings([]*types.Binding{
@@ -287,19 +285,19 @@ func TestForkListingRoutesByPane(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, []string{"v d"}, bindings[0].KeyLabels())
+	assert.Equal(t, []string{"<enter>", "v d"}, bindings[0].KeyLabels())
 	assert.Equal(t, []string{"v f"}, bindings[1].KeyLabels())
 	assert.Equal(t, []string{"<space>"}, bindings[2].KeyLabels(), "Space keeps toggling the commit selection in Commits")
-	assert.Equal(t, []string{"v d", "<space> d"}, bindings[3].KeyLabels())
-	assert.Equal(t, []string{"v f", "<space> f"}, bindings[4].KeyLabels())
-	assert.Equal(t, []string{"v d", "<space> d"}, bindings[5].KeyLabels())
-	assert.Equal(t, []string{"v f", "<space> f"}, bindings[6].KeyLabels())
-	assert.Equal(t, []string{"v", "<space>"}, bindings[7].KeyLabels(), "Stash keeps v and Space as a direct leaf")
+	assert.Equal(t, []string{"<enter>", "v d"}, bindings[3].KeyLabels())
+	assert.Equal(t, []string{"v f"}, bindings[4].KeyLabels())
+	assert.Equal(t, []string{"<enter>", "v d"}, bindings[5].KeyLabels())
+	assert.Equal(t, []string{"v f"}, bindings[6].KeyLabels())
+	assert.Equal(t, []string{"<enter>"}, bindings[7].KeyLabels(), "Stash opens its changed files on Enter, with no v menu")
 	assert.Empty(t, bindings[8].KeyLabels(), "Stash has no full listing")
-	assert.Empty(t, bindings[9].KeyLabels(), "Reflog's v and Space open the changed files, not the sub-commits")
+	assert.Empty(t, bindings[9].KeyLabels(), "Reflog's Enter opens the changed files, not the sub-commits")
 }
 
-// A menu pane must not have a leaf at v or Space next to the menu's children.
+// A menu pane must not have a leaf at v next to the menu's children.
 func TestForkListingMenuIsAPrefixNode(t *testing.T) {
 	gui := newForkKeymapTestGui(t)
 	bindings, err := gui.projectForkBindings([]*types.Binding{
@@ -312,10 +310,9 @@ func TestForkListingMenuIsAPrefixNode(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// Commits keeps Space as the selection toggle, so only v is a menu there.
 	menuKeys := map[string][]gocui.Key{
 		"commits":    {gocui.NewKeyRune('v')},
-		"subCommits": {gocui.NewKeyRune('v'), gocui.NewKeyRune(' ')},
+		"subCommits": {gocui.NewKeyRune('v')},
 	}
 	for view, keys := range menuKeys {
 		tree := keymap.BuildCommandTree(bindings, view)
@@ -376,12 +373,12 @@ func TestForkListingExplicitGoIntoIsSeparateFromDefaultRoutes(t *testing.T) {
 		}
 		return labels
 	}
-	assert.Equal(t, []string{"v d"}, routesOf("commits", false), "default routes stay default; Space is the selection toggle in Commits")
+	assert.Equal(t, []string{"<enter>", "v d"}, routesOf("commits", false), "default routes stay default; Space is the selection toggle in Commits")
 	assert.Equal(t, []string{"<enter>"}, routesOf("commits", true), "goInto is explicit in Commits")
 	assert.Equal(t, []string{"<enter>"}, routesOf("subCommits", true), "goInto is explicit in Sub-commits")
 	assert.Equal(t, []string{"<enter>"}, routesOf("stash", true), "goInto is explicit in Stash")
 	assert.Empty(t, routesOf("reflogCommits", true), "Reflog's goInto belongs to open-commits, not the changed files")
-	assert.Equal(t, []string{"v d", "<space> d"}, routesOf("reflogCommits", false), "Reflog keeps its menu routes")
+	assert.Equal(t, []string{"<enter>", "v d"}, routesOf("reflogCommits", false), "Reflog keeps its menu routes")
 }
 
 // Fork: an explicit claim of Space by another command in the same pane (here the

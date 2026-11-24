@@ -38,7 +38,7 @@ type SwitchToDiffFilesController struct {
 // controller already owns its double-click action and its focused main view diff
 // source, and both may be set only once per context. Reflog is the case: its
 // double-click enters its sub-commits, as upstream, and its own controller shows the
-// reflog entry's diff. Only v and Space list the commit's changed files there.
+// reflog entry's diff. Only Enter and v list the commit's changed files there.
 func (self *SwitchToDiffFilesController) WithoutDoubleClick() *SwitchToDiffFilesController {
 	self.keyOnly = true
 	return self
@@ -94,8 +94,7 @@ func (self *SwitchToDiffFilesController) GetKeybindings(opts types.KeybindingsOp
 			Verb:              "view-files",
 		},
 		// Fork: navigation.open-tree-files lists every file of the commit. It has no
-		// key of its own: its paths come from the v and Space menus (see
-		// fork_command_projection.go).
+		// key of its own: its paths come from the v menu (see fork_command_projection.go).
 		{
 			Handler:           self.enterFullListing,
 			GetDisabledReason: self.canEnterFullListing,

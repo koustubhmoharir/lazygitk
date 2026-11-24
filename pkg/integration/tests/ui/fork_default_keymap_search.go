@@ -29,7 +29,10 @@ var ForkDefaultKeymapSearch = NewIntegrationTest(NewIntegrationTestArgs{
 	},
 	Run: func(t *TestDriver, keys config.KeybindingConfig) {
 		commits := t.Views().Commits()
-		commits.Focus().PressEnter().IsFocused()
+		// Enter in Commits lists the commit's changed files, and Escape returns.
+		commits.Focus().PressEnter()
+		t.Views().CommitFiles().IsFocused().PressEscape()
+		commits.IsFocused()
 		t.Views().CommitMessage().IsInvisible()
 		t.Views().Options().Content(Contains("d w"))
 		commits.FilterOrSearch("match").SelectedLine(Contains("match second")).

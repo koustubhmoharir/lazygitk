@@ -6,7 +6,7 @@ import (
 )
 
 var ForkCommitsMultiSelect = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "Real default Commits multi-select: Space builds an explicit set, Shift runs join it, Space toggles runs, w a keeps the set, Escape clears the filter then the set, and Space in Sub-commits still inspects",
+	Description: "Real default Commits multi-select: Space builds an explicit set, Shift runs join it, Space toggles runs, w a keeps the set, Escape clears the filter then the set, and Space has no route in Sub-commits",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -118,20 +118,22 @@ var ForkCommitsMultiSelect = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().CommitFiles().Press(config.Keybinding{"<esc>"})
 		commits.IsFocused()
 
-		// Sub-commits keeps Space as inspect: Space opens the same menu as v, and d lists the changed files.
+		// Sub-commits has no Space route, so Space does nothing; its v opens the menu, and d lists the changed files.
 		t.Views().Branches().Focus().NavigateToLine(Contains("side")).
-			Press(config.Keybinding{"v"})
+			PressEnter()
 		t.Views().SubCommits().IsFocused().
 			Press(space)
-		t.ExpectPopup().Menu().Title(Equals("<space>"))
+		t.Views().SubCommits().IsFocused()
+		t.Views().SubCommits().Press(config.Keybinding{"v"})
+		t.ExpectPopup().Menu().Title(Equals("v"))
 		t.Views().Menu().Press(config.Keybinding{"d"})
 		t.Views().CommitFiles().IsFocused()
 		t.Views().CommitFiles().Press(config.Keybinding{"<esc>"})
 
-		// Reflog's Space opens the same menu as its v, so d lists the changed files.
+		// Reflog's v opens the menu, so d lists the changed files.
 		t.Views().ReflogCommits().Focus().
-			Press(space)
-		t.ExpectPopup().Menu().Title(Equals("<space>"))
+			Press(config.Keybinding{"v"})
+		t.ExpectPopup().Menu().Title(Equals("v"))
 		t.Views().Menu().Press(config.Keybinding{"d"})
 		t.Views().CommitFiles().IsFocused()
 		t.Views().CommitFiles().Press(config.Keybinding{"<esc>"})

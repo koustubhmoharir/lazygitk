@@ -38,7 +38,7 @@ var ForkShowInCommitsRemoteBranch = NewIntegrationTest(NewIntegrationTestArgs{
 		// v lists the remote's branches, as in the remote branch scope test.
 		t.Views().Remotes().Focus().
 			Lines(Contains("origin").IsSelected()).
-			Press(config.Keybinding{"v"})
+			PressEnter()
 
 		t.Views().RemoteBranches().
 			IsFocused().
