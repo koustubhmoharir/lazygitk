@@ -58,6 +58,7 @@ in the [design principles](Design.md). The generated per-pane reference is
 | `=` or `+`, `-` | Next, previous screen mode (normal, half, full) of the focused area: the side panels, or the main views |
 | `q` | Quit |
 | Escape | Leave the current layer, mode or menu |
+| Enter | Run the selected menu item (Space does not) |
 
 ### Moving around
 
@@ -191,12 +192,13 @@ Commits only:
 | Keys | Action |
 | --- | --- |
 | Enter | Show the file's diff |
+| Space | Toggle the file in the custom patch (as `g h t`) |
 | `d w`, `d p`, `d c` | Difftool against the working file, the previous commit, or a pasted commit hash |
 | `t d f` | Difftool against any working file you choose |
 | `g v f` | Restore this version of the file into the working tree |
 | `x` | Remove this file's changes from the commit |
 | `e`, `o` | Edit, open |
-| `g h t`, `g h a` | Toggle the file, or all files, in the custom patch |
+| `g h t`, `g h a` | Toggle the file (the same as Space), or all files, in the custom patch |
 | Left, Right; `t t t`, `t t c`, `t t e` | Tree navigation and view, as in Files |
 | `y n`, `y p`, `y f`, `y c`, `y d` | Copy name, path, absolute path, content at the commit, diff |
 

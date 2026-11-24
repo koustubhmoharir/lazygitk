@@ -217,6 +217,9 @@ func buildDefaultPaths() (map[string][][]gocui.Key, map[string]int) {
 	// Fork: Space toggles the commit selection in Commits (selection.commit.toggle).
 	// No inspection command has a Space route (Enter and v inspect instead).
 	add("selection.commit.toggle", "space")
+	// Fork: Space toggles the selected file in the custom patch in Commit files, as
+	// g h t does. Enter shows its diff (navigation.open-history-file-diff).
+	add("patch.toggle-file-selection", "space")
 
 	// Fork: the commit listings' v opens a menu: d lists the changed files and f
 	// every file of the commit. Commits, Sub-commits and Reflog keep it; the

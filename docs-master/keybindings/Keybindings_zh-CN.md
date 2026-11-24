@@ -240,7 +240,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` o `` | 打开文件 | 使用默认程序打开该文件 |
 | `` e `` | 编辑(Edit) | 使用外部编辑器打开文件 |
 | `` t d e `` | Diff using current comparison mode |  |
-| `` g h t `` | 补丁中包含的切换文件 | 切换文件是否包含在自定义补丁中。请参阅 https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches。 |
+| `` <space>, g h t `` | 补丁中包含的切换文件 | 切换文件是否包含在自定义补丁中。请参阅 https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches。 |
 | `` g h a `` | 操作所有文件 | 添加或删除所有提交中的文件到自定义的补丁中。请参阅 https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches。 |
 | `` <enter> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
 | `` t t t `` | 切换文件树视图 | 在平面布局和树布局之间切换文件视图。平面布局在单个列表中显示所有文件路径，树布局按目录分组文件。<br><br>可以在配置文件中使用 'gui.showFileTree' 键更改默认设置。 |

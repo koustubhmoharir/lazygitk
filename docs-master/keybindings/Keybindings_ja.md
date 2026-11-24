@@ -142,7 +142,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` o `` | ファイルを開く | デフォルトのアプリケーションでファイルを開きます。 |
 | `` e `` | 編集 | 外部エディタでファイルを開きます。 |
 | `` t d e `` | Diff using current comparison mode |  |
-| `` g h t `` | パッチに含めるファイルを切り替え | ファイルがカスタムパッチに含まれるかどうかを切り替えます。https://github.com/jesseduffield/lazygit#rebase-magic-custom-patchesを参照してください。 |
+| `` <space>, g h t `` | パッチに含めるファイルを切り替え | ファイルがカスタムパッチに含まれるかどうかを切り替えます。https://github.com/jesseduffield/lazygit#rebase-magic-custom-patchesを参照してください。 |
 | `` g h a `` | すべてのファイルを切り替え | コミットのすべてのファイルをカスタムパッチに追加/削除します。https://github.com/jesseduffield/lazygit#rebase-magic-custom-patchesを参照してください。 |
 | `` <enter> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
 | `` t t t `` | ファイルツリービューを切り替え | ファイル表示をフラット表示とツリー表示で切り替えます。フラット表示はすべてのファイルパスを一覧で表示し、ツリー表示はディレクトリごとにファイルをグループ化します。<br><br>デフォルトは設定ファイル内の 'gui.showFileTree' キーで変更できます。 |

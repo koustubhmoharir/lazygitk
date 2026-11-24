@@ -792,6 +792,7 @@ var tests = []*components.IntegrationTest{
 	ui.ForkDefaultKeymapFilesTree,
 	ui.ForkDefaultKeymapSearch,
 	ui.ForkDefaultRefresh,
+	ui.ForkDefaultSpaceToggles,
 	ui.ForkFilterAncestors,
 	ui.ForkFilterAncestorsOrder,
 	ui.ForkFilterAuthorKey,

@@ -40,7 +40,8 @@ func NewMenuController(
 func (self *MenuController) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
 	bindings := []*types.Binding{
 		{
-			Keys:              opts.GetKeys(opts.Config.Universal.Select),
+			// Fork: Space runs the item only where forkMenuExecuteKeys says so (fork_menu_execute.go).
+			Keys:              forkMenuExecuteKeys(self.c, opts, opts.Config.Universal.Select, self.context().FilterAsYouType()),
 			Handler:           self.withItem(self.press),
 			GetDisabledReason: self.require(self.singleItemSelected()),
 			CommandID:         "menu.execute",

@@ -356,6 +356,10 @@ re-apply it if upstream changes that code.
   Files' `v` menu (`v r`, `v s`, `v m`, `v d`) is
   `controllers/fork_files_inspect_menu.go`, also registered there; its routes
   are inapplicable except on conflicted and submodule entries.
+- `controllers/menu_controller.go`: the execute binding's Space comes from
+  `forkMenuExecuteKeys` (`fork_menu_execute.go`): only filtering menus (where
+  Space types) or an explicit `universal.select` keep it; upstream runs the
+  item on Space in every menu.
 - `keymap/command_tree.go`: in a view, a local complete path hides the default
   global routes that extend it (`shadowGlobalRoutes`), so Files' `c` hides the
   global `c c` and `c p`; `CommandTree.Shadowed` stops their labels from

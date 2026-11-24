@@ -260,7 +260,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` o `` | 開啟檔案 | 使用預設軟體開啟 |
 | `` e `` | 編輯 | 使用外部編輯器開啟 |
 | `` t d e `` | Diff using current comparison mode |  |
-| `` g h t `` | 切換檔案是否包含在補丁中 | 切換檔案是否包含在自定義補丁中。請參閱 https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches。 |
+| `` <space>, g h t `` | 切換檔案是否包含在補丁中 | 切換檔案是否包含在自定義補丁中。請參閱 https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches。 |
 | `` g h a `` | 切換所有檔案是否包含在補丁中 | 新增或刪除所有提交中的檔案到自定義的補丁中。請參閱 https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches。 |
 | `` <enter> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
 | `` t t t `` | 顯示檔案樹狀視圖 | 在平面佈局和樹佈局之間切換檔案檢視。平面佈局在單個列表中顯示所有檔案路徑，樹佈局按目錄分組檔案。<br><br>可以在設定檔中使用 'gui.showFileTree' 鍵更改預設設定。 |

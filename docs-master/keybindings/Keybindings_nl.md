@@ -182,7 +182,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` o `` | Open bestand | Open bestand in standaardapplicatie. |
 | `` e `` | Edit | Open bestand in externe editor. |
 | `` t d e `` | Diff using current comparison mode |  |
-| `` g h t `` | Toggle bestand inbegrepen in patch | Toggle whether the file is included in the custom patch. See https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches. |
+| `` <space>, g h t `` | Toggle bestand inbegrepen in patch | Toggle whether the file is included in the custom patch. See https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches. |
 | `` g h a `` | Toggle all files | Add/remove all commit's files to custom patch. See https://github.com/jesseduffield/lazygit#rebase-magic-custom-patches. |
 | `` <enter> `` | Focus file diff / Toggle directory | If a file is selected, focus its diff so you can act on individual lines. If it is a directory, collapse or expand it. |
 | `` t t t `` | Toggle bestandsboom weergave | Toggle file view between flat and tree layout. Flat layout shows all file paths in a single list, tree layout groups files by directory.<br><br>The default can be changed in the config file with the key 'gui.showFileTree'. |

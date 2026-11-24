@@ -38,10 +38,9 @@ integration suite passes.
 
 ## Tasks
 
-1. Space: patch toggle in Commit files; nothing in regular menus.
-2. Space selection in Sub-commits and Reflog.
-3. Stash `v d` / `v f` menu, if the full listing works for a stash entry.
-4. Design and merge-guide updates, full integration suite; close this
+1. Space selection in Sub-commits and Reflog.
+2. Stash `v d` / `v f` menu, if the full listing works for a stash entry.
+3. Design and merge-guide updates, full integration suite; close this
    section.
 
 ## How this tracker works
