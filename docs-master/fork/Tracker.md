@@ -38,7 +38,12 @@ integration suite passes.
 
 ## Tasks
 
-1. Space selection in Sub-commits and Reflog.
+1. Space selection in Sub-commits and Reflog. Agreed: the set is kept by
+   commit (every reflog row of a selected commit is highlighted, counted
+   once); a Sub-commits set survives pane switches and is cleared when
+   Escape leaves Sub-commits or another ref's commits open; `c p` and `g c`
+   act on the set; `w a`, `w d`, `w b` stay Commits-only; Escape clears a
+   lone Shift run, then the filter, then the set, then does what it did.
 2. Stash `v d` / `v f` menu, if the full listing works for a stash entry.
 3. Design and merge-guide updates, full integration suite; close this
    section.
