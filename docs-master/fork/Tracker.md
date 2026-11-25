@@ -38,8 +38,7 @@ integration suite passes.
 
 ## Tasks
 
-1. Stash `v d` / `v f` menu, if the full listing works for a stash entry.
-2. Design and merge-guide updates, full integration suite; close this
+1. Design and merge-guide updates, full integration suite; close this
    section.
 
 ## How this tracker works

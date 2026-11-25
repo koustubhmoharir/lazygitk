@@ -286,7 +286,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | 新建工作樹 |  |
 | `` <f2> `` | 重新命名收藏 |  |
 | `` 0 `` | 聚焦主檢視 |  |
-| `` <enter> `` | Changed files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | 搜尋 |  |
 
 ## 日誌

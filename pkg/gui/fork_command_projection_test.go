@@ -265,9 +265,9 @@ func TestForkProjectionLegacyModeKeyStaysLiveWithSpecificOverride(t *testing.T) 
 	assert.False(t, byID["patch.toggle-selection"].DefaultCommand)
 }
 
-// Fork: item 1 of "browse a commit's files". Commits, Sub-commits and Reflog open the
-// changed files on Enter and the menu of v (d for the changed files, f for every
-// file). Stash opens its changed files on Enter and offers no full listing.
+// Fork: item 1 of "browse a commit's files". Commits, Sub-commits, Reflog and Stash open
+// the changed files on Enter and the menu of v (d for the changed files, f for every
+// file).
 func TestForkListingRoutesByPane(t *testing.T) {
 	gui := newForkKeymapTestGui(t)
 	bindings, err := gui.projectForkBindings([]*types.Binding{
@@ -292,8 +292,8 @@ func TestForkListingRoutesByPane(t *testing.T) {
 	assert.Equal(t, []string{"v f"}, bindings[4].KeyLabels())
 	assert.Equal(t, []string{"<enter>", "v d"}, bindings[5].KeyLabels())
 	assert.Equal(t, []string{"v f"}, bindings[6].KeyLabels())
-	assert.Equal(t, []string{"<enter>"}, bindings[7].KeyLabels(), "Stash opens its changed files on Enter, with no v menu")
-	assert.Empty(t, bindings[8].KeyLabels(), "Stash has no full listing")
+	assert.Equal(t, []string{"<enter>", "v d"}, bindings[7].KeyLabels(), "Stash opens its changed files on Enter and under v d")
+	assert.Equal(t, []string{"v f"}, bindings[8].KeyLabels(), "Stash lists every file under v f")
 	assert.Empty(t, bindings[9].KeyLabels(), "Reflog's Enter opens the changed files, not the sub-commits")
 }
 
@@ -306,6 +306,8 @@ func TestForkListingMenuIsAPrefixNode(t *testing.T) {
 		{CommandID: "selection.commit.toggle", ViewName: "commits"},
 		{CommandID: "navigation.open-diff-files", ViewName: "subCommits"},
 		{CommandID: "navigation.open-tree-files", ViewName: "subCommits"},
+		{CommandID: "navigation.open-diff-files", ViewName: "stash"},
+		{CommandID: "navigation.open-tree-files", ViewName: "stash"},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -313,6 +315,7 @@ func TestForkListingMenuIsAPrefixNode(t *testing.T) {
 	menuKeys := map[string][]gocui.Key{
 		"commits":    {gocui.NewKeyRune('v')},
 		"subCommits": {gocui.NewKeyRune('v')},
+		"stash":      {gocui.NewKeyRune('v')},
 	}
 	for view, keys := range menuKeys {
 		tree := keymap.BuildCommandTree(bindings, view)

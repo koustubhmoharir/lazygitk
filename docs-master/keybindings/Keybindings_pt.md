@@ -449,7 +449,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | Nova árvore de trabalho |  |
 | `` <f2> `` | Renomear o stash |  |
 | `` 0 `` | Focar visualização principal |  |
-| `` <enter> `` | Changed files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | Filtrar a visualização atual por texto |  |
 
 ## Status

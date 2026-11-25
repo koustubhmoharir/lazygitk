@@ -189,14 +189,11 @@ func (self *SwitchToDiffFilesController) enterListing(fullListing bool) error {
 	return nil
 }
 
-// Fork: canEnterFullListing needs one commit: a range is crossed out, and so is a
-// stash entry, which has no commit tree.
+// Fork: canEnterFullListing needs one commit: a range is crossed out. A stash entry
+// is listed as its stash commit's tree, which is the working tree as stashed.
 func (self *SwitchToDiffFilesController) canEnterFullListing() *types.DisabledReason {
 	if self.context.GetSelectedRefRangeForDiffFiles() != nil {
 		return &types.DisabledReason{Text: self.c.Tr.SelectOneCommitForAllFiles}
-	}
-	if _, isStash := self.context.GetSelectedRef().(*models.StashEntry); isStash {
-		return &types.DisabledReason{Text: self.c.Tr.SelectedItemDoesNotHaveFiles}
 	}
 	return self.canEnter()
 }

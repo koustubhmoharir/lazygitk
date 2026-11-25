@@ -399,7 +399,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | Nowe drzewo pracy |  |
 | `` <f2> `` | Zmień nazwę schowka |  |
 | `` 0 `` | Focus main view |  |
-| `` <enter> `` | Changed files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | Filtruj bieżący widok po tekście |  |
 
 ## Status

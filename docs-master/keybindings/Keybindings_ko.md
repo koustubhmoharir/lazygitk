@@ -147,7 +147,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | New worktree |  |
 | `` <f2> `` | Rename stash |  |
 | `` 0 `` | Focus main view |  |
-| `` <enter> `` | Changed files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | Filter the current view by text |  |
 
 ## Sub-commits

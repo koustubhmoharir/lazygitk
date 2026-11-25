@@ -249,9 +249,8 @@ func forkWithoutInspectionKeys(paths [][]gocui.Key) [][]gocui.Key {
 }
 
 // forkListingCommand is the changed-files and full-listing pair (item 1 of
-// "browse a commit's files"). Commits, Sub-commits and Reflog reach the full listing
-// by the v menu and the changed files by Enter, and Stash reaches its changed files by
-// Enter alone.
+// "browse a commit's files"). Commits, Sub-commits, Reflog and Stash reach the full
+// listing by the v menu and the changed files by Enter or v d.
 func forkListingCommand(id string) bool {
 	return id == "navigation.open-diff-files" || id == "navigation.open-tree-files"
 }
@@ -292,22 +291,17 @@ func (gui *Gui) forkListingLegacyRoutes(binding *types.Binding) [][]gocui.Key {
 }
 
 // forkListingPaths chooses the routes of a listing command for a pane. Commits,
-// Sub-commits and Reflog use v as the menu prefix: v d lists the changed files
-// and v f every file. Their Enter lists the changed files directly. Stash has no
-// menu: Enter lists its changed files, and the full listing is not offered
-// there. Other panes have no listing route.
+// Sub-commits, Reflog and Stash use v as the menu prefix: v d lists the changed files
+// and v f every file. Their Enter lists the changed files directly. Other panes have
+// no listing route.
 func forkListingPaths(id, view string, paths [][]gocui.Key) [][]gocui.Key {
 	var kept [][]gocui.Key
 	for _, path := range paths {
 		switch view {
-		case "commits", "subCommits", "reflogCommits":
+		case "commits", "subCommits", "reflogCommits", "stash":
 			if len(path) == 2 && path[0] == gocui.NewKeyRune('v') {
 				kept = append(kept, path)
 			}
-			if id == "navigation.open-diff-files" && len(path) == 1 && path[0] == enterKey() {
-				kept = append(kept, path)
-			}
-		case "stash":
 			if id == "navigation.open-diff-files" && len(path) == 1 && path[0] == enterKey() {
 				kept = append(kept, path)
 			}

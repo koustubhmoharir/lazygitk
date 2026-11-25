@@ -227,7 +227,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | 新しいワークツリー |  |
 | `` <f2> `` | スタッシュの名前を変更 |  |
 | `` 0 `` | メインビューにフォーカス |  |
-| `` <enter> `` | Changed files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | 現在のビューをテキストでフィルタリング |  |
 
 ## ステータス

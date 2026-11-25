@@ -483,7 +483,8 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | 新建工作树 |  |
 | `` <f2> `` | 重命名贮藏 |  |
 | `` 0 `` | 聚焦主视图 |  |
-| `` <enter> `` | Changed files |  |
+| `` <enter>, v d `` | Changed files |  |
+| `` v f `` | All files |  |
 | `` / `` | 通过文本过滤当前视图 |  |
 
 ## 输入提示

@@ -793,6 +793,7 @@ var tests = []*components.IntegrationTest{
 	ui.ForkDefaultKeymapSearch,
 	ui.ForkDefaultRefresh,
 	ui.ForkDefaultSpaceToggles,
+	ui.ForkDefaultStashBrowseAllFiles,
 	ui.ForkFilterAncestors,
 	ui.ForkFilterAncestorsOrder,
 	ui.ForkFilterAuthorKey,

@@ -231,7 +231,7 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 | Pane | Keys |
 | --- | --- |
 | Remotes | Enter branches; `f` fetch it (after the review below, if any); `n r` new remote; `n f` add a fork remote; `e` edit; Delete remove |
-| Stash | Enter files; `g s a` apply; `g s p` pop; Delete drop; F2 rename; `n w` new worktree |
+| Stash | Enter files; `v d`, `v f` changed or all files; `g s a` apply; `g s p` pop; Delete drop; F2 rename; `n w` new worktree |
 | Worktrees | Enter its commits; `s w` switch to it; `n w` new; `o` open in editor; Delete remove |
 | Submodules | Enter enters it; `n s` new; `e` edit URL; Delete remove; `g u s`, `g u i`, `g u b` update, initialize, bulk options |
 | Status | `s r` recent repositories; `s n` open a repository by path; Enter focuses the main view; `t a c` edit config; `t a u` check for updates; `t l n`, `t l p` all-branch logs |
@@ -266,9 +266,11 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
 
 ### Browsing a commit's files
 
-- Enter on a commit in Commits, Reflog or Sub-commits lists the files the
-  commit changed. `v` opens a menu: `d` lists the changed files, `f` every
-  file at the commit. In Stash, Enter lists the entry's changed files.
+- Enter on a commit in Commits, Reflog or Sub-commits, or on a stash entry,
+  lists the files it changed. `v` opens a menu: `d` lists the changed files,
+  `f` every file at the commit (for a stash entry, the working tree as
+  stashed). Untracked files saved with `git stash -u` appear in neither
+  listing.
 - The full listing (`f`) needs one commit; with a range selected it is
   crossed out. Files the commit changed keep their status letter, and files it
   deleted are listed as D; unchanged files have a blank status. Folders start

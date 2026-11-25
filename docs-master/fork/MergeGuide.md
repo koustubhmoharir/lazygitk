@@ -365,7 +365,9 @@ re-apply it if upstream changes that code.
   global `c c` and `c p`; `CommandTree.Shadowed` stops their labels from
   falling back to the global route (`fork_command_key_labels.go`). `v d`/`v f`
   route the changed-files and full listings in Commits, Sub-commits and
-  Reflog, beside Enter for the changed files; Stash has Enter only.
+  Reflog and Stash, beside Enter for the changed files. The full listing
+  lists a stash entry's own tree (`canEnterFullListing` in
+  `switch_to_diff_files_controller.go`).
   These routes are always default routes (`forkListingDefaultRoutes`), so an
   explicit key of another command wins through the prefix menu's explicit-leaf
   rule. An explicit legacy `goInto` is added as a separate explicit binding
