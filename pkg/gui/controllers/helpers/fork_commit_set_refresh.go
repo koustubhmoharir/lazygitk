@@ -6,6 +6,7 @@ import (
 
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gocui"
+	"github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/utils"
 )
 
@@ -17,13 +18,14 @@ import (
 // with a notice. Those that no ref or HEAD reaches stay selected, with a notice the first
 // time each is seen. The rest are only hidden, and get no notice.
 //
-// checkSelectedCommitsAfterRefresh is the integration point, called from
-// refreshCommitsWithLimit once the new list is in the model.
+// checkSelectedCommitsAfterRefresh is the integration point, called from the refresh of each
+// commit list (Commits, Sub-commits and Reflog) inside the UI-thread bounce that writes the
+// new list into the model.
 
-// checkSelectedCommitsAfterRefresh starts the check for the commits the selection holds
-// and commits does not. It does nothing when there are none.
-func (self *RefreshHelper) checkSelectedCommitsAfterRefresh(env refreshEnv, commits []*models.Commit) {
-	absent := self.c.Contexts().LocalCommits.SelectedCommitHashesNotIn(commits)
+// checkSelectedCommitsAfterRefresh starts the check for the commits the selection of commits
+// holds and the list does not show. It does nothing when there are none.
+func (self *RefreshHelper) checkSelectedCommitsAfterRefresh(env refreshEnv, set context.CommitSetContext, shown []*models.Commit) {
+	absent := set.SelectedCommitHashesNotIn(shown)
 	if len(absent) == 0 {
 		return
 	}
@@ -34,7 +36,7 @@ func (self *RefreshHelper) checkSelectedCommitsAfterRefresh(env refreshEnv, comm
 			return err
 		}
 		self.onUIThread(env.background, func() error {
-			return self.applySelectedCommitsCheck(repository, missing, unreachable)
+			return self.applySelectedCommitsCheck(repository, set, missing, unreachable)
 		})
 		return nil
 	})
@@ -42,19 +44,18 @@ func (self *RefreshHelper) checkSelectedCommitsAfterRefresh(env refreshEnv, comm
 
 // applySelectedCommitsCheck updates the selection and the notices on the UI thread. A
 // repository change while the check ran drops the result: the next refresh checks again.
-func (self *RefreshHelper) applySelectedCommitsCheck(repository *capturedActionRepository, missing []string, unreachable []string) error {
+func (self *RefreshHelper) applySelectedCommitsCheck(repository *capturedActionRepository, set context.CommitSetContext, missing []string, unreachable []string) error {
 	if err := repository.checkRepository(); err != nil {
 		return nil
 	}
-	commits := self.c.Contexts().LocalCommits
 	if len(missing) > 0 {
-		commits.RemoveFromCommitSet(missing)
+		set.RemoveFromCommitSet(missing)
 		self.c.Toast(fmt.Sprintf(self.c.Tr.CommitSetMissingNotice, commitSetShortHashes(missing)))
 	}
-	if fresh := commits.NewUnreachableNotices(unreachable); len(fresh) > 0 {
+	if fresh := set.NewUnreachableNotices(unreachable); len(fresh) > 0 {
 		self.c.Toast(fmt.Sprintf(self.c.Tr.CommitSetRewrittenNotice, commitSetShortHashes(fresh)))
 	}
-	self.c.PostRefreshUpdate(commits)
+	self.c.PostRefreshUpdate(set)
 	return nil
 }
 

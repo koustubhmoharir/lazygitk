@@ -830,6 +830,7 @@ var tests = []*components.IntegrationTest{
 	ui.ForkShowInCommitsRemoteBranch,
 	ui.ForkShowInCommitsTag,
 	ui.ForkShowInCommitsUnreachableRefused,
+	ui.ForkSubCommitsReflogMultiSelect,
 	ui.ForkTerminalTitle,
 	ui.ForkTreeNavigationClearsRange,
 	ui.HideSidePanel,

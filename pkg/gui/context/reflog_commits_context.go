@@ -11,6 +11,8 @@ import (
 type ReflogCommitsContext struct {
 	*FilteredListViewModel[*models.Commit]
 	*ListContextTrait
+	// Fork: the multi-select set and run (see fork_commit_multi_select.go).
+	forkCommitSet
 }
 
 var (
@@ -66,6 +68,31 @@ func NewReflogCommitsContext(c *ContextCommon) *ReflogCommitsContext {
 			renderOnlyVisibleLines: true,
 		},
 	}
+}
+
+// ClearFilter ends a run in progress before the filter is cleared, since clearing moves the
+// cursor, which ends a run as any cursor move does (see forkCommitSet). FilteredListViewModel
+// moves the cursor itself, so the set's own overrides do not see the move.
+func (self *ReflogCommitsContext) ClearFilter() {
+	self.forkCommitSet.endRun(self.commitSetList())
+	self.FilteredListViewModel.ClearFilter()
+}
+
+// HandleFocus, FocusLine and HandleRender sync the view with the set (see
+// syncCommitSet).
+func (self *ReflogCommitsContext) HandleFocus(opts types.OnFocusOpts) {
+	self.ListContextTrait.HandleFocus(opts)
+	syncCommitSet(self, self.ListContextTrait.c.Tr)
+}
+
+func (self *ReflogCommitsContext) FocusLine(scrollIntoView bool) {
+	self.ListContextTrait.FocusLine(scrollIntoView)
+	syncCommitSet(self, self.ListContextTrait.c.Tr)
+}
+
+func (self *ReflogCommitsContext) HandleRender() {
+	self.ListContextTrait.HandleRender()
+	syncCommitSet(self, self.ListContextTrait.c.Tr)
 }
 
 func (self *ReflogCommitsContext) CanRebase() bool {

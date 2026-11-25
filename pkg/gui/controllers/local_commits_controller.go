@@ -715,11 +715,11 @@ func (self *LocalCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 		},
 	}
 
-	// Fork: the commit scope filters w a and w d (see fork_commit_scope_filters.go),
-	// Space's selection toggle, and the disabling of commands that cannot act on an
-	// explicit set (see fork_commit_multi_select.go).
+	// Fork: the commit scope filters w a and w d (see fork_commit_scope_filters.go), and the
+	// disabling of commands that cannot act on an explicit set (see fork_commit_multi_select.go).
+	// Space's selection toggle is in BasicCommitsController, shared with Sub-commits and Reflog.
 	return guardCommitSelectionBindings(self.context(), self.c.Tr.ClearCommitSelectionFirst,
-		self.addCommitMultiSelectBindings(self.addCommitScopeFilterBindings(bindings)))
+		self.addCommitScopeFilterBindings(bindings))
 }
 
 func (self *LocalCommitsController) checkedOutBranchHasPR() *types.DisabledReason {

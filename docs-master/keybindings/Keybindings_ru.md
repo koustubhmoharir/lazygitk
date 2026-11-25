@@ -181,6 +181,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | New worktree |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` <space> `` | Toggle selection |  |
 | `` y i `` | Copy abbreviated commit hash |  |
 | `` y s `` | Copy commit subject |  |
 | `` y m `` | Copy commit message |  |
@@ -219,7 +220,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` w a `` | Show selected commits and their ancestors |  |
 | `` w d `` | Show selected commits and their descendants |  |
 | `` w b `` | Show branch / tag |  |
-| `` <space> `` | Toggle selection |  |
 | `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | Жёсткий сброс |  |
 | `` s m `` | Смешанный сброс |  |
@@ -236,6 +236,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | New worktree |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` <space> `` | Toggle selection |  |
 | `` y h `` | Copy commit hash |  |
 | `` y s `` | Copy commit subject |  |
 | `` y m `` | Copy commit message |  |
@@ -329,6 +330,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | New worktree |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | Select commits of current branch |  |
+| `` <space> `` | Toggle selection |  |
 | `` y h `` | Copy commit hash |  |
 | `` y s `` | Copy commit subject |  |
 | `` y m `` | Copy commit message |  |

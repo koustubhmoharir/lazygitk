@@ -51,8 +51,8 @@ recorded here or in the user guide.
   In Commits, push and pull act on the branch at the selected commit, and ask
   which when several branches are there. Actions on the current branch say so
   in their label.
-- **A multi-selection is never narrowed silently.** While Commits holds an
-  explicit selection, a command either acts on the whole set or is disabled
+- **A multi-selection is never narrowed silently.** While a commit list (Commits,
+  Sub-commits, Reflog) holds an explicit selection, a command either acts on the whole set or is disabled
   with the reason "Clear the selection first (Escape)"; it never falls back to
   the cursor commit. Only inspection (Enter, `v` and the main view) follows the
   cursor, which the gutter marks.

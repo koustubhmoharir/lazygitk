@@ -182,7 +182,7 @@ func (gui *Gui) getCopySelectedSideContextItemToClipboardDisabledReason() *types
 
 	// Fork: y i copies the cursor commit's hash, so it is disabled while Commits holds an
 	// explicit set (see controllers/fork_commit_multi_select.go).
-	if commits, ok := currentSideContext.(*context.LocalCommitsContext); ok && commits.HasCommitSet() {
+	if commits, ok := currentSideContext.(context.CommitSetHolder); ok && commits.HasCommitSet() {
 		return &types.DisabledReason{Text: gui.Tr.ClearCommitSelectionFirst}
 	}
 

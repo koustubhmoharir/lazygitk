@@ -144,7 +144,9 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 	// Fork direct-diff actions are additive; the existing sticky comparison remains available.
 	// Fork: expose each captured reset mode as a separately discoverable action.
 	// Fork: the flat `y` copy menu's commit actions (see fork_commit_copy.go).
-	// Fork: in Commits, commands that cannot act on an explicit set are disabled (see fork_commit_multi_select.go).
+	// Fork: Space toggles the commit selection in all three commit lists, and commands that
+	// cannot act on an explicit set are disabled there (see fork_commit_multi_select.go).
+	bindings = append(bindings, self.commitSelectionToggleBinding())
 	return guardCommitSelectionBindings(self.context, self.c.Tr.ClearCommitSelectionFirst, self.addSelectedCheckoutBindings(self.addSelectedResetBindings(append(self.historicalDiffBindings(opts), self.addCommitCopyBindings(bindings)...))))
 }
 

@@ -478,6 +478,13 @@ branches: `g t` set as upstream, `t s o` sort order. Tags: `p` push the tag,
   branch's history, and names it.
 - A Shift run that a drop, fixup or squash starts on does not join the
   selection, since the operation takes its commits.
+- Sub-commits and Reflog select the same way: Space, Shift runs, the gutter
+  marker and the `N selected` subtitle. `c p` and `g c` act on the
+  selection there; `w a`, `w d` and `w b` stay in Commits. A commit that the
+  reflog lists on several rows is selected once, and all its rows are
+  highlighted. Escape clears a lone Shift run, then the selection, then leaves
+  Sub-commits. A Sub-commits selection survives switching panes; leaving
+  Sub-commits or opening another branch's or tag's commits starts empty.
 
 ### Rebase, merge, reset
 

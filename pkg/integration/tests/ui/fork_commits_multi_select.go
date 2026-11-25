@@ -6,7 +6,7 @@ import (
 )
 
 var ForkCommitsMultiSelect = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "Real default Commits multi-select: Space builds an explicit set, Shift runs join it, Space toggles runs, w a keeps the set, Escape clears the filter then the set, and Space has no route in Sub-commits",
+	Description: "Real default Commits multi-select: Space builds an explicit set, Shift runs join it, Space toggles runs, w a keeps the set, Escape clears the filter then the set, and Space toggles in Sub-commits too",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -118,11 +118,13 @@ var ForkCommitsMultiSelect = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().CommitFiles().Press(config.Keybinding{"<esc>"})
 		commits.IsFocused()
 
-		// Sub-commits has no Space route, so Space does nothing; its v opens the menu, and d lists the changed files.
+		// Sub-commits has the same Space toggle, which the sub-commits scenario covers; its v
+		// opens the menu, and d lists the changed files.
 		t.Views().Branches().Focus().NavigateToLine(Contains("side")).
 			PressEnter()
 		t.Views().SubCommits().IsFocused().
 			Press(space)
+		t.Views().SubCommits().ExplicitSelection(Contains("delta"))
 		t.Views().SubCommits().IsFocused()
 		t.Views().SubCommits().Press(config.Keybinding{"v"})
 		t.ExpectPopup().Menu().Title(Equals("v"))

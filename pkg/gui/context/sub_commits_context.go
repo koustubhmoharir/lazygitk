@@ -173,6 +173,8 @@ type SubCommitsViewModel struct {
 	ref                     models.Ref
 	refToShowDivergenceFrom string
 	*ListViewModel[*models.Commit]
+	// Fork: the multi-select set and run (see fork_commit_multi_select.go).
+	forkCommitSet
 
 	limitCommits    bool
 	showBranchHeads bool
@@ -215,6 +217,10 @@ func (self *SubCommitsContext) GetSelectedRef() models.Ref {
 }
 
 func (self *SubCommitsContext) GetSelectedRefRangeForDiffFiles() *types.RefRange {
+	// Fork: with an explicit set the diff is the cursor commit's; a lone run keeps the range.
+	if self.HasCommitSet() {
+		return nil
+	}
 	commits, startIdx, endIdx := self.GetSelectedItems()
 	if commits == nil || startIdx == endIdx {
 		return nil
@@ -225,6 +231,22 @@ func (self *SubCommitsContext) GetSelectedRefRangeForDiffFiles() *types.RefRange
 		return nil
 	}
 	return &types.RefRange{From: from, To: to}
+}
+
+// HandleFocus, FocusLine and HandleRender sync the view with the set (see syncCommitSet).
+func (self *SubCommitsContext) HandleFocus(opts types.OnFocusOpts) {
+	self.ListContextTrait.HandleFocus(opts)
+	syncCommitSet(self, self.ListContextTrait.c.Tr)
+}
+
+func (self *SubCommitsContext) FocusLine(scrollIntoView bool) {
+	self.ListContextTrait.FocusLine(scrollIntoView)
+	syncCommitSet(self, self.ListContextTrait.c.Tr)
+}
+
+func (self *SubCommitsContext) HandleRender() {
+	self.ListContextTrait.HandleRender()
+	syncCommitSet(self, self.ListContextTrait.c.Tr)
 }
 
 func (self *SubCommitsContext) GetCommits() []*models.Commit {
@@ -246,6 +268,13 @@ func (self *SubCommitsContext) GetDiffTerminals() []string {
 }
 
 func (self *SubCommitsContext) RefForAdjustingLineNumberInDiff() string {
+	// Fork: with an explicit set the diff is the cursor commit's; see GetSelectedRefRangeForDiffFiles.
+	if self.HasCommitSet() {
+		if commit := self.GetSelected(); commit != nil {
+			return commit.Hash()
+		}
+		return ""
+	}
 	commits, _, _ := self.GetSelectedItems()
 	if commits == nil {
 		return ""

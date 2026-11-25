@@ -923,7 +923,7 @@ func (self *RefreshHelper) refreshCommitsWithLimit(captured capturedCommitState,
 			// The caller set the selection index deliberately; leave it untouched.
 		}
 		// Fork: the selected commits this list lacks are checked by Git (fork_commit_set_refresh.go).
-		self.checkSelectedCommitsAfterRefresh(env, commits)
+		self.checkSelectedCommitsAfterRefresh(env, self.c.Contexts().LocalCommits, commits)
 	})
 
 	self.refreshView(self.c.Contexts().LocalCommits, env)
@@ -1069,6 +1069,8 @@ func (self *RefreshHelper) refreshSubCommitsWithLimit(captured capturedSubCommit
 	self.onUIThreadUnlessRepoChanged(env, func() {
 		self.c.Model().SubCommits = commits
 		self.RefreshAuthors(commits)
+		// Fork: the selected commits this list lacks are checked by Git (fork_commit_set_refresh.go).
+		self.checkSelectedCommitsAfterRefresh(env, self.c.Contexts().SubCommits, commits)
 	})
 
 	self.refreshView(self.c.Contexts().SubCommits, env)
@@ -1607,6 +1609,8 @@ func (self *RefreshHelper) refreshReflogCommits(captured capturedReflogState, en
 		if selectTopEntry {
 			self.c.Contexts().ReflogCommits.SetSelectedLineIdx(0)
 		}
+		// Fork: the selected commits this list lacks are checked by Git (fork_commit_set_refresh.go).
+		self.checkSelectedCommitsAfterRefresh(env, self.c.Contexts().ReflogCommits, filteredReflogCommits)
 	})
 
 	self.refreshView(self.c.Contexts().ReflogCommits, env)

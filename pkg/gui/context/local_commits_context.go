@@ -346,8 +346,9 @@ type LocalCommitsViewModel struct {
 	// If this is true we'll use git log --all when fetching the commits.
 	showWholeGitGraph bool
 
-	// Fork: the explicit set and run of multi-select mode (see fork_commit_multi_select.go).
-	multiSelect commitMultiSelect
+	// Fork: the explicit set and run of multi-select mode, shared with Sub-commits and
+	// Reflog (see fork_commit_multi_select.go).
+	forkCommitSet
 }
 
 func NewLocalCommitsViewModel(getModel func() []*models.Commit, c *ContextCommon) *LocalCommitsViewModel {

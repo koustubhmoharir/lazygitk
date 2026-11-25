@@ -475,11 +475,21 @@ re-apply it if upstream changes that code.
   reviewed cherry-pick of the selection (`fork_cherry_pick.go`); fixup and
   amend creation preflight their placement;
   `GetKeybindings` appends the commit scope filters
-  (`fork_commit_scope_filters.go`) and Space's selection toggle
-  (`fork_commit_multi_select.go`).
-- `context/local_commits_context.go`: `LocalCommitsViewModel` holds the
-  multi-select set; `fork_commit_multi_select.go` in context overrides the
-  cursor methods that end a range, `GetSelectedItems`, focus and render.
+  (`fork_commit_scope_filters.go`). Space's selection toggle
+  (`fork_commit_multi_select.go`) is appended by
+  `basic_commits_controller.go`, so Commits, Sub-commits and Reflog share it.
+- `context/local_commits_context.go`, `sub_commits_context.go`,
+  `reflog_commits_context.go`: each embeds the multi-select set
+  (`forkCommitSet`, whose zero value is an empty set); `fork_commit_multi_select.go`
+  in context overrides the cursor methods that end a range, `GetSelectedItems`,
+  focus and render, passing the view model's own list. Sub-commits and Reflog
+  also override focus and render to sync the set, and Reflog's `ClearFilter`
+  ends a run first (`FilteredListViewModel` moves the cursor itself; its other
+  internal `SetSelection` calls bypass the overrides).
+- `helpers/refresh_helper.go` checks the set after the Commits, Sub-commits
+  and Reflog refreshes (`fork_commit_set_refresh.go`);
+  `helpers/sub_commits_helper.go` clears a Sub-commits set when another ref's
+  commits open.
   `GetSelectedRefRangeForDiffFiles` and `RefForAdjustingLineNumberInDiff`
   use the cursor commit while a set exists. New upstream `ListCursor` entry
   points that cancel a range need an override there. The set is never pruned

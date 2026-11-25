@@ -1,6 +1,7 @@
 package context
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
@@ -242,7 +243,7 @@ func TestMultiSelectRunEndedAfterListReplacementUsesTheDrawnCommits(t *testing.T
 	vm.SetSelection(1)
 	vm.ExpandNonStickyRange(1)
 	vm.ExpandNonStickyRange(1)
-	vm.recordDrawn(vm.GetCommits())
+	vm.recordDrawn(vm.ListViewModel, vm.GetCommits())
 
 	// A refresh adds a commit at the top, so the run's indices now point one higher.
 	pool := &utils.StringPool{}
@@ -251,4 +252,166 @@ func TestMultiSelectRunEndedAfterListReplacementUsesTheDrawnCommits(t *testing.T
 	// The run that was drawn is h1 to h3; it joins the set, not the commits at its indices.
 	vm.SetSelection(0)
 	assert.Equal(t, []string{"h1", "h2", "h3"}, setHashes(vm))
+}
+
+// multiSelectList is what the shared set needs from a commit list, for the three lists that
+// hold one. The adapters below add the commit list accessor that the view models leave to
+// their contexts.
+type multiSelectList interface {
+	CommitSetHolder
+	SetSelection(int)
+	MoveSelectedLine(int)
+	GetSelectedLineIdx() int
+	GetSelectedItems() ([]*models.Commit, int, int)
+	GetCommits() []*models.Commit
+	ExpandNonStickyRange(int)
+}
+
+type subCommitsSetList struct {
+	*SubCommitsViewModel
+	list *[]*models.Commit
+}
+
+func (self subCommitsSetList) GetCommits() []*models.Commit { return *self.list }
+
+type reflogSetList struct {
+	*ReflogCommitsContext
+	list *[]*models.Commit
+}
+
+func (self reflogSetList) GetCommits() []*models.Commit { return *self.list }
+
+// multiSelectListKinds builds each list over the same list variable, so a test can replace
+// the list the way a refresh does.
+var multiSelectListKinds = []struct {
+	name string
+	new  func(hashes ...string) (multiSelectList, *[]*models.Commit)
+}{
+	{"commits", func(hashes ...string) (multiSelectList, *[]*models.Commit) {
+		vm, list := newMultiSelectModel(hashes...)
+		return vm, list
+	}},
+	{"sub-commits", func(hashes ...string) (multiSelectList, *[]*models.Commit) {
+		list := commitsOf(hashes...)
+		vm := &SubCommitsViewModel{ListViewModel: NewListViewModel(func() []*models.Commit { return *list })}
+		return subCommitsSetList{vm, list}, list
+	}},
+	{"reflog", func(hashes ...string) (multiSelectList, *[]*models.Commit) {
+		list := commitsOf(hashes...)
+		filtered := NewFilteredListViewModel(
+			func() []*models.Commit { return *list },
+			func(*models.Commit) []string { return nil },
+		)
+		ctx := &ReflogCommitsContext{FilteredListViewModel: filtered}
+		return reflogSetList{ctx, list}, list
+	}},
+}
+
+func commitsOf(hashes ...string) *[]*models.Commit {
+	pool := &utils.StringPool{}
+	list := &[]*models.Commit{}
+	for _, hash := range hashes {
+		*list = append(*list, models.NewCommit(pool, models.NewCommitOpts{Hash: hash}))
+	}
+	return list
+}
+
+func TestMultiSelectListsToggleAndCount(t *testing.T) {
+	for _, kind := range multiSelectListKinds {
+		t.Run(kind.name, func(t *testing.T) {
+			list, _ := kind.new("h0", "h1", "h2", "h3", "h4")
+			list.SetSelection(1)
+			list.ToggleCommitSelection()
+			list.MoveSelectedLine(2)
+			list.ToggleCommitSelection()
+
+			assert.True(t, list.MultiSelectActive())
+			assert.True(t, list.HasCommitSet())
+			assert.Equal(t, []string{"h1", "h3"}, sortedHashes(list.SelectedCommitHashes()))
+			selected, notShown := list.CommitSelectionCounts()
+			assert.Equal(t, []int{2, 0}, []int{selected, notShown})
+
+			list.ToggleCommitSelection()
+			selected, _ = list.CommitSelectionCounts()
+			assert.Equal(t, 1, selected, "Space on a member removes it")
+		})
+	}
+}
+
+func TestMultiSelectListsRepeatedRowsAreOneCommit(t *testing.T) {
+	// A reflog lists one commit twice when it was checked out and then reset to: the set holds
+	// the hash, so both rows are selected and the count is one.
+	for _, kind := range multiSelectListKinds {
+		t.Run(kind.name, func(t *testing.T) {
+			list, shown := kind.new("h0", "h1", "h1", "h2")
+			list.SetSelection(1)
+			list.ToggleCommitSelection()
+
+			items, first, last := list.GetSelectedItems()
+			assert.Equal(t, []string{"h1", "h1"}, hashesOf(items), "every row of the commit is selected")
+			assert.Equal(t, []int{1, 2}, []int{first, last})
+			selected, notShown := list.CommitSelectionCounts()
+			assert.Equal(t, []int{1, 0}, []int{selected, notShown}, "counted once")
+
+			// A refresh that drops the commit from the list leaves it counted as not shown.
+			*shown = (*shown)[:1]
+			selected, notShown = list.CommitSelectionCounts()
+			assert.Equal(t, []int{1, 1}, []int{selected, notShown})
+		})
+	}
+}
+
+func TestMultiSelectListsDropRunKeepsTheSet(t *testing.T) {
+	for _, kind := range multiSelectListKinds {
+		t.Run(kind.name, func(t *testing.T) {
+			list, _ := kind.new("h0", "h1", "h2")
+			list.SetSelection(0)
+			list.ToggleCommitSelection()
+			list.SetSelection(2)
+			list.ExpandNonStickyRange(1)
+			assert.True(t, list.IsSelectingRange())
+
+			list.DropRun()
+			assert.False(t, list.IsSelectingRange(), "the run is cancelled")
+			assert.Equal(t, []string{"h0"}, sortedHashes(list.SelectedCommitHashes()), "and nothing joins the set")
+		})
+	}
+}
+
+func sortedHashes(hashes []string) []string {
+	sort.Strings(hashes)
+	return hashes
+}
+
+func hashesOf(commits []*models.Commit) []string {
+	hashes := []string{}
+	for _, commit := range commits {
+		hashes = append(hashes, commit.Hash())
+	}
+	return hashes
+}
+
+func TestMultiSelectZeroValueIsEmpty(t *testing.T) {
+	// A view model made as a literal, without a constructor: the wrappers bind its list, so
+	// selection works on it as on a constructed one.
+	list := commitsOf("h0", "h1", "h2")
+	literal := &LocalCommitsViewModel{ListViewModel: NewListViewModel(func() []*models.Commit { return *list })}
+	literal.SetSelection(1)
+	literal.ToggleCommitSelection()
+	assert.Equal(t, []string{"h1"}, sortedHashes(literal.SelectedCommitHashes()))
+	items, first, last := literal.GetSelectedItems()
+	assert.Equal(t, []string{"h1"}, hashesOf(items))
+	assert.Equal(t, []int{1, 1}, []int{first, last})
+
+	// A view model with nothing at all: no members, no run, nothing to select.
+	zero := &LocalCommitsViewModel{}
+	assert.False(t, zero.MultiSelectActive())
+	assert.False(t, zero.HasCommitSet())
+	assert.Empty(t, zero.SelectedCommitHashes())
+	zero.ToggleCommitSelection()
+	zero.ClearMultiSelection()
+	zero.DropRun()
+	assert.False(t, zero.MultiSelectActive(), "toggling an empty list selects nothing")
+	selected, notShown := zero.CommitSelectionCounts()
+	assert.Equal(t, []int{0, 0}, []int{selected, notShown})
 }

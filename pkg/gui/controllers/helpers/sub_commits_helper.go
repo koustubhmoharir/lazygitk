@@ -53,6 +53,14 @@ func (self *SubCommitsHelper) ViewSubCommits(opts ViewSubCommitsOpts) error {
 	self.refreshHelper.RefreshAuthors(commits)
 
 	subCommitsContext := self.c.Contexts().SubCommits
+	// Fork: a set belongs to the ref it was made on, so opening another ref clears it; opening
+	// the same ref keeps it, and only drops a run in progress, so that reopening adds nothing
+	// to the set (see fork_commit_multi_select.go). Escape clears it when it leaves the view.
+	if previous := subCommitsContext.GetRef(); previous == nil || previous.FullRefName() != opts.Ref.FullRefName() {
+		subCommitsContext.ClearMultiSelection()
+	} else {
+		subCommitsContext.DropRun()
+	}
 	subCommitsContext.SetSelection(0)
 	subCommitsContext.SetParentContext(opts.Context)
 	subCommitsContext.SetWindowName(opts.Context.GetWindowName())

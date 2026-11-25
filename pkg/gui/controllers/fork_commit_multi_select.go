@@ -7,8 +7,8 @@ import (
 
 // Fork: multi-select mode in Commits (item 24). Space toggles a commit in the explicit
 // set, or the whole run in progress, and Escape clears the filter, then the set. The
-// state is in context/fork_commit_multi_select.go. Only Commits has these routes:
-// Reflog and Sub-commits have no Space route, and Commits inspects with Enter and v
+// state is in context/fork_commit_multi_select.go. Commits, Sub-commits and Reflog share
+// Space (commitSelectionToggleBinding); Commits inspects with Enter and v as the others do
 // (see fork_command_projection.go).
 
 // forkSelectionHashes returns the hashes that a command on the selection of source acts
@@ -17,8 +17,8 @@ import (
 // commit in single-select mode, as upstream has it. A nil item gives an empty hash, which
 // the callers' full-ID checks refuse.
 func forkSelectionHashes(source ContainsCommits) []string {
-	if local, ok := source.(*context.LocalCommitsContext); ok && local.MultiSelectActive() {
-		return local.SelectedCommitHashes()
+	if set, ok := source.(context.CommitSetHolder); ok && set.MultiSelectActive() {
+		return set.SelectedCommitHashes()
 	}
 	selected, _, _ := source.GetSelectedItems()
 	hashes := make([]string, len(selected))
@@ -84,6 +84,7 @@ var commitSelectionScoped = map[string]bool{
 	"branch.reset.hard":                          true,
 	"branch.reset.mixed":                         true,
 	"branch.reset.soft":                          true,
+	"commit.select-current-branch-history":       true,
 	"worktree.create-menu":                       true,
 	"diff.commit.external":                       true,
 	"diff.commit.worktree":                       true,
@@ -105,7 +106,7 @@ var commitSelectionScoped = map[string]bool{
 // returned unchanged. A disabled reason from here takes precedence over the command's
 // own reasons. It is not Inapplicable, so the default key shows it as a toast.
 func guardCommitSelectionBindings(commits ContainsCommits, clearFirst string, bindings []*types.Binding) []*types.Binding {
-	local, ok := commits.(*context.LocalCommitsContext)
+	set, ok := commits.(context.CommitSetHolder)
 	if !ok {
 		return bindings
 	}
@@ -115,7 +116,7 @@ func guardCommitSelectionBindings(commits ContainsCommits, clearFirst string, bi
 		}
 		upstream := binding.GetDisabledReason
 		binding.GetDisabledReason = func() *types.DisabledReason {
-			if local.HasCommitSet() {
+			if set.HasCommitSet() {
 				return &types.DisabledReason{Text: clearFirst}
 			}
 			if upstream != nil {
@@ -127,26 +128,29 @@ func guardCommitSelectionBindings(commits ContainsCommits, clearFirst string, bi
 	return bindings
 }
 
-// addCommitMultiSelectBindings is the integration point in LocalCommitsController.
-func (self *LocalCommitsController) addCommitMultiSelectBindings(bindings []*types.Binding) []*types.Binding {
-	return append(bindings, &types.Binding{
+// commitSelectionToggleBinding is Space in the three commit lists: Commits, Sub-commits and
+// Reflog. It is the integration point in BasicCommitsController, which all three share.
+func (self *BasicCommitsController) commitSelectionToggleBinding() *types.Binding {
+	return &types.Binding{
 		CommandID:   "selection.commit.toggle",
 		Verb:        "toggle-selection",
 		Description: self.c.Tr.ToggleCommitSelection,
-		Handler:     self.toggleCommitSelection,
-	})
+		Handler: func() error {
+			if set, ok := self.context.(context.CommitSetHolder); ok {
+				set.ToggleCommitSelection()
+			}
+			self.context.HandleRender()
+			return nil
+		},
+	}
 }
 
-func (self *LocalCommitsController) toggleCommitSelection() error {
-	self.context().ToggleCommitSelection()
-	self.context().HandleRender()
-	return nil
-}
-
-// forkCommitSelectionEscape is the Escape step for Commits that comes before upstream's
-// (see QuitActions.Escape). It reports whether it handled the key. In Commits, Escape
-// cancels a lone Shift run first; then it clears the filter, which keeps the set and the
-// cursor; then it clears the set, without adding the run in progress to it.
+// forkCommitSelectionEscape is the Escape step for the commit lists that comes before
+// upstream's (see QuitActions.Escape). It reports whether it handled the key. In Commits,
+// Escape cancels a lone Shift run first; then it clears the filter, which keeps the set and
+// the cursor; then it clears the set, without adding the run in progress to it. Sub-commits
+// and Reflog have no filter of this kind, so their Escape cancels a lone run, then clears
+// the set, and only then does upstream's behaviour apply (range, search, parent view).
 func (self *QuitActions) forkCommitSelectionEscape() (bool, error) {
 	commits, ok := self.forkCommitsContextIfCurrent()
 	if !ok {
@@ -158,7 +162,7 @@ func (self *QuitActions) forkCommitSelectionEscape() (bool, error) {
 		self.c.PostRefreshUpdate(commits)
 		return true, nil
 	}
-	if self.c.Modes().Filtering.Active() {
+	if self.commitFilterEscape(commits) {
 		return true, self.c.Helpers().Mode.ExitFilterMode()
 	}
 	if commits.MultiSelectActive() {
@@ -173,7 +177,7 @@ func (self *QuitActions) forkCommitSelectionEscape() (bool, error) {
 // matching parts of EscapeEnabled and EscapeDescription.
 func (self *QuitActions) forkCommitSelectionEscapeEnabled() bool {
 	commits, ok := self.forkCommitsContextIfCurrent()
-	return ok && (self.c.Modes().Filtering.Active() || commits.MultiSelectActive())
+	return ok && (self.commitFilterEscape(commits) || commits.MultiSelectActive())
 }
 
 func (self *QuitActions) forkCommitSelectionEscapeDescription() (string, bool) {
@@ -184,7 +188,7 @@ func (self *QuitActions) forkCommitSelectionEscapeDescription() (string, bool) {
 	if commits.IsSelectingRange() && !commits.HasCommitSet() {
 		return self.c.Tr.ClearCommitSelection, true
 	}
-	if self.c.Modes().Filtering.Active() {
+	if self.commitFilterEscape(commits) {
 		return self.c.Tr.ExitFilterMode, true
 	}
 	if commits.MultiSelectActive() {
@@ -193,10 +197,22 @@ func (self *QuitActions) forkCommitSelectionEscapeDescription() (string, bool) {
 	return "", false
 }
 
-// forkCommitsContextIfCurrent returns the Commits context when it is the focused one.
-func (self *QuitActions) forkCommitsContextIfCurrent() (*context.LocalCommitsContext, bool) {
-	if self.c.Context().Current().GetKey() != context.LOCAL_COMMITS_CONTEXT_KEY {
-		return nil, false
+// commitFilterEscape reports whether Escape exits the Commits filter. The filter is Commits'
+// own (path and author), so it is not offered from the other lists.
+func (self *QuitActions) commitFilterEscape(commits context.CommitSetContext) bool {
+	return commits.GetKey() == context.LOCAL_COMMITS_CONTEXT_KEY && self.c.Modes().Filtering.Active()
+}
+
+// forkCommitsContextIfCurrent returns the commit list when it is the focused one and holds a
+// set: Commits, Sub-commits or Reflog.
+func (self *QuitActions) forkCommitsContextIfCurrent() (context.CommitSetContext, bool) {
+	switch self.c.Context().Current().GetKey() {
+	case context.LOCAL_COMMITS_CONTEXT_KEY:
+		return self.c.Contexts().LocalCommits, true
+	case context.SUB_COMMITS_CONTEXT_KEY:
+		return self.c.Contexts().SubCommits, true
+	case context.REFLOG_COMMITS_CONTEXT_KEY:
+		return self.c.Contexts().ReflogCommits, true
 	}
-	return self.c.Contexts().LocalCommits, true
+	return nil, false
 }

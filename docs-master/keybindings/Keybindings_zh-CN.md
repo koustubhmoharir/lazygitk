@@ -88,6 +88,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | 新建工作树 |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | 选择当前分支的提交 |  |
+| `` <space> `` | Toggle selection |  |
 | `` y h `` | Copy commit hash |  |
 | `` y s `` | Copy commit subject |  |
 | `` y m `` | Copy commit message |  |
@@ -149,6 +150,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | 新建工作树 |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | 选择当前分支的提交 |  |
+| `` <space> `` | Toggle selection |  |
 | `` y i `` | Copy abbreviated commit hash |  |
 | `` y s `` | Copy commit subject |  |
 | `` y m `` | Copy commit message |  |
@@ -187,7 +189,6 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` w a `` | Show selected commits and their ancestors |  |
 | `` w d `` | Show selected commits and their descendants |  |
 | `` w b `` | Show branch / tag |  |
-| `` <space> `` | Toggle selection |  |
 | `` s d `` | Checkout detached HEAD |  |
 | `` s h `` | 硬重置 |  |
 | `` s m `` | 混合重置 |  |
@@ -204,6 +205,7 @@ _This file is auto-generated. To update, make the changes in the pkg/i18n direct
 | `` n w `` | 新建工作树 |  |
 | `` t d e `` | Diff using current comparison mode |  |
 | `` t l s `` | 选择当前分支的提交 |  |
+| `` <space> `` | Toggle selection |  |
 | `` y h `` | Copy commit hash |  |
 | `` y s `` | Copy commit subject |  |
 | `` y m `` | Copy commit message |  |
