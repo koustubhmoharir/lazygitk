@@ -146,8 +146,8 @@ func (self *BasicCommitsController) GetKeybindings(opts types.KeybindingsOpts) [
 	// Fork: the flat `y` copy menu's commit actions (see fork_commit_copy.go).
 	// Fork: Space toggles the commit selection in all three commit lists, and commands that
 	// cannot act on an explicit set are disabled there (see fork_commit_multi_select.go).
-	bindings = append(bindings, self.commitSelectionToggleBinding())
-	return guardCommitSelectionBindings(self.context, self.c.Tr.ClearCommitSelectionFirst, self.addSelectedCheckoutBindings(self.addSelectedResetBindings(append(self.historicalDiffBindings(opts), self.addCommitCopyBindings(bindings)...))))
+	guarded := guardCommitSelectionBindings(self.context, self.c.Tr.ClearCommitSelectionFirst, self.addSelectedCheckoutBindings(self.addSelectedResetBindings(append(self.historicalDiffBindings(opts), self.addCommitCopyBindings(bindings)...))))
+	return append(guarded, self.commitSelectionToggleBinding())
 }
 
 func (self *BasicCommitsController) getCommitMessageBody(hash string) string {

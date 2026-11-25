@@ -384,7 +384,7 @@ func sortedHashes(hashes []string) []string {
 }
 
 func hashesOf(commits []*models.Commit) []string {
-	hashes := []string{}
+	hashes := make([]string, 0, len(commits))
 	for _, commit := range commits {
 		hashes = append(hashes, commit.Hash())
 	}
