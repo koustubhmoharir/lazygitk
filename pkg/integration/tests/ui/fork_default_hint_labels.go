@@ -6,7 +6,7 @@ import (
 )
 
 var ForkDefaultHintLabels = NewIntegrationTest(NewIntegrationTestArgs{
-	Description: "Default-profile hints name the effective command keys: the conflict resolve hint shows v, and the command log header shows t l c",
+	Description: "Default-profile hints name the effective command keys: the conflict resolve hint shows Enter, and the command log header shows t l c",
 	SetupConfig: func(appConfig *config.AppConfig) {
 		loaded := appConfig.GetUserConfig()
 		appearance := loaded.Gui
@@ -44,8 +44,8 @@ var ForkDefaultHintLabels = NewIntegrationTest(NewIntegrationTestArgs{
 			NavigateToLine(Contains("DU bar"))
 
 		// The conflict hint names the default files-view key for focusing the
-		// main view, which is v rather than the legacy Enter/GoInto key.
-		t.Views().Main().Content(Contains("Press v to resolve."))
+		// main view, which is Enter, the inspection key.
+		t.Views().Main().Content(Contains("Press <enter> to resolve."))
 
 		// The command log header names the options-menu route, t l c, in the
 		// default profile.
