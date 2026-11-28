@@ -1036,7 +1036,7 @@ unreachable` marker that names its replacement. Do not reconnect them.
 ### Prompt role markers
 
 - `pkg/utils/promptmark` (fork) marks spans of prompt text with a role
-  (branch, hash, path, key, warning...); `pkg/theme/fork_prompt_marks.go`
+  (branch, hash, path, key, label, warning...); `pkg/theme/fork_prompt_marks.go`
   resolves them to the panes' styles. Markers must never reach the screen raw.
 - `controllers/helpers/confirmation_helper.go` `CreatePopupPanel`: resolves
   the markers of a non-editable prompt and strips them from an editable one.

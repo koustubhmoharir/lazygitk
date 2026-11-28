@@ -10,6 +10,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/git_commands"
 	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 func TestBranchSyncCurrentPullMenuUsesCurrentPullIdentityAndCopy(t *testing.T) {
@@ -521,7 +522,7 @@ func TestBranchSyncCurrentPullConfiguredMergeOptionsAreQuoted(t *testing.T) {
 	}
 	final := branchSyncCurrentPullChoose(t, f, choices, "branch.pull-current.default")
 	for _, expected := range []string{`"--no-ff --log=7"`, `pull.ff override: ""`} {
-		if !strings.Contains(final.Prompt, expected) {
+		if !strings.Contains(promptmark.Strip(final.Prompt), expected) {
 			t.Errorf("configured merge details missing %q: %s", expected, final.Prompt)
 		}
 	}

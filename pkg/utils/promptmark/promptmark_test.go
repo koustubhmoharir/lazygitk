@@ -13,7 +13,7 @@ import (
 func brackets(role Role) func(string) string {
 	switch role {
 	case RoleBranch, RoleRemoteBranch, RoleRemote, RoleTag, RoleHash,
-		RolePath, RoleKey, RoleCount, RoleWarn:
+		RolePath, RoleKey, RoleCount, RoleWarn, RoleLabel:
 		return func(s string) string { return "<" + string(rune(role)) + ":" + s + ">" }
 	}
 	return nil
@@ -33,6 +33,7 @@ func TestConstructorsAddTheirRole(t *testing.T) {
 		"key":           {Key("x"), 'k'},
 		"count":         {Count("x"), 'n'},
 		"warn":          {Warn("x"), 'w'},
+		"label":         {Label("x"), 'l'},
 	}
 	for name, c := range cases {
 		t.Run(name, func(t *testing.T) {

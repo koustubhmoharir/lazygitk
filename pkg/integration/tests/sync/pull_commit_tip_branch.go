@@ -39,7 +39,7 @@ var PullCommitTipBranch = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.ExpectPopup().Menu().
 			Title(Equals("Update selected branch without checkout")).
-			Content(Contains("Local branch \"topic\"")).
+			Content(Contains("Local branch: topic")).
 			Cancel()
 
 		if got := t.Git().GetCommitHash("refs/heads/topic"); got != topicOID {

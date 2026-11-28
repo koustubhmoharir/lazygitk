@@ -14,8 +14,6 @@ actions look like prompt text. Agreed behaviour (2026-11-28):
 - Values inside menu item labels (hashes, branches, paths, as in "Mark
   5d59a479 as bad" or "Filter by path/file.go") are coloured like prompt
   values and lose their quotes, in fork and upstream menus.
-- Upstream confirmation and menu prompts with `name: value` lines get the
-  same label colour as the fork's.
 - Every menu item with a key shows a cyan `→` between the key and the label,
   upstream menus included.
 - Toggles in the push menu are checkboxes (`[✓]`, `[ ]`) instead of a
@@ -25,7 +23,6 @@ actions look like prompt text. Agreed behaviour (2026-11-28):
 
 ## Tasks
 
-2. `promptmark.Label` and labelled summary prompts.
 3. Digit keys and the `→` column in menus.
 4. Coloured values in menu item labels.
 5. User guide, design principles and merge guide.

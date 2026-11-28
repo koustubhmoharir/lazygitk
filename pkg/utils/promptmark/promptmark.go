@@ -42,6 +42,7 @@ const (
 	RoleKey          Role = 'k' // key label, as shown in the options bar
 	RoleCount        Role = 'n' // count of items
 	RoleWarn         Role = 'w' // destructive or irreversible consequence
+	RoleLabel        Role = 'l' // attribute name in a "name: value" line, with its colon
 )
 
 const (
@@ -75,6 +76,10 @@ func Count(s string) string { return mark(RoleCount, s) }
 
 // Warn marks s as a destructive or irreversible consequence.
 func Warn(s string) string { return mark(RoleWarn, s) }
+
+// Label marks s as the name of an attribute in a "name: value" line. s includes
+// the colon, so the colon is styled with the name.
+func Label(s string) string { return mark(RoleLabel, s) }
 
 // RefAs marks text that names ref with the role of the kind of ref: a full ref
 // by its prefix (refs/heads/ is a branch, refs/remotes/ a remote branch,

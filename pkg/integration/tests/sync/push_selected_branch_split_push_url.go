@@ -34,7 +34,7 @@ var PushSelectedBranchSplitPushUrl = NewIntegrationTest(NewIntegrationTestArgs{
 		// The plain push is enabled: the fetch URL's tracking ref does not describe the push URL.
 		t.ExpectPopup().Menu().
 			Title(Equals("Push selected branch")).
-			Content(Contains("Remote: \"origin\"")).
+			Content(Contains("Remote: origin")).
 			Select(Contains("Push this branch")).
 			Confirm()
 

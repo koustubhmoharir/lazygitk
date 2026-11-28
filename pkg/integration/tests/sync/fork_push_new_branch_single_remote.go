@@ -37,7 +37,7 @@ var ForkPushNewBranchSingleRemote = NewIntegrationTest(NewIntegrationTestArgs{
 		// The menu names the only remote as the destination, so no prompt is needed.
 		t.ExpectPopup().Menu().
 			Title(Equals("Push selected branch")).
-			Content(Contains("Remote: \"origin\"")).
+			Content(Contains("Remote: origin")).
 			Select(Contains("Push this branch")).
 			Confirm()
 

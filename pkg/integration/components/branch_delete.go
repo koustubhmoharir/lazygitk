@@ -10,7 +10,7 @@ import (
 func (self *Common) ReviewBranchDeleteMenu(title, sourceRef, sourceOID, headRef, headOID string, reserved bool) *MenuDriver {
 	menu := self.t.ExpectPopup().Menu()
 	menu.Title(Equals(title))
-	menu.getViewDriver().Content(Contains(sourceRef + " (" + sourceOID + ")").Contains("Current HEAD:").Contains(fmt.Sprintf("%q at %s", headRef, headOID)).DoesNotContain("Detach worktree").DoesNotContain("Remove worktree"))
+	menu.getViewDriver().Content(Contains(sourceRef + " (" + sourceOID + ")").Contains("Current HEAD:").Contains(fmt.Sprintf("%s at %s", headRef, headOID)).DoesNotContain("Detach worktree").DoesNotContain("Remove worktree"))
 	menu.ContainsLines(
 		MatchesRegexp(`^[[:space:]]*c Delete local branch`),
 		MatchesRegexp(`^[[:space:]]*r Delete remote branch`),

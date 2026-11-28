@@ -34,7 +34,7 @@ var PushSelectedBranch = NewIntegrationTest(NewIntegrationTestArgs{
 		// The menu names the sole remote, so Push this branch needs no prompt.
 		t.ExpectPopup().Menu().
 			Title(Equals("Push selected branch")).
-			Content(Contains("Remote: \"origin\"")).
+			Content(Contains("Remote: origin")).
 			Select(Contains("Push this branch")).
 			Confirm()
 

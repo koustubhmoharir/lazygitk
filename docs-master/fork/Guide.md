@@ -703,7 +703,9 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
 - Confirmation and menu prompts are regular weight, with their values in the
   colours the panes use: local branches cyan bold, remotes, remote branches
   and hashes yellow, tags magenta bold, paths and counts bold, and keys in the
-  options bar's colour. Consequences that destroy work or cannot be undone
+  options bar's colour. In summaries made of `name: value` lines, such as the
+  push and pull menus, the names (Source:, Remote:, ...) are blue and the
+  values have no quotes. Consequences that destroy work or cannot be undone
   ("is not fully merged", "cannot be undone", "force push") are bold red.
 - lazygitk uses true colour when `COLORTERM` says the terminal has it, or
   when the terminal says so itself at startup, as Windows Terminal does

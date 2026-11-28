@@ -33,7 +33,7 @@ var PushCommitTipBranch = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.ExpectPopup().Menu().
 			Title(Equals("Push selected branch")).
-			Content(Contains("Source \"topic\"")).
+			Content(Contains("Source: topic")).
 			Select(Contains("Push this branch")).
 			Confirm()
 
@@ -56,7 +56,7 @@ var PushCommitTipBranch = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.ExpectPopup().Menu().
 			Title(Equals("Push selected branch")).
-			Content(Contains("Source \"master\"")).
+			Content(Contains("Source: master")).
 			Cancel()
 	},
 })

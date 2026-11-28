@@ -212,7 +212,8 @@ func TestBranchSyncPushSelectedBranchExecutesWithoutConfirmation(t *testing.T) {
 		t.Fatalf("expected initial push menu, got %d", len(f.ui.menus))
 	}
 	menu := f.ui.menus[0]
-	if !strings.Contains(menu.Prompt, `"topic"`) || !strings.Contains(menu.Prompt, "origin") || !strings.Contains(menu.Prompt, "topic") {
+	prompt := promptmark.Strip(menu.Prompt)
+	if !strings.Contains(prompt, "Source: topic") || !strings.Contains(prompt, "origin") || !strings.Contains(prompt, "topic") {
 		t.Fatalf("menu omitted captured target/defaults: %q", menu.Prompt)
 	}
 	if menuItem(t, menu, "branch.push-selected.set-upstream").Widget != types.MenuWidgetCheckboxSelected || menuItem(t, menu, "branch.push-selected.submodules").Widget != types.MenuWidgetCheckboxUnselected {
@@ -839,9 +840,10 @@ func TestBranchSyncPushAmbiguousUpstreamForceFallbackPreservesReviewedLease(t *t
 		t.Fatal(err)
 	}
 	review := f.ui.menus[len(f.ui.menus)-1]
+	prompt := promptmark.Strip(review.Prompt)
 	for _, text := range []string{"Set upstream for selected local branch: false", "origin", "refs/heads/topic", leaseRef, oldTip[:7], f.sourceOID[:7]} {
-		if !strings.Contains(review.Prompt, text) {
-			t.Fatalf("force fallback review omitted %q: %q", text, review.Prompt)
+		if !strings.Contains(prompt, text) {
+			t.Fatalf("force fallback review omitted %q: %q", text, prompt)
 		}
 	}
 	// The lease confirmation selects the reviewed push by default; nothing

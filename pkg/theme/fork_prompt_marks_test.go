@@ -27,6 +27,7 @@ func TestResolvePromptMarksUsesPaneStyles(t *testing.T) {
 		"key":           {promptmark.Key("x"), OptionsFgColor.Sprint("x")},
 		"count":         {promptmark.Count("x"), style.AttrBold.Sprint("x")},
 		"warn":          {promptmark.Warn("x"), style.FgRed.SetBold().Sprint("x")},
+		"label":         {promptmark.Label("x"), OptionsFgColor.Sprint("x")},
 	}
 	for name, c := range cases {
 		t.Run(name, func(t *testing.T) {

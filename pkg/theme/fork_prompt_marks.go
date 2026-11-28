@@ -29,7 +29,7 @@ func promptMarkStyle(role promptmark.Role) func(string) string {
 		textStyle = style.FgYellow
 	case promptmark.RolePath, promptmark.RoleCount:
 		textStyle = style.AttrBold
-	case promptmark.RoleKey:
+	case promptmark.RoleKey, promptmark.RoleLabel:
 		textStyle = OptionsFgColor
 	case promptmark.RoleWarn:
 		textStyle = style.FgRed.SetBold()

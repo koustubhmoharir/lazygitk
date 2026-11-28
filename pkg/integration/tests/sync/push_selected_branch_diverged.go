@@ -32,7 +32,7 @@ var PushSelectedBranchDiverged = NewIntegrationTest(NewIntegrationTestArgs{
 		// The plain push is shown but disabled, and pressing it explains why.
 		t.ExpectPopup().Menu().
 			Title(Equals("Push selected branch")).
-			Content(Contains("Remote: \"origin\"")).
+			Content(Contains("Remote: origin")).
 			Select(Contains("Push this branch")).
 			Tooltip(Equals("Disabled: " + disabledText)).
 			Confirm().
