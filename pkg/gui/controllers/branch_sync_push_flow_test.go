@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -216,8 +215,8 @@ func TestBranchSyncPushSelectedBranchExecutesWithoutConfirmation(t *testing.T) {
 	if !strings.Contains(menu.Prompt, `"topic"`) || !strings.Contains(menu.Prompt, "origin") || !strings.Contains(menu.Prompt, "topic") {
 		t.Fatalf("menu omitted captured target/defaults: %q", menu.Prompt)
 	}
-	if !strings.Contains(menu.Prompt, "Set upstream for selected branch: true") || !strings.Contains(menu.Prompt, "Check submodules: false") {
-		t.Fatalf("push defaults were not explicit: %q", menu.Prompt)
+	if menuItem(t, menu, "branch.push-selected.set-upstream").Widget != types.MenuWidgetCheckboxSelected || menuItem(t, menu, "branch.push-selected.submodules").Widget != types.MenuWidgetCheckboxUnselected {
+		t.Fatal("push defaults were not shown as checkboxes")
 	}
 	if err := menuItem(t, menu, "branch.push-selected.execute").OnPress(); err != nil {
 		t.Fatal(err)
@@ -584,7 +583,7 @@ func TestBranchSyncPushSingleUpstreamReplacementIsReviewed(t *testing.T) {
 		t.Fatal(err)
 	}
 	f.ui.runPending(t)
-	if !strings.Contains(f.ui.menus[len(f.ui.menus)-1].Prompt, "Check submodules: true") {
+	if menuItem(t, f.ui.menus[len(f.ui.menus)-1], "branch.push-selected.submodules").Widget != types.MenuWidgetCheckboxSelected {
 		t.Fatal("submodule recursion toggle was not reflected in the menu")
 	}
 	if err := menuItem(t, f.ui.menus[len(f.ui.menus)-1], "branch.push-selected.execute").OnPress(); err != nil {
@@ -1064,7 +1063,7 @@ func TestBranchSyncPushTrackingReplacementEscapeReturnsToMenu(t *testing.T) {
 	if len(f.ui.menus) != menusBefore+1 {
 		t.Fatalf("Escape did not reopen the push menu: %d menus, want %d", len(f.ui.menus), menusBefore+1)
 	}
-	if !strings.Contains(f.ui.menus[len(f.ui.menus)-1].Prompt, "Set upstream for selected branch: true") {
+	if menuItem(t, f.ui.menus[len(f.ui.menus)-1], "branch.push-selected.set-upstream").Widget != types.MenuWidgetCheckboxSelected {
 		t.Fatal("reopened menu lost the set-upstream choice")
 	}
 	if got := branchSyncPushGit(t, f.root, "config", "--get", "branch.topic.remote"); got != "oldremote" {
@@ -1116,17 +1115,16 @@ func TestBranchSyncPushDefaultsToSoleRemote(t *testing.T) {
 
 func TestBranchSyncPushDefaultsSetUpstreamWithoutTracking(t *testing.T) {
 	for _, tc := range []struct {
-		name        string
-		pushRemote  string
-		tracking    [][]string
-		wantSetUp   bool
-		wantSummary string
+		name       string
+		pushRemote string
+		tracking   [][]string
+		wantSetUp  bool
 	}{
-		{name: "no tracking, sole remote", wantSetUp: true, wantSummary: "Set upstream for selected branch: true"},
-		{name: "no tracking, push remote", pushRemote: "origin", wantSetUp: false, wantSummary: "Set upstream for selected branch: false"},
-		{name: "tracking, push remote", pushRemote: "origin", tracking: [][]string{{"config", "branch.topic.remote", "origin"}, {"config", "branch.topic.merge", "refs/heads/old"}}, wantSetUp: false, wantSummary: "Set upstream for selected branch: false"},
-		{name: "existing tracking", tracking: [][]string{{"config", "branch.topic.remote", "origin"}, {"config", "branch.topic.merge", "refs/heads/old"}}, wantSetUp: false, wantSummary: "Set upstream for selected branch: false"},
-		{name: "dangling tracking config", tracking: [][]string{{"config", "branch.topic.remote", "oldremote"}, {"config", "--add", "branch.topic.merge", "refs/heads/old-one"}}, wantSetUp: false, wantSummary: "Set upstream for selected branch: false"},
+		{name: "no tracking, sole remote", wantSetUp: true},
+		{name: "no tracking, push remote", pushRemote: "origin", wantSetUp: false},
+		{name: "tracking, push remote", pushRemote: "origin", tracking: [][]string{{"config", "branch.topic.remote", "origin"}, {"config", "branch.topic.merge", "refs/heads/old"}}, wantSetUp: false},
+		{name: "existing tracking", tracking: [][]string{{"config", "branch.topic.remote", "origin"}, {"config", "branch.topic.merge", "refs/heads/old"}}, wantSetUp: false},
+		{name: "dangling tracking config", tracking: [][]string{{"config", "branch.topic.remote", "oldremote"}, {"config", "--add", "branch.topic.merge", "refs/heads/old-one"}}, wantSetUp: false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			f := newBranchSyncPushFixture(t)
@@ -1139,12 +1137,8 @@ func TestBranchSyncPushDefaultsSetUpstreamWithoutTracking(t *testing.T) {
 			}
 			f.open(t, branchSyncSource{name: "topic", selected: true})
 			menu := f.ui.menus[0]
-			if !strings.Contains(menu.Prompt, tc.wantSummary) {
-				t.Fatalf("menu summary %q does not contain %q", menu.Prompt, tc.wantSummary)
-			}
-			want := fmt.Sprintf("(%t)", tc.wantSetUp)
-			if item := menuItem(t, menu, "branch.push-selected.set-upstream"); !strings.HasSuffix(item.Label, want) {
-				t.Fatalf("set-upstream label %q does not end with %q", item.Label, want)
+			if item := menuItem(t, menu, "branch.push-selected.set-upstream"); item.Widget != types.MakeMenuCheckBox(tc.wantSetUp) {
+				t.Fatalf("set-upstream checkbox %v, want %v", item.Widget, types.MakeMenuCheckBox(tc.wantSetUp))
 			}
 		})
 	}

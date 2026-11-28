@@ -20,7 +20,6 @@ actions look like prompt text. Agreed behaviour (2026-11-28):
 
 ## Tasks
 
-1. Checkboxes in the push menu; no doubled ellipsis.
 2. `promptmark.Label` and labelled summary prompts.
 3. Digit keys and the `→` column in menus.
 4. User guide, design principles and merge guide.

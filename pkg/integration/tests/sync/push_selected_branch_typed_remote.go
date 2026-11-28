@@ -24,7 +24,7 @@ var PushSelectedBranchTypedRemote = NewIntegrationTest(NewIntegrationTestArgs{
 		t.Views().Branches().Focus().NavigateToLine(Contains("topic")).Press(keys.Universal.Push)
 		t.ExpectPopup().Menu().
 			Title(Equals("Push selected branch")).
-			Select(MatchesRegexp("^Choose remote")).
+			Select(MatchesRegexp("Choose remote")).
 			Confirm()
 		// The prompt is prefilled with the sole remote; clear it before typing.
 		t.ExpectPopup().Prompt().Title(Equals("Remote name")).InitialText(Equals("origin")).Clear().Type("origin").Confirm()

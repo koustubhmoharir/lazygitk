@@ -48,7 +48,7 @@ var PushSelectedBranchPreserveTracking = NewIntegrationTest(NewIntegrationTestAr
 			t.Views().Branches().Focus().NavigateToLine(Contains("topic")).Press(keys.Universal.Push)
 			t.ExpectPopup().Menu().
 				Title(Equals("Push selected branch")).
-				Select(Contains("Toggle set upstream for selected local branch")).
+				Select(Contains("Set upstream for selected local branch")).
 				Confirm()
 			t.ExpectPopup().Menu().
 				Title(Equals("Push selected branch")).

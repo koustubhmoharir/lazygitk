@@ -110,8 +110,8 @@ func (flow *branchSyncPushFlow) showMenu(divergedReason *types.DisabledReason) e
 		}},
 		{CommandID: "branch.push-selected.remote", Verb: "configure-push", Label: tr.BranchSyncChooseRemote, OpensMenu: true, OnPress: func() error { return flow.promptRemote(false) }},
 		{CommandID: "branch.push-selected.destination", Verb: "configure-push", Label: tr.BranchSyncChooseDestination, OpensMenu: true, OnPress: flow.promptDestination},
-		{CommandID: "branch.push-selected.set-upstream", Verb: "configure-push", Label: fmt.Sprintf("%s (%t)", tr.BranchSyncSetUpstream, flow.opts.SetUpstream), OnPress: func() error { flow.opts.SetUpstream = !flow.opts.SetUpstream; return flow.menu() }},
-		{CommandID: "branch.push-selected.submodules", Verb: "configure-push", Label: fmt.Sprintf("%s (%t)", tr.BranchSyncCheckSubmodules, flow.opts.Submodules == git_commands.BranchPushCheckSubmodules), OnPress: func() error {
+		{CommandID: "branch.push-selected.set-upstream", Verb: "configure-push", Label: tr.BranchSyncSetUpstream, Widget: types.MakeMenuCheckBox(flow.opts.SetUpstream), OnPress: func() error { flow.opts.SetUpstream = !flow.opts.SetUpstream; return flow.menu() }},
+		{CommandID: "branch.push-selected.submodules", Verb: "configure-push", Label: tr.BranchSyncCheckSubmodules, Widget: types.MakeMenuCheckBox(flow.opts.Submodules == git_commands.BranchPushCheckSubmodules), OnPress: func() error {
 			if flow.opts.Submodules == git_commands.BranchPushCheckSubmodules {
 				flow.opts.Submodules = git_commands.BranchPushNoSubmoduleRecursion
 			} else {
@@ -130,7 +130,7 @@ func (flow *branchSyncPushFlow) menuSummary() string {
 		remote = flow.target.c.Tr.BranchSyncChooseRemote
 	}
 	destination = strings.TrimPrefix(destination, "refs/heads/")
-	return fmt.Sprintf(flow.target.c.Tr.BranchSyncPushSummary, flow.info.Name, utils.ShortHash(flow.info.OID), remote, destination, flow.opts.SetUpstream, flow.opts.Submodules == git_commands.BranchPushCheckSubmodules)
+	return fmt.Sprintf(flow.target.c.Tr.BranchSyncPushSummary, flow.info.Name, utils.ShortHash(flow.info.OID), remote, destination)
 }
 
 // Fork: Escape on a prompt or review opened from the push menu steps back to

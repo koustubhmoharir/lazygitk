@@ -396,6 +396,8 @@ re-apply it if upstream changes that code.
 - `pkg/gui/menu_panel.go` and `pkg/gui/context.go`: invalidate an open prefix
   on a new menu or a focus change; `Activate` updates focus frames. The physical
   essential keys of a prefix menu are in `pkg/gui/fork_menu_panel.go`.
+  `createMenu` skips the `OpensMenu` "..." suffix when the label already ends
+  in "…" or "..." (`forkLabelEndsWithEllipsis`).
 - `pkg/gui/options_map.go` and `pkg/gui/command_log_panel.go` (replacement):
   hints and tips name effective key paths through `CommandKeyLabel`; tips for
   keys with no route are dropped. `keyTip`, `commandRoute` and the options-map

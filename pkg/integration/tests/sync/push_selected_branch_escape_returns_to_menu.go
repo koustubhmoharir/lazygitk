@@ -22,7 +22,7 @@ var PushSelectedBranchEscapeReturnsToMenu = NewIntegrationTest(NewIntegrationTes
 		t.Views().Branches().Focus().NavigateToLine(Contains("topic")).Press(keys.Universal.Push)
 		t.ExpectPopup().Menu().
 			Title(Equals("Push selected branch")).
-			Select(MatchesRegexp("^Choose remote")).
+			Select(MatchesRegexp("Choose remote")).
 			Confirm()
 		t.ExpectPopup().Prompt().Title(Equals("Remote name")).Cancel()
 

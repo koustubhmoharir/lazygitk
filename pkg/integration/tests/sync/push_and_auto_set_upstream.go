@@ -34,9 +34,9 @@ var PushAndAutoSetUpstream = NewIntegrationTest(NewIntegrationTestArgs{
 		// this test still checks that push.autoSetupRemote saves nothing; the
 		// menu reopens after the toggle.
 		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).
-			Select(Contains("set upstream")).Confirm()
+			Select(Contains("Set upstream for selected local branch")).Confirm()
 		t.ExpectPopup().Menu().Title(Equals("Push selected branch")).
-			Select(MatchesRegexp("^Choose remote")).Confirm()
+			Select(MatchesRegexp("Choose remote")).Confirm()
 		t.ExpectPopup().Prompt().Title(Equals("Remote name")).InitialText(Equals("origin")).Confirm()
 		// Push completion refreshes the remote branch history; wait for that
 		// visible result before checking the bare remote and saved config.

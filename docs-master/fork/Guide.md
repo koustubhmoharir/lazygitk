@@ -607,7 +607,7 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
 
 - **Push** pushes the selected local branch (or the checked-out one outside
   Branches) directly from the push menu, which shows the commit, remote,
-  destination and options. A separate review appears only for replacing
+  destination, and its options as checkboxes. A separate review appears only for replacing
   different tracking and for force-with-lease. A new branch with no push
   remote uses the repository's only remote without prompting. Set upstream
   starts on for a branch with no tracking, so the push records the destination

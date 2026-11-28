@@ -58,7 +58,8 @@ func (gui *Gui) createMenu(opts types.CreateMenuOptions) error {
 			item.LabelColumns = []string{item.Label}
 		}
 
-		if item.OpensMenu {
+		if item.OpensMenu && !forkLabelEndsWithEllipsis(item.LabelColumns[0]) {
+			// Fork: fork labels already end in "…", so the upstream "..." suffix is skipped.
 			item.LabelColumns[0] = fmt.Sprintf("%s...", item.LabelColumns[0])
 		}
 
