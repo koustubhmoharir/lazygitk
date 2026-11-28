@@ -7,12 +7,6 @@ work, Appearance) and the design principles.
 
 ## Open follow-ups
 
-- Three integration scenarios expect the commit graph as drawn before the
-  recent graph work: `interactive_rebase/reword_merge_commit` and
-  `cherry_pick/cherry_pick_merge` expect `○ ╯ base` where the graph now
-  draws `○─╯ base`, and `ui/fork_filter_graph` expects `○ │─╯ f1` where it
-  draws `○─│─╯ f1`. They already fail at ad92526d7. Decide whether the new
-  drawing is intended, then fix the graph or the expectations.
 - Untracked files saved with `git stash -u` (the stash's third parent) appear
   in neither Stash listing (`Enter`/`v d`, `v f`). This predates the work
   above. Showing them would change Stash's changed-files listing; present

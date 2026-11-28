@@ -44,7 +44,7 @@ var ForkFilterGraph = NewIntegrationTest(NewIntegrationTestArgs{
 			Contains("○ s1"),
 			Contains("│ ○ m1"),
 			Contains("│ │ ○ f2"),
-			Contains("○ │─╯ f1"),
+			Contains("○─│─╯ f1"),
 			Contains("○─╯ base"),
 		)
 
@@ -68,14 +68,14 @@ var ForkFilterGraph = NewIntegrationTest(NewIntegrationTestArgs{
 			SelectedLines(Contains("m1"))
 
 		// Escape clears the filter: the full graph is drawn again with the cursor kept.
-		// The selected m1 draws its lane over f1's, so f1's line reads differently
-		// from the unselected graph above.
+		// The selected m1's lane does not cut f1's line, so f1 reads as in the
+		// unselected graph above.
 		commits.Press(config.Keybinding{"<esc>"})
 		commits.Lines(
 			Contains("○ s1"),
 			Contains("│ ○ m1"),
 			Contains("│ │ ○ f2"),
-			Contains("○─│ ╯ f1"),
+			Contains("○─│─╯ f1"),
 			Contains("○─╯ base"),
 		).
 			SelectedLines(Contains("m1"))

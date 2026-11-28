@@ -45,7 +45,7 @@ var CherryPickMerge = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("◎─╮ Merge branch 'second-branch'").IsSelected(),
 				Contains("│ ○ two"),
 				Contains("│ ○ one"),
-				Contains("○ ╯ base"),
+				Contains("○─╯ base"),
 			)
 
 		// cherry-pick the merge commit, the selected one

@@ -44,7 +44,7 @@ var RewordMergeCommit = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("CI ○ two"),
 				Contains("CI ◎─╮ renamed merge").IsSelected(),
 				Contains("CI │ ○ one"),
-				Contains("CI ○ ╯ base"),
+				Contains("CI ○─╯ base"),
 			)
 	},
 })
