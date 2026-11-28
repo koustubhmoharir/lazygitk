@@ -1217,6 +1217,12 @@ the same way:
   stubs delta's lookup and expects `default` without delta, `delta` with it.
 - The shared fixture sets an explicit `rawGit` renderer so scenarios never use
   delta and disables fetch/file/ref polling.
+- `graph_test.go` `TestRenderPipeSet`: three box-drawing cases with a
+  selected commit expect the other commits' lines to be kept
+  ("terminating hook and starting hook, selected", "starting and terminating
+  pipe sharing some space, with selection", "when previous commit is
+  selected, not a merge commit, and spawns a continuing pipe"). Update new
+  upstream selection cases the same way.
 - Four upstream scenarios were deleted: `cherry_pick/cherry_pick_across_worktrees`,
   `cherry_pick/cherry_pick_range_after_paste`, `commit/history` and
   `commit/history_complex`. Do not restore them without checking the fork's
