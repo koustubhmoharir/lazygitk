@@ -85,7 +85,7 @@ var ForkRepoSwitchInvalidRepoConfig = NewIntegrationTest(NewIntegrationTestArgs{
 			Confirm()
 		head := t.Git().GetCommitHash("HEAD")
 		t.Common().ReviewBranchCreateMenu("refs/heads/master", head, "refs/heads/master", head).
-			Select(MatchesRegexp(`^[[:space:]]*Do not set up upstream tracking`)).Confirm()
+			Select(MatchesRegexp(`^[[:space:]]*(?:[0-9] → )?Do not set up upstream tracking`)).Confirm()
 		t.Views().Status().Content(Contains("repo → from-repo"))
 		t.Git().CurrentBranchName("from-repo")
 

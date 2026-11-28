@@ -23,7 +23,7 @@ var AmendWhenThereAreConflictsAndContinue = NewIntegrationTest(NewIntegrationTes
 
 		t.ExpectPopup().Menu().
 			Title(Equals("Amend commit")).
-			Select(Equals("No, continue rebase")).
+			Select(MatchesRegexp(`^[[:space:]]*(?:[0-9] → )?No, continue rebase$`)).
 			Confirm()
 
 		t.Views().Files().IsEmpty()

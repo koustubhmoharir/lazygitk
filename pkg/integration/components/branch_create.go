@@ -16,7 +16,7 @@ func (self *Common) ReviewBranchCreateMenu(sourceRef, sourceOID, headRef, headOI
 		"Use Git's configured tracking policy",
 		"Track the selected source branch directly",
 	} {
-		menu.ContainsLines(MatchesRegexp(`^[[:space:]]*` + label))
+		menu.ContainsLines(MatchesRegexp(`^[[:space:]]*(?:[0-9] → )?` + label))
 	}
 	return menu
 }

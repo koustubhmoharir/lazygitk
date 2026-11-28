@@ -30,7 +30,7 @@ var PushCommitTipChooseBranch = NewIntegrationTest(NewIntegrationTestArgs{
 
 		chooser := t.ExpectPopup().Menu().
 			Title(Equals("Push which branch?")).
-			ContainsLines(Equals("master"), Equals("other"))
+			ContainsLines(MatchesRegexp(`^[[:space:]]*(?:[0-9] → )?master$`), MatchesRegexp(`^[[:space:]]*(?:[0-9] → )?other$`))
 		chooser.Confirm()
 
 		t.ExpectPopup().Menu().
@@ -44,7 +44,7 @@ var PushCommitTipChooseBranch = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.ExpectPopup().Menu().
 			Title(Equals("Push which branch?")).
-			Select(Equals("other")).
+			Select(MatchesRegexp(`^[[:space:]]*(?:[0-9] → )?other$`)).
 			Confirm()
 
 		t.ExpectPopup().Menu().

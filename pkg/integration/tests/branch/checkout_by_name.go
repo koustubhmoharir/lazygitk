@@ -33,7 +33,7 @@ var CheckoutByName = NewIntegrationTest(NewIntegrationTestArgs{
 
 				t.ExpectPopup().Alert().Title(Equals("Branch not found")).Content(Equals("Branch not found. Create a new branch named new-branch?")).Confirm()
 				t.Common().ReviewBranchCreateMenu("refs/heads/@", t.Git().GetCommitHash("refs/heads/@"), "refs/heads/master", t.Git().GetCommitHash("HEAD")).
-					Select(MatchesRegexp(`^[[:space:]]*Do not set up upstream tracking`)).Confirm()
+					Select(MatchesRegexp(`^[[:space:]]*(?:[0-9] → )?Do not set up upstream tracking`)).Confirm()
 			}).
 			Lines(
 				MatchesRegexp(`\*.*new-branch`).IsSelected(),

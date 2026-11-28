@@ -24,10 +24,11 @@ func forkLabelEndsWithEllipsis(label string) bool {
 
 // Fork: forkAssignDigitKeys gives each item that has no key of its own the next
 // free digit 1-9, so that pressing the digit runs it. Digits that another item
-// uses are skipped, the Cancel item gets none, and disabled items still get one
+// uses are skipped, Cancel items get none (the menu's own, or a flow's item
+// labelled cancelLabel), and disabled items still get one
 // (pressing them shows the reason). Filtering menus take printable keys as text,
 // and prefix menus reserve their keys, so neither gets digits.
-func forkAssignDigitKeys(opts types.CreateMenuOptions) {
+func forkAssignDigitKeys(opts types.CreateMenuOptions, cancelLabel string) {
 	if opts.FilterAsYouType || len(opts.BlockUnmatchedKeys) > 0 {
 		return
 	}
@@ -61,7 +62,8 @@ func forkAssignDigitKeys(opts types.CreateMenuOptions) {
 		if len(free) == 0 {
 			return
 		}
-		if item.CommandID == "menu.cancel" || len(item.KeyLabels()) > 0 {
+		if item.CommandID == "menu.cancel" || len(item.KeyLabels()) > 0 ||
+			(len(item.LabelColumns) > 0 && item.LabelColumns[0] == cancelLabel) {
 			continue
 		}
 		// A binding-backed item with no key labels would run the digit without

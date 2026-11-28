@@ -39,7 +39,7 @@ var NewBranchFromRemoteTrackingSameName = NewIntegrationTest(NewIntegrationTestA
 			Confirm()
 
 		t.Common().ReviewBranchCreateMenu("refs/remotes/origin/other_branch", t.Git().GetCommitHash("refs/remotes/origin/other_branch"), "refs/heads/master", t.Git().GetCommitHash("HEAD")).
-			Select(MatchesRegexp(`^[[:space:]]*Use Git's configured tracking policy`)).Confirm()
+			Select(MatchesRegexp(`^[[:space:]]*(?:[0-9] → )?Use Git's configured tracking policy`)).Confirm()
 
 		t.Views().Branches().
 			Focus().

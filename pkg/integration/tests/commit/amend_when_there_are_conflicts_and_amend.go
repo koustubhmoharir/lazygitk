@@ -23,7 +23,7 @@ var AmendWhenThereAreConflictsAndAmend = NewIntegrationTest(NewIntegrationTestAr
 
 		t.ExpectPopup().Menu().
 			Title(Equals("Amend commit")).
-			Select(Equals("Yes, amend previous commit")).
+			Select(MatchesRegexp(`^[[:space:]]*(?:[0-9] → )?Yes, amend previous commit$`)).
 			Confirm()
 
 		t.Views().Files().IsEmpty()

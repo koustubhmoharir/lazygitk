@@ -22,7 +22,7 @@ var FilterMenuByKeybinding = NewIntegrationTest(NewIntegrationTestArgs{
 					Lines(
 						// menu has filtered down to the one item that matches the filter
 						Contains("─── Files and global"),
-						Contains("_ Prev screen mode").IsSelected(),
+						Contains("_ → Prev screen mode").IsSelected(),
 					).
 					Confirm()
 			}).

@@ -41,12 +41,12 @@ var ForkPaletteSections = NewIntegrationTest(NewIntegrationTestArgs{
 		// Within a section, single keys come first, then the d, s, n, c, u, y, g, t and w
 		// groups, then commands without a key path.
 		palette.
-			Content(MatchesRegexp("(?s)─── Local branches and global.*f Fetch.*s c Checkout.*n b Create.*c p Cherry-pick.*y a Copy commit author.*g f Fast-forward.*t d c View diffing.*w b Show branch.*New branch.*─── Status"))
+			Content(MatchesRegexp("(?s)─── Local branches and global.*f → Fetch.*s c → Checkout.*n b → Create.*c p → Cherry-pick.*y a → Copy commit author.*g f → Fast-forward.*t d c → View diffing.*w b → Show branch.*New branch.*─── Status"))
 
 		// The other panes are ordered the same way. A command of Commits, which is not
 		// available from Branches, is listed under Commits.
 		palette.
-			Content(MatchesRegexp("(?s)─── Commits.*< Move commit up one.*d c Diff with commit.*d w Diff with working tree.*s c Checkout.*g b View bisect options.*g e a Amend commit attribute.*w a Show selected commits.*─── Reflog"))
+			Content(MatchesRegexp("(?s)─── Commits.*< → Move commit up one.*d c → Diff with commit.*d w → Diff with working tree.*s c → Checkout.*g b → View bisect options.*g e a → Amend commit attribute.*w a → Show selected commits.*─── Reflog"))
 
 		// Popups get no section of their own from another pane. Their commands are
 		// listed only while the popup is focused.
@@ -62,7 +62,7 @@ var ForkPaletteSections = NewIntegrationTest(NewIntegrationTestArgs{
 		// Typing a filter scrolls the palette cheaply. Confirming runs the filtered
 		// command, which is a Commits command, so it is refused here.
 		palette.Filter("Reword")
-		t.Views().Menu().SelectedLine(Contains("<f2> Reword"))
+		t.Views().Menu().SelectedLine(Contains("<f2> → Reword"))
 		palette.Confirm()
 		t.ExpectToast(Equals("Disabled: Available in Commits"))
 	},

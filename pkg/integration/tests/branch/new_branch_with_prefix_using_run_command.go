@@ -31,7 +31,7 @@ var NewBranchWithPrefixUsingRunCommand = NewIntegrationTest(NewIntegrationTestAr
 					Type("my-branch").
 					Confirm()
 				t.Common().ReviewBranchCreateMenu(t.Git().GetCommitHash("HEAD"), t.Git().GetCommitHash("HEAD"), "refs/heads/master", t.Git().GetCommitHash("HEAD")).
-					Select(MatchesRegexp(`^[[:space:]]*Do not set up upstream tracking`)).Confirm()
+					Select(MatchesRegexp(`^[[:space:]]*(?:[0-9] → )?Do not set up upstream tracking`)).Confirm()
 				t.Git().CurrentBranchName("myprefix/dynamic/my-branch")
 			})
 	},

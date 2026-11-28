@@ -74,7 +74,7 @@ func (gui *Gui) createMenu(opts types.CreateMenuOptions) error {
 	}
 
 	// Fork: keyless items get the free digits 1-9 (fork_menu_panel.go).
-	forkAssignDigitKeys(opts)
+	forkAssignDigitKeys(opts, gui.c.Tr.Cancel)
 
 	for _, item := range opts.Items {
 		if len(item.LabelColumns) < maxColumnSize {

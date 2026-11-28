@@ -33,7 +33,7 @@ var CreateBranch = NewIntegrationTest(NewIntegrationTestArgs{
 					Type("new_branch").
 					Confirm()
 				t.Common().ReviewBranchCreateMenu(t.Git().GetCommitHash("refs/stash"), t.Git().GetCommitHash("refs/stash@{0}"), "refs/heads/master", t.Git().GetCommitHash("HEAD")).
-					Select(MatchesRegexp(`^[[:space:]]*Do not set up upstream tracking`)).Confirm()
+					Select(MatchesRegexp(`^[[:space:]]*(?:[0-9] → )?Do not set up upstream tracking`)).Confirm()
 			})
 
 		t.Views().Files().IsEmpty()

@@ -53,7 +53,7 @@ var MenuFromCommandsOutput = NewIntegrationTest(NewIntegrationTestArgs{
 			InitialText(Equals("branch")).
 			Confirm()
 
-		t.ExpectPopup().Menu().Title(Equals("Branch:")).Select(Equals("master")).Confirm()
+		t.ExpectPopup().Menu().Title(Equals("Branch:")).Select(MatchesRegexp(`^[[:space:]]*(?:[0-9] → )?master$`)).Confirm()
 
 		t.Git().CurrentBranchName("master")
 	},

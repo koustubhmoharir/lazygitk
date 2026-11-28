@@ -23,7 +23,7 @@ var AmendWhenThereAreConflictsAndCancel = NewIntegrationTest(NewIntegrationTestA
 
 		t.ExpectPopup().Menu().
 			Title(Equals("Amend commit")).
-			Select(Equals("Cancel")).
+			Select(MatchesRegexp(`^[[:space:]]*Cancel[[:space:]]*$`)).
 			Confirm()
 
 		// Check that nothing happened:

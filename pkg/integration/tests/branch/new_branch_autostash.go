@@ -42,7 +42,7 @@ var NewBranchAutostash = NewIntegrationTest(NewIntegrationTestArgs{
 			Confirm()
 
 		t.Common().ReviewBranchCreateMenu("refs/heads/master", t.Git().GetCommitHash("refs/heads/master"), "HEAD (detached)", t.Git().GetCommitHash("HEAD")).
-			Select(MatchesRegexp(`^[[:space:]]*Do not set up upstream tracking`)).Confirm()
+			Select(MatchesRegexp(`^[[:space:]]*(?:[0-9] → )?Do not set up upstream tracking`)).Confirm()
 
 		t.ExpectPopup().Alert().Title(Equals("Error")).Content(Contains("would be overwritten")).Confirm()
 

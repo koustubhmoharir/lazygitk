@@ -30,7 +30,7 @@ var DiffAndApplyPatch = NewIntegrationTest(NewIntegrationTestArgs{
 			).
 			Press(keys.Universal.DiffingMenu)
 
-		t.ExpectPopup().Menu().Title(Equals("Diffing")).Select(Equals("Diff branch-a")).Confirm()
+		t.ExpectPopup().Menu().Title(Equals("Diffing")).Select(MatchesRegexp(`^[[:space:]]*(?:[0-9] → )?Diff branch-a$`)).Confirm()
 
 		t.Views().Information().Content(Contains("Showing output for: git diff --stat -p branch-a branch-a"))
 
