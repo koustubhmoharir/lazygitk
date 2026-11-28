@@ -178,13 +178,26 @@ func getNextPipes(prevPipes []Pipe, commit *models.Commit, getStyle func(c *mode
 		}
 	}
 
+	// Fork fix of an upstream bug; drop it if upstream fixes the same thing.
+	// Horizontal spans [from, to] of continuing pipes that move in this row. A new
+	// pipe must not span a gap that one of them also spans, or the two lines
+	// overlap and read as joined (e.g. a merge's second parent beside a pipe
+	// moving left).
+	movingContinuingSpans := [][2]int16{}
+	spansOverlap := func(a, b [2]int16) bool {
+		return max(a[0], b[0]) < min(a[1], b[1])
+	}
+
 	getNextAvailablePosForNewPipe := func() int16 {
 		i := int16(0)
 		for {
 			// a newly created pipe is not allowed to end on a spot that's already taken,
 			// nor on a spot that's been traversed by a continuing pipe.
 			if !takenSpots.Includes(int(i)) && !traversedSpotsForContinuingPipes.Includes(int(i)) {
-				return i
+				newSpan := [2]int16{min(pos, i), max(pos, i)}
+				if !lo.SomeBy(movingContinuingSpans, func(span [2]int16) bool { return spansOverlap(span, newSpan) }) {
+					return i
+				}
 			}
 			i++
 		}
@@ -224,6 +237,9 @@ func getNextPipes(prevPipes []Pipe, commit *models.Commit, getStyle func(c *mode
 				kind:     CONTINUES,
 				style:    pipe.style,
 			})
+			if availablePos != pipe.toPos {
+				movingContinuingSpans = append(movingContinuingSpans, [2]int16{min(pipe.toPos, availablePos), max(pipe.toPos, availablePos)})
+			}
 			traverse(pipe.toPos, availablePos)
 		}
 	}

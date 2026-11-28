@@ -139,6 +139,20 @@ func TestRenderCommitGraph(t *testing.T) {
 			3 ○─┴─╯`,
 		},
 		{
+			name: "new merge path does not overlap a continuing path that moves left",
+			commitOpts: []models.NewCommitOpts{
+				{Hash: "c11", Parents: []string{"c4"}},
+				{Hash: "c8", Parents: []string{"c4", "c12"}},
+				{Hash: "c4"},
+				{Hash: "c14", Parents: []string{"c16", "c15"}},
+			},
+			expectedOutput: `
+			c11 ○
+			c8 │ ◎─╮
+			c4 ○─╯ │
+			c14 ╭───╯ ◎─╮`,
+		},
+		{
 			name: "with a path that has room to move to the left and continues",
 			commitOpts: []models.NewCommitOpts{
 				{Hash: "1", Parents: []string{"2"}},

@@ -969,7 +969,11 @@ unreachable` marker that names its replacement. Do not reconnect them.
   terminates there, so a merge at a branch tip of a whole-graph list does
   not put its second parent on its first parent's spot and drop that pipe.
   Covered by "with a merge at a branch tip that has no descendant" in
-  `graph_test.go`. Drop the fix if upstream fixes the same bug.
+  `graph_test.go`. A merge's new pipe also avoids spots whose horizontal
+  span overlaps a continuing pipe that moves left in the same row
+  (`movingContinuingSpans`), so the two lines do not read as joined; covered
+  by "new merge path does not overlap a continuing path that moves left".
+  Drop either fix if upstream fixes the same bug.
 - `pkg/gui/views.go` (replacement): upstream's border-style switch is removed;
   frame runes come from `updateFocusFrames` (`fork_focus_frame.go`), called
   from `configureViewProperties`, `ContextMgr.Activate` and initial layout.
