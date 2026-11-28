@@ -12,14 +12,14 @@ func (self *Common) ReviewBranchDeleteMenu(title, sourceRef, sourceOID, headRef,
 	menu.Title(Equals(title))
 	menu.getViewDriver().Content(Contains(sourceRef + " (" + sourceOID + ")").Contains("Current HEAD:").Contains(fmt.Sprintf("%s at %s", headRef, headOID)).DoesNotContain("Detach worktree").DoesNotContain("Remove worktree"))
 	menu.ContainsLines(
-		MatchesRegexp(`^[[:space:]]*c Delete local branch`),
-		MatchesRegexp(`^[[:space:]]*r Delete remote branch`),
-		MatchesRegexp(`^[[:space:]]*b Delete local and remote branch`),
+		MatchesRegexp(`^[[:space:]]*c → Delete local branch`),
+		MatchesRegexp(`^[[:space:]]*r → Delete remote branch`),
+		MatchesRegexp(`^[[:space:]]*b → Delete local and remote branch`),
 	)
 	if reserved {
 		reservation := Contains("reserved").Contains(strings.TrimPrefix(sourceRef, "refs/heads/"))
-		menu.Select(MatchesRegexp(`^[[:space:]]*c Delete local branch`)).Tooltip(reservation)
-		menu.Select(MatchesRegexp(`^[[:space:]]*b Delete local and remote branch`)).Tooltip(reservation)
+		menu.Select(MatchesRegexp(`^[[:space:]]*c → Delete local branch`)).Tooltip(reservation)
+		menu.Select(MatchesRegexp(`^[[:space:]]*b → Delete local and remote branch`)).Tooltip(reservation)
 	}
 	return menu
 }

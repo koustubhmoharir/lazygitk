@@ -131,6 +131,10 @@ recorded here or in the user guide.
   the key structure. A popup's commands are listed only while it is focused;
   from a pane they are noise. Unavailable actions are faded when they have nothing to
   act on here and crossed out when a precondition fails, in every menu.
+- **Every menu action has a key.** A menu item shows its key and a `→`;
+  items without a key of their own are numbered 1-9, except in menus where
+  typing filters and in prefix menus. A toggle shows its state as a checkbox,
+  not as text, and the prompt does not repeat it.
 
 ## Appearance
 

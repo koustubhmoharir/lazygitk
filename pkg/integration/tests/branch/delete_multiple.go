@@ -77,7 +77,7 @@ var DeleteMultiple = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete selected branches?")).
-					Select(MatchesRegexp(`^[[:space:]]*c Delete local branches`)).
+					Select(MatchesRegexp(`^[[:space:]]*c → Delete local branches`)).
 					Confirm()
 				t.ExpectPopup().
 					Confirmation().
@@ -102,7 +102,7 @@ var DeleteMultiple = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete selected branches?")).
-					Select(MatchesRegexp(`^[[:space:]]*r Delete remote branches`)).
+					Select(MatchesRegexp(`^[[:space:]]*r → Delete remote branches`)).
 					Confirm()
 			}).
 			Tap(func() {
@@ -137,7 +137,7 @@ var DeleteMultiple = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete selected branches?")).
-					Select(MatchesRegexp(`^[[:space:]]*b Delete local and remote branches`)).
+					Select(MatchesRegexp(`^[[:space:]]*b → Delete local and remote branches`)).
 					Confirm()
 				confirmation := t.ExpectPopup().Confirmation()
 				confirmation.Title(Equals("Delete selected branches?"))
@@ -159,7 +159,7 @@ var DeleteMultiple = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete selected branches?")).
-					Select(MatchesRegexp(`^[[:space:]]*b Delete local and remote branches`)).
+					Select(MatchesRegexp(`^[[:space:]]*b → Delete local and remote branches`)).
 					Confirm()
 				t.ExpectPopup().
 					Confirmation().

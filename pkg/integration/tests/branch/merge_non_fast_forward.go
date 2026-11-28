@@ -43,7 +43,7 @@ var MergeNonFastForward = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("Squash merge and leave uncommitted"),
 				Contains("Squash merge and commit"),
 			).
-			Select(MatchesRegexp(`^[[:space:]]*n Merge \(no fast-forward\)`)).Confirm()
+			Select(MatchesRegexp(`^[[:space:]]*n → Merge \(no fast-forward\)`)).Confirm()
 
 		t.Views().Commits().EventuallyContent(Contains(`Merge branch "branch2" into "original-branch"`)).ContainsLines(
 			Contains(`Merge branch "branch2" into "original-branch"`).IsSelected(),

@@ -73,6 +73,9 @@ func (gui *Gui) createMenu(opts types.CreateMenuOptions) error {
 		}
 	}
 
+	// Fork: keyless items get the free digits 1-9 (fork_menu_panel.go).
+	forkAssignDigitKeys(opts)
+
 	for _, item := range opts.Items {
 		if len(item.LabelColumns) < maxColumnSize {
 			// we require that each item has the same number of columns so we're padding out with blank strings

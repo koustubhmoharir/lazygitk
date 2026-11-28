@@ -209,7 +209,8 @@ func (self *MenuViewModel) GetDisplayStrings(_ int, _ int) [][]string {
 			checkMark = "[ ]"
 		}
 
-		displayStrings = utils.Prepend(displayStrings, keyLabel, checkMark)
+		// Fork: the arrow column between the key and the check mark (fork_menu_context.go).
+		displayStrings = utils.Prepend(displayStrings, keyLabel, forkKeyArrow(len(labels) > 0), checkMark)
 		return displayStrings
 	})
 }

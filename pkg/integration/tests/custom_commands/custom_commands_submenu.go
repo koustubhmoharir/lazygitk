@@ -44,8 +44,8 @@ var CustomCommandsSubmenu = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().Menu().
 					Title(Equals("My Custom Commands")).
 					Lines(
-						Contains("1 touch myfile-global"),
-						Contains("2 touch myfile-files"),
+						Contains("1 → touch myfile-global"),
+						Contains("2 → touch myfile-files"),
 					).
 					Select(Contains("touch myfile-files")).Confirm()
 			}).
@@ -60,8 +60,8 @@ var CustomCommandsSubmenu = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().Menu().
 					Title(Equals("My Custom Commands")).
 					Lines(
-						Contains("1 touch myfile-global"),
-						Contains("3 touch myfile-commits"),
+						Contains("1 → touch myfile-global"),
+						Contains("3 → touch myfile-commits"),
 					)
 				t.GlobalPress(config.Keybinding{"3"})
 			})

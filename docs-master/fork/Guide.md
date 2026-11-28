@@ -17,6 +17,11 @@ in the [design principles](Design.md). The generated per-pane reference is
   whatever is selected there. Where it has nothing to act on, it does nothing:
   a menu leaves out entries that do not apply to the focused pane, and a first
   key with nothing applicable opens no menu.
+- **Every menu item can be typed.** An item shows its key in cyan with a `→`
+  before the label. An item that has no key of its own gets the next free
+  digit 1-9, so a review menu's actions can be run by number. Cancel
+  (Escape) gets none. Menus where typing filters (the `?` palette, the
+  repository switcher, file pickers) and prefix menus have no digits.
 - **`?` lists every command** in the app with its full key path, including
   commands that have no key. The focused pane's and the global commands come
   first, then each other pane's in its own section, then the focused pane's

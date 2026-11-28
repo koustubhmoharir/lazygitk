@@ -30,7 +30,7 @@ var SelectionCommandTooltipsFollowTheDiff = NewIntegrationTest(NewIntegrationTes
 		// The palette is filtered rather than scrolled to each item, which is far down it.
 		palette := t.ExpectPopup().Menu().Title(Equals("Keybindings"))
 		palette.Filter("Stage")
-		t.Views().Menu().SelectedLine(Contains("<space> Stage"))
+		t.Views().Menu().SelectedLine(Contains("<space> → Stage"))
 		palette.Tooltip(Equals("Toggle selection staged / unstaged."))
 		// Escape clears the filter, and a second Escape closes the palette.
 		palette.Cancel()

@@ -2,6 +2,7 @@ package context
 
 import (
 	"github.com/jesseduffield/lazygit/pkg/gocui"
+	"github.com/jesseduffield/lazygit/pkg/gui/style"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/samber/lo"
 )
@@ -26,4 +27,14 @@ func (self *MenuContext) forkBlockedKeyBindings() []*types.Binding {
 	return lo.Map(self.blockUnmatchedKeys, func(key gocui.Key, _ int) *types.Binding {
 		return &types.Binding{Keys: []gocui.Key{key}, DefaultCommand: true, Handler: func() error { return nil }}
 	})
+}
+
+// Fork: the arrow column that points from an item's key to its label. Items
+// without a key get a blank cell, and a menu where no item has a key has no
+// visible column at all (RenderDisplayStrings drops blank columns).
+func forkKeyArrow(hasKey bool) string {
+	if !hasKey {
+		return ""
+	}
+	return style.FgCyan.Sprint("→")
 }

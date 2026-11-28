@@ -29,7 +29,7 @@ var MergeFastForward = NewIntegrationTest(NewIntegrationTestArgs{
 
 		firstSourceOID := t.Git().GetCommitHash("refs/heads/branch1")
 		t.ExpectPopup().Menu().Title(Equals("Merge")).
-			Select(MatchesRegexp(`^[[:space:]]*f Merge \(allow fast-forward\)`)).Confirm()
+			Select(MatchesRegexp(`^[[:space:]]*f → Merge \(allow fast-forward\)`)).Confirm()
 		t.Views().Commits().EventuallyContent(Contains("branch1"))
 		if got := t.Git().GetCommitHash("HEAD"); got != firstSourceOID {
 			t.Fail("allow-fast-forward merge did not fast-forward current HEAD")
@@ -47,7 +47,7 @@ var MergeFastForward = NewIntegrationTest(NewIntegrationTestArgs{
 				Contains("Squash merge and leave uncommitted"),
 				Contains("Squash merge and commit"),
 			).
-			Select(MatchesRegexp(`^[[:space:]]*f Merge \(allow fast-forward\)`)).Confirm()
+			Select(MatchesRegexp(`^[[:space:]]*f → Merge \(allow fast-forward\)`)).Confirm()
 
 		t.Views().Commits().EventuallyContent(Contains("branch2")).ContainsLines(
 			Contains(`Merge branch "branch2" into "original-branch"`).IsSelected(),

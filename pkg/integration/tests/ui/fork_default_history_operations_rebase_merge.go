@@ -55,7 +55,7 @@ var ForkDefaultHistoryOperationsRebaseMerge = NewIntegrationTest(NewIntegrationT
 		branches.Focus().NavigateToLine(Contains("side")).Press(config.Keybinding{"m"})
 		t.ExpectPopup().Menu().
 			Title(Equals("Merge")).
-			Select(MatchesRegexp(`^[[:space:]]*m Merge using configured options`)).
+			Select(MatchesRegexp(`^[[:space:]]*m → Merge using configured options`)).
 			Confirm()
 
 		commits.TopLines(Contains(`Merge branch "side" into "topic"`))

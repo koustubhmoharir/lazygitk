@@ -35,7 +35,7 @@ var DeleteRemoteBranchWithCredentialPrompt = NewIntegrationTest(NewIntegrationTe
 			t.ExpectPopup().
 				Menu().
 				Title(Equals("Delete branch 'mybranch'?")).
-				Select(MatchesRegexp(`^[[:space:]]*r Delete remote branch`)).
+				Select(MatchesRegexp(`^[[:space:]]*r → Delete remote branch`)).
 				Confirm()
 
 			t.ExpectPopup().

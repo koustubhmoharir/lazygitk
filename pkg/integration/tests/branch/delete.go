@@ -75,7 +75,7 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-four'?")).
-					Select(MatchesRegexp(`^[[:space:]]*c Delete local branch`)).
+					Select(MatchesRegexp(`^[[:space:]]*c → Delete local branch`)).
 					Confirm()
 				t.ExpectPopup().
 					Confirmation().
@@ -100,7 +100,7 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-three'?")).
-					Select(MatchesRegexp(`^[[:space:]]*c Delete local branch`)).
+					Select(MatchesRegexp(`^[[:space:]]*c → Delete local branch`)).
 					Confirm()
 			}).
 			EventuallyContent(Contains("branch-two ✓").DoesNotContain("branch-three")).Lines(
@@ -119,7 +119,7 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-two'?")).
-					Select(MatchesRegexp(`^[[:space:]]*c Delete local branch`)).
+					Select(MatchesRegexp(`^[[:space:]]*c → Delete local branch`)).
 					Confirm()
 			}).
 			EventuallyContent(Contains("master").DoesNotContain("branch-two")).Lines(
@@ -137,7 +137,7 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-one'?")).
-					Select(MatchesRegexp(`^[[:space:]]*r Delete remote branch`)).
+					Select(MatchesRegexp(`^[[:space:]]*r → Delete remote branch`)).
 					Confirm()
 			}).
 			Tap(func() {
@@ -170,7 +170,7 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-one'?")).
-					Select(MatchesRegexp(`^[[:space:]]*c Delete local branch`)).
+					Select(MatchesRegexp(`^[[:space:]]*c → Delete local branch`)).
 					Confirm()
 			}).
 			EventuallyContent(Contains("master").DoesNotContain("branch-one")).Lines(
@@ -187,7 +187,7 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-six'?")).
-					Select(MatchesRegexp(`^[[:space:]]*b Delete local and remote branch`)).
+					Select(MatchesRegexp(`^[[:space:]]*b → Delete local and remote branch`)).
 					Confirm()
 				t.ExpectPopup().
 					Confirmation().
@@ -208,7 +208,7 @@ var Delete = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch-five'?")).
-					Select(MatchesRegexp(`^[[:space:]]*b Delete local and remote branch`)).
+					Select(MatchesRegexp(`^[[:space:]]*b → Delete local and remote branch`)).
 					Confirm()
 				t.ExpectPopup().
 					Confirmation().

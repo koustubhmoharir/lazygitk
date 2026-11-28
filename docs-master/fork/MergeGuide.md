@@ -397,7 +397,8 @@ re-apply it if upstream changes that code.
   on a new menu or a focus change; `Activate` updates focus frames. The physical
   essential keys of a prefix menu are in `pkg/gui/fork_menu_panel.go`.
   `createMenu` skips the `OpensMenu` "..." suffix when the label already ends
-  in "…" or "..." (`forkLabelEndsWithEllipsis`).
+  in "…" or "..." (`forkLabelEndsWithEllipsis`), and gives keyless items the
+  free digits 1-9 (`forkAssignDigitKeys`).
 - `pkg/gui/options_map.go` and `pkg/gui/command_log_panel.go` (replacement):
   hints and tips name effective key paths through `CommandKeyLabel`; tips for
   keys with no route are dropped. `keyTip`, `commandRoute` and the options-map
@@ -427,7 +428,10 @@ re-apply it if upstream changes that code.
 - `context/menu_context.go` `GetDisplayStrings`: an inapplicable disabled
   reason is dimmed instead of struck through (all menus). `OnMenuPress` shows
   the reason for items with `MenuItem.ExplainDisabled` (palette items) even
-  when an inapplicable default command would otherwise be silent.
+  when an inapplicable default command would otherwise be silent. A `→`
+  column sits between the key and the check mark (`forkKeyArrow` in
+  `context/fork_menu_context.go`); menu row assertions in integration tests
+  include it.
 - `pkg/gui/popup/popup_handler.go`: `Menu`, `Confirm`, `ConfirmIf` and `Prompt`
   pass through the usage hook (`popup/fork_usage_hook.go`), so a use counts
   only when its first popup is accepted. Popups opened later by background

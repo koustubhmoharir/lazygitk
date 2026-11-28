@@ -39,7 +39,7 @@ var DeleteWhileFiltering = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("Delete branch 'branch2'?")).
-					Select(MatchesRegexp(`^[[:space:]]*c Delete local branch`)).
+					Select(MatchesRegexp(`^[[:space:]]*c → Delete local branch`)).
 					Confirm()
 			}).
 			EventuallyContent(Contains("branch1")).Lines(

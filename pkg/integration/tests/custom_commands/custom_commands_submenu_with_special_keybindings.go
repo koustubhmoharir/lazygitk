@@ -54,10 +54,10 @@ var CustomCommandsSubmenuWithSpecialKeybindings = NewIntegrationTest(NewIntegrat
 				t.ExpectPopup().Menu().
 					Title(Equals("My Custom Commands")).
 					Lines(
-						Contains("j echo j"),
-						Contains("H echo H"),
-						Contains("  echo y"),
-						Contains("  echo down"),
+						Contains("j → echo j"),
+						Contains("H → echo H"),
+						Contains("1 → echo y"),
+						Contains("2 → echo down"),
 					)
 				t.GlobalPress(config.Keybinding{"j"})
 				t.ExpectPopup().Alert().Title(Equals("echo j")).Content(Equals("j")).Confirm()

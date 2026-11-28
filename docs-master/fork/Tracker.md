@@ -23,7 +23,6 @@ actions look like prompt text. Agreed behaviour (2026-11-28):
 
 ## Tasks
 
-3. Digit keys and the `→` column in menus.
 4. Coloured values in menu item labels.
 5. User guide, design principles and merge guide.
 

@@ -89,7 +89,7 @@ var ModeSpecificKeybindingSuggestions = NewIntegrationTest(NewIntegrationTestArg
 			Tap(func() {
 				t.ExpectPopup().Menu().
 					Title(Equals("Merge")).
-					Select(MatchesRegexp(`^[[:space:]]*n Merge \(no fast-forward\)`)).
+					Select(MatchesRegexp(`^[[:space:]]*n → Merge \(no fast-forward\)`)).
 					Confirm()
 
 				t.Common().AcknowledgeConflicts()

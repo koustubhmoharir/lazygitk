@@ -41,7 +41,7 @@ var RemoveWorktreeAndDeleteLocalAndRemoteBranch = NewIntegrationTest(NewIntegrat
 				menu := t.Common().ReviewBranchDeleteMenu("Delete branch 'mybranch'?", "refs/heads/mybranch", branchOID, "refs/heads/master", t.Git().GetCommitHash("refs/heads/master"), true)
 				// Confirming the disabled compound option must not reach a confirmation;
 				// it reports the reservation in a toast, which must be acknowledged.
-				menu.Select(MatchesRegexp(`^[[:space:]]*b Delete local and remote branch`)).Confirm()
+				menu.Select(MatchesRegexp(`^[[:space:]]*b → Delete local and remote branch`)).Confirm()
 				t.ExpectToast(Contains("reserved by checkout"))
 				t.Views().Confirmation().IsInvisible()
 				menu.Cancel()

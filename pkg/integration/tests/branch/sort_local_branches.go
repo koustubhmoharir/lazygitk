@@ -38,9 +38,9 @@ var SortLocalBranches = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.ExpectPopup().Menu().Title(Equals("Sort order")).
 			ContainsLines(
-				Contains("r ( ) Recency").IsSelected(),
-				Contains("a ( ) Alphabetical"),
-				Contains("d (•) Date"),
+				Contains("r → ( ) Recency").IsSelected(),
+				Contains("a → ( ) Alphabetical"),
+				Contains("d → (•) Date"),
 				Contains("      Cancel"),
 			).
 			Select(Contains("Recency")).
@@ -60,9 +60,9 @@ var SortLocalBranches = NewIntegrationTest(NewIntegrationTestArgs{
 
 		t.ExpectPopup().Menu().Title(Equals("Sort order")).
 			ContainsLines(
-				Contains("r (•) Recency").IsSelected(),
-				Contains("a ( ) Alphabetical"),
-				Contains("d ( ) Date"),
+				Contains("r → (•) Recency").IsSelected(),
+				Contains("a → ( ) Alphabetical"),
+				Contains("d → ( ) Date"),
 				Contains("      Cancel"),
 			).
 			Select(Contains("refname")).

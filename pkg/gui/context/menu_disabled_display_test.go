@@ -15,10 +15,10 @@ func TestMenuDisabledItemsDisplayByReason(t *testing.T) {
 	precondition := &types.MenuItem{LabelColumns: []string{"Blocked"}, DisabledReason: &types.DisabledReason{Text: "Nothing to do"}}
 	menu.SetMenuItems([]*types.MenuItem{inapplicable, precondition}, nil)
 
-	// Each row starts with the key and check mark columns.
+	// Each row starts with the key, arrow and check mark columns.
 	labels := menu.GetDisplayStrings(0, 0)
-	assert.Equal(t, style.FgDefault.SetDim().Sprint("Elsewhere"), labels[0][2], "inapplicable items are dimmed")
-	assert.Equal(t, style.FgDefault.SetStrikethrough().Sprint("Blocked"), labels[1][2], "precondition failures are struck through")
+	assert.Equal(t, style.FgDefault.SetDim().Sprint("Elsewhere"), labels[0][3], "inapplicable items are dimmed")
+	assert.Equal(t, style.FgDefault.SetStrikethrough().Sprint("Blocked"), labels[1][3], "precondition failures are struck through")
 	assert.Equal(t, []string{"Elsewhere"}, inapplicable.LabelColumns, "styling does not change the item")
 
 	again := menu.GetDisplayStrings(0, 0)
