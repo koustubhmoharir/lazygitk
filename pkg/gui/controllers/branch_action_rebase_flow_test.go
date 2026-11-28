@@ -17,6 +17,7 @@ import (
 	guicontext "github.com/jesseduffield/lazygit/pkg/gui/context"
 	"github.com/jesseduffield/lazygit/pkg/gui/controllers/helpers"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 type branchActionRebaseUI struct {
@@ -266,7 +267,7 @@ func TestBranchActionRebaseFlowTrackingChoices(t *testing.T) {
 	branchActionRebaseGit(t, f.root, "update-ref", "refs/remotes/origin/main", headOID)
 	menu = branchActionRebaseStartRef(t, f, ui, "refs/heads/main")
 	item := trackingItem(menu)
-	if item.DisabledReason != nil || item.Label != "Rebase onto tracking branch 'origin/main'" {
+	if item.DisabledReason != nil || promptmark.Strip(item.Label) != "Rebase onto tracking branch origin/main" {
 		t.Fatalf("single candidate entry: disabled=%+v label=%q", item.DisabledReason, item.Label)
 	}
 	if err := menu.OnCancel(); err != nil {
@@ -288,7 +289,8 @@ func TestBranchActionRebaseFlowTrackingChoices(t *testing.T) {
 	if chooser.Title != "Rebase 'main' onto" || len(chooser.Items) != 2 {
 		t.Fatalf("chooser title=%q items=%d", chooser.Title, len(chooser.Items))
 	}
-	if chooser.Items[0].Label != "origin/main (upstream)" || chooser.Items[1].Label != "fork/main" {
+	// Labels carry role markers (promptmark); the text they show is compared.
+	if promptmark.Strip(chooser.Items[0].Label) != "origin/main (upstream)" || promptmark.Strip(chooser.Items[1].Label) != "fork/main" {
 		t.Fatalf("chooser order: %q, %q", chooser.Items[0].Label, chooser.Items[1].Label)
 	}
 	if err := menu.OnCancel(); err != nil {

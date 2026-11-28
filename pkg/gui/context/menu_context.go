@@ -2,7 +2,6 @@ package context
 
 import (
 	"errors"
-	"slices"
 	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/gocui"
@@ -87,11 +86,12 @@ func NewMenuViewModel(c *ContextCommon) *MenuViewModel {
 				return item.KeyLabels()
 			}
 
+			// Fork: filter by the plain text of the columns (fork_menu_context.go).
 			if item.FilterColumns != nil {
-				return item.FilterColumns
+				return forkPlainColumns(item.FilterColumns)
 			}
 
-			return item.LabelColumns
+			return forkPlainColumns(item.LabelColumns)
 		},
 	)
 
@@ -174,8 +174,9 @@ func (self *MenuViewModel) GetDisplayStrings(_ int, _ int) [][]string {
 	menuItems := self.FilteredListViewModel.GetItems()
 
 	return lo.Map(menuItems, func(item *types.MenuItem, _ int) []string {
-		// Copied so that styling does not accumulate on the item across renders.
-		displayStrings := slices.Clone(item.LabelColumns)
+		// Fork: the columns are resolved into a new slice, so styling does not
+		// accumulate on the item across renders (fork_menu_context.go).
+		displayStrings := forkMenuDisplayColumns(item)
 		if item.DisabledReason != nil {
 			// Fork: an inapplicable reason means the command has nothing to act on
 			// here, so it is faded; a failed precondition is struck through.

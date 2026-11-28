@@ -12,6 +12,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gui/presentation"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 	"github.com/samber/lo"
 )
 
@@ -493,7 +494,7 @@ func (self *BranchesController) createPullRequestMenu(selectedBranch *models.Bra
 			{
 				CommandID:    "branch.create-pull-request",
 				Verb:         "create-pull-request",
-				LabelColumns: fromToLabelColumns(branch.Name, self.c.Tr.DefaultBranch),
+				LabelColumns: fromToLabelColumns(promptmark.Branch(branch.Name), self.c.Tr.DefaultBranch), // Fork: branch names are marked (fork_prompt_marks.go).
 				OnPress: func() error {
 					return self.handleCreatePullRequest(branch)
 				},
@@ -501,7 +502,7 @@ func (self *BranchesController) createPullRequestMenu(selectedBranch *models.Bra
 			{
 				CommandID:    "branch.create-pull-request-to-chosen-target",
 				Verb:         "create-pull-request",
-				LabelColumns: fromToLabelColumns(branch.Name, self.c.Tr.SelectBranch),
+				LabelColumns: fromToLabelColumns(promptmark.Branch(branch.Name), self.c.Tr.SelectBranch), // Fork: branch names are marked (fork_prompt_marks.go).
 				OnPress: func() error {
 					if !branch.IsTrackingRemote() {
 						return errors.New(self.c.Tr.PullRequestNoUpstream)
@@ -534,7 +535,7 @@ func (self *BranchesController) createPullRequestMenu(selectedBranch *models.Bra
 			&types.MenuItem{
 				CommandID:    "branch.create-pull-request-current-to-selected",
 				Verb:         "create-pull-request",
-				LabelColumns: fromToLabelColumns(checkedOutBranch.Name, selectedBranch.Name),
+				LabelColumns: fromToLabelColumns(promptmark.Branch(checkedOutBranch.Name), promptmark.Branch(selectedBranch.Name)), // Fork: branch names are marked (fork_prompt_marks.go).
 				OnPress: func() error {
 					if !checkedOutBranch.IsTrackingRemote() || !selectedBranch.IsTrackingRemote() {
 						return errors.New(self.c.Tr.PullRequestNoUpstream)

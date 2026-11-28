@@ -151,10 +151,11 @@ func (flow *capturedRebaseFlow) menu() error {
 	if flow.source.SourceRef() == flow.source.HeadRef() {
 		selfDisabled = &types.DisabledReason{Text: c.Tr.CantRebaseOntoSelf}
 	}
-	label := ShortBranchName(flow.source.SourceRef())
+	// Fork: the refs in these labels are marked with their role (promptmark.RefAs).
+	label := promptmark.RefAs(flow.source.SourceRef(), ShortBranchName(flow.source.SourceRef()))
 	baseLabel := c.Tr.CouldNotDetermineBaseBranch
 	if flow.baseDisabled == nil {
-		baseLabel = ShortBranchName(flow.base.SourceRef())
+		baseLabel = promptmark.RefAs(flow.base.SourceRef(), ShortBranchName(flow.base.SourceRef()))
 	}
 	choices := []capturedRebaseChoice{
 		{
@@ -208,7 +209,7 @@ func (flow *capturedRebaseFlow) trackingMenuItem() *types.MenuItem {
 	if len(flow.tracking) == 1 {
 		// A single candidate is named and rebases directly, as the simple rebase does.
 		tracked := flow.tracking[0]
-		label := utils.ResolvePlaceholderString(c.Tr.RebaseOntoTrackingBranch, map[string]string{"ref": ShortBranchName(tracked.candidate.Ref)})
+		label := utils.ResolvePlaceholderString(c.Tr.RebaseOntoTrackingBranch, map[string]string{"ref": promptmark.RefAs(tracked.candidate.Ref, ShortBranchName(tracked.candidate.Ref))})
 		item.Label = label
 		choice := capturedRebaseChoice{id: item.CommandID, label: label, source: tracked.source}
 		item.OnPress = func() error { return flow.prepare(choice) }
@@ -228,7 +229,7 @@ func (flow *capturedRebaseFlow) chooseTracking() error {
 	c := flow.repository.c
 	items := make([]*types.MenuItem, 0, len(flow.tracking))
 	for _, tracked := range flow.tracking {
-		label := ShortBranchName(tracked.candidate.Ref)
+		label := promptmark.RefAs(tracked.candidate.Ref, ShortBranchName(tracked.candidate.Ref))
 		if tracked.candidate.Upstream {
 			label = utils.ResolvePlaceholderString(c.Tr.RebaseOntoTrackingUpstreamChoice, map[string]string{"ref": label})
 		}

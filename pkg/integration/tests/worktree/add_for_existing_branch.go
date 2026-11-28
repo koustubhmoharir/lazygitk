@@ -31,7 +31,7 @@ var AddForExistingBranch = NewIntegrationTest(NewIntegrationTestArgs{
 				t.ExpectPopup().
 					Menu().
 					Title(Equals("New worktree")).
-					Select(Contains("New worktree for 'mybranch'")).
+					Select(Contains("New worktree for mybranch")).
 					Tooltip(Contains("Branch mybranch is checked out by worktree repo")).
 					Confirm().
 					Tap(func() {
@@ -45,7 +45,7 @@ var AddForExistingBranch = NewIntegrationTest(NewIntegrationTestArgs{
 			Tap(func() {
 				t.ExpectPopup().Menu().
 					Title(Equals("New worktree")).
-					Select(Contains("New worktree for 'otherbranch'")).
+					Select(Contains("New worktree for otherbranch")).
 					Confirm()
 
 				t.ExpectPopup().Menu().

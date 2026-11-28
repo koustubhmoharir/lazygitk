@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 type FilteringMenuAction struct {
@@ -38,8 +39,9 @@ func (self *FilteringMenuAction) Call() error {
 	}
 
 	if fileName != "" {
+		// Fork: the path is marked and its quotes dropped (fork_prompt_marks.go).
 		menuItems = append(menuItems, &types.MenuItem{
-			Label:     fmt.Sprintf("%s '%s'", self.c.Tr.FilterBy, fileName),
+			Label:     fmt.Sprintf("%s %s", self.c.Tr.FilterBy, promptmark.Path(fileName)),
 			CommandID: "filter.by-selected-path",
 			Verb:      "filter",
 			OnPress: func() error {

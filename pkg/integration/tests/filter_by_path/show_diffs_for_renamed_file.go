@@ -47,7 +47,7 @@ var ShowDiffsForRenamedFile = NewIntegrationTest(NewIntegrationTestArgs{
 			Press(keys.Universal.FilteringMenu)
 
 		t.ExpectPopup().Menu().Title(Equals("Filtering")).
-			Select(Contains("Filter by 'newFile'")).Confirm()
+			Select(Contains("Filter by newFile")).Confirm()
 
 		t.Views().Commits().
 			IsFocused().

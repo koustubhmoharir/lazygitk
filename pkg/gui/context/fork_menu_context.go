@@ -4,6 +4,8 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/style"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
+	"github.com/jesseduffield/lazygit/pkg/theme"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 	"github.com/samber/lo"
 )
 
@@ -37,4 +39,29 @@ func forkKeyArrow(hasKey bool) string {
 		return ""
 	}
 	return style.FgCyan.Sprint("→")
+}
+
+// Fork: the label columns of a menu item as they are displayed. Role markers in
+// a label (see pkg/utils/promptmark) resolve to the prompt styles. The first
+// column of a disabled item is styled as a whole (struck through or dimmed), so
+// its markers are stripped instead, which keeps inner colours from resetting
+// that style.
+func forkMenuDisplayColumns(item *types.MenuItem) []string {
+	columns := make([]string, len(item.LabelColumns))
+	for i, column := range item.LabelColumns {
+		if i == 0 && item.DisabledReason != nil {
+			columns[i] = promptmark.Strip(column)
+		} else {
+			columns[i] = theme.ResolvePromptMarks(column)
+		}
+	}
+	return columns
+}
+
+// Fork: the plain text of label columns, for matching a filter against. Role
+// markers are not text, so a filter matches what the user reads.
+func forkPlainColumns(columns []string) []string {
+	return lo.Map(columns, func(column string, _ int) string {
+		return promptmark.Strip(column)
+	})
 }

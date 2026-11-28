@@ -34,7 +34,7 @@ var AddFromRemoteBranch = NewIntegrationTest(NewIntegrationTestArgs{
 			Tap(func() {
 				t.ExpectPopup().Menu().
 					Title(Equals("New worktree")).
-					Select(Contains("New local branch and worktree from 'origin/feature'")).
+					Select(Contains("New local branch and worktree from origin/feature")).
 					Confirm()
 
 				// the new branch name defaults to the remote branch name with

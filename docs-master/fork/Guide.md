@@ -710,7 +710,9 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
   and hashes yellow, tags magenta bold, paths and counts bold, and keys in the
   options bar's colour. In summaries made of `name: value` lines, such as the
   push and pull menus, the names (Source:, Remote:, ...) are blue and the
-  values have no quotes. Consequences that destroy work or cannot be undone
+  values have no quotes. Values inside menu items are coloured the same way
+  ("Mark 5d59a479 as bad", "Filter by path/file.go"), except in a crossed-out
+  or faded item. Consequences that destroy work or cannot be undone
   ("is not fully merged", "cannot be undone", "force push") are bold red.
 - lazygitk uses true colour when `COLORTERM` says the terminal has it, or
   when the terminal says so itself at startup, as Windows Terminal does

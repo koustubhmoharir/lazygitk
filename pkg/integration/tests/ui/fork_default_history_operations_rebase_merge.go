@@ -43,7 +43,7 @@ var ForkDefaultHistoryOperationsRebaseMerge = NewIntegrationTest(NewIntegrationT
 		branches.Focus().NavigateToLine(Contains("master")).Press(config.Keybinding{"r"})
 		t.ExpectPopup().Menu().
 			Title(Equals("Rebase 'topic'")).
-			Select(Contains("Simple rebase onto 'master'")).
+			Select(Contains("Simple rebase onto master")).
 			Confirm()
 
 		commits := t.Views().Commits()

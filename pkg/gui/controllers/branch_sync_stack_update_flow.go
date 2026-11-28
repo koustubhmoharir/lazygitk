@@ -10,6 +10,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gocui"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 func (self *SyncController) reviewBranchStackUpdate(target *branchSyncTarget, info git_commands.BranchSyncInfo) error {
@@ -201,7 +202,8 @@ func (batch *branchStackUpdateFlow) reviewBatch() error {
 	}
 	for _, plan := range batch.executionOrder() {
 		prompt := batch.planPrompt(plan)
-		label := fmt.Sprintf("%q %s → %s", plan.name(), utils.ShortHash(plan.sourceOID()), utils.ShortHash(plan.targetOID()))
+		// Fork: the branch and the hashes are marked (fork_prompt_marks.go); the quotes are dropped.
+		label := fmt.Sprintf("%s %s → %s", promptmark.Branch(plan.name()), promptmark.Hash(utils.ShortHash(plan.sourceOID())), promptmark.Hash(utils.ShortHash(plan.targetOID())))
 		if plan.current != nil {
 			label = fmt.Sprintf(batch.target.c.Tr.BranchSyncStackUpdateCurrentLabel, plan.name(), utils.ShortHash(plan.targetOID()), utils.ShortHash(plan.sourceOID())) + batch.target.c.Tr.BranchSyncStackUpdateCurrentLast
 		} else if !plan.forward.NeedsUpdate() {

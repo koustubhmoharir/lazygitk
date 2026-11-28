@@ -37,7 +37,7 @@ var SelectFile = NewIntegrationTest(NewIntegrationTestArgs{
 			Press(keys.Universal.FilteringMenu)
 
 		t.ExpectPopup().Menu().Title(Equals("Filtering")).
-			Select(Contains("Filter by 'filterFile'")).Confirm()
+			Select(Contains("Filter by filterFile")).Confirm()
 
 		postFilterTest(t)
 	},

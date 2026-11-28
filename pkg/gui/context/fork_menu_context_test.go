@@ -7,6 +7,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/gui/style"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,4 +46,43 @@ func TestPrefixMenuKeyArrowColumn(t *testing.T) {
 
 	rows := menu.GetDisplayStrings(0, 0)
 	assert.Equal(t, style.FgCyan.Sprint("→"), rows[0][1])
+}
+
+// Fork: role markers in a label show as the prompt styles, so a hash in a
+// label is coloured like a hash in a prompt.
+func TestMenuLabelMarksResolveToColour(t *testing.T) {
+	menu, _ := newMenuBeforeAcceptContext()
+	menu.SetMenuItems([]*types.MenuItem{{LabelColumns: []string{"Mark " + promptmark.Hash("5d59a479") + " as bad"}}}, nil)
+
+	rows := menu.GetDisplayStrings(0, 0)
+	// Columns: key, arrow, check mark, label.
+	assert.Equal(t, "Mark "+style.FgYellow.Sprint("5d59a479")+" as bad", rows[0][3])
+}
+
+// Fork: a disabled item's first column is struck through as a whole, so it
+// shows no inner colours and no markers. Its other columns still resolve.
+func TestMenuLabelMarksDisabledItemHasNoInnerColour(t *testing.T) {
+	menu, _ := newMenuBeforeAcceptContext()
+	menu.SetMenuItems([]*types.MenuItem{{
+		LabelColumns:   []string{"Filter by " + promptmark.Path("path/file.go"), promptmark.Hash("abc123")},
+		DisabledReason: &types.DisabledReason{Text: "not now"},
+	}}, nil)
+
+	rows := menu.GetDisplayStrings(0, 0)
+	assert.Equal(t, style.FgDefault.SetStrikethrough().Sprint("Filter by path/file.go"), rows[0][3])
+	assert.Equal(t, style.FgYellow.Sprint("abc123"), rows[0][4])
+}
+
+// Fork: filtering matches the plain text of a marked label, not its markers.
+func TestMenuLabelMarksFilterMatchesPlainText(t *testing.T) {
+	menu, _ := newMenuBeforeAcceptContext()
+	marked := &types.MenuItem{LabelColumns: []string{"Filter by " + promptmark.Path("path/file.go")}}
+	other := &types.MenuItem{LabelColumns: []string{"Other"}}
+	menu.SetMenuItems([]*types.MenuItem{marked, other}, nil)
+
+	menu.SetFilter("by path/file.go", false)
+	assert.Equal(t, []*types.MenuItem{marked}, menu.GetFilteredList())
+
+	menu.SetFilter(string(rune(0xE000)), false)
+	assert.Empty(t, menu.GetFilteredList())
 }

@@ -23,8 +23,7 @@ actions look like prompt text. Agreed behaviour (2026-11-28):
 
 ## Tasks
 
-4. Coloured values in menu item labels.
-5. User guide, design principles and merge guide.
+1. Run the full integration suite; finish.
 
 ## Open follow-ups
 

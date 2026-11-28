@@ -1042,6 +1042,20 @@ unreachable` marker that names its replacement. Do not reconnect them.
 - `pkg/utils/promptmark` (fork) marks spans of prompt text with a role
   (branch, hash, path, key, label, warning...); `pkg/theme/fork_prompt_marks.go`
   resolves them to the panes' styles. Markers must never reach the screen raw.
+- `context/menu_context.go`: `GetDisplayStrings` resolves markers in menu item
+  labels (stripped from the first column of a disabled item), and the filter
+  getter matches marker-free text (`forkMenuDisplayColumns`,
+  `forkPlainColumns` in `context/fork_menu_context.go`). `MenuItem.ID()` is
+  the label and may hold markers; it is never drawn.
+- `pkg/i18n/fork_upstream_prompt_marks.go` also marks upstream menu labels.
+  An entry with `unquote` drops the quotes around its value; one with a nil
+  mark only drops them, and the call site marks the value.
+- Upstream call sites that mark a menu label's value (each with a `Fork:`
+  comment): `controllers/git_flow_controller.go` (finish branch),
+  `controllers/filtering_menu_action.go` (filter by path),
+  `controllers/branches_controller.go` (three `fromToLabelColumns` calls),
+  `controllers/branch_upstream_menu.go` (divergence, upstream reset and
+  rebase labels).
 - `controllers/helpers/confirmation_helper.go` `CreatePopupPanel`: resolves
   the markers of a non-editable prompt and strips them from an editable one.
   `prepareConfirmationPanel` no longer bolds the whole prompt, so the marked

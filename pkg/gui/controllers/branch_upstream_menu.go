@@ -118,7 +118,12 @@ func (captured *capturedUpstreamMenu) menu() error {
 	} else {
 		baseLabel = helpers.ShortBranchName(baseLabel)
 	}
-	baseDivergenceLabel := utils.ResolvePlaceholderString(c.Tr.ViewDivergenceFromBaseBranch, map[string]string{"baseBranch": baseLabel})
+	// Fork: the base ref's label is marked with its role (promptmark.RefAs). Only the menu labels use it.
+	baseMenuLabel := baseLabel
+	if baseDisabled == nil {
+		baseMenuLabel = promptmark.RefAs(captured.baseBranch, baseLabel)
+	}
+	baseDivergenceLabel := utils.ResolvePlaceholderString(c.Tr.ViewDivergenceFromBaseBranch, map[string]string{"baseBranch": baseMenuLabel})
 	viewUpstream := &types.MenuItem{
 		CommandID: "branch.view-upstream-divergence", Verb: "view-divergence",
 		LabelColumns: []string{c.Tr.ViewDivergenceFromUpstream}, DisabledReason: captured.upstreamDisabled,
@@ -156,9 +161,14 @@ func (captured *capturedUpstreamMenu) menu() error {
 		CommandID: "branch.set-upstream", Verb: "set-upstream",
 		LabelColumns: []string{c.Tr.SetUpstream}, Keys: menuKey('s'), OnPress: captured.upstreamFlow.set,
 	}
-	resetLabel := utils.ResolvePlaceholderString(c.Tr.ViewUpstreamResetOptions, map[string]string{"upstream": upstreamLabel})
+	// Fork: the upstream ref's label is marked with its role (promptmark.RefAs). Only the menu labels use it.
+	upstreamMenuLabel := upstreamLabel
+	if captured.upstreamRef != "" {
+		upstreamMenuLabel = promptmark.RefAs(captured.upstreamRef, upstreamLabel)
+	}
+	resetLabel := utils.ResolvePlaceholderString(c.Tr.ViewUpstreamResetOptions, map[string]string{"upstream": upstreamMenuLabel})
 	resetTooltip := utils.ResolvePlaceholderString(c.Tr.ViewUpstreamResetOptionsTooltip, map[string]string{"upstream": upstreamLabel})
-	rebaseLabel := utils.ResolvePlaceholderString(c.Tr.ViewUpstreamRebaseOptions, map[string]string{"upstream": upstreamLabel})
+	rebaseLabel := utils.ResolvePlaceholderString(c.Tr.ViewUpstreamRebaseOptions, map[string]string{"upstream": upstreamMenuLabel})
 	rebaseTooltip := utils.ResolvePlaceholderString(c.Tr.ViewUpstreamRebaseOptionsTooltip, map[string]string{"upstream": upstreamLabel})
 	resetUpstream := &types.MenuItem{
 		CommandID: "branch.reset-selected-upstream-menu", Verb: "reset", LabelColumns: []string{resetLabel},

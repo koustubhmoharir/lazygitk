@@ -7,6 +7,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/jesseduffield/lazygit/pkg/utils/promptmark"
 )
 
 type GitFlowController struct {
@@ -75,7 +76,8 @@ func (self *GitFlowController) handleCreateGitFlowMenu(branch *models.Branch) er
 		Items: []*types.MenuItem{
 			{
 				// not localising here because it's one to one with the actual git flow commands
-				Label:     fmt.Sprintf("finish branch '%s'", branch.Name),
+				// Fork: the branch name is marked and its quotes dropped (fork_prompt_marks.go).
+				Label:     fmt.Sprintf("finish branch %s", promptmark.Branch(branch.Name)),
 				CommandID: "branch.git-flow-finish",
 				Verb:      "finish-git-flow",
 				OnPress: func() error {
