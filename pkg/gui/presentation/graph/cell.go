@@ -94,6 +94,18 @@ func (cell *Cell) boxDrawingChars() (string, string) {
 	case MERGE:
 		return string(MergeSymbol), second
 	default:
+		// Fork: upstream draws │ here; see MergeGuide.
+		// Box drawing has no glyph for two bends meeting in one cell (the
+		// branch drawing symbols have one: "╯ and ╮"). │ reads as a lane
+		// passing straight through, so show the connection to the side
+		// instead. Lanes never share a column, so this only arises from two
+		// bends.
+		if cell.up == lineToLeft && cell.down == lineToLeft && cell.left && !cell.right {
+			return "┤", " "
+		}
+		if cell.up == lineToRight && cell.down == lineToRight && cell.right && !cell.left {
+			return "├", "─"
+		}
 		return first, second
 	}
 }

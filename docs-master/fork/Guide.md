@@ -710,7 +710,9 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
   inside WSL, where `COLORTERM` is usually unset.
 - In the commit graph, the selected commit's lines are highlighted without
   cutting other commits' lines; only where a highlighted line runs across
-  another lane is it drawn over that lane.
+  another lane is it drawn over that lane. Where a line comes in from above
+  and another leaves below, both bending to the same side, the cell is drawn
+  `┤` or `├` rather than `│`, so it does not look like a lane passing through.
 - The popup on first run only says that lazygitk is a fork of lazygit, and
   how to thank lazygit's author through the donate link.
 

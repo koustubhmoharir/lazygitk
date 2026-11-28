@@ -979,6 +979,11 @@ unreachable` marker that names its replacement. Do not reconnect them.
   cut other commits' lines. The fork only clears a lane that a selected
   horizontal line crosses straight through, so the highlight is drawn over it;
   every other line is kept. `Cell.reset` is removed with it.
+- `pkg/gui/presentation/graph/cell.go` `boxDrawingChars`: a cell where a line
+  from above and a line from below both bend left is drawn `┤` instead of
+  upstream's `│` (`├` when both bend right), as `│` reads as a lane passing
+  straight through. Upstream test expectations with `│` in such a cell are
+  updated to `┤`.
 - `pkg/gui/views.go` (replacement): upstream's border-style switch is removed;
   frame runes come from `updateFocusFrames` (`fork_focus_frame.go`), called
   from `configureViewProperties`, `ContextMgr.Activate` and initial layout.

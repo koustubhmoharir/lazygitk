@@ -153,6 +153,22 @@ func TestRenderCommitGraph(t *testing.T) {
 			c14 ╭───╯ ◎─╮`,
 		},
 		{
+			name: "two lines bending into and out of the same cell",
+			commitOpts: []models.NewCommitOpts{
+				{Hash: "B", Parents: []string{"S"}},
+				{Hash: "C", Parents: []string{"S"}},
+				{Hash: "S", Parents: []string{"P", "Q"}},
+				{Hash: "Q", Parents: []string{"P"}},
+				{Hash: "P"},
+			},
+			expectedOutput: `
+			B ○
+			C │ ○
+			S ◎─┤
+			Q │ ○
+			P ○─╯`,
+		},
+		{
 			name: "with a path that has room to move to the left and continues",
 			commitOpts: []models.NewCommitOpts{
 				{Hash: "1", Parents: []string{"2"}},
@@ -202,7 +218,7 @@ func TestRenderCommitGraph(t *testing.T) {
 			expectedOutput: `
 			1 ◎─╮
 			3 │ ○
-			2 ◎─│
+			2 ◎─┤
 			4 ◎─│─╮
 			6 ○ │ │`,
 		},
@@ -693,7 +709,7 @@ func TestRenderPipeSet(t *testing.T) {
 				{fromPos: 0, toPos: 1, fromHash: pool("selected"), toHash: pool("e"), kind: STARTS, style: &green},
 			},
 			prevCommit:  models.NewCommit(hashPool, models.NewCommitOpts{Hash: "a"}),
-			expectedStr: "◎─│",
+			expectedStr: "◎─┤",
 			expectedStyles: []style.TextStyle{
 				highlightStyle, highlightStyle, highlightStyle,
 			},
@@ -707,7 +723,7 @@ func TestRenderPipeSet(t *testing.T) {
 				{fromPos: 0, toPos: 1, fromHash: pool("b"), toHash: pool("e"), kind: STARTS, style: &green},
 			},
 			prevCommit:  models.NewCommit(hashPool, models.NewCommitOpts{Hash: "a"}),
-			expectedStr: "◎─│",
+			expectedStr: "◎─┤",
 			expectedStyles: []style.TextStyle{
 				green, green, magenta,
 			},
@@ -847,7 +863,7 @@ func TestRenderPipeSet(t *testing.T) {
 				{fromPos: 1, toPos: 0, fromHash: pool("selected"), toHash: pool("a2"), kind: TERMINATES, style: &yellow},
 			},
 			prevCommit:  models.NewCommit(hashPool, models.NewCommitOpts{Hash: "selected"}),
-			expectedStr: "◎─│",
+			expectedStr: "◎─┤",
 			expectedStyles: []style.TextStyle{
 				highlightStyle, highlightStyle, highlightStyle,
 			},
@@ -892,6 +908,18 @@ func TestRenderPipeSet(t *testing.T) {
 			expectedStr: "○─┴─╯",
 			expectedStyles: []style.TextStyle{
 				highlightStyle, highlightStyle, magenta, highlightStyle, highlightStyle,
+			},
+		},
+		{
+			name: "two lines bending right into and out of the same cell",
+			pipes: []Pipe{
+				{fromPos: 0, toPos: 1, fromHash: pool("a1"), toHash: pool("c"), kind: TERMINATES, style: &red},
+				{fromPos: 1, toPos: 0, fromHash: pool("c"), toHash: pool("b"), kind: STARTS, style: &green},
+			},
+			prevCommit:  models.NewCommit(hashPool, models.NewCommitOpts{Hash: "a1"}),
+			expectedStr: "├─○",
+			expectedStyles: []style.TextStyle{
+				red, green, red,
 			},
 		},
 	}

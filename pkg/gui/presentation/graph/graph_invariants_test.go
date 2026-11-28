@@ -96,8 +96,8 @@ var (
 		}
 		return m
 	}()
-	invBoxUp   = map[rune]bool{'│': true, '┴': true, '╯': true, '╰': true, '╵': true}
-	invBoxDown = map[rune]bool{'│': true, '┬': true, '╮': true, '╭': true, '╷': true}
+	invBoxUp   = map[rune]bool{'│': true, '┴': true, '╯': true, '╰': true, '╵': true, '┤': true, '├': true}
+	invBoxDown = map[rune]bool{'│': true, '┬': true, '╮': true, '╭': true, '╷': true, '┤': true, '├': true}
 	invBoxNone = map[rune]bool{' ': true, '─': true, '╶': true}
 )
 
