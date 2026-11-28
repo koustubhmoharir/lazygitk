@@ -104,7 +104,7 @@ func (captured *capturedUpstreamMenu) menu() error {
 	upstreamReview := c.Tr.UpstreamGenericName
 	if captured.upstreamOID != "" {
 		// Fork: the upstream ref's role follows its kind (see promptmark.RefAs).
-		upstreamReview = promptmark.RefAs(captured.upstreamRef, fmt.Sprintf("%q", captured.upstreamRef)) + " at " + promptmark.Hash(captured.upstreamOID)
+		upstreamReview = promptmark.RefAs(captured.upstreamRef, captured.upstreamRef) + " at " + promptmark.Hash(captured.upstreamOID)
 	} else if captured.upstreamDisabled != nil {
 		upstreamReview = captured.upstreamDisabled.Text
 	}

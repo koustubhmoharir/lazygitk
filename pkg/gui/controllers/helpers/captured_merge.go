@@ -83,7 +83,7 @@ func (flow *capturedMergeFlow) prompt(choice capturedMergeChoice) string {
 	sourceRef := target.SourceRef()
 	text := fmt.Sprintf(flow.repository.c.Tr.BranchActionMergeReviewPrompt,
 		ShortBranchName(target.HeadRef()), target.HeadOID(),
-		promptmark.RefAs(sourceRef, fmt.Sprintf("%q", ShortBranchName(sourceRef))), promptmark.RefAs(sourceRef, sourceRef),
+		promptmark.RefAs(sourceRef, ShortBranchName(sourceRef)), promptmark.RefAs(sourceRef, sourceRef),
 		target.SourceOID(), mode)
 	args := flow.review.Arguments()
 	if len(args) > 0 {

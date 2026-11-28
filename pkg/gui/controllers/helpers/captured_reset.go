@@ -228,8 +228,8 @@ func (flow *branchActionResetFlow) prompt() string {
 	}
 	sourceRef := flow.snapshot.SourceRef()
 	return fmt.Sprintf(flow.target.c.Tr.BranchActionResetReviewPrompt,
-		promptmark.Branch(fmt.Sprintf("%q", head)), promptmark.Hash(oid),
-		promptmark.RefAs(sourceRef, fmt.Sprintf("%q", flow.label)), promptmark.RefAs(sourceRef, sourceRef),
+		promptmark.Branch(head), promptmark.Hash(oid),
+		promptmark.RefAs(sourceRef, flow.label), promptmark.RefAs(sourceRef, sourceRef),
 		promptmark.Hash(flow.snapshot.SourceOID()))
 }
 
