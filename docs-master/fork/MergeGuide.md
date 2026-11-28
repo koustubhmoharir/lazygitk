@@ -964,6 +964,12 @@ unreachable` marker that names its replacement. Do not reconnect them.
   `fork_pipe_set_key.go`), because scoped and whole-graph lists can share
   their first commit and length. F5 drops the cache (`DropPipeSetCache`,
   called from `fork_full_refresh.go`).
+- `pkg/gui/presentation/graph/graph.go` `getNextPipes` (upstream bug fix):
+  a commit's own spot is marked taken even when no pipe from a descendant
+  terminates there, so a merge at a branch tip of a whole-graph list does
+  not put its second parent on its first parent's spot and drop that pipe.
+  Covered by "with a merge at a branch tip that has no descendant" in
+  `graph_test.go`. Drop the fix if upstream fixes the same bug.
 - `pkg/gui/views.go` (replacement): upstream's border-style switch is removed;
   frame runes come from `updateFocusFrames` (`fork_focus_frame.go`), called
   from `configureViewProperties`, `ContextMgr.Activate` and initial layout.

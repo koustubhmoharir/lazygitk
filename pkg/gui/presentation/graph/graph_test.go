@@ -123,6 +123,22 @@ func TestRenderCommitGraph(t *testing.T) {
 			3 ○`,
 		},
 		{
+			name: "with a merge at a branch tip that has no descendant",
+			commitOpts: []models.NewCommitOpts{
+				{Hash: "1", Parents: []string{"2"}},
+				{Hash: "M", Parents: []string{"3", "4"}},
+				{Hash: "4", Parents: []string{"3"}},
+				{Hash: "2", Parents: []string{"3"}},
+				{Hash: "3"},
+			},
+			expectedOutput: `
+			1 ○
+			M │ ◎─╮
+			4 │ │ ○
+			2 ○ │ │
+			3 ○─┴─╯`,
+		},
+		{
 			name: "with a path that has room to move to the left and continues",
 			commitOpts: []models.NewCommitOpts{
 				{Hash: "1", Parents: []string{"2"}},

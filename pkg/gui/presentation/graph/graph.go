@@ -153,6 +153,13 @@ func getNextPipes(prevPipes []Pipe, commit *models.Commit, getStyle func(c *mode
 		kind:     STARTS,
 		style:    getStyle(commit),
 	})
+	// Fork fix of an upstream bug; drop it if upstream fixes the same thing.
+	// The commit's first-parent pipe ends at pos. When a pipe from a descendant
+	// terminates here, traversing it already marks pos as taken, but a branch tip
+	// with no descendant in the list (only with --all) has no such pipe. Mark it
+	// here, or a merge's second parent would take the same spot and the
+	// first-parent pipe would be dropped.
+	takenSpots.Add(int(pos))
 
 	traversedSpotsForContinuingPipes := set.New[int]()
 	for _, pipe := range currentPipes {
