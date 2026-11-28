@@ -1,32 +1,18 @@
-# Current work: readable menus and summaries
+# Current work: none
 
-Coloured prompts help, but summary prompts are still hard to scan and menu
-actions look like prompt text. Agreed behaviour (2026-11-28):
-
-- In prompts made of `name: value` lines, the name and its colon are blue
-  (the options bar's colour, `promptmark.Label`). Values keep their colours
-  and lose their quotes. Every such line has a colon ("Source: NAV at
-  5d59a479").
-- A menu item that has no key of its own gets the next free digit 1-9,
-  which runs it. Digits another item uses are skipped. Filtering menus
-  (palette, repo switcher, file pickers) and prefix menus get no digits.
-  Cancel gets none.
-- Values inside menu item labels (hashes, branches, paths, as in "Mark
-  5d59a479 as bad" or "Filter by path/file.go") are coloured like prompt
-  values and lose their quotes, in fork and upstream menus.
-- Every menu item with a key shows a cyan `→` between the key and the label,
-  upstream menus included.
-- Toggles in the push menu are checkboxes (`[✓]`, `[ ]`) instead of a
-  "(false)" suffix, and the prompt no longer repeats their values.
-- An item that opens another prompt and already ends in "…" gets no extra
-  "...".
-
-## Tasks
-
-1. Run the full integration suite; finish.
+Readable menus and summaries were finished on 2026-11-29: blue names in
+`name: value` prompt lines, coloured values in menu items, digit keys and
+`→` in menus, and checkboxes in the push menu. See the user guide (How keys
+work, Appearance) and the design principles.
 
 ## Open follow-ups
 
+- Three integration scenarios expect the commit graph as drawn before the
+  recent graph work: `interactive_rebase/reword_merge_commit` and
+  `cherry_pick/cherry_pick_merge` expect `○ ╯ base` where the graph now
+  draws `○─╯ base`, and `ui/fork_filter_graph` expects `○ │─╯ f1` where it
+  draws `○─│─╯ f1`. They already fail at ad92526d7. Decide whether the new
+  drawing is intended, then fix the graph or the expectations.
 - Untracked files saved with `git stash -u` (the stash's third parent) appear
   in neither Stash listing (`Enter`/`v d`, `v f`). This predates the work
   above. Showing them would change Stash's changed-files listing; present
