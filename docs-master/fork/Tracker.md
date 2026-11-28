@@ -1,9 +1,29 @@
-# Current work: none
+# Current work: readable menus and summaries
 
-Consistent Enter, Space and `v` was finished on 2026-11-25: Enter goes in,
-Space toggles, `v` chooses how to go in where there is a choice, and `c` in
-Files commits or continues. See the design principles (Shared roles) and the
-user guide.
+Coloured prompts help, but summary prompts are still hard to scan and menu
+actions look like prompt text. Agreed behaviour (2026-11-28):
+
+- In prompts made of `name: value` lines, the name and its colon are blue
+  (the options bar's colour, `promptmark.Label`). Values keep their colours
+  and lose their quotes. Every such line has a colon ("Source: NAV at
+  5d59a479").
+- A menu item that has no key of its own gets the next free digit 1-9,
+  which runs it. Digits another item uses are skipped. Filtering menus
+  (palette, repo switcher, file pickers) and prefix menus get no digits.
+  Cancel gets none.
+- Every menu item with a key shows a cyan `→` between the key and the label,
+  upstream menus included.
+- Toggles in the push menu are checkboxes (`[✓]`, `[ ]`) instead of a
+  "(false)" suffix, and the prompt no longer repeats their values.
+- An item that opens another prompt and already ends in "…" gets no extra
+  "...".
+
+## Tasks
+
+1. Checkboxes in the push menu; no doubled ellipsis.
+2. `promptmark.Label` and labelled summary prompts.
+3. Digit keys and the `→` column in menus.
+4. User guide, design principles and merge guide.
 
 ## Open follow-ups
 
