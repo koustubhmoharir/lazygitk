@@ -974,6 +974,11 @@ unreachable` marker that names its replacement. Do not reconnect them.
   (`movingContinuingSpans`), so the two lines do not read as joined; covered
   by "new merge path does not overlap a continuing path that moves left".
   Drop either fix if upstream fixes the same bug.
+- `pkg/gui/presentation/graph/graph.go` `renderPipeSet` (replacement): in box
+  drawing, upstream reset every cell under the selected commit's lines, which
+  cut other commits' lines. The fork only clears a lane that a selected
+  horizontal line crosses straight through, so the highlight is drawn over it;
+  every other line is kept. `Cell.reset` is removed with it.
 - `pkg/gui/views.go` (replacement): upstream's border-style switch is removed;
   frame runes come from `updateFocusFrames` (`fork_focus_frame.go`), called
   from `configureViewProperties`, `ContextMgr.Activate` and initial layout.

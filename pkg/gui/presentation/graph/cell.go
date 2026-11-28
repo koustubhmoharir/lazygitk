@@ -132,15 +132,6 @@ func cachedSprint(style style.TextStyle, str string) string {
 	return style.Sprint(str)
 }
 
-func (cell *Cell) reset() {
-	cell.up = noLine
-	cell.down = noLine
-	cell.left = false
-	cell.right = false
-	cell.horizontal = false
-	cell.horizontalOnTop = false
-}
-
 func (cell *Cell) setUp(style *style.TextStyle, line verticalLine) *Cell {
 	cell.up = line
 	cell.style = style

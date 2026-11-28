@@ -693,7 +693,7 @@ func TestRenderPipeSet(t *testing.T) {
 				{fromPos: 0, toPos: 1, fromHash: pool("selected"), toHash: pool("e"), kind: STARTS, style: &green},
 			},
 			prevCommit:  models.NewCommit(hashPool, models.NewCommitOpts{Hash: "a"}),
-			expectedStr: "◎─╮",
+			expectedStr: "◎─│",
 			expectedStyles: []style.TextStyle{
 				highlightStyle, highlightStyle, highlightStyle,
 			},
@@ -737,9 +737,9 @@ func TestRenderPipeSet(t *testing.T) {
 				{fromPos: 0, toPos: 2, fromHash: pool("selected"), toHash: pool("c3"), kind: STARTS, style: &yellow},
 			},
 			prevCommit:  models.NewCommit(hashPool, models.NewCommitOpts{Hash: "a1"}),
-			expectedStr: "◎───╮ ╯",
+			expectedStr: "◎───┬─╯",
 			expectedStyles: []style.TextStyle{
-				highlightStyle, highlightStyle, highlightStyle, highlightStyle, highlightStyle, nothing, green,
+				highlightStyle, highlightStyle, highlightStyle, highlightStyle, highlightStyle, green, green,
 			},
 		},
 		{
@@ -847,9 +847,51 @@ func TestRenderPipeSet(t *testing.T) {
 				{fromPos: 1, toPos: 0, fromHash: pool("selected"), toHash: pool("a2"), kind: TERMINATES, style: &yellow},
 			},
 			prevCommit:  models.NewCommit(hashPool, models.NewCommitOpts{Hash: "selected"}),
-			expectedStr: "◎─╯",
+			expectedStr: "◎─│",
 			expectedStyles: []style.TextStyle{
 				highlightStyle, highlightStyle, highlightStyle,
+			},
+		},
+		{
+			name: "line of the selected commit beside another commit's line, which is not cut",
+			pipes: []Pipe{
+				{fromPos: 0, toPos: 0, fromHash: pool("selected"), toHash: pool("a2"), kind: TERMINATES, style: &red},
+				{fromPos: 1, toPos: 1, fromHash: pool("selected"), toHash: pool("b3"), kind: CONTINUES, style: &red},
+				{fromPos: 0, toPos: 0, fromHash: pool("a2"), toHash: pool("a3"), kind: STARTS, style: &green},
+				{fromPos: 0, toPos: 2, fromHash: pool("a2"), toHash: pool("c3"), kind: STARTS, style: &yellow},
+			},
+			prevCommit:  models.NewCommit(hashPool, models.NewCommitOpts{Hash: "selected"}),
+			expectedStr: "◎─│─╮",
+			expectedStyles: []style.TextStyle{
+				highlightStyle, yellow, highlightStyle, yellow, yellow,
+			},
+		},
+		{
+			name: "line of the selected commit crossing a lane that passes straight through, drawn over it",
+			pipes: []Pipe{
+				{fromPos: 0, toPos: 0, fromHash: pool("a1"), toHash: pool("selected"), kind: TERMINATES, style: &red},
+				{fromPos: 0, toPos: 0, fromHash: pool("selected"), toHash: pool("a3"), kind: STARTS, style: &yellow},
+				{fromPos: 0, toPos: 2, fromHash: pool("selected"), toHash: pool("c3"), kind: STARTS, style: &yellow},
+				{fromPos: 1, toPos: 1, fromHash: pool("b1"), toHash: pool("b3"), kind: CONTINUES, style: &magenta},
+			},
+			prevCommit:  models.NewCommit(hashPool, models.NewCommitOpts{Hash: "a1"}),
+			expectedStr: "◎───╮",
+			expectedStyles: []style.TextStyle{
+				highlightStyle, highlightStyle, highlightStyle, highlightStyle, highlightStyle,
+			},
+		},
+		{
+			name: "line of the selected commit passing through a cell where another line from above joins",
+			pipes: []Pipe{
+				{fromPos: 0, toPos: 0, fromHash: pool("a1"), toHash: pool("a2"), kind: TERMINATES, style: &red},
+				{fromPos: 1, toPos: 0, fromHash: pool("b1"), toHash: pool("a2"), kind: TERMINATES, style: &magenta},
+				{fromPos: 2, toPos: 0, fromHash: pool("selected"), toHash: pool("a2"), kind: TERMINATES, style: &cyan},
+				{fromPos: 0, toPos: 0, fromHash: pool("a2"), toHash: pool("a3"), kind: STARTS, style: &green},
+			},
+			prevCommit:  models.NewCommit(hashPool, models.NewCommitOpts{Hash: "a1"}),
+			expectedStr: "○─┴─╯",
+			expectedStyles: []style.TextStyle{
+				highlightStyle, highlightStyle, magenta, highlightStyle, highlightStyle,
 			},
 		},
 	}

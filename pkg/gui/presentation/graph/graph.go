@@ -382,14 +382,23 @@ func renderPipeSet(
 		renderPipe(&pipe, pipe.style, false)
 	}
 
-	// Box drawing characters can't show every combination of lines in a cell,
-	// so the cells that the selected commit's lines run through show only
-	// those lines. The branch drawing symbols can, so they keep the other
-	// lines too.
+	// Box drawing characters can't show a horizontal line passing over a
+	// vertical one except as ─, so where a line of the selected commit runs
+	// straight through a lane of another commit, the horizontal line is drawn
+	// over it and the lane is dropped from that cell. Everywhere else the
+	// selected commit's lines are drawn over the cells they run through
+	// without removing the other lines, so that other commits' lines aren't
+	// cut. The branch drawing symbols get the same treatment further down.
+	// Fork: upstream reset every cell under the selected commit's lines, which
+	// cut other commits' lines; see MergeGuide.
 	if symbolSet == BoxDrawingSymbols {
 		for _, pipe := range selectedPipes {
-			for i := pipe.left(); i <= pipe.right(); i++ {
-				cells[i].reset()
+			for i := pipe.left() + 1; i < pipe.right(); i++ {
+				cell := cells[i]
+				if cell.up == straightLine && cell.down == straightLine {
+					cell.up = noLine
+					cell.down = noLine
+				}
 			}
 		}
 	}

@@ -708,6 +708,9 @@ worktree's cancelled drafts, and nothing you type is lost by doing so:
 - lazygitk uses true colour when `COLORTERM` says the terminal has it, or
   when the terminal says so itself at startup, as Windows Terminal does
   inside WSL, where `COLORTERM` is usually unset.
+- In the commit graph, the selected commit's lines are highlighted without
+  cutting other commits' lines; only where a highlighted line runs across
+  another lane is it drawn over that lane.
 - The popup on first run only says that lazygitk is a fork of lazygit, and
   how to thank lazygit's author through the donate link.
 
